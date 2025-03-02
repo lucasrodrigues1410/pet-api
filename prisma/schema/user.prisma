@@ -1,0 +1,19 @@
+model User {
+    id        Int      @id @default(autoincrement())
+    email     String   @unique
+    name      String    @default("")
+    password  String
+    type      UserType
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+    deletedAt DateTime? @map("deleted_at")
+    
+    @@index([email], name: "idx_user_email")
+    @@map("users")
+}
+
+enum UserType {
+   CUSTOMER
+   COMPANY
+   ADMIN
+}
