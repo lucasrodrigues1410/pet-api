@@ -1,17 +1,20 @@
 import { Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { ITokenGenerator } from "../../domain/interfaces/token-generator.interface";
+import { UserType } from "src/modules/user/domain/entities/user.entity";
 
 interface User {
 	id: number;
 	name: string;
 	email: string;
+	type: UserType;
 }
 
 interface TokenPayload {
 	sub: number;
 	name: string;
 	email: string;
+	type: UserType;
 }
 
 @Injectable()
@@ -23,14 +26,22 @@ export class TokenGeneratorService implements ITokenGenerator {
 			sub: user.id,
 			name: user.name,
 			email: user.email,
+			type: user.type,
 		};
 		return this.jwtService.sign(payload);
 	}
 
-	verifyToken(token: string): User | null {
+	async verifyToken(token: string): Promise<User | null> {
 		try {
-			const payload = this.jwtService.verify(token) as TokenPayload;
-			return { id: payload.sub, name: payload.name, email: payload.email };
+			const payload = await this.jwtService.verifyAsync(token, {
+				secret: "secret",
+			}) as TokenPayload;
+			return {
+				id: payload.sub,
+				name: payload.name,
+				email: payload.email,
+				type: payload.type,
+			};
 		} catch {
 			return null;
 		}

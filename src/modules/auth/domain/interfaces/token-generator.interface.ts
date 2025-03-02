@@ -5,9 +5,9 @@ export interface ITokenGenerator {
 		email: string;
 	}): string;
 
-    verifyToken(token: string): {
+    verifyToken(token: string): Promise<{
         id: number;
         name: string;
         email: string;
-    } | null;
+    } | null>;
 }
