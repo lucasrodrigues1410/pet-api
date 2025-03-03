@@ -6,6 +6,7 @@ import { BcryptPasswordHasher } from "./infrastructure/services/bcrypt-password-
 import { AuthController } from "./presentation/controllers/auth.controller";
 import { UserModule } from "../user/user.module";
 import { VerifyTokenUseCase } from "./application/use-cases/verify-token.use-case";
+import { RegisterUseCase } from "./application/use-cases/register.use-case";
 
 @Module({
 	imports: [
@@ -19,6 +20,7 @@ import { VerifyTokenUseCase } from "./application/use-cases/verify-token.use-cas
 	controllers: [AuthController],
 	providers: [
 		LoginUseCase,
+		RegisterUseCase,
 		VerifyTokenUseCase,
 		{
 			provide: "IPasswordHasher",

@@ -46,4 +46,16 @@ export class UserPrismaRepository implements IUserRepository {
 			updatedAt: response.updatedAt,
 		};
 	}
+
+	async save(user: User): Promise<void> {
+		await this.prisma.user.create({
+			data: {
+				id: user.id,
+				name: user.name,
+				email: user.email,
+				type: user.type,
+				password: user.password,
+			},
+		});
+	}
 }
