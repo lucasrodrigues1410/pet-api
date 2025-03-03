@@ -1,6 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { UserRepository } from "src/modules/user/domain/repositories/user.repository";
-import { TokenGeneratorService } from "../../infrastructure/services/token-generator.service";
+import { TokenGeneratorService } from "../../infrastructure/security/token-generator.service";
 import { IPasswordHasher } from "../../domain/interfaces/password-hasher.interface";
 import { InvalidCredentialsError } from "../errors/invalid-credentials.error";
 import { Either, left, right } from "src/common/either";

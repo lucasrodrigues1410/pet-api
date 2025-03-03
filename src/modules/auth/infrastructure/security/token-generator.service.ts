@@ -33,9 +33,7 @@ export class TokenGeneratorService implements ITokenGenerator {
 
 	async verifyToken(token: string): Promise<User | null> {
 		try {
-			const payload = await this.jwtService.verifyAsync(token, {
-				secret: "secret",
-			}) as TokenPayload;
+			const payload = await this.jwtService.verify(token) as TokenPayload;
 			return {
 				id: payload.sub,
 				name: payload.name,

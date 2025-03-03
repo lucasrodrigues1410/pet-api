@@ -1,5 +1,5 @@
 import { UserType } from "src/modules/user/domain/entities/user.entity";
-import { TokenGeneratorService } from "../../infrastructure/services/token-generator.service";
+import { TokenGeneratorService } from "../../infrastructure/security/token-generator.service";
 import { Inject } from "@nestjs/common";
 
 interface AuthenticatedUser {
