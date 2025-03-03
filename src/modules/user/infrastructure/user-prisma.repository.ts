@@ -38,7 +38,7 @@ export class UserPrismaRepository implements IUserRepository {
 				name: user.name,
 				email: user.email,
 				type: user.type,
-				password: user.password,
+				password: user.password!,
 			},
 		});
 	}

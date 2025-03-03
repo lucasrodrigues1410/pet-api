@@ -26,6 +26,7 @@
 				"noStaticOnlyClass": "off"
 			},
 			"style": {
+				"noNonNullAssertion": "off",
 				"useImportType": "off"
 			},
 			"recommended": true
