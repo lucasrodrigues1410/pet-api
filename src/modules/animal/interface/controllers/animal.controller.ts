@@ -15,7 +15,7 @@ import {
 import { CreateAnimalUseCase } from "../../application/use-cases/create-animal.use-case";
 import { ListAnimalsFromUserUserUseCase } from "../../application/use-cases/list-animals-from-user.use-case";
 import { CreateAnimalDto } from "../dtos/create-animal.dto";
-import { CurrentUser } from "src/modules/auth/presentation/decorators/current-user.decorator";
+import { User } from "src/modules/auth/presentation/decorators/user.decorator";
 import { UserTypeDecorator } from "src/modules/auth/presentation/decorators/user-type.decorator";
 import { AnimalDto } from "../dtos/animal.dto";
 
@@ -34,8 +34,9 @@ export class AnimalController {
 		type: AnimalDto,
 	})
 	@Post()
+	@UserTypeDecorator('CUSTOMER')
 	async create(
-		@CurrentUser("sub") userId: number,
+		@User("sub") userId: number,
 		@Body() data: CreateAnimalDto,
 	) {
 		const result = await this.createAnimalUseCase.execute({
@@ -54,6 +55,7 @@ export class AnimalController {
 		type: AnimalDto,
 	})
 	@Get("user/:id")
+	@UserTypeDecorator('CUSTOMER')
 	async listAll(@Param("id") userId: number) {
 		const result = await this.listAnimalsFromUserUseCase.execute({ userId });
 		if (result.isLeft()) {
