@@ -14,6 +14,7 @@ import {
 } from "@nestjs/swagger";
 import { CurrentUser } from "src/modules/auth/presentation/decorators/current-user.decorator";
 import { UserResponseDto } from "../dtos/user-response.dto";
+import { UserTypeDecorator } from "src/modules/auth/presentation/decorators/user-type.decorator";
 
 @ApiTags("Usuários")
 @Controller("users")
@@ -27,11 +28,16 @@ export class UserController {
 		type: UserResponseDto,
 	})
 	@Get("me")
-	async getUser(@CurrentUser("id") userId: number): Promise<User> {
+	async getUser(@CurrentUser("sub") userId: number) {
 		const result = await this.findUserByIdUseCase.execute({ userId });
 		if (result.isLeft()) {
 			throw new BadRequestException();
 		}
-		return result.value.user;
+		const user = result.value.user;
+		return {
+			name: user.name,
+			email: user.email,
+			type: user.type,
+		};
 	}
 }

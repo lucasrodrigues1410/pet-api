@@ -26,10 +26,6 @@ export class User extends Entity<UserProps> {
 		return this.props.type;
 	}
 
-	private constructor(props: UserProps, id?: number) {
-		super(props, id);
-	}
-
 	public static create(props: UserProps, id?: number): User {
 		const user = new User(props, id);
 		return user;

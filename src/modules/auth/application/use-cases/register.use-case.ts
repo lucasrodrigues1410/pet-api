@@ -1,10 +1,9 @@
-import { ConflictException, Inject, Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { UserRepository } from "src/modules/user/domain/repositories/user.repository";
-import { IPasswordHasher } from "../../domain/interfaces/password-hasher.interface";
-import { User, UserType } from "src/modules/user/domain/entities/user.entity";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import { User } from "src/modules/user/domain/entities/user.entity";
 import { Either, left, right } from "src/common/either";
 import { UserAlreadyExistError } from "../errors/user-already-exists.error";
+import { HashGenerator } from "../../domain/interfaces/hash-generator.interface";
 
 interface LoginUseCaseRequest {
 	name: string;
@@ -22,8 +21,7 @@ type LoginUseCaseResponse = Either<
 export class RegisterUseCase {
 	constructor(
 		private readonly userRepository: UserRepository,
-		@Inject("IPasswordHasher")
-		private readonly passwordHasher: IPasswordHasher,
+		private hashGenerator: HashGenerator,
 	) {}
 
 	async execute({
@@ -37,7 +35,7 @@ export class RegisterUseCase {
 			return left(new UserAlreadyExistError(email));
 		}
 
-		const hashedPassword = await this.passwordHasher.hashPassword(password);
+		const hashedPassword = await this.hashGenerator.hash(password);
 
 		const user = User.create({
 			name,

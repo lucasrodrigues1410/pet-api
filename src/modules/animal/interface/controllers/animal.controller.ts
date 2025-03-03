@@ -35,7 +35,7 @@ export class AnimalController {
 	})
 	@Post()
 	async create(
-		@CurrentUser("id") userId: number,
+		@CurrentUser("sub") userId: number,
 		@Body() data: CreateAnimalDto,
 	) {
 		const result = await this.createAnimalUseCase.execute({
@@ -59,6 +59,16 @@ export class AnimalController {
 		if (result.isLeft()) {
 			throw new BadRequestException();
 		}
-		return result.value;
+		const animals = result.value.animals;
+
+		return animals.map((animal) => ({
+			id: animal.id,
+			name: animal.name,
+			age: animal.birthdate
+				? new Date().getFullYear() - animal.birthdate.getFullYear()
+				: null,
+			weight: animal.weight,
+			userId: animal.userId,
+		}));
 	}
 }

@@ -1,9 +1,9 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { UserRepository } from "src/modules/user/domain/repositories/user.repository";
-import { TokenGeneratorService } from "../../infrastructure/security/token-generator.service";
-import { IPasswordHasher } from "../../domain/interfaces/password-hasher.interface";
 import { InvalidCredentialsError } from "../errors/invalid-credentials.error";
 import { Either, left, right } from "src/common/either";
+import { HashComparer } from "../../domain/interfaces/hash-comparer.interface";
+import { Encrypter } from "../../domain/interfaces/encrypter.interface";
 
 interface LoginUseCaseRequest {
 	email: string;
@@ -21,14 +21,13 @@ type LoginUseCaseResponse = Either<
 export class LoginUseCase {
 	constructor(
 		private readonly userRepository: UserRepository,
-		@Inject("ITokenGenerator")
-		private readonly tokenGeneratorSevice: TokenGeneratorService,
-		@Inject("IPasswordHasher")
-		private readonly passwordHasher: IPasswordHasher,
+		private hashComparer: HashComparer,
+		private encrypter: Encrypter,
 	) {}
 
 	async execute({
-		email,password
+		email,
+		password,
 	}: LoginUseCaseRequest): Promise<LoginUseCaseResponse> {
 		const user = await this.userRepository.findByEmail(email);
 
@@ -36,7 +35,7 @@ export class LoginUseCase {
 			return left(new InvalidCredentialsError());
 		}
 
-		const isPasswordValid = await this.passwordHasher.comparePassword(
+		const isPasswordValid = await this.hashComparer.compare(
 			password,
 			user?.password,
 		);
@@ -45,7 +44,12 @@ export class LoginUseCase {
 			return left(new InvalidCredentialsError());
 		}
 
-		const accessToken = this.tokenGeneratorSevice.generateToken(user);
+		const accessToken = await this.encrypter.encrypt({
+			sub: user.id,
+			name: user.name,
+			email: user.email,
+			type: user.type,
+		});
 		return right({ accessToken });
 	}
 }

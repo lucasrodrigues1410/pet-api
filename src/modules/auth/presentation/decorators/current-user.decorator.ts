@@ -1,19 +1,9 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
-import { UserType } from 'src/modules/user/domain/entities/user.entity';
-
-interface ActiveUser {
-  id: number;
-  name: string;
-  email: string;
-  type: UserType;
-}
+import { UserPayload } from '../../infrastructure/strategies/jwt.strategy';
 
 export const CurrentUser = createParamDecorator(
-  (data: keyof Partial<ActiveUser>, ctx: ExecutionContext) => {
-    const request = ctx.switchToHttp().getRequest();
-    if (data) {
-      return (request.user as ActiveUser)[data];
-    }
-    return request.user;
+  (data: keyof UserPayload, context: ExecutionContext) => {
+    const request = context.switchToHttp().getRequest()
+    return data ? request.user[data] : request.user;
   },
 );
