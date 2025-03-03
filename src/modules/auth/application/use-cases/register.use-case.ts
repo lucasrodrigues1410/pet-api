@@ -24,7 +24,7 @@ export class RegisterUseCase {
 				email: body.email,
 				name: body.name,
 				password: await this.passwordHasher.hashPassword(body.password),
-				type: UserType.CUSTOMER,
+				type: "CUSTOMER",
 			});
 		} catch (error) {
 			if (

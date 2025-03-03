@@ -1,8 +1,4 @@
-export enum UserType {
-	CUSTOMER = "CUSTOMER",
-	COMPANY = "COMPANY",
-	ADMIN = "ADMIN",
-}
+export type  UserType =  "CUSTOMER" | "COMPANY" | "ADMIN";
 
 export class User {
 	id!: number;
@@ -12,5 +8,5 @@ export class User {
 	type!: UserType;
 	createdAt!: Date;
 	updatedAt!: Date;
-	deletedAt?: Date;
+	deletedAt?: Date | null;
 }

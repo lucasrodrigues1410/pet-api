@@ -1,4 +1,3 @@
-// user-type.decorator.ts
 import { SetMetadata } from '@nestjs/common';
 import { UserType } from 'src/modules/user/domain/entities/user.entity';
 
