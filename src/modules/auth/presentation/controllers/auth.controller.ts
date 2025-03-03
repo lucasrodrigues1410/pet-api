@@ -1,22 +1,24 @@
 import {
+	BadRequestException,
 	Body,
+	ConflictException,
 	Controller,
 	HttpCode,
 	HttpStatus,
 	Post,
-	UseFilters,
+	UnauthorizedException,
 } from "@nestjs/common";
 import { LoginDto } from "../dtos/login.dto";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { LoginUseCase } from "../../application/use-cases/login.use-case";
-import { InvalidCredentialsExceptionFilter } from "../filters/invalid-credentials-exception.filter";
 import { RegisterUseCase } from "../../application/use-cases/register.use-case";
 import { RegisterDto } from "../dtos/register.dto";
 import { Public } from "../decorators/public.decorator";
+import { InvalidCredentialsError } from "../../application/errors/invalid-credentials.error";
+import { UserAlreadyExistError } from "../../application/errors/user-already-exists.error";
 
 @ApiTags("Autenticação")
 @Controller("auth")
-@UseFilters(new InvalidCredentialsExceptionFilter())
 export class AuthController {
 	constructor(
 		private loginUseCase: LoginUseCase,
@@ -25,21 +27,58 @@ export class AuthController {
 
 	@ApiOperation({ summary: "Login de usuário" })
 	@ApiResponse({ status: 200, description: "Usuário autenticado com sucesso" })
-	@ApiResponse({ status: 401, description: "Credenciais inválidas" })
 	@Post("login")
-    @Public()
+	@Public()
 	@HttpCode(HttpStatus.OK)
-	login(@Body() body: LoginDto) {
-		return this.loginUseCase.execute(body);
+	async login(@Body() body: LoginDto) {
+		const { email, password } = body;
+
+		const result = await this.loginUseCase.execute({
+			email,
+			password,
+		});
+
+		if (result.isLeft()) {
+			const error = result.value;
+
+			switch (error.constructor) {
+				case InvalidCredentialsError:
+					throw new UnauthorizedException(error.message);
+				default:
+					throw new BadRequestException(error.message);
+			}
+		}
+
+		const { accessToken } = result.value;
+
+		return {
+			access_token: accessToken,
+		};
 	}
 
 	@ApiOperation({ summary: "Registro de usuário" })
 	@ApiResponse({ status: 201, description: "Usuário registrado com sucesso" })
-	@ApiResponse({ status: 400, description: "Erro ao registrar usuário" })
 	@Post("register")
-    @Public()
+	@Public()
 	@HttpCode(HttpStatus.CREATED)
-	register(@Body() body: RegisterDto) {
-		return this.registerUseCase.execute(body);
+	async register(@Body() body: RegisterDto) {
+		const { name, email, password } = body;
+
+		const result = await this.registerUseCase.execute({
+			name,
+			email,
+			password,
+		});
+
+		if (result.isLeft()) {
+			const error = result.value;
+
+			switch (error.constructor) {
+				case UserAlreadyExistError:
+					throw new ConflictException(error.message);
+				default:
+					throw new BadRequestException(error.message);
+			}
+		}
 	}
 }

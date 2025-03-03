@@ -1,13 +1,14 @@
 import { PrismaService } from "src/common/infrastructure/prisma/prisma.service";
-import { IUserRepository } from "../domain/repositories/user.repository";
-import { User } from "../domain/entities/user.entity";
+import { UserRepository } from "../../../domain/repositories/user.repository";
+import { User } from "../../../domain/entities/user.entity";
 import { Injectable } from "@nestjs/common";
+import { UserPrismaMapper } from "./user-prisma.mapper";
 
 @Injectable()
-export class UserPrismaRepository implements IUserRepository {
+export class UserPrismaRepository implements UserRepository {
 	constructor(private readonly prisma: PrismaService) {}
 
-	async findUserByEmail(email): Promise<User | null> {
+	async findByEmail(email): Promise<User | null> {
 		const response = await this.prisma.user.findFirst({
 			where: { email },
 		});
@@ -16,7 +17,7 @@ export class UserPrismaRepository implements IUserRepository {
 			return null;
 		}
 
-		return response;
+		return UserPrismaMapper.toDomain(response);
 	}
 
 	async findById(id: number): Promise<User | null> {
@@ -28,18 +29,13 @@ export class UserPrismaRepository implements IUserRepository {
 			return null;
 		}
 
-		return response;
+		return UserPrismaMapper.toDomain(response);
 	}
 
-	async save(user: User): Promise<void> {
+	async create(user: User): Promise<void> {
+		const data = UserPrismaMapper.toPrisma(user);
 		await this.prisma.user.create({
-			data: {
-				id: user.id,
-				name: user.name,
-				email: user.email,
-				type: user.type,
-				password: user.password!,
-			},
+			data: data,
 		});
 	}
 }

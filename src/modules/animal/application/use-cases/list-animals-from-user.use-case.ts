@@ -1,12 +1,29 @@
 import { Injectable } from "@nestjs/common";
 import { Animal } from "../../domain/entities/animal.entity";
-import { IAnimalRepository } from "../../domain/repositories/animal.repository";
+import { AnimalRepository } from "../../domain/repositories/animal.repository";
+import { Either, right } from "src/common/either";
+
+interface ListAnimalsFromUserUseCaseRequest {
+	userId: number;
+}
+
+type ListAnimalsFromUserUseCaseResponse = Either<
+	null,
+	{
+		animals: Animal[];
+	}
+>;
 
 @Injectable()
 export class ListAnimalsFromUserUserUseCase {
-    constructor(private readonly animalRepository: IAnimalRepository) {}
+	constructor(private readonly animalRepository: AnimalRepository) {}
 
-    async execute(userId: number): Promise<Animal[]> {
-        return this.animalRepository.getAnimalsByUser(userId);
-    }
+	async execute({
+		userId,
+	}: ListAnimalsFromUserUseCaseRequest): Promise<ListAnimalsFromUserUseCaseResponse> {
+		const animals = await this.animalRepository.getAllByUser(userId);
+		return right({
+			animals,
+		});
+	}
 }

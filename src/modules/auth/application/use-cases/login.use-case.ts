@@ -1,39 +1,51 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { IUserRepository } from "src/modules/user/domain/repositories/user.repository";
+import { UserRepository } from "src/modules/user/domain/repositories/user.repository";
 import { TokenGeneratorService } from "../../infrastructure/services/token-generator.service";
 import { IPasswordHasher } from "../../domain/interfaces/password-hasher.interface";
-import { InvalidCredentialsException } from "../../domain/exception/invalid-credentials.exception";
+import { InvalidCredentialsError } from "../errors/invalid-credentials.error";
+import { Either, left, right } from "src/common/either";
+
+interface LoginUseCaseRequest {
+	email: string;
+	password: string;
+}
+
+type LoginUseCaseResponse = Either<
+	InvalidCredentialsError,
+	{
+		accessToken: string;
+	}
+>;
 
 @Injectable()
 export class LoginUseCase {
 	constructor(
-		private readonly userRepository: IUserRepository,
+		private readonly userRepository: UserRepository,
 		@Inject("ITokenGenerator")
 		private readonly tokenGeneratorSevice: TokenGeneratorService,
 		@Inject("IPasswordHasher")
 		private readonly passwordHasher: IPasswordHasher,
 	) {}
 
-	async execute(body: { email: string; password: string }) {
-		const user = await this.userRepository.findUserByEmail(body.email);
-		const isPasswordValid = await this.passwordHasher.comparePassword(
-			body.password,
-			user?.password ?? "",
-		);
+	async execute({
+		email,password
+	}: LoginUseCaseRequest): Promise<LoginUseCaseResponse> {
+		const user = await this.userRepository.findByEmail(email);
 
-		if (!user || !isPasswordValid) {
-			throw new InvalidCredentialsException();
+		if (!user) {
+			return left(new InvalidCredentialsError());
 		}
 
-		const accessToken = this.tokenGeneratorSevice.generateToken({
-			id: user.id,
-			email: user.email,
-			name: user.name ?? "",
-			type: user.type
-		});
+		const isPasswordValid = await this.passwordHasher.comparePassword(
+			password,
+			user?.password,
+		);
 
-		return {
-			access_token: accessToken,
-		};
+		if (!isPasswordValid) {
+			return left(new InvalidCredentialsError());
+		}
+
+		const accessToken = this.tokenGeneratorSevice.generateToken(user);
+		return right({ accessToken });
 	}
 }

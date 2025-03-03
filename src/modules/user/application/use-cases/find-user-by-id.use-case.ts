@@ -1,18 +1,35 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { User } from "../../domain/entities/user.entity";
-import { IUserRepository } from "../../domain/repositories/user.repository";
+import { UserRepository } from "../../domain/repositories/user.repository";
+import { Either, left, right } from "src/common/either";
+import { ResourceNotFoundError } from "src/common/errors/errors/resource-not-found.error";
+
+interface FindUserByIdUseCaseRequest {
+	userId: number;
+}
+
+type FindUserByIdUseCaseResponse = Either<
+	ResourceNotFoundError,
+	{
+		user: User;
+	}
+>;
 
 @Injectable()
 export class FindUserByIdUseCase {
-    constructor(private readonly userRepository: IUserRepository) {}
+	constructor(private readonly userRepository: UserRepository) {}
 
-    async execute(id: number): Promise<User> {
-        const response = await this.userRepository.findById(id);
+	async execute({
+		userId,
+	}: FindUserByIdUseCaseRequest): Promise<FindUserByIdUseCaseResponse> {
+		const user = await this.userRepository.findById(userId);
 
-        if (!response) {
-            throw new NotFoundException('Usuário não encontrado');
-        }
+		if (!user) {
+			return left(new ResourceNotFoundError());
+		}
 
-        return response;
-    }
+		return right({
+			user: user,
+		});
+	}
 }

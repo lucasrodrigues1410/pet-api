@@ -2,8 +2,6 @@ import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { ValidationPipe } from "@nestjs/common";
-import { ValidationExceptionFilter } from "./common/filters/validation-exception.filter";
-import { HttpExceptionFilter } from "./common/filters/http-exception.filter";
 
 async function bootstrap() {
 	const app = await NestFactory.create(AppModule);
@@ -16,18 +14,13 @@ async function bootstrap() {
 		}),
 	);
 
-	app.useGlobalFilters(
-		new HttpExceptionFilter(),
-		new ValidationExceptionFilter(),
-	);
-
 	const config = new DocumentBuilder()
-		.setTitle("Cats example")
-		.setDescription("The cats API description")
+		.setTitle("API de Cuidados com Animais")
+		.setDescription("API para gerenciar serviços e informações de cuidados com animais, incluindo banho e tosa, serviços veterinários e mais")
 		.setVersion("1.0")
 		.build();
 	const documentFactory = () => SwaggerModule.createDocument(app, config);
-	SwaggerModule.setup("swagger", app, documentFactory, {
+	SwaggerModule.setup("docs", app, documentFactory, {
 		jsonDocumentUrl: "swagger/json",
 	});
 
