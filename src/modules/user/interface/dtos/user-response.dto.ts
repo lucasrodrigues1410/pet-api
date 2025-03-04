@@ -1,24 +1,3 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { UserType } from "../../domain/entities/user.entity";
+import { UserDto } from "./user.dto";
 
-export class UserResponseDto {
-	@ApiProperty()
-	id: number;
-
-	@ApiProperty()
-	name: string;
-
-	@ApiProperty()
-	email: string;
-
-	@ApiProperty({
-		enum: ["CUSTOMER", "COMPANY", "ADMIN"],
-	})
-	type: UserType;
-
-	@ApiProperty()
-	createdAt: Date;
-
-	@ApiProperty()
-	updatedAt: Date;
-}
+export class UserResponseDto extends UserDto {}

@@ -16,6 +16,7 @@ import { RegisterDto } from "../dtos/register.dto";
 import { Public } from "../decorators/public.decorator";
 import { InvalidCredentialsError } from "../../application/errors/invalid-credentials.error";
 import { UserAlreadyExistError } from "../../application/errors/user-already-exists.error";
+import { LoginResponseDto } from "../dtos/login-response.dto";
 
 @ApiTags("Autenticação")
 @Controller("auth")
@@ -26,7 +27,11 @@ export class AuthController {
 	) {}
 
 	@ApiOperation({ summary: "Login de usuário" })
-	@ApiResponse({ status: 200, description: "Usuário autenticado com sucesso" })
+	@ApiResponse({
+		status: 200,
+		description: "Usuário autenticado com sucesso",
+		type: LoginResponseDto,
+	})
 	@Post("login")
 	@Public()
 	@HttpCode(HttpStatus.OK)

@@ -1,27 +1,4 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { OmitType } from "@nestjs/swagger";
+import { AnimalDto } from "./animal.dto";
 
-class BreedDto {
-    @ApiProperty()
-    name: string;
-}
-
-export class CreateAnimalResponseDto {
-
-    @ApiProperty()
-    id: number;
-
-    @ApiProperty()
-    name: string;
-
-    @ApiProperty()
-    breed: BreedDto;
-
-    @ApiProperty()
-    age: number;
-
-    @ApiProperty()
-    weight: number;
-
-    @ApiProperty()
-    userId: number;
-}
+export class CreateAnimalResponseDto extends OmitType(AnimalDto, ["breed"]) {}

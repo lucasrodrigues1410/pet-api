@@ -18,6 +18,7 @@ import { CreateAnimalDto } from "../dtos/create-animal.dto";
 import { User } from "src/modules/auth/interface/decorators/user.decorator";
 import { UserTypeDecorator } from "src/modules/auth/interface/decorators/user-type.decorator";
 import { CreateAnimalResponseDto } from "../dtos/create-animal-response.dto";
+import { ListAnimalsResponseDto } from "../dtos/list-animals-response.dto";
 
 @ApiTags("Animais")
 @Controller("animal")
@@ -51,7 +52,7 @@ export class AnimalController {
 	@ApiOperation({ summary: "Listar todos os animais de um usuário" })
 	@ApiOkResponse({
 		description: "Animais listados com sucesso",
-		type: CreateAnimalResponseDto,
+		type: ListAnimalsResponseDto,
 	})
 	@Get("user/:id")
 	@UserTypeDecorator('CUSTOMER')
