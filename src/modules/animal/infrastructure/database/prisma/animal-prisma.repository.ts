@@ -35,8 +35,10 @@ export class AnimalPrismaRepository implements AnimalRepository {
 	async getAllByUser(userId: number) {
 		const response = await this.prismaService.animal.findMany({
 			where: { userId },
+			include: {
+				breed: true,
+			}
 		});
-
 		return response.map((animal) => AnimalPrismaMapper.toDomain(animal));
 	}
 }

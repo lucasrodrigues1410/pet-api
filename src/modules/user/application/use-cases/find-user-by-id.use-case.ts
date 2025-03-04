@@ -23,7 +23,6 @@ export class FindUserByIdUseCase {
 		userId,
 	}: FindUserByIdUseCaseRequest): Promise<FindUserByIdUseCaseResponse> {
 		const user = await this.userRepository.findById(userId);
-		console.log(user)
 		if (!user) {
 			return left(new ResourceNotFoundError());
 		}

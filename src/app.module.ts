@@ -3,7 +3,7 @@ import { PrismaModule } from "./common/infrastructure/prisma/prisma.module";
 import { UserModule } from "./modules/user/user.module";
 import { AuthModule } from "./modules/auth/auth.module";
 import { APP_GUARD } from "@nestjs/core";
-import { JwtGuard } from "./modules/auth/presentation/guards/jwt.guard";
+import { JwtGuard } from "./modules/auth/interface/guards/jwt.guard";
 import { AnimalModule } from "./modules/animal/animal.module";
 import { JwtStrategy } from "./modules/auth/infrastructure/strategies/jwt.strategy";
 import { ConfigModule } from "@nestjs/config";
@@ -18,11 +18,11 @@ import { ConfigModule } from "@nestjs/config";
 	],
 	controllers: [],
 	providers: [
+		JwtStrategy,
 		{
 			provide: APP_GUARD,
 			useClass: JwtGuard,
 		},
-		JwtStrategy,
 	],
 })
 export class AppModule {}

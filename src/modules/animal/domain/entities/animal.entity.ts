@@ -1,4 +1,5 @@
 import { Entity } from "src/common/entities/entity";
+import { Breed } from "src/modules/breed/domain/entities/breed.entity";
 
 export interface AnimalProps {
 	userId: number;
@@ -6,9 +7,11 @@ export interface AnimalProps {
 	name: string;
 	birthdate?: Date | null;
 	weight?: number | null;
+	breed?: Breed;
 }
 
 export class Animal extends Entity<AnimalProps> {
+
 	get userId(): number {
 		return this.props.userId;
 	}
@@ -29,8 +32,8 @@ export class Animal extends Entity<AnimalProps> {
 		return this.props.weight;
 	}
 
-	private constructor(props: AnimalProps, id?: number) {
-		super(props, id);
+	get breed(): Breed | null | undefined {
+		return this.props.breed;
 	}
 
 	public static create(props: AnimalProps, id?: number): Animal {

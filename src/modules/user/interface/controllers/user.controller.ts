@@ -6,15 +6,13 @@ import {
 	HttpStatus,
 } from "@nestjs/common";
 import { FindUserByIdUseCase } from "../../application/use-cases/find-user-by-id.use-case";
-import { User } from "../../domain/entities/user.entity";
 import {
 	ApiOkResponse,
 	ApiOperation,
 	ApiTags,
 } from "@nestjs/swagger";
-import { User } from "src/modules/auth/presentation/decorators/user.decorator";
+import { User } from "src/modules/auth/interface/decorators/user.decorator";
 import { UserResponseDto } from "../dtos/user-response.dto";
-import { UserTypeDecorator } from "src/modules/auth/presentation/decorators/user-type.decorator";
 
 @ApiTags("Usuários")
 @Controller("users")

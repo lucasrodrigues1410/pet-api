@@ -1,6 +1,11 @@
 import { ApiProperty } from "@nestjs/swagger";
 
-export class AnimalDto {
+class BreedDto {
+    @ApiProperty()
+    name: string;
+}
+
+export class CreateAnimalResponseDto {
 
     @ApiProperty()
     id: number;
@@ -9,7 +14,7 @@ export class AnimalDto {
     name: string;
 
     @ApiProperty()
-    breed: string;
+    breed: BreedDto;
 
     @ApiProperty()
     age: number;

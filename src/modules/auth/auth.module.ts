@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common";
 import { JwtModule } from "@nestjs/jwt";
 import { LoginUseCase } from "./application/use-cases/login.use-case";
-import { AuthController } from "./presentation/controllers/auth.controller";
+import { AuthController } from "./interface/controllers/auth.controller";
 import { UserModule } from "../user/user.module";
 import { RegisterUseCase } from "./application/use-cases/register.use-case";
 import { JwtStrategy } from "./infrastructure/strategies/jwt.strategy";
@@ -17,7 +17,7 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 		JwtModule.registerAsync({
 			imports: [ConfigModule],
 			useFactory: async (configService: ConfigService) => ({
-			  secret: `${configService.get<string>('JWT_SECRET')}`,
+			  secret: configService.get<string>('JWT_SECRET')!,
 			}),
 			inject: [ConfigService],
 		  }),
