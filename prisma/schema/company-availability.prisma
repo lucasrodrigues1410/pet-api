@@ -1,0 +1,38 @@
+enum DayOfWeek {
+    SUNDAY
+    MONDAY
+    TUESDAY
+    WEDNESDAY
+    THURSDAY
+    FRIDAY
+    SATURDAY
+}
+
+model CompanyAvailability {
+    id        Int       @id @default(autoincrement())
+    companyId Int       @map("company_id")
+    day       DayOfWeek
+    startTime DateTime  @map("start_time") @db.Time(1)
+    endTime   DateTime  @map("end_time") @db.Time(1)
+    createdAt DateTime  @default(now()) @map("created_at")
+    updatedAt DateTime  @updatedAt @map("updated_at")
+    company   Company   @relation(fields: [companyId], references: [id])
+
+    @@map("company_availabilities")
+}
+
+model CompanyAvailabilityException {
+    id            Int       @id @default(autoincrement())
+    companyId     Int       @map("company_id")
+    isRecurring   Boolean   @default(false) @map("is_recurring")
+    day           DayOfWeek @map("day")
+    exceptionDate DateTime  @map("exception_date") @db.Date()
+    startTime     DateTime  @map("start_time") @db.Time(1)
+    endTime       DateTime  @map("end_time") @db.Time(1)
+    reason        String?   @map("reason")
+    createdAt     DateTime  @default(now()) @map("created_at")
+    updatedAt     DateTime  @updatedAt @map("updated_at")
+    company       Company   @relation(fields: [companyId], references: [id])
+
+    @@map("company_availability_exceptions")
+}

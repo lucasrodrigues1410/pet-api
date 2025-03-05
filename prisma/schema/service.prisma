@@ -1,0 +1,27 @@
+model Service {
+    id          Int      @id @default(autoincrement())
+    name        String
+    description String?
+    price       Decimal @db.Decimal(10, 2)
+    duration    Int?
+    isActive    Boolean  @default(true) @map("is_active")
+    details     Json
+    createdAt   DateTime @default(now()) @map("created_at")
+    updatedAt   DateTime @updatedAt @map("updated_at")
+    
+    appointments Appointment[]
+    categories  ServiceCategory[]
+    @@map("services")
+}
+
+
+model ServiceCategory {
+  serviceId   Int      @map("service_id")
+  categoryId  Int      @map("category_id")
+  assignedAt  DateTime @default(now()) @map("assigned_at")
+  service     Service  @relation(fields: [serviceId], references: [id])
+  category    Category @relation(fields: [categoryId], references: [id])
+
+  @@id([serviceId, categoryId])
+  @@map("service_categories")
+}

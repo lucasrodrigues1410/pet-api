@@ -1,0 +1,20 @@
+model Category {
+    id          Int               @id @default(autoincrement())
+    parentId    Int?              @map("parent_id")
+    name        String            @unique
+    description String?
+    type        ServiceType
+    createdAt   DateTime          @default(now()) @map("created_at")
+    updatedAt   DateTime          @updatedAt @map("updated_at")
+    parent      Category?         @relation("CategoryToCategory", fields: [parentId], references: [id])
+    children    Category[]        @relation("CategoryToCategory")
+    services    ServiceCategory[]
+
+    @@unique([parentId, name])
+    @@index([parentId])
+    @@map("categories")
+}
+
+enum ServiceType {
+    PETSHOP
+}
