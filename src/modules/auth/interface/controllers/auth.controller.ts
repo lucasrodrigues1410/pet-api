@@ -8,15 +8,14 @@ import {
 	Post,
 	UnauthorizedException,
 } from "@nestjs/common";
-import { LoginDto } from "../dtos/login.dto";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
-import { LoginUseCase } from "../../application/use-cases/login.use-case";
-import { RegisterUseCase } from "../../application/use-cases/register.use-case";
-import { RegisterDto } from "../dtos/register.dto";
-import { Public } from "../decorators/public.decorator";
 import { InvalidCredentialsError } from "../../application/errors/invalid-credentials.error";
 import { UserAlreadyExistError } from "../../application/errors/user-already-exists.error";
-import { LoginResponseDto } from "../dtos/login-response.dto";
+import { LoginUseCase } from "../../application/use-cases/login.use-case";
+import { RegisterUseCase } from "../../application/use-cases/register.use-case";
+import { Public } from "../decorators/public.decorator";
+import { LoginRequestDto, LoginResponseDto } from "../dtos/login.dto";
+import { RegisterRequestDto } from "../dtos/register.dto";
 
 @ApiTags("Autenticação")
 @Controller("auth")
@@ -35,7 +34,7 @@ export class AuthController {
 	@Post("login")
 	@Public()
 	@HttpCode(HttpStatus.OK)
-	async login(@Body() body: LoginDto) {
+	async login(@Body() body: LoginRequestDto) {
 		const { email, password } = body;
 
 		const result = await this.loginUseCase.execute({
@@ -66,7 +65,7 @@ export class AuthController {
 	@Post("register")
 	@Public()
 	@HttpCode(HttpStatus.CREATED)
-	async register(@Body() body: RegisterDto) {
+	async register(@Body() body: RegisterRequestDto) {
 		const { name, email, password } = body;
 
 		const result = await this.registerUseCase.execute({

@@ -1,8 +1,8 @@
 import { Module } from "@nestjs/common";
-import { UserController } from "./interface/controllers/user.controller";
 import { FindUserByIdUseCase } from "./application/use-cases/find-user-by-id.use-case";
-import { UserPrismaRepository } from "./infrastructure/database/prisma/user-prisma.repository";
 import { UserRepository } from "./domain/repositories/user.repository";
+import { UserPrismaRepository } from "./infrastructure/database/prisma/user-prisma.repository";
+import { UserController } from "./interface/controllers/user.controller";
 
 @Module({
 	controllers: [UserController],

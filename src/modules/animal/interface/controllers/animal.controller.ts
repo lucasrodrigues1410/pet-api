@@ -6,19 +6,16 @@ import {
 	Param,
 	Post,
 } from "@nestjs/common";
-import {
-	ApiOkResponse,
-	ApiOperation,
-	ApiResponse,
-	ApiTags,
-} from "@nestjs/swagger";
+import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { UserTypeDecorator } from "src/modules/auth/interface/decorators/user-type.decorator";
+import { User } from "src/modules/auth/interface/decorators/user.decorator";
 import { CreateAnimalUseCase } from "../../application/use-cases/create-animal.use-case";
 import { ListAnimalsFromUserUserUseCase } from "../../application/use-cases/list-animals-from-user.use-case";
-import { CreateAnimalDto } from "../dtos/create-animal.dto";
-import { User } from "src/modules/auth/interface/decorators/user.decorator";
-import { UserTypeDecorator } from "src/modules/auth/interface/decorators/user-type.decorator";
-import { CreateAnimalResponseDto } from "../dtos/create-animal-response.dto";
-import { ListAnimalsResponseDto } from "../dtos/list-animals-response.dto";
+import {
+	CreateAnimalRequestDto,
+	CreateAnimalResponseDto,
+} from "../dtos/create-animal.dto";
+import { ListAnimalsResponseDto } from "../dtos/list-animals.dto";
 
 @ApiTags("Animais")
 @Controller("animal")
@@ -31,13 +28,13 @@ export class AnimalController {
 	@ApiOperation({ summary: "Cria um animal" })
 	@ApiOkResponse({
 		description: "Animal criado com sucesso",
-		type: CreateAnimalResponseDto,
+		type: CreateAnimalRequestDto,
 	})
 	@Post()
-	@UserTypeDecorator('CUSTOMER')
+	@UserTypeDecorator("CUSTOMER")
 	async create(
 		@User("sub") userId: number,
-		@Body() data: CreateAnimalDto,
+		@Body() data: CreateAnimalResponseDto,
 	) {
 		const result = await this.createAnimalUseCase.execute({
 			...data,
@@ -55,23 +52,22 @@ export class AnimalController {
 		type: ListAnimalsResponseDto,
 	})
 	@Get("user/:id")
-	@UserTypeDecorator('CUSTOMER')
+	@UserTypeDecorator("CUSTOMER")
 	async listAll(@Param("id") userId: number) {
 		const result = await this.listAnimalsFromUserUseCase.execute({ userId });
 		if (result.isLeft()) {
 			throw new BadRequestException();
 		}
-		const animals = result.value.animals;
-		return animals.map((animal) => ({
-			id: animal.id,
-			name: animal.name,
-			age: animal.birthdate
-				? new Date().getFullYear() - animal.birthdate.getFullYear()
-				: null,
-			weight: animal.weight,
-			breed: {
-				name: animal.breed?.name,
-			},
-		}));
+		return {
+			results: result.value.animals.map((animal) => ({
+				id: animal.id,
+				name: animal.name,
+				birthdate: animal.birthdate,
+				weight: animal.weight,
+				breed: {
+					name: animal.breed?.name,
+				},
+			})),
+		};
 	}
 }

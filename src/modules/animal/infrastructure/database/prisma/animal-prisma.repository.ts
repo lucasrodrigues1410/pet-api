@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
-import { AnimalRepository } from "../../../domain/repositories/animal.repository";
 import { PrismaService } from "src/common/infrastructure/prisma/prisma.service";
 import { Animal } from "../../../domain/entities/animal.entity";
+import { AnimalRepository } from "../../../domain/repositories/animal.repository";
 import { AnimalPrismaMapper } from "./animal-prisma.mapper";
 
 @Injectable()
@@ -37,7 +37,7 @@ export class AnimalPrismaRepository implements AnimalRepository {
 			where: { userId },
 			include: {
 				breed: true,
-			}
+			},
 		});
 		return response.map((animal) => AnimalPrismaMapper.toDomain(animal));
 	}

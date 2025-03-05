@@ -1,24 +1,11 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { UserType } from "../../domain/entities/user.entity";
+import { createZodDto } from "nestjs-zod";
+import { z } from "zod";
 
-export class UserDto {
-    @ApiProperty()
-    id: number;
+const user = z.object({
+	id: z.number(),
+	name: z.string(),
+	email: z.string(),
+	type: z.enum(["CUSTOMER", "ADMIN", "COMPANY"]),
+});
 
-    @ApiProperty()
-    name: string;
-
-    @ApiProperty()
-    email: string;
-
-    @ApiProperty({
-        enum: ["CUSTOMER", "COMPANY", "ADMIN"],
-    })
-    type: UserType;
-
-    @ApiProperty()
-    createdAt: Date;
-
-    @ApiProperty()
-    updatedAt: Date;
-}
+export class UserResponseDto extends createZodDto(user) {}

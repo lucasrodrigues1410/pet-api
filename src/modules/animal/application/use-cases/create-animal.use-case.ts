@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
+import { Either, right } from "src/common/either";
 import { Animal } from "../../domain/entities/animal.entity";
 import { AnimalRepository } from "../../domain/repositories/animal.repository";
-import { Either, right } from "src/common/either";
 
 interface CreateAnimalCaseRequest {
 	name: string;

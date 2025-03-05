@@ -1,8 +1,8 @@
 import { Injectable } from "@nestjs/common";
-import { User } from "../../domain/entities/user.entity";
-import { UserRepository } from "../../domain/repositories/user.repository";
 import { Either, left, right } from "src/common/either";
 import { ResourceNotFoundError } from "src/common/errors/errors/resource-not-found.error";
+import { User } from "../../domain/entities/user.entity";
+import { UserRepository } from "../../domain/repositories/user.repository";
 
 interface FindUserByIdUseCaseRequest {
 	userId: number;

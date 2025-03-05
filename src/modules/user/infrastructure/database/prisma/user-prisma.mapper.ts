@@ -7,7 +7,7 @@ export class UserPrismaMapper {
 			name: prismaUser.name,
 			email: prismaUser.email,
 			type: prismaUser.type,
-            password: prismaUser.password,
+			password: prismaUser.password,
 		});
 	}
 

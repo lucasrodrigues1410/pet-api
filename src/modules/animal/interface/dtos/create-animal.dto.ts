@@ -1,24 +1,18 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { IsString, IsNotEmpty, IsOptional, IsNumber, IsDateString } from "class-validator";
+import { createZodDto } from "nestjs-zod";
+import { z } from "zod";
 
-export class CreateAnimalDto {
-    @ApiProperty()
-    @IsNumber()
-    @IsNotEmpty()
-    breedId: number;
-    
-    @ApiProperty()
-    @IsString()
-    @IsNotEmpty()
-    name: string;
-    
-    @ApiProperty()
-    @IsOptional()
-    @IsDateString()
-    birthdate: Date;
-    
-    @ApiProperty()
-    @IsOptional()
-    @IsNumber()
-    weight: number;
-}
+const createAnimalRequest = z.object({
+	name: z.string(),
+	breedId: z.number(),
+	birthdate: z.coerce.date().nullish(),
+	weight: z.number().min(0),
+});
+
+const createAnimalResponse = createAnimalRequest;
+
+export class CreateAnimalResponseDto extends createZodDto(
+	createAnimalRequest,
+) {}
+export class CreateAnimalRequestDto extends createZodDto(
+	createAnimalResponse,
+) {}

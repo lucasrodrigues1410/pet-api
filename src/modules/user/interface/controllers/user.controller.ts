@@ -5,14 +5,10 @@ import {
 	HttpCode,
 	HttpStatus,
 } from "@nestjs/common";
-import { FindUserByIdUseCase } from "../../application/use-cases/find-user-by-id.use-case";
-import {
-	ApiOkResponse,
-	ApiOperation,
-	ApiTags,
-} from "@nestjs/swagger";
+import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { User } from "src/modules/auth/interface/decorators/user.decorator";
-import { UserResponseDto } from "../dtos/user-response.dto";
+import { FindUserByIdUseCase } from "../../application/use-cases/find-user-by-id.use-case";
+import { UserResponseDto } from "../dtos/user.dto";
 
 @ApiTags("Usuários")
 @Controller("users")

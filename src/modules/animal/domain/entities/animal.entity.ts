@@ -11,7 +11,6 @@ export interface AnimalProps {
 }
 
 export class Animal extends Entity<AnimalProps> {
-
 	get userId(): number {
 		return this.props.userId;
 	}
