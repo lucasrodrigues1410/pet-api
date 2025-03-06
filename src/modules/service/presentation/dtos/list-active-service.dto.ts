@@ -10,7 +10,7 @@ const listActiveServiceResponse = z.object({
         z.object({
             id: z.number(),
             name: z.string(),
-            type: z.string(),
+            type: z.enum(["PETSHOP"]),
         })
     ),
 });
