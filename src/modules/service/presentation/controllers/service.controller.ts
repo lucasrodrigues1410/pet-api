@@ -5,10 +5,10 @@ import {
 	HttpCode,
 	HttpStatus,
 } from "@nestjs/common";
-import { ListActiveServicesUseCase } from "../../application/use-cases/list-active-services.use-case";
 import { ApiOperation, ApiResponse } from "@nestjs/swagger";
-import { ListActiveServiceResponseDto } from "../dtos/list-active-service.dto";
 import { Public } from "src/modules/auth/presentation/decorators/public.decorator";
+import { ListActiveServicesUseCase } from "../../application/use-cases/list-active-services.use-case";
+import { ListActiveServiceResponseDto } from "../dtos/list-active-service.dto";
 
 @Controller("service")
 export class ServiceController {

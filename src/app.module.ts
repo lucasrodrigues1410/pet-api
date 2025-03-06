@@ -7,8 +7,8 @@ import { AnimalModule } from "./modules/animal/animal.module";
 import { AuthModule } from "./modules/auth/auth.module";
 import { JwtStrategy } from "./modules/auth/infrastructure/strategies/jwt.strategy";
 import { JwtGuard } from "./modules/auth/presentation/guards/jwt.guard";
-import { UserModule } from "./modules/user/user.module";
 import { ServiceModule } from "./modules/service/service.module";
+import { UserModule } from "./modules/user/user.module";
 
 @Module({
 	imports: [
@@ -17,7 +17,7 @@ import { ServiceModule } from "./modules/service/service.module";
 		AuthModule,
 		UserModule,
 		AnimalModule,
-		ServiceModule
+		ServiceModule,
 	],
 	controllers: [],
 	providers: [

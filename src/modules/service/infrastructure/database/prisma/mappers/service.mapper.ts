@@ -1,7 +1,7 @@
 import {
 	Prisma,
-	Service as PrismaSerivce,
 	Category as PrismaCategory,
+	Service as PrismaSerivce,
 } from "@prisma/client";
 import { Category } from "src/modules/category/domain/entities/category.entity";
 import { Service } from "src/modules/service/domain/entities/service.entity";

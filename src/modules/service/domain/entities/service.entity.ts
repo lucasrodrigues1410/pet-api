@@ -8,7 +8,7 @@ export interface ServiceProps {
 	isActive: boolean;
 	duration?: number | null;
 	companyId: number;
-	details?: Record<string,unknown> | null;
+	details?: Record<string, unknown> | null;
 	categories?: Category[];
 }
 
@@ -37,7 +37,7 @@ export class Service extends Entity<ServiceProps> {
 		return this.props.companyId;
 	}
 
-	get details(): Record<string,unknown> | null | undefined {
+	get details(): Record<string, unknown> | null | undefined {
 		return this.props.details;
 	}
 

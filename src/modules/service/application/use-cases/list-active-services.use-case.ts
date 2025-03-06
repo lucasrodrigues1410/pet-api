@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
-import { ServiceRepository } from "../../domain/repositories/service.repository";
-import { Service } from "../../domain/entities/service.entity";
 import { Either, right } from "src/common/either";
+import { Service } from "../../domain/entities/service.entity";
+import { ServiceRepository } from "../../domain/repositories/service.repository";
 
 type ListActiveServicesUseCaseResponse = Either<
 	null,
@@ -16,8 +16,8 @@ export class ListActiveServicesUseCase {
 
 	async execute(): Promise<ListActiveServicesUseCaseResponse> {
 		const result = await this.serviceRepository.findAllActive();
-        return right({
-            services: result,
-        })
+		return right({
+			services: result,
+		});
 	}
 }
