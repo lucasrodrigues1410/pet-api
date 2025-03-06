@@ -3,16 +3,7 @@ import { PrismaService } from "src/common/infrastructure/prisma/prisma.service";
 import { Service } from "src/modules/service/domain/entities/service.entity";
 import { ServiceRepository } from "src/modules/service/domain/repositories/service.repository";
 import { ServicePrismaMapper } from "../mappers/service.mapper";
-
-const dictionaryDayOfWeek = [
-	"SUNDAY",
-	"MONDAY",
-	"TUESDAY",
-	"WEDNESDAY",
-	"THURSDAY",
-	"FRIDAY",
-	"SATURDAY",
-] as const;
+import { getDayOfWeek } from "src/common/enums/day-of-week.enum";
 
 @Injectable()
 export class ServicePrismaRepository implements ServiceRepository {
@@ -20,7 +11,6 @@ export class ServicePrismaRepository implements ServiceRepository {
 
 	async findAllActive(): Promise<Service[]> {
 		const now = new Date();
-		const formattedTime = now.toISOString().split("T")[1].slice(0, 8);
 
 		const result = await this.prismaService.service.findMany({
 			where: {
@@ -30,23 +20,23 @@ export class ServicePrismaRepository implements ServiceRepository {
 						companyAvailability: {
 							some: {
 								day: {
-									equals: dictionaryDayOfWeek[new Date().getDay()],
+									equals: getDayOfWeek(now),
 								},
 								startTime: {
-									gte: formattedTime,
+									lte: now,
 								},
 								endTime: {
-									lte: formattedTime,
+									gte: now,
 								},
 							},
 						},
 						companyAvailabilityException: {
 							none: {
 								startDate: {
-									lte: now.toISOString().split("T")[0],
+									lte: now,
 								},
 								endDate: {
-									gte: now.toISOString().split("T")[0],
+									gte: now,
 								},
 							},
 						},
