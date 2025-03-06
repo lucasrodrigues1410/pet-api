@@ -10,7 +10,7 @@ import { HashGenerator } from "./domain/interfaces/hash-generator.interface";
 import { BcryptHasher } from "./infrastructure/security/bcrypt-hasher.service";
 import { JwtEncrypter } from "./infrastructure/security/jwt-encrypter.service";
 import { JwtStrategy } from "./infrastructure/strategies/jwt.strategy";
-import { AuthController } from "./interface/controllers/auth.controller";
+import { AuthController } from "./presentation/controllers/auth.controller";
 
 @Module({
 	imports: [

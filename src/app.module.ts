@@ -6,8 +6,9 @@ import { PrismaModule } from "./common/infrastructure/prisma/prisma.module";
 import { AnimalModule } from "./modules/animal/animal.module";
 import { AuthModule } from "./modules/auth/auth.module";
 import { JwtStrategy } from "./modules/auth/infrastructure/strategies/jwt.strategy";
-import { JwtGuard } from "./modules/auth/interface/guards/jwt.guard";
+import { JwtGuard } from "./modules/auth/presentation/guards/jwt.guard";
 import { UserModule } from "./modules/user/user.module";
+import { ServiceModule } from "./modules/service/service.module";
 
 @Module({
 	imports: [
@@ -16,6 +17,7 @@ import { UserModule } from "./modules/user/user.module";
 		AuthModule,
 		UserModule,
 		AnimalModule,
+		ServiceModule
 	],
 	controllers: [],
 	providers: [

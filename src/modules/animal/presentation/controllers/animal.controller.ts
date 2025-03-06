@@ -7,8 +7,8 @@ import {
 	Post,
 } from "@nestjs/common";
 import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
-import { UserTypeDecorator } from "src/modules/auth/interface/decorators/user-type.decorator";
-import { User } from "src/modules/auth/interface/decorators/user.decorator";
+import { UserTypeDecorator } from "src/modules/auth/presentation/decorators/user-type.decorator";
+import { User } from "src/modules/auth/presentation/decorators/user.decorator";
 import { CreateAnimalUseCase } from "../../application/use-cases/create-animal.use-case";
 import { ListAnimalsFromUserUserUseCase } from "../../application/use-cases/list-animals-from-user.use-case";
 import {

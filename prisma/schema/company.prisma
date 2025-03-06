@@ -9,6 +9,7 @@ model Company {
     companyUsers UserCompany[]
     companyAvailability CompanyAvailability[]
     companyAvailabilityException CompanyAvailabilityException[]
+    services     Service[]
 
     @@map("companies")
 }
