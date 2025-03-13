@@ -1,4 +1,4 @@
-import { Entity } from "src/common/entities/entity";
+import { Entity } from "src/core/entities/entity";
 import { Category } from "src/modules/category/domain/entities/category.entity";
 
 export interface ServiceProps {

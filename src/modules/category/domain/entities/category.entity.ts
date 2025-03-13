@@ -1,4 +1,4 @@
-import { Entity } from "src/common/entities/entity";
+import { Entity } from "src/core/entities/entity";
 
 export type CategoryType = "PETSHOP";
 

@@ -1,4 +1,4 @@
-import { Entity } from "src/common/entities/entity";
+import { Entity } from "src/core/entities/entity";
 import { Breed } from "src/modules/breed/domain/entities/breed.entity";
 
 export interface AnimalProps {
