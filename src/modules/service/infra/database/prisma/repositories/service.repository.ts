@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { getDayOfWeek } from "src/core/enums/day-of-week.enum";
-import { PrismaService } from "src/core/infrastructure/prisma/prisma.service";
+import { PrismaService } from "src/core/infra/prisma/prisma.service";
 import { Service } from "src/modules/service/domain/entities/service.entity";
 import { ServiceRepository } from "src/modules/service/domain/repositories/service.repository";
 import { ServicePrismaMapper } from "../mappers/service.mapper";

@@ -2,7 +2,7 @@ import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { APP_GUARD, APP_PIPE } from "@nestjs/core";
 import { ZodValidationPipe } from "nestjs-zod";
-import { PrismaModule } from "./core/infrastructure/prisma/prisma.module";
+import { PrismaModule } from "./core/infra/prisma/prisma.module";
 import { AnimalModule } from "./modules/animal/animal.module";
 import { AuthModule } from "./modules/auth/auth.module";
 import { JwtStrategy } from "./modules/auth/infra/strategies/jwt.strategy";
