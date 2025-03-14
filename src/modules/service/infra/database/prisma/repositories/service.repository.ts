@@ -9,6 +9,42 @@ import { ServicePrismaMapper } from "../mappers/service.mapper";
 export class ServicePrismaRepository implements ServiceRepository {
 	constructor(private prismaService: PrismaService) {}
 
+	async findById(id: number): Promise<Service | undefined> {
+		const result = await this.prismaService.service.findUnique({
+			where: { id },
+			include: {
+				company: true,
+				categories: {
+					include: {
+						category: {
+							select: {
+								id: true,
+								name: true,
+								type: true,
+								createdAt: true,
+								updatedAt: true,
+							},
+						},
+					},
+				},
+			},
+		});
+
+		if (!result) {
+			return undefined;
+		}
+
+		return ServicePrismaMapper.toDomain({
+			...result,
+			company: result.company,
+			categories: result.categories.map((category) => ({
+				...category.category,
+				description: null,
+				parentId: null,
+			})),
+		});
+	}
+
 	async findAllActive(): Promise<Service[]> {
 		const now = new Date();
 
@@ -44,12 +80,7 @@ export class ServicePrismaRepository implements ServiceRepository {
 				},
 			},
 			include: {
-				company: {
-					select: {
-						id: true,
-						name: true,
-					},
-				},
+				company: true,
 				categories: {
 					include: {
 						category: {
@@ -67,9 +98,10 @@ export class ServicePrismaRepository implements ServiceRepository {
 			take: 10,
 		});
 
-		return result.map(({ categories, ...service }) =>
+		return result.map(({ categories,company, ...service }) =>
 			ServicePrismaMapper.toDomain({
 				...service,
+				company,
 				categories: categories.map((category) => ({
 					...category.category,
 					description: null,

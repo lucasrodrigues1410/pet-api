@@ -1,5 +1,6 @@
 import { Entity } from "src/core/entities/entity";
 import { Category } from "src/modules/category/domain/entities/category.entity";
+import { Company } from "src/modules/company/domain/entities/company.entity";
 
 export interface ServiceProps {
 	name: string;
@@ -10,6 +11,7 @@ export interface ServiceProps {
 	companyId: number;
 	details?: Record<string, unknown> | null;
 	categories?: Category[];
+	company?: Company;
 }
 
 export class Service extends Entity<ServiceProps> {
@@ -43,6 +45,10 @@ export class Service extends Entity<ServiceProps> {
 
 	get categories(): Category[] | undefined {
 		return this.props.categories;
+	}
+
+	get company(): Company | undefined {
+		return this.props.company;
 	}
 
 	public static create(props: ServiceProps, id?: number): Service {

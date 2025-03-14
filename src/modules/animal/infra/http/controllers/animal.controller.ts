@@ -3,6 +3,7 @@ import {
 	Body,
 	Controller,
 	Get,
+	HttpCode,
 	Param,
 	Post,
 } from "@nestjs/common";
@@ -32,6 +33,7 @@ export class AnimalController {
 	})
 	@Post()
 	@UserTypeDecorator("CUSTOMER")
+	@HttpCode(201)
 	async create(
 		@User("sub") userId: number,
 		@Body() data: CreateAnimalResponseDto,

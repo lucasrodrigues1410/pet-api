@@ -1,7 +1,7 @@
 import { createZodDto } from "nestjs-zod";
 import { z } from "zod";
 
-const listActiveServiceResponse = z.object({
+const serviceByIdResponse = z.object({
 	id: z.number(),
 	name: z.string(),
 	description: z.string().nullable(),
@@ -19,6 +19,6 @@ const listActiveServiceResponse = z.object({
 	})
 });
 
-export class ListActiveServiceResponseDto extends createZodDto(
-	listActiveServiceResponse,
+export class ServiceByIdResponseDTO extends createZodDto(
+	serviceByIdResponse,
 ) {}

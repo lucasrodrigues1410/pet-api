@@ -2,14 +2,17 @@ import {
 	Prisma,
 	Category as PrismaCategory,
 	Service as PrismaSerivce,
+	Company as PrismaCompany,
 } from "@prisma/client";
 import { Category } from "src/modules/category/domain/entities/category.entity";
+import { CompanyPrismaMapper } from "src/modules/company/infra/database/prisma/mappers/company.mapper";
 import { Service } from "src/modules/service/domain/entities/service.entity";
 
 export class ServicePrismaMapper {
 	static toDomain(
 		prismaService: PrismaSerivce & {
 			categories?: PrismaCategory[];
+			company?: PrismaCompany;	
 		},
 	): Service {
 		const categories = prismaService.categories
@@ -25,6 +28,10 @@ export class ServicePrismaMapper {
 				)
 			: [];
 
+		const company = prismaService.company
+			? CompanyPrismaMapper.toDomain(prismaService.company)
+			: undefined;
+
 		return Service.create(
 			{
 				description: prismaService.description,
@@ -34,6 +41,7 @@ export class ServicePrismaMapper {
 				name: prismaService.name,
 				companyId: prismaService.companyId,
 				categories,
+				company,
 			},
 			prismaService.id,
 		);

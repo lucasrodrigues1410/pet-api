@@ -9,6 +9,8 @@ import { JwtStrategy } from "./modules/auth/infra/strategies/jwt.strategy";
 import { JwtGuard } from "./modules/auth/infra/http/guards/jwt.guard";
 import { ServiceModule } from "./modules/service/service.module";
 import { UserModule } from "./modules/user/user.module";
+import { BreedModule } from "./modules/breed/breed.module";
+import { companyModule } from "./modules/company/company.module";
 
 @Module({
 	imports: [
@@ -18,6 +20,8 @@ import { UserModule } from "./modules/user/user.module";
 		UserModule,
 		AnimalModule,
 		ServiceModule,
+		BreedModule,
+		companyModule
 	],
 	controllers: [],
 	providers: [
