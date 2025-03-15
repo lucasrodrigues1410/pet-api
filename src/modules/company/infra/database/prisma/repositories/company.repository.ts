@@ -41,4 +41,16 @@ export class CompanyPrismaRepository implements CompanyRepository {
 		});
 		return result.map((company) => CompanyPrismaMapper.toDomain(company));
 	}
+
+	async findById(id: number): Promise<Company | null> {
+		const result = await this.prismaService.company.findUnique({
+			where: {
+				id,
+			},
+		});
+		if (!result) {
+			return null;
+		}
+		return CompanyPrismaMapper.toDomain(result);
+	}
 }
