@@ -7,10 +7,11 @@ import {
 } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Public } from "src/modules/auth/infra/http/decorators/public.decorator";
-import { ListServicesByCompanyResponseDto } from "src/modules/service/application/dtos/list-service-by-company.response.dto";
+import { ListServicesByCompanyResponseDto } from "src/modules/service/application/dtos/list-services-by-company.response.dto";
 import { ServiceByIdResponseDTO } from "src/modules/service/application/dtos/service-by-id-response.dto";
 import { GetServiceByIdUseCase } from "src/modules/service/application/use-cases/get-service-by-id.use-case";
 import { ListServicesByCompanyUseCase } from "src/modules/service/application/use-cases/list-services-by-company.use-case";
+import { ListServicesUseCase } from "src/modules/service/application/use-cases/list-services.use-case";
 
 @ApiTags("Serviços")
 @Controller("service")
@@ -18,6 +19,7 @@ export class ServiceController {
 	constructor(
 		private readonly listServicesByCompanyUseCase: ListServicesByCompanyUseCase,
 		private readonly getServiceByIdUseCase: GetServiceByIdUseCase,
+		private readonly listServices: ListServicesUseCase
 	) {}
 
 	@ApiOperation({ summary: "Buscar serviço por ID" })
@@ -68,6 +70,35 @@ export class ServiceController {
 		const result = await this.listServicesByCompanyUseCase.execute({
 			companyId: Number(companyId),
 		});
+		if (result.isLeft()) {
+			throw new BadRequestException();
+		}
+
+		return {
+			results: result.value.services.map((service) => ({
+				id: service.id,
+				name: service.name,
+				description: service.description,
+				price: service.price,
+				categories: service.categories?.map((category) => ({
+					id: category.id,
+					name: category.name,
+					type: category.type,
+				})),
+			})),
+		};
+	}
+
+	@ApiOperation({ summary: "Listar serviços" })
+	@ApiResponse({
+		status: 200,
+		description: "Lista de serviços encontrada",
+		type: ListServicesByCompanyResponseDto,
+	})
+	@Get()
+	@Public()
+	async listAllServices() {
+		const result = await this.listServices.execute();
 		if (result.isLeft()) {
 			throw new BadRequestException();
 		}

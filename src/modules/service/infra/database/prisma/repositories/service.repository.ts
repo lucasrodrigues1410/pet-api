@@ -81,4 +81,37 @@ export class ServicePrismaRepository implements ServiceRepository {
 			}),
 		);
 	}
+
+	async findAll(): Promise<Service[]> {
+		const result = await this.prismaService.service.findMany({
+			include: {
+				company: true,
+				categories: {
+					include: {
+						category: {
+							select: {
+								id: true,
+								name: true,
+								type: true,
+								createdAt: true,
+								updatedAt: true,
+							},
+						},
+					},
+				},
+			},
+		});
+
+		return result.map(({ categories, company, ...service }) =>
+			ServicePrismaMapper.toDomain({
+				...service,
+				company,
+				categories: categories.map((category) => ({
+					...category.category,
+					description: null,
+					parentId: null,
+				})),
+			}),
+		);
+	}
 }
