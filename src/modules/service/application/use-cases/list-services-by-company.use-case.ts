@@ -3,6 +3,10 @@ import { Either, right } from "src/core/either";
 import { Service } from "../../domain/entities/service.entity";
 import { ServiceRepository } from "../../domain/repositories/service.repository";
 
+interface ListServicesByCompanyUseCaseRequest {
+	companyId: number;
+}
+
 type ListActiveServicesUseCaseResponse = Either<
 	null,
 	{
@@ -11,11 +15,13 @@ type ListActiveServicesUseCaseResponse = Either<
 >;
 
 @Injectable()
-export class ListActiveServicesUseCase {
+export class ListServicesByCompanyUseCase {
 	constructor(private readonly serviceRepository: ServiceRepository) {}
 
-	async execute(): Promise<ListActiveServicesUseCaseResponse> {
-		const result = await this.serviceRepository.findAllActive();
+	async execute({
+		companyId,
+	}: ListServicesByCompanyUseCaseRequest): Promise<ListActiveServicesUseCaseResponse> {
+		const result = await this.serviceRepository.findByCompanyId(companyId);
 		return right({
 			services: result,
 		});

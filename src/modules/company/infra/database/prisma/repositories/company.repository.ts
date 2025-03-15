@@ -3,41 +3,42 @@ import { PrismaService } from "src/core/infra/prisma/prisma.service";
 import { Company } from "src/modules/company/domain/entities/company.entity";
 import { CompanyRepository } from "src/modules/company/domain/repositories/company.repository";
 import { CompanyPrismaMapper } from "../mappers/company.mapper";
-import { getDayOfWeek } from "src/core/enums/day-of-week.enum";
 
 @Injectable()
 export class CompanyPrismaRepository implements CompanyRepository {
 	constructor(private prismaService: PrismaService) {}
 
-	async findAllOpenCompanies(): Promise<Company[]> {
-		const now = new Date();
+	async searchCompanies(params: {
+		location?: {
+			latitude: number;
+			longitude: number;
+		};
+		query?: string;
+		page?: number;
+	}): Promise<Company[]> {
+		const query = params.query || "";
+		const page = params.page || 1;
 
 		const result = await this.prismaService.company.findMany({
 			where: {
-				companyAvailability: {
-					some: {
-						day: {
-							equals: getDayOfWeek(now),
-						},
-						startTime: {
-							lte: now,
-						},
-						endTime: {
-							gte: now,
+				OR: [
+					{
+						name: { contains: query, mode: "insensitive" },
+					},
+					{
+						services: {
+							some: {
+								OR: [
+									{ name: { contains: query, mode: "insensitive" } },
+									{ description: { contains: query, mode: "insensitive" } },
+								],
+							},
 						},
 					},
-				},
-				companyAvailabilityException: {
-					none: {
-						startDate: {
-							lte: now,
-						},
-						endDate: {
-							gte: now,
-						},
-					},
-				},
+				],
 			},
+			take: 10,
+			skip: (page - 1) * 10,
 		});
 		return result.map((company) => CompanyPrismaMapper.toDomain(company));
 	}

@@ -1,9 +1,11 @@
 import {
 	BadRequestException,
+	Body,
 	Controller,
 	Get,
 	NotFoundException,
 	Param,
+	Post,
 } from "@nestjs/common";
 import {
 	ApiOkResponse,
@@ -11,29 +13,31 @@ import {
 	ApiResponse,
 	ApiTags,
 } from "@nestjs/swagger";
+import { Public } from "src/modules/auth/infra/http/decorators/public.decorator";
 import { UserTypeDecorator } from "src/modules/auth/infra/http/decorators/user-type.decorator";
 import { CompanyByIdResponseDTO } from "src/modules/company/application/dtos/company-by-id.response.dto";
-import { OpenCompanyResponseDto } from "src/modules/company/application/dtos/open-company-response.dto";
+import { SearchCompaniesResponseDto } from "src/modules/company/application/dtos/search-companies.request.dto";
+import { SearchCompaniesRequestDto } from "src/modules/company/application/dtos/search-companies.response.dto";
 import { GetCompanyByIdUseCase } from "src/modules/company/application/use-cases/get-company-by-id.use-case";
-import { ListOpenCompaniesUseCase } from "src/modules/company/application/use-cases/list-open-companies.use-case ";
+import { SearchCompaniesUseCase } from "src/modules/company/application/use-cases/search-companies.use-case ";
 
 @ApiTags("Empresas")
 @Controller("company")
 export class CompanyController {
 	constructor(
-		private readonly listCompaniesOpenedUseCase: ListOpenCompaniesUseCase,
+		private readonly searchCompaniesUseCase: SearchCompaniesUseCase,
 		private readonly getCompanyByIdUseCase: GetCompanyByIdUseCase,
 	) {}
 
-	@ApiOperation({ summary: "Listar todas as empresas abertas" })
+	@ApiOperation({ summary: "Pesquisar empresas por query" })
 	@ApiOkResponse({
-		description: "Empresas abertas listadas com sucesso",
-		type: OpenCompanyResponseDto,
+		description: "Empresas encontradas com sucesso",
+		type: SearchCompaniesResponseDto,
 	})
-	@Get("open")
-	@UserTypeDecorator("CUSTOMER")
-	async listOpenCompanies() {
-		const result = await this.listCompaniesOpenedUseCase.execute();
+	@Post("search")
+	@Public()
+	async searchCompanies(@Body() data: SearchCompaniesRequestDto) {
+		const result = await this.searchCompaniesUseCase.execute(data);
 		if (result.isLeft()) {
 			throw new BadRequestException();
 		}
@@ -55,8 +59,9 @@ export class CompanyController {
 		description: "Empresa não encontrada",
 	})
 	@Get(":id")
+	@Public()
 	async getCompanyById(@Param("id") id: number) {
-		const result = await this.getCompanyByIdUseCase.execute({ id });
+		const result = await this.getCompanyByIdUseCase.execute({ id: +id });
 		if (result.isLeft()) {
 			throw new NotFoundException();
 		}

@@ -2,23 +2,21 @@ import {
 	BadRequestException,
 	Controller,
 	Get,
-	HttpCode,
-	HttpStatus,
 	NotFoundException,
 	Param,
 } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Public } from "src/modules/auth/infra/http/decorators/public.decorator";
-import { ListActiveServicesUseCase } from "../../../application/use-cases/list-active-services.use-case";
-import { ListActiveServiceResponseDto } from "../../../application/dtos/list-active-service.dto";
+import { ListServicesByCompanyResponseDto } from "src/modules/service/application/dtos/list-service-by-company.response.dto";
 import { ServiceByIdResponseDTO } from "src/modules/service/application/dtos/service-by-id-response.dto";
 import { GetServiceByIdUseCase } from "src/modules/service/application/use-cases/get-service-by-id.use-case";
+import { ListServicesByCompanyUseCase } from "src/modules/service/application/use-cases/list-services-by-company.use-case";
 
 @ApiTags("Serviços")
 @Controller("service")
 export class ServiceController {
 	constructor(
-		private readonly listActiveServicesUseCase: ListActiveServicesUseCase,
+		private readonly listServicesByCompanyUseCase: ListServicesByCompanyUseCase,
 		private readonly getServiceByIdUseCase: GetServiceByIdUseCase,
 	) {}
 
@@ -41,11 +39,12 @@ export class ServiceController {
 
 		const service = result.value.service;
 		const company = service.company;
-		const categories = service.categories?.map((category) => ({
-			id: category.id,
-			name: category.name,
-			type: category.type,
-		})) || []
+		const categories =
+			service.categories?.map((category) => ({
+				id: category.id,
+				name: category.name,
+				type: category.type,
+			})) || [];
 
 		return {
 			id: service.id,
@@ -57,17 +56,18 @@ export class ServiceController {
 		};
 	}
 
-	@ApiOperation({ summary: "Listar serviços ativos" })
+	@ApiOperation({ summary: "Listar serviços por empresa" })
 	@ApiResponse({
 		status: 200,
-		description: "Lista de serviços ativos",
-		type: ListActiveServiceResponseDto,
+		description: "Lista de serviços encontrada",
+		type: ListServicesByCompanyResponseDto,
 	})
-	@Get("active")
+	@Get("/company/:id")
 	@Public()
-	@HttpCode(HttpStatus.OK)
-	async listActiveServices() {
-		const result = await this.listActiveServicesUseCase.execute();
+	async listServicesByCompany(@Param("id") companyId: number) {
+		const result = await this.listServicesByCompanyUseCase.execute({
+			companyId: Number(companyId),
+		});
 		if (result.isLeft()) {
 			throw new BadRequestException();
 		}

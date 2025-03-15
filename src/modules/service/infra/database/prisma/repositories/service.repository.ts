@@ -1,5 +1,4 @@
 import { Injectable } from "@nestjs/common";
-import { getDayOfWeek } from "src/core/enums/day-of-week.enum";
 import { PrismaService } from "src/core/infra/prisma/prisma.service";
 import { Service } from "src/modules/service/domain/entities/service.entity";
 import { ServiceRepository } from "src/modules/service/domain/repositories/service.repository";
@@ -45,39 +44,11 @@ export class ServicePrismaRepository implements ServiceRepository {
 		});
 	}
 
-	async findAllActive(): Promise<Service[]> {
-		const now = new Date();
-
+	async findByCompanyId(companyId: number): Promise<Service[]> {
 		const result = await this.prismaService.service.findMany({
 			where: {
 				isActive: true,
-				AND: {
-					company: {
-						companyAvailability: {
-							some: {
-								day: {
-									equals: getDayOfWeek(now),
-								},
-								startTime: {
-									lte: now,
-								},
-								endTime: {
-									gte: now,
-								},
-							},
-						},
-						companyAvailabilityException: {
-							none: {
-								startDate: {
-									lte: now,
-								},
-								endDate: {
-									gte: now,
-								},
-							},
-						},
-					},
-				},
+				companyId,
 			},
 			include: {
 				company: true,

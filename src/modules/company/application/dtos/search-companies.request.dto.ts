@@ -1,7 +1,7 @@
 import { createZodDto } from "nestjs-zod";
 import { z } from "zod";
 
-const openCompanyResponse = z.object({
+const searchCompaniesResponse = z.object({
 	results: z.array(
 		z.object({
 			id: z.number(),
@@ -10,4 +10,6 @@ const openCompanyResponse = z.object({
 	),
 });
 
-export class OpenCompanyResponseDto extends createZodDto(openCompanyResponse) {}
+export class SearchCompaniesResponseDto extends createZodDto(
+	searchCompaniesResponse,
+) {}
