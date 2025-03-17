@@ -1,4 +1,4 @@
-import { InMemoryServiceRepository } from "test/repositories/in-memory-service-repository";
+import { InMemoryServiceRepository } from "test/repositories/in-memory-service.repository";
 import { GetServiceByIdUseCase } from "./get-service-by-id.use-case";
 import { beforeEach, describe, expect, it } from "vitest";
 import { makeService } from "test/factories/make-service";

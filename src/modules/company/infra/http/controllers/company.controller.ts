@@ -19,7 +19,7 @@ import { CompanyByIdResponseDTO } from "src/modules/company/application/dtos/com
 import { SearchCompaniesResponseDto } from "src/modules/company/application/dtos/search-companies.request.dto";
 import { SearchCompaniesRequestDto } from "src/modules/company/application/dtos/search-companies.response.dto";
 import { GetCompanyByIdUseCase } from "src/modules/company/application/use-cases/get-company-by-id.use-case";
-import { SearchCompaniesUseCase } from "src/modules/company/application/use-cases/search-companies.use-case ";
+import { SearchCompaniesUseCase } from "src/modules/company/application/use-cases/search-companies.use-case";
 
 @ApiTags("Empresas")
 @Controller("company")

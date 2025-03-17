@@ -1,4 +1,4 @@
-import { InMemoryUserRepository } from "test/repositories/in-memory-user-repository";
+import { InMemoryUserRepository } from "test/repositories/in-memory-user.repository";
 import { FindUserByIdUseCase } from "./find-user-by-id.use-case";
 import { describe, beforeEach, it, expect } from "vitest";
 import { makeUser } from "test/factories/make-user";

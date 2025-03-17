@@ -54,4 +54,10 @@ export class CompanyPrismaRepository implements CompanyRepository {
 		}
 		return CompanyPrismaMapper.toDomain(result);
 	}
+
+	async create(company: Company): Promise<void> {
+		await this.prismaService.company.create({
+			data: CompanyPrismaMapper.toPrisma(company),
+		});
+	}
 }

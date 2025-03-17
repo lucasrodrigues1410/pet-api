@@ -23,7 +23,7 @@ export function makeUser(override: Partial<User> = {}, id?: number) {
 export class UserFactory {
 	constructor(private prisma: PrismaService) {}
 
-	async makePrismaStudent(data: Partial<UserProps> = {}): Promise<User> {
+	async makePrismaUser(data: Partial<UserProps> = {}): Promise<User> {
 		const user = makeUser(data);
 
 		await this.prisma.user.create({

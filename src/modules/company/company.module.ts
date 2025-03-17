@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
 import { CompanyController } from "./infra/http/controllers/company.controller";
-import { SearchCompaniesUseCase } from "./application/use-cases/search-companies.use-case ";
+import { SearchCompaniesUseCase } from "./application/use-cases/search-companies.use-case";
 import { CompanyRepository } from "./domain/repositories/company.repository";
 import { CompanyPrismaRepository } from "./infra/database/prisma/repositories/company.repository";
 import { GetCompanyByIdUseCase } from "./application/use-cases/get-company-by-id.use-case";

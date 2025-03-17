@@ -13,4 +13,10 @@ export class BreedPrismaRepository implements BreedRepository {
 		const response = await this.prismaService.breed.findMany();
 		return response.map((breed) => BreedPrismaMapper.toDomain(breed));
 	}
+
+	async create(breed: Breed): Promise<void> {
+		await this.prismaService.breed.create({
+			data: BreedPrismaMapper.toPrisma(breed),
+		});
+	}
 }

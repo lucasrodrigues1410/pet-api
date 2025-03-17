@@ -10,4 +10,5 @@ export abstract class CompanyRepository {
 		query?: string;
 		page?: number;
 	}): Promise<Company[]>;
+	abstract create(company: Company): Promise<void>;
 }
