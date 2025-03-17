@@ -2,7 +2,7 @@ import { User } from "src/modules/user/domain/entities/user.entity";
 import { UserRepository } from "src/modules/user/domain/repositories/user.repository";
 
 export class InMemoryUserRepository implements UserRepository {
-  private users: User[] = [];
+  public users: User[] = [];
 
   findByEmail(email: string): Promise<User | null> {
     return Promise.resolve(this.users.find(user => user.email === email) || null);

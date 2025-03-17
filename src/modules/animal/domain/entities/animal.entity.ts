@@ -7,7 +7,7 @@ export interface AnimalProps {
 	name: string;
 	birthdate?: Date | null;
 	weight?: number | null;
-	breed?: Breed;
+	breed?: Breed | undefined | null;
 }
 
 export class Animal extends Entity<AnimalProps> {
