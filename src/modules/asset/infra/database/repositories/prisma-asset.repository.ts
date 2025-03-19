@@ -10,7 +10,7 @@ export class PrismaAssetRepository implements AssetRepository {
 
 	async create(asset: Asset): Promise<void> {
 		await this.prismaService.asset.create({
-			data: PrismaAssetMapper.toPersistence(asset),
+			data: PrismaAssetMapper.toPrisma(asset),
 		});
 	}
 }

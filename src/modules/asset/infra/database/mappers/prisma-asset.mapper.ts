@@ -19,7 +19,7 @@ export class PrismaAssetMapper {
 		);
 	}
 
-	static toPersistence(asset: Asset): Prisma.AssetUncheckedCreateInput {
+	static toPrisma(asset: Asset): Prisma.AssetUncheckedCreateInput {
 		return {
 			id: asset.id.toString(),
 			name: asset.name,
