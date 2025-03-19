@@ -10,13 +10,13 @@ import {
 import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { UserTypeDecorator } from "src/modules/auth/infra/http/decorators/user-type.decorator";
 import { User } from "src/modules/auth/infra/http/decorators/user.decorator";
+import { CreateAnimalUseCase } from "../../../application/use-cases/create-animal.use-case";
+import { ListAnimalsFromUserUserUseCase } from "../../../application/use-cases/list-animals-from-user.use-case";
 import {
 	CreateAnimalRequestDto,
 	CreateAnimalResponseDto,
 } from "../dtos/create-animal.dto";
 import { ListAnimalsResponseDto } from "../dtos/list-animals.dto";
-import { CreateAnimalUseCase } from "../../../application/use-cases/create-animal.use-case";
-import { ListAnimalsFromUserUserUseCase } from "../../../application/use-cases/list-animals-from-user.use-case";
 
 @ApiTags("Animais")
 @Controller("animal")

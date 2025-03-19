@@ -7,10 +7,10 @@ import {
 } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Public } from "src/modules/auth/infra/http/decorators/public.decorator";
-import { ListServicesByCompanyResponseDto } from "src/modules/service/infra/http/dtos/list-services-by-company.response.dto";
-import { ServiceByIdResponseDTO } from "src/modules/service/infra/http/dtos/service-by-id-response.dto";
 import { GetServiceByIdUseCase } from "src/modules/service/application/use-cases/get-service-by-id.use-case";
 import { ListServicesByCompanyUseCase } from "src/modules/service/application/use-cases/list-services-by-company.use-case";
+import { ListServicesByCompanyResponseDto } from "src/modules/service/infra/http/dtos/list-services-by-company.response.dto";
+import { ServiceByIdResponseDTO } from "src/modules/service/infra/http/dtos/service-by-id-response.dto";
 
 @ApiTags("Serviços")
 @Controller("service")
