@@ -30,10 +30,11 @@ export class UploadAndCreateAssetUseCase {
 		fileType,
 		body,
 	}: UploadAndCreateAssetRequest): Promise<UploadAndCreateAssetResponse> {
-		if (!/^(image\/(jpeg|png))$|^application\/pdf$/.test(fileType)) {
+		const allowedFileTypes = ["image/jpeg", "image/png", "application/pdf"];
+		if (!allowedFileTypes.includes(fileType)) {
 			return left(new InvalidAssetTypeError(fileType));
 		}
-
+		
 		const { url, name, height, width, metadata, thumbnailUrl } =
 			await this.uploader.upload({ fileName, fileType, body });
 
