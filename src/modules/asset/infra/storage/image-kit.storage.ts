@@ -7,6 +7,7 @@ import {
 	UploadResponse,
 	Uploader,
 } from "../../domain/storage/uploader";
+import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 
 @Injectable()
 export class ImageKitStorageProvider implements Uploader {
@@ -24,7 +25,7 @@ export class ImageKitStorageProvider implements Uploader {
 	}
 
 	async upload({ fileName, body }: UploadParams): Promise<UploadResponse> {
-		const uploadId = randomUUID();
+		const uploadId = new UniqueEntityID();
 		const uniqueFileName = `${uploadId}-${fileName}`;
 
 		const response = await this.client.upload({
@@ -34,7 +35,6 @@ export class ImageKitStorageProvider implements Uploader {
 		});
 
 		return {
-			id: uploadId,
 			name: response.name,
 			url: response.url,
 			width: response.width,

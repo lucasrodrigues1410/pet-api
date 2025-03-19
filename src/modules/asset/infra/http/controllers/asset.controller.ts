@@ -9,7 +9,7 @@ import {
 	UseInterceptors,
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
-import { ApiOperation, ApiTags } from "@nestjs/swagger";
+import { ApiConsumes, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { InvalidAssetTypeError } from "src/modules/asset/application/errors/invalid-asset-type.error";
 import { UploadAndCreateAssetUseCase } from "src/modules/asset/application/use-cases/upload-and-create-asset.use-case";
 import { Public } from "src/modules/auth/infra/http/decorators/public.decorator";
@@ -23,6 +23,7 @@ export class AssetController {
 
 	@ApiOperation({ summary: "Envia um arquivo e cria um asset" })
 	@Post()
+	@ApiConsumes('multipart/form-data')
 	@UseInterceptors(FileInterceptor("file"))
 	@Public()
 	async handle(
