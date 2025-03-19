@@ -2,7 +2,6 @@ import { FakeEncrypter } from "test/cryptography/fake-encrypter";
 import { FakeHasher } from "test/cryptography/fake-hasher";
 import { makeUser } from "test/factories/make-user";
 import { InMemoryUserRepository } from "test/repositories/in-memory-user.repository";
-import { beforeEach, describe, expect, it } from "vitest";
 import { LoginUseCase } from "./login.use-case";
 
 let inMemoryUserRepository: InMemoryUserRepository;

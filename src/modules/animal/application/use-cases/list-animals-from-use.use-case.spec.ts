@@ -1,7 +1,6 @@
 import { UniqueEntityID } from "src/core/entities/unique-entity-id";
 import { makeAnimal } from "test/factories/make-animal";
 import { InMemoryAnimalRepository } from "test/repositories/in-memory-animal.repository";
-import { beforeEach, describe, expect, it } from "vitest";
 import { ListAnimalsFromUserUserUseCase } from "./list-animals-from-user.use-case";
 
 let inMemoryAnimalsRepository: InMemoryAnimalRepository;
@@ -22,7 +21,7 @@ describe("List Animals from User", () => {
 		for (const animal of animals) {
 			inMemoryAnimalsRepository.animals.push(animal);
 		}
-		const result = await useCase.execute({ userId: 1 });
+		const result = await useCase.execute({ userId: uniqueId.toString() });
 
 		expect(result.isRight()).toBe(true);
 		expect(result.value?.animals).toHaveLength(5);

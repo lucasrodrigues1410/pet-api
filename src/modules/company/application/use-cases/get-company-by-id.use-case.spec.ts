@@ -1,6 +1,5 @@
 import { makeCompany } from "test/factories/make-company";
 import { InMemoryCompanyRepository } from "test/repositories/in-memory-company.repository";
-import { beforeEach, describe, expect, it } from "vitest";
 import { GetCompanyByIdUseCase } from "./get-company-by-id.use-case";
 
 let inMemoryCompaniesRepository: InMemoryCompanyRepository;

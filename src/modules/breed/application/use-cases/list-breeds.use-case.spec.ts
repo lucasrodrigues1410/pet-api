@@ -1,6 +1,5 @@
 import { makeBreed } from "test/factories/make-breed";
 import { InMemoryBreedRepository } from "test/repositories/in-memory-breed.repository";
-import { beforeEach, describe, expect, it } from "vitest";
 import { ListBreedsUseCase } from "./list-breeds.use-case";
 
 let inMemoryCompaniesRepository: InMemoryBreedRepository;

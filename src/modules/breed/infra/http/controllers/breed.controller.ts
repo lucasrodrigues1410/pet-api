@@ -1,6 +1,6 @@
 import { BadRequestException, Controller, Get } from "@nestjs/common";
 import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
-import { ListBreedsResponseDto } from "src/modules/breed/application/dtos/list-breeds.dto";
+import { ListBreedsResponseDto } from "src/modules/breed/infra/http/dtos/list-breeds.dto";
 import { ListBreedsUseCase } from "src/modules/breed/application/use-cases/list-breeds.use-case";
 
 @ApiTags("Raças")

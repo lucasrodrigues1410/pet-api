@@ -1,7 +1,6 @@
 import { faker } from "@faker-js/faker";
 import { UniqueEntityID } from "src/core/entities/unique-entity-id";
 import { InMemoryAnimalRepository } from "test/repositories/in-memory-animal.repository";
-import { beforeEach, describe, expect, it } from "vitest";
 import { CreateAnimalUseCase } from "./create-animal.use-case";
 
 let inMemoryAnimalRepository: InMemoryAnimalRepository;

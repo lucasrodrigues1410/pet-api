@@ -1,6 +1,5 @@
 import { makeUser } from "test/factories/make-user";
 import { InMemoryUserRepository } from "test/repositories/in-memory-user.repository";
-import { beforeEach, describe, expect, it } from "vitest";
 import { FindUserByIdUseCase } from "./find-user-by-id.use-case";
 
 let inMemoryUsersRepository: InMemoryUserRepository;

@@ -7,8 +7,8 @@ import {
 } from "@nestjs/common";
 import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { User } from "src/modules/auth/infra/http/decorators/user.decorator";
-import { UserResponseDto } from "../../../application/dtos/user.dto";
-import { FindUserByIdUseCase } from "../../../application/use-cases/find-user-by-id.use-case";
+import { FindUserByIdUseCase } from "@/modules/user/application/use-cases/find-user-by-id.use-case";
+import { UserResponseDto } from "../dtos/user.dto";
 
 @ApiTags("Usuários")
 @Controller("users")

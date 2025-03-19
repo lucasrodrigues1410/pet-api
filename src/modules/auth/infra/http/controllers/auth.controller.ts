@@ -12,8 +12,8 @@ import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import {
 	LoginRequestDto,
 	LoginResponseDto,
-} from "../../../application/dtos/login.dto";
-import { RegisterRequestDto } from "../../../application/dtos/register.dto";
+} from "../dtos/login.dto";
+import { RegisterRequestDto } from "../dtos/register.dto";
 import { LoginUseCase } from "../../../application/use-cases/login.use-case";
 import { RegisterUseCase } from "../../../application/use-cases/register.use-case";
 import { InvalidCredentialsError } from "../../../domain/errors/invalid-credentials.error";

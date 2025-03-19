@@ -1,6 +1,5 @@
 import { FakeHasher } from "test/cryptography/fake-hasher";
 import { InMemoryUserRepository } from "test/repositories/in-memory-user.repository";
-import { beforeEach, describe, expect, it } from "vitest";
 import { RegisterUseCase } from "./register.use-case";
 
 let inMemoryUsersRepository: InMemoryUserRepository;

@@ -13,8 +13,8 @@ import { User } from "src/modules/auth/infra/http/decorators/user.decorator";
 import {
 	CreateAnimalRequestDto,
 	CreateAnimalResponseDto,
-} from "../../../application/dtos/create-animal.dto";
-import { ListAnimalsResponseDto } from "../../../application/dtos/list-animals.dto";
+} from "../dtos/create-animal.dto";
+import { ListAnimalsResponseDto } from "../dtos/list-animals.dto";
 import { CreateAnimalUseCase } from "../../../application/use-cases/create-animal.use-case";
 import { ListAnimalsFromUserUserUseCase } from "../../../application/use-cases/list-animals-from-user.use-case";
 
