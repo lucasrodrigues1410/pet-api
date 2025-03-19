@@ -1,23 +1,26 @@
 model Company {
-    id           Int           @id @default(autoincrement())
-    name         String
-    address      String?
-    contact      String?
-    createdAt    DateTime      @default(now())
-    updatedAt    DateTime      @updatedAt
-    appointments Appointment[]
-    companyUsers UserCompany[]
-    companyAvailability CompanyAvailability[]
+    id                           String                         @id @default(cuid())
+    name                         String
+    address                      String?
+    contact                      String?
+    createdAt                    DateTime                       @default(now())
+    updatedAt                    DateTime                       @updatedAt
+    logoAssetId                  String?
+    appointments                 Appointment[]
+    companyUsers                 UserCompany[]
+    companyAvailability          CompanyAvailability[]
     companyAvailabilityException CompanyAvailabilityException[]
-    services     Service[]
+    services                     Service[]
+    companyLocations             CompanyLocation[]
+    companyImage                 CompanyImage[]
 
     @@map("companies")
 }
 
 model UserCompany {
-    id        Int      @id @default(autoincrement())
-    userId    Int
-    companyId Int
+    id        Int    @id @default(autoincrement())
+    userId    String
+    companyId String
     role      Role
 
     user    User    @relation(fields: [userId], references: [id])
@@ -31,4 +34,25 @@ enum Role {
     ADMIN
     MANAGER
     EMPLOYEE
+}
+
+model CompanyImage {
+    company   Company             @relation(fields: [companyId], references: [id])
+    companyId String
+    asset     Asset               @relation(fields: [assetId], references: [id])
+    assetId   String
+    purpose   CompanyImagePurpose @default(COVER)
+    sortOrder Float               @default(0.0)
+    version   Int                 @default(1)
+    validFrom DateTime?
+    validTo   DateTime?
+
+    @@id([companyId, assetId, purpose])
+    @@index([companyId, purpose, sortOrder])
+    @@map("company_images")
+}
+
+enum CompanyImagePurpose {
+    LOGO
+    COVER
 }

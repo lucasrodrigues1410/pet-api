@@ -10,22 +10,28 @@ export class InMemoryAnimalRepository implements AnimalRepository {
 			resolve(animal);
 		});
 	}
-	getById(animalId: number): Promise<Animal | null> {
+	getById(animalId: string): Promise<Animal | null> {
 		return new Promise((resolve) => {
-            const animal = this.animals.find((animal) => animal.id === animalId);
-            resolve(animal || null);
-        });
+			const animal = this.animals.find(
+				(animal) => animal.id.toString() === animalId,
+			);
+			resolve(animal || null);
+		});
 	}
-	delete(animalId: number): Promise<void> {
+	delete(animalId: string): Promise<void> {
 		return new Promise((resolve) => {
-            this.animals = this.animals.filter((animal) => animal.id !== animalId);
-            resolve();
-        });
+			this.animals = this.animals.filter(
+				(animal) => animal.id.toString() !== animalId,
+			);
+			resolve();
+		});
 	}
-	getAllByUser(userId: number): Promise<Animal[]> {
+	getAllByUser(userId: string): Promise<Animal[]> {
 		return new Promise((resolve) => {
-            const animals = this.animals.filter((animal) => animal.userId === userId);
-            resolve(animals);
-        });
+			const animals = this.animals.filter(
+				(animal) => animal.userId.toString() === userId,
+			);
+			resolve(animals);
+		});
 	}
 }

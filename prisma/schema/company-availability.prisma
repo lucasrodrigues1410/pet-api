@@ -9,8 +9,8 @@ enum DayOfWeek {
 }
 
 model CompanyAvailability {
-    id        Int       @id @default(autoincrement())
-    companyId Int       @map("company_id")
+    id        String    @id @default(cuid())
+    companyId String       @map("company_id")
     day       DayOfWeek
     startTime DateTime  @map("start_time") @db.Time(1)
     endTime   DateTime  @map("end_time") @db.Time(1)
@@ -22,14 +22,14 @@ model CompanyAvailability {
 }
 
 model CompanyAvailabilityException {
-    id            Int       @id @default(autoincrement())
-    companyId     Int       @map("company_id")
-    startDate     DateTime  @map("start_date")
-    endDate       DateTime  @map("end_date")
-    reason        String?   @map("reason")
-    createdAt     DateTime  @default(now()) @map("created_at")
-    updatedAt     DateTime  @updatedAt @map("updated_at")
-    company       Company   @relation(fields: [companyId], references: [id])
+    id        String   @id @default(cuid())
+    companyId String   @map("company_id")
+    startDate DateTime @map("start_date")
+    endDate   DateTime @map("end_date")
+    reason    String?  @map("reason")
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+    company   Company  @relation(fields: [companyId], references: [id])
 
     @@map("company_availability_exceptions")
 }

@@ -1,9 +1,9 @@
 import { Module } from "@nestjs/common";
-import { CompanyController } from "./infra/http/controllers/company.controller";
+import { GetCompanyByIdUseCase } from "./application/use-cases/get-company-by-id.use-case";
 import { SearchCompaniesUseCase } from "./application/use-cases/search-companies.use-case";
 import { CompanyRepository } from "./domain/repositories/company.repository";
-import { CompanyPrismaRepository } from "./infra/database/prisma/repositories/company.repository";
-import { GetCompanyByIdUseCase } from "./application/use-cases/get-company-by-id.use-case";
+import { PrismaCompanyRepository } from "./infra/database/repositories/prisma-company.repository";
+import { CompanyController } from "./infra/http/controllers/company.controller";
 
 @Module({
 	controllers: [CompanyController],
@@ -12,8 +12,8 @@ import { GetCompanyByIdUseCase } from "./application/use-cases/get-company-by-id
 		GetCompanyByIdUseCase,
 		{
 			provide: CompanyRepository,
-			useClass: CompanyPrismaRepository,
+			useClass: PrismaCompanyRepository,
 		},
 	],
 })
-export class companyModule {}
+export class CompanyModule {}

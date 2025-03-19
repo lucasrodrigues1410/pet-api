@@ -1,11 +1,11 @@
 import { Injectable } from "@nestjs/common";
 import { Either, left, right } from "src/core/either";
+import { ResourceNotFoundError } from "src/core/errors/errors/resource-not-found.error";
 import { Service } from "../../domain/entities/service.entity";
 import { ServiceRepository } from "../../domain/repositories/service.repository";
-import { ResourceNotFoundError } from "src/core/errors/errors/resource-not-found.error";
 
 interface GetServiceByIdUseCaseRequest {
-	id: number;
+	id: string;
 }
 
 type GetServiceByIdUseCaseResponse = Either<

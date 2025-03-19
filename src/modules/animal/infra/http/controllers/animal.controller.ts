@@ -10,13 +10,13 @@ import {
 import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { UserTypeDecorator } from "src/modules/auth/infra/http/decorators/user-type.decorator";
 import { User } from "src/modules/auth/infra/http/decorators/user.decorator";
-import { CreateAnimalUseCase } from "../../../application/use-cases/create-animal.use-case";
-import { ListAnimalsFromUserUserUseCase } from "../../../application/use-cases/list-animals-from-user.use-case";
 import {
 	CreateAnimalRequestDto,
 	CreateAnimalResponseDto,
 } from "../../../application/dtos/create-animal.dto";
 import { ListAnimalsResponseDto } from "../../../application/dtos/list-animals.dto";
+import { CreateAnimalUseCase } from "../../../application/use-cases/create-animal.use-case";
+import { ListAnimalsFromUserUserUseCase } from "../../../application/use-cases/list-animals-from-user.use-case";
 
 @ApiTags("Animais")
 @Controller("animal")
@@ -35,7 +35,7 @@ export class AnimalController {
 	@UserTypeDecorator("CUSTOMER")
 	@HttpCode(201)
 	async create(
-		@User("sub") userId: number,
+		@User("sub") userId: string,
 		@Body() data: CreateAnimalResponseDto,
 	) {
 		const result = await this.createAnimalUseCase.execute({
@@ -55,7 +55,7 @@ export class AnimalController {
 	})
 	@Get("user/:id")
 	@UserTypeDecorator("CUSTOMER")
-	async listAll(@Param("id") userId: number) {
+	async listAll(@Param("id") userId: string) {
 		const result = await this.listAnimalsFromUserUseCase.execute({ userId });
 		if (result.isLeft()) {
 			throw new BadRequestException();

@@ -4,7 +4,7 @@ import { Animal } from "../../domain/entities/animal.entity";
 import { AnimalRepository } from "../../domain/repositories/animal.repository";
 
 interface ListAnimalsFromUserUseCaseRequest {
-	userId: number;
+	userId: string;
 }
 
 type ListAnimalsFromUserUseCaseResponse = Either<

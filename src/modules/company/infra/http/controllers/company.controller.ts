@@ -60,8 +60,8 @@ export class CompanyController {
 	})
 	@Get(":id")
 	@Public()
-	async getCompanyById(@Param("id") id: number) {
-		const result = await this.getCompanyByIdUseCase.execute({ id: +id });
+	async getCompanyById(@Param("id") id: string) {
+		const result = await this.getCompanyByIdUseCase.execute({ id });
 		if (result.isLeft()) {
 			throw new NotFoundException();
 		}

@@ -1,9 +1,9 @@
 import { Module } from "@nestjs/common";
-import { ServiceRepository } from "./domain/repositories/service.repository";
-import { ServicePrismaRepository } from "./infra/database/prisma/repositories/service.repository";
-import { ServiceController } from "./infra/http/controllers/service.controller";
 import { GetServiceByIdUseCase } from "./application/use-cases/get-service-by-id.use-case";
 import { ListServicesByCompanyUseCase } from "./application/use-cases/list-services-by-company.use-case";
+import { ServiceRepository } from "./domain/repositories/service.repository";
+import { PrismaServiceRepository } from "./infra/database/repositories/service.repository";
+import { ServiceController } from "./infra/http/controllers/service.controller";
 
 @Module({
 	controllers: [ServiceController],
@@ -12,7 +12,7 @@ import { ListServicesByCompanyUseCase } from "./application/use-cases/list-servi
 		GetServiceByIdUseCase,
 		{
 			provide: ServiceRepository,
-			useClass: ServicePrismaRepository,
+			useClass: PrismaServiceRepository,
 		},
 	],
 })

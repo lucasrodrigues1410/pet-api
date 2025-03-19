@@ -1,4 +1,5 @@
 import { Entity } from "src/core/entities/entity";
+import { UniqueEntityID } from "src/core/entities/unique-entity-id";
 
 export type UserType = "CUSTOMER" | "COMPANY" | "ADMIN";
 
@@ -26,7 +27,7 @@ export class User extends Entity<UserProps> {
 		return this.props.type;
 	}
 
-	public static create(props: UserProps, id?: number): User {
+	public static create(props: UserProps, id?: UniqueEntityID): User {
 		const user = new User(props, id);
 		return user;
 	}

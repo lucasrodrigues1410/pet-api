@@ -7,8 +7,8 @@ import {
 } from "@nestjs/common";
 import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { User } from "src/modules/auth/infra/http/decorators/user.decorator";
-import { FindUserByIdUseCase } from "../../../application/use-cases/find-user-by-id.use-case";
 import { UserResponseDto } from "../../../application/dtos/user.dto";
+import { FindUserByIdUseCase } from "../../../application/use-cases/find-user-by-id.use-case";
 
 @ApiTags("Usuários")
 @Controller("users")
@@ -22,7 +22,7 @@ export class UserController {
 		type: UserResponseDto,
 	})
 	@Get("me")
-	async getUser(@User("sub") userId: number) {
+	async getUser(@User("sub") userId: string) {
 		const result = await this.findUserByIdUseCase.execute({ userId });
 		if (result.isLeft()) {
 			throw new BadRequestException();

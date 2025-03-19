@@ -1,17 +1,18 @@
 model Appointment {
-    id              Int       @id @default(autoincrement())
-    userId          Int       @map("user_id")
-    companyId       Int       @map("company_id")
-    serviceId       Int       @map("service_id")
-    appointmentDate DateTime  @map("appointment_date")
-    startTime       DateTime  @map("start_time")
-    endTime         DateTime  @map("end_time")
+    id              String            @id @default(cuid())
+    userId          String            @map("user_id")
+    companyId       String            @map("company_id")
+    serviceId       String            @map("service_id")
+    appointmentDate DateTime          @map("appointment_date")
+    startTime       DateTime          @map("start_time")
+    endTime         DateTime          @map("end_time")
     status          AppointmentStatus
-    createdAt       DateTime  @default(now()) @map("created_at")
-    updatedAt       DateTime  @updatedAt @map("updated_at")
-    user            User      @relation(fields: [userId], references: [id])
-    company         Company   @relation(fields: [companyId], references: [id])
-    service         Service   @relation(fields: [serviceId], references: [id])
+    createdAt       DateTime          @default(now()) @map("created_at")
+    updatedAt       DateTime          @updatedAt @map("updated_at")
+    user            User              @relation(fields: [userId], references: [id])
+    company         Company           @relation(fields: [companyId], references: [id])
+    service         Service           @relation(fields: [serviceId], references: [id])
+
     @@map("appointments")
 }
 

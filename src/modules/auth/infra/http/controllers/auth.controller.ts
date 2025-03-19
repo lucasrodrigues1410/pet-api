@@ -9,13 +9,16 @@ import {
 	UnauthorizedException,
 } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
-import { InvalidCredentialsError } from "../../../domain/errors/invalid-credentials.error";
-import { UserAlreadyExistError } from "../../../domain/errors/user-already-exists.error";
+import {
+	LoginRequestDto,
+	LoginResponseDto,
+} from "../../../application/dtos/login.dto";
+import { RegisterRequestDto } from "../../../application/dtos/register.dto";
 import { LoginUseCase } from "../../../application/use-cases/login.use-case";
 import { RegisterUseCase } from "../../../application/use-cases/register.use-case";
+import { InvalidCredentialsError } from "../../../domain/errors/invalid-credentials.error";
+import { UserAlreadyExistError } from "../../../domain/errors/user-already-exists.error";
 import { Public } from "../decorators/public.decorator";
-import { LoginRequestDto, LoginResponseDto } from "../../../application/dtos/login.dto";
-import { RegisterRequestDto } from "../../../application/dtos/register.dto";
 
 @ApiTags("Autenticação")
 @Controller("auth")

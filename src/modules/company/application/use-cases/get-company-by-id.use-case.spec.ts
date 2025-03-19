@@ -1,7 +1,7 @@
-import { beforeEach, describe, expect, it } from "vitest";
-import { InMemoryCompanyRepository } from "test/repositories/in-memory-company.repository";
-import { GetCompanyByIdUseCase } from "./get-company-by-id.use-case";
 import { makeCompany } from "test/factories/make-company";
+import { InMemoryCompanyRepository } from "test/repositories/in-memory-company.repository";
+import { beforeEach, describe, expect, it } from "vitest";
+import { GetCompanyByIdUseCase } from "./get-company-by-id.use-case";
 
 let inMemoryCompaniesRepository: InMemoryCompanyRepository;
 let useCase: GetCompanyByIdUseCase;
@@ -16,7 +16,7 @@ describe("Get a company", () => {
 		const company = makeCompany();
 		inMemoryCompaniesRepository.create(company);
 		const result = await useCase.execute({
-			id: company.id,
+			id: company.id.toString(),
 		});
 		expect(result.isRight()).toBe(true);
 		expect(result.value).toMatchObject({

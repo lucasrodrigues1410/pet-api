@@ -4,13 +4,14 @@ import { APP_GUARD, APP_PIPE } from "@nestjs/core";
 import { ZodValidationPipe } from "nestjs-zod";
 import { PrismaModule } from "./core/infra/prisma/prisma.module";
 import { AnimalModule } from "./modules/animal/animal.module";
+import { AssetModule } from "./modules/asset/asset.module";
 import { AuthModule } from "./modules/auth/auth.module";
-import { JwtStrategy } from "./modules/auth/infra/strategies/jwt.strategy";
 import { JwtGuard } from "./modules/auth/infra/http/guards/jwt.guard";
+import { JwtStrategy } from "./modules/auth/infra/strategies/jwt.strategy";
+import { BreedModule } from "./modules/breed/breed.module";
+import { CompanyModule } from "./modules/company/company.module";
 import { ServiceModule } from "./modules/service/service.module";
 import { UserModule } from "./modules/user/user.module";
-import { BreedModule } from "./modules/breed/breed.module";
-import { companyModule } from "./modules/company/company.module";
 
 @Module({
 	imports: [
@@ -21,7 +22,8 @@ import { companyModule } from "./modules/company/company.module";
 		AnimalModule,
 		ServiceModule,
 		BreedModule,
-		companyModule
+		CompanyModule,
+		AssetModule,
 	],
 	controllers: [],
 	providers: [

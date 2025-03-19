@@ -5,7 +5,7 @@ import { User } from "../../domain/entities/user.entity";
 import { UserRepository } from "../../domain/repositories/user.repository";
 
 interface FindUserByIdUseCaseRequest {
-	userId: number;
+	userId: string;
 }
 
 type FindUserByIdUseCaseResponse = Either<

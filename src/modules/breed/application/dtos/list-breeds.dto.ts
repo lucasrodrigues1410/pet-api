@@ -4,7 +4,7 @@ import { z } from "zod";
 const listBreedsResponse = z.object({
 	results: z.array(
 		z.object({
-			id: z.number(),
+			id: z.string(),
 			name: z.string(),
 		}),
 	),

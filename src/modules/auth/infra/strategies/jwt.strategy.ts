@@ -5,7 +5,7 @@ import { ExtractJwt, Strategy } from "passport-jwt";
 import { z } from "zod";
 
 const tokenPayloadSchema = z.object({
-	sub: z.number(),
+	sub: z.string(),
 	name: z.string(),
 	email: z.string().email(),
 	type: z.string(),

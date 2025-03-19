@@ -1,17 +1,24 @@
 import { faker } from "@faker-js/faker";
 import { Injectable } from "@nestjs/common";
+import { UniqueEntityID } from "src/core/entities/unique-entity-id";
 import { PrismaService } from "src/core/infra/prisma/prisma.service";
-import { Animal, AnimalProps } from "src/modules/animal/domain/entities/animal.entity";
-import { AnimalPrismaMapper } from "src/modules/animal/infra/database/prisma/mappers/animal.mapper";
+import {
+	Animal,
+	AnimalProps,
+} from "src/modules/animal/domain/entities/animal.entity";
+import { AnimalPrismaMapper } from "src/modules/animal/infra/database/mappers/prisma-animal.mapper";
 
-export function makeAnimal(override: Partial<Animal> = {}, id?: number) {
+export function makeAnimal(
+	override: Partial<Animal> = {},
+	id?: UniqueEntityID,
+) {
 	const animal = Animal.create(
 		{
 			birthdate: faker.date.past(),
 			name: faker.animal.dog(),
 			weight: faker.number.float({ min: 1, max: 100 }),
-            userId: faker.number.int({ min: 1, max: 10 }),
-            breedId: faker.number.int({ min: 1, max: 10 }),
+			userId: new UniqueEntityID(),
+			breedId: new UniqueEntityID(),
 			...override,
 		},
 		id,

@@ -1,7 +1,7 @@
-import { beforeEach, describe, expect, it } from "vitest";
-import { InMemoryCompanyRepository } from "test/repositories/in-memory-company.repository";
-import { SearchCompaniesUseCase } from "./search-companies.use-case";
 import { makeCompany } from "test/factories/make-company";
+import { InMemoryCompanyRepository } from "test/repositories/in-memory-company.repository";
+import { beforeEach, describe, expect, it } from "vitest";
+import { SearchCompaniesUseCase } from "./search-companies.use-case";
 
 let inMemoryCompaniesRepository: InMemoryCompanyRepository;
 let useCase: SearchCompaniesUseCase;
@@ -13,10 +13,8 @@ describe("List services by company", () => {
 	});
 
 	it("should search companies", async () => {
-		const companies = Array.from({ length: 5 }, () =>
-			makeCompany(),
-		);
-		
+		const companies = Array.from({ length: 5 }, () => makeCompany());
+
 		for (const company of companies) {
 			inMemoryCompaniesRepository.create(company);
 		}

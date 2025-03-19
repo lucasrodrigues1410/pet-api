@@ -1,6 +1,6 @@
 model Category {
-    id          Int               @id @default(autoincrement())
-    parentId    Int?              @map("parent_id")
+    id          String            @id @default(cuid())
+    parentId    String?              @map("parent_id")
     name        String            @unique
     description String?
     type        ServiceType

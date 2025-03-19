@@ -1,10 +1,17 @@
 import { faker } from "@faker-js/faker";
 import { Injectable } from "@nestjs/common";
+import { UniqueEntityID } from "src/core/entities/unique-entity-id";
 import { PrismaService } from "src/core/infra/prisma/prisma.service";
-import { Service, ServiceProps } from "src/modules/service/domain/entities/service.entity";
-import { ServicePrismaMapper } from "src/modules/service/infra/database/prisma/mappers/service.mapper";
+import {
+	Service,
+	ServiceProps,
+} from "src/modules/service/domain/entities/service.entity";
+import { PrismaServiceMapper } from "src/modules/service/infra/database/mappers/prisma-service.mapper";
 
-export function makeService(override: Partial<Service> = {}, id?: number) {
+export function makeService(
+	override: Partial<Service> = {},
+	id?: UniqueEntityID,
+) {
 	const student = Service.create(
 		{
 			name: faker.commerce.productName(),
@@ -16,7 +23,7 @@ export function makeService(override: Partial<Service> = {}, id?: number) {
 			duration: faker.datatype.boolean({ probability: 0.7 })
 				? faker.number.int({ min: 1, max: 1440 })
 				: null,
-			companyId: faker.number.int({ min: 1, max: 1000 }),
+			companyId: new UniqueEntityID(),
 			details: {},
 			...override,
 		},
@@ -34,7 +41,7 @@ export class ServiceFactory {
 		const service = makeService(data);
 
 		await this.prisma.service.create({
-			data: ServicePrismaMapper.toPrisma(service),
+			data: PrismaServiceMapper.toPrisma(service),
 		});
 
 		return service;

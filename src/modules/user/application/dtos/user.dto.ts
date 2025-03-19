@@ -2,7 +2,7 @@ import { createZodDto } from "nestjs-zod";
 import { z } from "zod";
 
 const user = z.object({
-	id: z.number(),
+	id: z.string(),
 	name: z.string(),
 	email: z.string(),
 	type: z.enum(["CUSTOMER", "ADMIN", "COMPANY"]),

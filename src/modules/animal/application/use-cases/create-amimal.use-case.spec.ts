@@ -1,7 +1,8 @@
-import { InMemoryAnimalRepository } from "test/repositories/in-memory-animal.repository";
-import { CreateAnimalUseCase } from "./create-animal.use-case";
-import { beforeEach, describe, expect, it } from "vitest";
 import { faker } from "@faker-js/faker";
+import { UniqueEntityID } from "src/core/entities/unique-entity-id";
+import { InMemoryAnimalRepository } from "test/repositories/in-memory-animal.repository";
+import { beforeEach, describe, expect, it } from "vitest";
+import { CreateAnimalUseCase } from "./create-animal.use-case";
 
 let inMemoryAnimalRepository: InMemoryAnimalRepository;
 let useCase: CreateAnimalUseCase;
@@ -17,8 +18,8 @@ describe("Create Animal", () => {
 			birthdate: faker.date.past(),
 			name: faker.animal.dog(),
 			weight: faker.number.float({ min: 1, max: 100 }),
-			userId: faker.number.int({ min: 1, max: 10 }),
-			breedId: faker.number.int({ min: 1, max: 10 }),
+			userId: new UniqueEntityID().toString(),
+			breedId: new UniqueEntityID().toString(),
 		};
 
 		await useCase.execute(params);

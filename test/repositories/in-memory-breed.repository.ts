@@ -8,8 +8,8 @@ export class InMemoryBreedRepository implements BreedRepository {
 		return Promise.resolve(this.breeds);
 	}
 
-    async create(breed: Breed): Promise<void> {
-        this.breeds.push(breed);
-        await Promise.resolve();
-    }
+	async create(breed: Breed): Promise<void> {
+		this.breeds.push(breed);
+		await Promise.resolve();
+	}
 }

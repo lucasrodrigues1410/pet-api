@@ -1,9 +1,10 @@
 import { Entity } from "src/core/entities/entity";
+import { UniqueEntityID } from "src/core/entities/unique-entity-id";
 import { Breed } from "src/modules/breed/domain/entities/breed.entity";
 
 export interface AnimalProps {
-	userId: number;
-	breedId: number;
+	userId: UniqueEntityID;
+	breedId: UniqueEntityID;
 	name: string;
 	birthdate?: Date | null;
 	weight?: number | null;
@@ -11,31 +12,31 @@ export interface AnimalProps {
 }
 
 export class Animal extends Entity<AnimalProps> {
-	get userId(): number {
+	get userId() {
 		return this.props.userId;
 	}
 
-	get breedId(): number {
+	get breedId() {
 		return this.props.breedId;
 	}
 
-	get name(): string {
+	get name() {
 		return this.props.name;
 	}
 
-	get birthdate(): Date | null | undefined {
+	get birthdate() {
 		return this.props.birthdate;
 	}
 
-	get weight(): number | null | undefined {
+	get weight() {
 		return this.props.weight;
 	}
 
-	get breed(): Breed | null | undefined {
+	get breed() {
 		return this.props.breed;
 	}
 
-	public static create(props: AnimalProps, id?: number): Animal {
+	public static create(props: AnimalProps, id?: UniqueEntityID): Animal {
 		return new Animal(props, id);
 	}
 }

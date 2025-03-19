@@ -1,0 +1,21 @@
+model Asset {
+  id           String    @id @default(uuid())
+  name         String
+  url          String
+  format       String?
+  alt          String?
+  width        Int?
+  height       Int?
+  thumbnailUrl String?
+  formats      Json?
+  metadata     Json?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  companyImage CompanyImage[]
+
+  @@index([url])
+  @@map("assets")
+}

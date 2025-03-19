@@ -1,9 +1,9 @@
-import { InMemoryUserRepository } from "test/repositories/in-memory-user.repository";
-import { LoginUseCase } from "./login.use-case";
-import { beforeEach, describe, expect, it } from "vitest";
-import { FakeHasher } from "test/cryptography/fake-hasher";
 import { FakeEncrypter } from "test/cryptography/fake-encrypter";
+import { FakeHasher } from "test/cryptography/fake-hasher";
 import { makeUser } from "test/factories/make-user";
+import { InMemoryUserRepository } from "test/repositories/in-memory-user.repository";
+import { beforeEach, describe, expect, it } from "vitest";
+import { LoginUseCase } from "./login.use-case";
 
 let inMemoryUserRepository: InMemoryUserRepository;
 let fakeHasher: FakeHasher;
@@ -22,10 +22,10 @@ describe("Login", () => {
 
 	it("should login", async () => {
 		const user = makeUser({
-            email: 'johndoe@example.com',
-            password: await fakeHasher.hash('123456'),
-        });
-		inMemoryUserRepository.users.push(user)
+			email: "johndoe@example.com",
+			password: await fakeHasher.hash("123456"),
+		});
+		inMemoryUserRepository.users.push(user);
 		const result = await useCase.execute({
 			email: user.email,
 			password: "123456",

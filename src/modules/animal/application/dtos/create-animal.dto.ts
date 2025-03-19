@@ -3,7 +3,7 @@ import { z } from "zod";
 
 const createAnimalRequest = z.object({
 	name: z.string(),
-	breedId: z.number(),
+	breedId: z.string(),
 	birthdate: z.coerce.date().nullish(),
 	weight: z.number().min(0),
 });

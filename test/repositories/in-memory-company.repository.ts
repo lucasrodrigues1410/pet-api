@@ -4,9 +4,9 @@ import { CompanyRepository } from "src/modules/company/domain/repositories/compa
 export class InMemoryCompanyRepository implements CompanyRepository {
 	private companies: Company[] = [];
 
-	findById(id: number): Promise<Company | null> {
+	findById(id: string): Promise<Company | null> {
 		return Promise.resolve(
-			this.companies.find((company) => company.id === id) || null,
+			this.companies.find((company) => company.id.toString() === id) || null,
 		);
 	}
 	searchCompanies(params: {

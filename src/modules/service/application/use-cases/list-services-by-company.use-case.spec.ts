@@ -1,6 +1,7 @@
+import { UniqueEntityID } from "src/core/entities/unique-entity-id";
+import { makeService } from "test/factories/make-service";
 import { InMemoryServiceRepository } from "test/repositories/in-memory-service.repository";
 import { beforeEach, describe, expect, it } from "vitest";
-import { makeService } from "test/factories/make-service";
 import { ListServicesByCompanyUseCase } from "./list-services-by-company.use-case";
 
 let inMemoryServicesRepository: InMemoryServiceRepository;
@@ -13,15 +14,16 @@ describe("List services by company", () => {
 	});
 
 	it("should get a services by company", async () => {
+		const randomId = new UniqueEntityID();
 		const services = Array.from({ length: 5 }, () =>
-			makeService({ companyId: 1 }),
+			makeService({ companyId: randomId }),
 		);
 		const companyId = services[0].companyId;
 		for (const service of services) {
 			await inMemoryServicesRepository.create(service);
 		}
 		const result = await useCase.execute({
-			companyId,
+			companyId: companyId.toString(),
 		});
 
 		expect(result.isRight()).toBe(true);

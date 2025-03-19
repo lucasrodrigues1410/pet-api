@@ -1,4 +1,5 @@
 import { Entity } from "src/core/entities/entity";
+import { UniqueEntityID } from "src/core/entities/unique-entity-id";
 
 export type CategoryType = "PETSHOP";
 
@@ -21,8 +22,7 @@ export class Category extends Entity<CategoryProps> {
 		return this.props.description;
 	}
 
-	public static create(props: CategoryProps, id?: number): Category {
-		const category = new Category(props, id);
-		return category;
+	public static create(props: CategoryProps, id?: UniqueEntityID): Category {
+		return new Category(props, id);
 	}
 }

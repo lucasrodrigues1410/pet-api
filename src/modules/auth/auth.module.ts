@@ -7,10 +7,10 @@ import { RegisterUseCase } from "./application/use-cases/register.use-case";
 import { Encrypter } from "./domain/interfaces/encrypter.interface";
 import { HashComparer } from "./domain/interfaces/hash-comparer.interface";
 import { HashGenerator } from "./domain/interfaces/hash-generator.interface";
+import { AuthController } from "./infra/http/controllers/auth.controller";
 import { BcryptHasher } from "./infra/security/bcrypt-hasher.service";
 import { JwtEncrypter } from "./infra/security/jwt-encrypter.service";
 import { JwtStrategy } from "./infra/strategies/jwt.strategy";
-import { AuthController } from "./infra/http/controllers/auth.controller";
 
 @Module({
 	imports: [

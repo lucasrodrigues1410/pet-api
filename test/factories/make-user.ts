@@ -1,10 +1,11 @@
-import { User, UserProps } from "src/modules/user/domain/entities/user.entity";
 import { faker } from "@faker-js/faker";
 import { Injectable } from "@nestjs/common";
+import { UniqueEntityID } from "src/core/entities/unique-entity-id";
 import { PrismaService } from "src/core/infra/prisma/prisma.service";
-import { UserPrismaMapper } from "src/modules/user/infra/database/prisma/mappers/user.mapper";
+import { User, UserProps } from "src/modules/user/domain/entities/user.entity";
+import { PrismaUserMapper } from "src/modules/user/infra/database/mappers/prisma-user.mapper";
 
-export function makeUser(override: Partial<User> = {}, id?: number) {
+export function makeUser(override: Partial<User> = {}, id?: UniqueEntityID) {
 	const student = User.create(
 		{
 			email: faker.internet.email(),
@@ -27,7 +28,7 @@ export class UserFactory {
 		const user = makeUser(data);
 
 		await this.prisma.user.create({
-			data: UserPrismaMapper.toPrisma(user),
+			data: PrismaUserMapper.toPrisma(user),
 		});
 
 		return user;

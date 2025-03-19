@@ -4,7 +4,7 @@ import { Service } from "../../domain/entities/service.entity";
 import { ServiceRepository } from "../../domain/repositories/service.repository";
 
 interface ListServicesByCompanyUseCaseRequest {
-	companyId: number;
+	companyId: string;
 }
 
 type ListActiveServicesUseCaseResponse = Either<

@@ -1,7 +1,7 @@
-import { beforeEach, describe, expect, it } from "vitest";
-import { InMemoryBreedRepository } from "test/repositories/in-memory-breed.repository";
-import { ListBreedsUseCase } from "./list-breeds.use-case";
 import { makeBreed } from "test/factories/make-breed";
+import { InMemoryBreedRepository } from "test/repositories/in-memory-breed.repository";
+import { beforeEach, describe, expect, it } from "vitest";
+import { ListBreedsUseCase } from "./list-breeds.use-case";
 
 let inMemoryCompaniesRepository: InMemoryBreedRepository;
 let useCase: ListBreedsUseCase;
@@ -13,10 +13,8 @@ describe("List Breeds", () => {
 	});
 
 	it("should get a breeds", async () => {
-		const breeds = Array.from({ length: 5 }, () =>
-			makeBreed(),
-		);
-		
+		const breeds = Array.from({ length: 5 }, () => makeBreed());
+
 		for (const breed of breeds) {
 			inMemoryCompaniesRepository.create(breed);
 		}

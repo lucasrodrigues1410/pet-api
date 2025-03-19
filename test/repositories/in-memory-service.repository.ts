@@ -4,12 +4,16 @@ import { ServiceRepository } from "src/modules/service/domain/repositories/servi
 export class InMemoryServiceRepository implements ServiceRepository {
 	private services: Service[] = [];
 
-	findById(id: number): Promise<Service | undefined> {
-		return Promise.resolve(this.services.find((service) => service.id === id));
-	}
-	findByCompanyId(companyId: number): Promise<Service[]> {
+	findById(id: string): Promise<Service | undefined> {
 		return Promise.resolve(
-			this.services.filter((service) => service.companyId === companyId),
+			this.services.find((service) => service.id.toString() === id),
+		);
+	}
+	findByCompanyId(companyId: string): Promise<Service[]> {
+		return Promise.resolve(
+			this.services.filter(
+				(service) => service.companyId.toString() === companyId,
+			),
 		);
 	}
 

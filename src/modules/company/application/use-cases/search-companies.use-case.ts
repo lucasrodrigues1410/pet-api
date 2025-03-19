@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { Either, right } from "src/core/either";
-import { CompanyRepository } from "../../domain/repositories/company.repository";
 import { Company } from "../../domain/entities/company.entity";
+import { CompanyRepository } from "../../domain/repositories/company.repository";
 
 interface SearchCompaniesUseCaseRequest {
 	location?: {
@@ -11,7 +11,6 @@ interface SearchCompaniesUseCaseRequest {
 	query?: string;
 	page?: number;
 }
-
 
 type SearchCompaniesUseCaseResponse = Either<
 	null,
@@ -24,7 +23,9 @@ type SearchCompaniesUseCaseResponse = Either<
 export class SearchCompaniesUseCase {
 	constructor(private readonly companyRepository: CompanyRepository) {}
 
-	async execute(params:SearchCompaniesUseCaseRequest): Promise<SearchCompaniesUseCaseResponse> {
+	async execute(
+		params: SearchCompaniesUseCaseRequest,
+	): Promise<SearchCompaniesUseCaseResponse> {
 		const companies = await this.companyRepository.searchCompanies(params);
 		return right({
 			companies,

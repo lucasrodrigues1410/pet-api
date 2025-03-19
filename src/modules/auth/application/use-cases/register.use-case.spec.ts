@@ -1,7 +1,7 @@
 import { FakeHasher } from "test/cryptography/fake-hasher";
 import { InMemoryUserRepository } from "test/repositories/in-memory-user.repository";
-import { RegisterUseCase } from "./register.use-case";
 import { beforeEach, describe, expect, it } from "vitest";
+import { RegisterUseCase } from "./register.use-case";
 
 let inMemoryUsersRepository: InMemoryUserRepository;
 let fakeHasher: FakeHasher;
@@ -24,8 +24,8 @@ describe("Register", () => {
 		});
 
 		expect(result.isRight()).toBe(true);
-        expect(result.value).toEqual({
-            user: inMemoryUsersRepository.users[0],
-          })
+		expect(result.value).toEqual({
+			user: inMemoryUsersRepository.users[0],
+		});
 	});
 });

@@ -31,7 +31,7 @@ export class ServiceController {
 		description: "Serviço não encontrado",
 	})
 	@Get(":id")
-	async getServiceById(@Param("id") id: number) {
+	async getServiceById(@Param("id") id: string) {
 		const result = await this.getServiceByIdUseCase.execute({ id });
 		if (result.isLeft()) {
 			throw new NotFoundException();
@@ -64,9 +64,9 @@ export class ServiceController {
 	})
 	@Get("/company/:id")
 	@Public()
-	async listServicesByCompany(@Param("id") companyId: number) {
+	async listServicesByCompany(@Param("id") companyId: string) {
 		const result = await this.listServicesByCompanyUseCase.execute({
-			companyId: Number(companyId),
+			companyId,
 		});
 		if (result.isLeft()) {
 			throw new BadRequestException();
