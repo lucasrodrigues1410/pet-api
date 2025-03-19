@@ -8,7 +8,7 @@ let inMemoryUserRepository: InMemoryUserRepository;
 let fakeHasher: FakeHasher;
 let encrypter: FakeEncrypter;
 
-let useCase: LoginUseCase;
+let sut: LoginUseCase;
 
 describe("Login", () => {
 	beforeEach(() => {
@@ -16,7 +16,7 @@ describe("Login", () => {
 		fakeHasher = new FakeHasher();
 		encrypter = new FakeEncrypter();
 
-		useCase = new LoginUseCase(inMemoryUserRepository, fakeHasher, encrypter);
+		sut = new LoginUseCase(inMemoryUserRepository, fakeHasher, encrypter);
 	});
 
 	it("should login", async () => {
@@ -24,8 +24,8 @@ describe("Login", () => {
 			email: "johndoe@example.com",
 			password: await fakeHasher.hash("123456"),
 		});
-		inMemoryUserRepository.users.push(user);
-		const result = await useCase.execute({
+		inMemoryUserRepository.items.push(user);
+		const result = await sut.execute({
 			email: user.email,
 			password: "123456",
 		});

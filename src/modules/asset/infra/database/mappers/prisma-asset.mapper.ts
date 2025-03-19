@@ -13,7 +13,6 @@ export class PrismaAssetMapper {
 				width: asset.width || undefined,
 				height: asset.height || undefined,
 				thumbnailUrl: asset.thumbnailUrl || undefined,
-				formats: (asset.formats as Record<string, unknown>) || undefined,
 				metadata: (asset.metadata as Record<string, unknown>) || undefined,
 			},
 			new UniqueEntityID(asset.id),
@@ -30,7 +29,6 @@ export class PrismaAssetMapper {
 			width: asset.width,
 			height: asset.height,
 			thumbnailUrl: asset.thumbnailUrl,
-			formats: asset.formats as Prisma.JsonObject,
 			metadata: asset.metadata as Prisma.JsonObject,
 		};
 	}

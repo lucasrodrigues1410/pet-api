@@ -4,12 +4,12 @@ import { InMemoryServiceRepository } from "test/repositories/in-memory-service.r
 import { ListServicesByCompanyUseCase } from "./list-services-by-company.use-case";
 
 let inMemoryServicesRepository: InMemoryServiceRepository;
-let useCase: ListServicesByCompanyUseCase;
+let sut: ListServicesByCompanyUseCase;
 
 describe("List services by company", () => {
 	beforeEach(() => {
 		inMemoryServicesRepository = new InMemoryServiceRepository();
-		useCase = new ListServicesByCompanyUseCase(inMemoryServicesRepository);
+		sut = new ListServicesByCompanyUseCase(inMemoryServicesRepository);
 	});
 
 	it("should get a services by company", async () => {
@@ -21,7 +21,7 @@ describe("List services by company", () => {
 		for (const service of services) {
 			await inMemoryServicesRepository.create(service);
 		}
-		const result = await useCase.execute({
+		const result = await sut.execute({
 			companyId: companyId.toString(),
 		});
 

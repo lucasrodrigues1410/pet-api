@@ -1,9 +1,8 @@
 import { Injectable } from "@nestjs/common";
-import { Either, right } from "src/core/either";
-import { UniqueEntityID } from "src/core/entities/unique-entity-id";
+import { Either, left, right } from "src/core/either";
 import { Asset } from "../../domain/entities/asset";
 import { AssetRepository } from "../../domain/repositories/asset.repository";
-import { UploaderProvider } from "../../domain/storage/uploader-provider";
+import { Uploader } from "../../domain/storage/uploader";
 import { InvalidAssetTypeError } from "../errors/invalid-asset-type.error";
 
 interface UploadAndCreateAssetRequest {
@@ -23,28 +22,35 @@ type UploadAndCreateAssetResponse = Either<
 export class UploadAndCreateAssetUseCase {
 	constructor(
 		private assetRepository: AssetRepository,
-		private uploadProvider: UploaderProvider,
+		private uploader: Uploader,
 	) {}
 
-	async execute(
-		data: UploadAndCreateAssetRequest,
-	): Promise<UploadAndCreateAssetResponse> {
-		const uploadResponse = await this.uploadProvider.upload(data);
-		const asset = Asset.create(
-			{
-				name: uploadResponse.name,
-				format: data.fileType,
-				url: uploadResponse.url,
-				formats: uploadResponse.formats,
-				height: uploadResponse.height,
-				width: uploadResponse.width,
-				metadata: uploadResponse.metadata,
-				thumbnailUrl: uploadResponse.thumbnailUrl,
-			},
-			new UniqueEntityID(uploadResponse.id),
-		);
+	async execute({
+		fileName,
+		fileType,
+		body,
+	}: UploadAndCreateAssetRequest): Promise<UploadAndCreateAssetResponse> {
+		if (!/^(image\/(jpeg|png))$|^application\/pdf$/.test(fileType)) {
+			return left(new InvalidAssetTypeError(fileType));
+		}
+
+		const { url, name, height, width, metadata, thumbnailUrl } =
+			await this.uploader.upload({ fileName, fileType, body });
+
+		const asset = Asset.create({
+			name,
+			format: fileType,
+			url,
+			height,
+			width,
+			metadata,
+			thumbnailUrl,
+		});
 
 		await this.assetRepository.create(asset);
-		return right({ asset });
+
+		return right({
+			asset,
+		});
 	}
 }

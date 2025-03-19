@@ -5,11 +5,11 @@ import ImageKit from "imagekit";
 import {
 	UploadParams,
 	UploadResponse,
-	UploaderProvider,
-} from "../../domain/storage/uploader-provider";
+	Uploader,
+} from "../../domain/storage/uploader";
 
 @Injectable()
-export class ImageKitStorageProvider implements UploaderProvider {
+export class ImageKitStorageProvider implements Uploader {
 	private client: ImageKit;
 
 	constructor(private readonly configService: ConfigService) {

@@ -3,18 +3,18 @@ import { InMemoryServiceRepository } from "test/repositories/in-memory-service.r
 import { GetServiceByIdUseCase } from "./get-service-by-id.use-case";
 
 let inMemoryServicesRepository: InMemoryServiceRepository;
-let useCase: GetServiceByIdUseCase;
+let sut: GetServiceByIdUseCase;
 
 describe("Get a service", () => {
 	beforeEach(() => {
 		inMemoryServicesRepository = new InMemoryServiceRepository();
-		useCase = new GetServiceByIdUseCase(inMemoryServicesRepository);
+		sut = new GetServiceByIdUseCase(inMemoryServicesRepository);
 	});
 
 	it("should get a service by id", async () => {
 		const service = makeService();
 		inMemoryServicesRepository.create(service);
-		const result = await useCase.execute({
+		const result = await sut.execute({
 			id: service.id.toString(),
 		});
 		expect(result.isRight()).toBe(true);

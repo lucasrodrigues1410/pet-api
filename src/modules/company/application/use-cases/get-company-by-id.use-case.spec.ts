@@ -3,18 +3,18 @@ import { InMemoryCompanyRepository } from "test/repositories/in-memory-company.r
 import { GetCompanyByIdUseCase } from "./get-company-by-id.use-case";
 
 let inMemoryCompaniesRepository: InMemoryCompanyRepository;
-let useCase: GetCompanyByIdUseCase;
+let sut: GetCompanyByIdUseCase;
 
 describe("Get a company", () => {
 	beforeEach(() => {
 		inMemoryCompaniesRepository = new InMemoryCompanyRepository();
-		useCase = new GetCompanyByIdUseCase(inMemoryCompaniesRepository);
+		sut = new GetCompanyByIdUseCase(inMemoryCompaniesRepository);
 	});
 
 	it("should get a company by id", async () => {
 		const company = makeCompany();
 		inMemoryCompaniesRepository.create(company);
-		const result = await useCase.execute({
+		const result = await sut.execute({
 			id: company.id.toString(),
 		});
 		expect(result.isRight()).toBe(true);

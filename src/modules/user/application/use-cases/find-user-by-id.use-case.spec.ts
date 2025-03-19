@@ -3,18 +3,18 @@ import { InMemoryUserRepository } from "test/repositories/in-memory-user.reposit
 import { FindUserByIdUseCase } from "./find-user-by-id.use-case";
 
 let inMemoryUsersRepository: InMemoryUserRepository;
-let useCase: FindUserByIdUseCase;
+let sut: FindUserByIdUseCase;
 
 describe("Find a user", () => {
 	beforeEach(() => {
 		inMemoryUsersRepository = new InMemoryUserRepository();
-		useCase = new FindUserByIdUseCase(inMemoryUsersRepository);
+		sut = new FindUserByIdUseCase(inMemoryUsersRepository);
 	});
 
 	it("should find a user by id", async () => {
 		const user = makeUser({});
 		inMemoryUsersRepository.create(user);
-		const result = await useCase.execute({
+		const result = await sut.execute({
 			userId: user.id.toString(),
 		});
 

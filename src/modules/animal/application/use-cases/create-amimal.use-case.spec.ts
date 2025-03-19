@@ -4,12 +4,12 @@ import { InMemoryAnimalRepository } from "test/repositories/in-memory-animal.rep
 import { CreateAnimalUseCase } from "./create-animal.use-case";
 
 let inMemoryAnimalRepository: InMemoryAnimalRepository;
-let useCase: CreateAnimalUseCase;
+let sut: CreateAnimalUseCase;
 
 describe("Create Animal", () => {
 	beforeEach(() => {
 		inMemoryAnimalRepository = new InMemoryAnimalRepository();
-		useCase = new CreateAnimalUseCase(inMemoryAnimalRepository);
+		sut = new CreateAnimalUseCase(inMemoryAnimalRepository);
 	});
 
 	it("should create an animal", async () => {
@@ -21,7 +21,7 @@ describe("Create Animal", () => {
 			breedId: new UniqueEntityID().toString(),
 		};
 
-		await useCase.execute(params);
+		await sut.execute(params);
 
 		const animals = await inMemoryAnimalRepository.getAllByUser(params.userId);
 		expect(animals).toHaveLength(1);

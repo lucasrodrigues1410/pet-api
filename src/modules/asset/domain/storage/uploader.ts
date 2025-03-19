@@ -5,16 +5,14 @@ export interface UploadParams {
 }
 
 export interface UploadResponse {
-	id: string;
 	name: string;
 	url: string;
 	width?: number;
 	height?: number;
 	thumbnailUrl?: string;
-	formats?: Record<string, unknown>;
 	metadata?: Record<string, unknown>;
 }
 
-export abstract class UploaderProvider {
+export abstract class Uploader {
 	abstract upload(params: UploadParams): Promise<UploadResponse>;
 }

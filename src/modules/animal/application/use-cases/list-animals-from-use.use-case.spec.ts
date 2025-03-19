@@ -4,12 +4,12 @@ import { InMemoryAnimalRepository } from "test/repositories/in-memory-animal.rep
 import { ListAnimalsFromUserUserUseCase } from "./list-animals-from-user.use-case";
 
 let inMemoryAnimalsRepository: InMemoryAnimalRepository;
-let useCase: ListAnimalsFromUserUserUseCase;
+let sut: ListAnimalsFromUserUserUseCase;
 
 describe("List Animals from User", () => {
 	beforeEach(() => {
 		inMemoryAnimalsRepository = new InMemoryAnimalRepository();
-		useCase = new ListAnimalsFromUserUserUseCase(inMemoryAnimalsRepository);
+		sut = new ListAnimalsFromUserUserUseCase(inMemoryAnimalsRepository);
 	});
 
 	it("should get animals", async () => {
@@ -19,9 +19,9 @@ describe("List Animals from User", () => {
 		);
 
 		for (const animal of animals) {
-			inMemoryAnimalsRepository.animals.push(animal);
+			inMemoryAnimalsRepository.items.push(animal);
 		}
-		const result = await useCase.execute({ userId: uniqueId.toString() });
+		const result = await sut.execute({ userId: uniqueId.toString() });
 
 		expect(result.isRight()).toBe(true);
 		expect(result.value?.animals).toHaveLength(5);

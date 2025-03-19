@@ -3,12 +3,12 @@ import { InMemoryCompanyRepository } from "test/repositories/in-memory-company.r
 import { SearchCompaniesUseCase } from "./search-companies.use-case";
 
 let inMemoryCompaniesRepository: InMemoryCompanyRepository;
-let useCase: SearchCompaniesUseCase;
+let sut: SearchCompaniesUseCase;
 
 describe("List services by company", () => {
 	beforeEach(() => {
 		inMemoryCompaniesRepository = new InMemoryCompanyRepository();
-		useCase = new SearchCompaniesUseCase(inMemoryCompaniesRepository);
+		sut = new SearchCompaniesUseCase(inMemoryCompaniesRepository);
 	});
 
 	it("should search companies", async () => {
@@ -17,7 +17,7 @@ describe("List services by company", () => {
 		for (const company of companies) {
 			inMemoryCompaniesRepository.create(company);
 		}
-		const result = await useCase.execute({
+		const result = await sut.execute({
 			query: "",
 		});
 

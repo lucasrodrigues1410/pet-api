@@ -9,7 +9,6 @@ export interface AssetProps {
 	width?: number;
 	height?: number;
 	thumbnailUrl?: string;
-	formats?: Record<string, unknown>;
 	metadata?: Record<string, unknown>;
 }
 
@@ -40,10 +39,6 @@ export class Asset extends Entity<AssetProps> {
 
 	get thumbnailUrl() {
 		return this.props.thumbnailUrl;
-	}
-
-	get formats() {
-		return this.props.formats;
 	}
 
 	get metadata() {

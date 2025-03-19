@@ -2,20 +2,20 @@ import { User } from "src/modules/user/domain/entities/user.entity";
 import { UserRepository } from "src/modules/user/domain/repositories/user.repository";
 
 export class InMemoryUserRepository implements UserRepository {
-	public users: User[] = [];
+	public items: User[] = [];
 
 	findByEmail(email: string): Promise<User | null> {
 		return Promise.resolve(
-			this.users.find((user) => user.email === email) || null,
+			this.items.find((user) => user.email === email) || null,
 		);
 	}
 	findById(id: string): Promise<User | null> {
 		return Promise.resolve(
-			this.users.find((user) => user.id.toString() === id) || null,
+			this.items.find((user) => user.id.toString() === id) || null,
 		);
 	}
 	create(user: User): Promise<void> {
-		this.users.push(user);
+		this.items.push(user);
 		return Promise.resolve();
 	}
 }

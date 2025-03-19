@@ -3,12 +3,12 @@ import { InMemoryBreedRepository } from "test/repositories/in-memory-breed.repos
 import { ListBreedsUseCase } from "./list-breeds.use-case";
 
 let inMemoryCompaniesRepository: InMemoryBreedRepository;
-let useCase: ListBreedsUseCase;
+let sut: ListBreedsUseCase;
 
 describe("List Breeds", () => {
 	beforeEach(() => {
 		inMemoryCompaniesRepository = new InMemoryBreedRepository();
-		useCase = new ListBreedsUseCase(inMemoryCompaniesRepository);
+		sut = new ListBreedsUseCase(inMemoryCompaniesRepository);
 	});
 
 	it("should get a breeds", async () => {
@@ -17,7 +17,7 @@ describe("List Breeds", () => {
 		for (const breed of breeds) {
 			inMemoryCompaniesRepository.create(breed);
 		}
-		const result = await useCase.execute();
+		const result = await sut.execute();
 
 		expect(result.isRight()).toBe(true);
 		expect(result.value?.breeds).toHaveLength(5);
