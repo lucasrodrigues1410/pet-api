@@ -1,7 +1,7 @@
 import {
-	Uploader,
 	UploadParams,
 	UploadResponse,
+	Uploader,
 } from "@/modules/asset/domain/storage/uploader";
 import { faker } from "@faker-js/faker";
 import { uuidv7 } from "uuidv7";
@@ -22,6 +22,6 @@ export class FakeUploader implements Uploader {
 			url,
 		});
 
-		return { url, id: uuidv7(), name: fileName };
+		return { url, name: fileName };
 	}
 }

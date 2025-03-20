@@ -1,9 +1,11 @@
+import { ResourceNotFoundError } from "@/core/errors/errors/resource-not-found.error";
 import {
 	BadRequestException,
 	Body,
 	Controller,
 	Get,
 	HttpCode,
+	NotFoundException,
 	Param,
 	Post,
 } from "@nestjs/common";
@@ -44,6 +46,9 @@ export class AnimalController {
 		});
 
 		if (result.isLeft()) {
+			if (result.value instanceof ResourceNotFoundError) {
+				throw new NotFoundException();
+			}
 			throw new BadRequestException();
 		}
 	}
@@ -69,6 +74,14 @@ export class AnimalController {
 				breed: {
 					name: animal.breed?.name,
 				},
+				image: animal.asset
+					? {
+							url: animal.asset?.url,
+							thumbnailUrl: animal.asset?.thumbnailUrl,
+							width: animal.asset?.width,
+							height: animal.asset?.height,
+						}
+					: undefined,
 			})),
 		};
 	}

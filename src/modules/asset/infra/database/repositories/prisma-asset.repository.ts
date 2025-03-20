@@ -13,4 +13,16 @@ export class PrismaAssetRepository implements AssetRepository {
 			data: PrismaAssetMapper.toPrisma(asset),
 		});
 	}
+
+	async existsByIds(ids: string[]): Promise<boolean> {
+		const assets = await this.prismaService.asset.count({
+			where: {
+				id: {
+					in: ids,
+				},
+			},
+		});
+
+		return assets === ids.length;
+	}
 }

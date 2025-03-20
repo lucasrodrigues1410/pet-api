@@ -15,9 +15,7 @@ export class InMemoryCompanyRepository implements CompanyRepository {
 		page?: number;
 	}): Promise<Company[]> {
 		return Promise.resolve(
-			this.items.filter((company) =>
-				company.name.includes(params.query || ""),
-			),
+			this.items.filter((company) => company.name.includes(params.query || "")),
 		);
 	}
 

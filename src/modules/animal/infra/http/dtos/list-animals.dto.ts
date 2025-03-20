@@ -1,3 +1,4 @@
+import { w } from "@faker-js/faker/dist/airline-CBNP41sR";
 import { createZodDto } from "nestjs-zod";
 import { z } from "zod";
 
@@ -11,6 +12,14 @@ const listAnimalsResponse = z.object({
 			}),
 			birthdate: z.string().nullable(),
 			weight: z.number(),
+			image: z
+				.object({
+					url: z.string(),
+					thumbnailUrl: z.string().optional(),
+					width: z.number().optional(),
+					height: z.number().optional(),
+				})
+				.optional(),
 		}),
 	),
 });

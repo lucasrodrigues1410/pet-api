@@ -1,5 +1,5 @@
+import { PrismaService } from "@/core/infra/prisma/prisma.service";
 import { Injectable } from "@nestjs/common";
-import { PrismaService } from "src/core/infra/prisma/prisma.service";
 import { Animal } from "../../../domain/entities/animal.entity";
 import { AnimalRepository } from "../../../domain/repositories/animal.repository";
 import { AnimalPrismaMapper } from "../mappers/prisma-animal.mapper";

@@ -8,12 +8,10 @@ export class PrismaAssetMapper {
 			{
 				name: asset.name,
 				url: asset.url,
-				format: asset.format || undefined,
-				alt: asset.alt || undefined,
+				fileType: asset.fileType || undefined,
 				width: asset.width || undefined,
 				height: asset.height || undefined,
 				thumbnailUrl: asset.thumbnailUrl || undefined,
-				metadata: (asset.metadata as Record<string, unknown>) || undefined,
 			},
 			new UniqueEntityID(asset.id),
 		);
@@ -24,12 +22,10 @@ export class PrismaAssetMapper {
 			id: asset.id.toString(),
 			name: asset.name,
 			url: asset.url,
-			format: asset.format,
-			alt: asset.alt,
+			fileType: asset.fileType,
 			width: asset.width,
 			height: asset.height,
 			thumbnailUrl: asset.thumbnailUrl,
-			metadata: asset.metadata as Prisma.JsonObject,
 		};
 	}
 }

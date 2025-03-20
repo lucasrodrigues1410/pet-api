@@ -34,17 +34,16 @@ export class UploadAndCreateAssetUseCase {
 		if (!allowedFileTypes.includes(fileType)) {
 			return left(new InvalidAssetTypeError(fileType));
 		}
-		
-		const { url, name, height, width, metadata, thumbnailUrl } =
+
+		const { url, name, height, width, thumbnailUrl } =
 			await this.uploader.upload({ fileName, fileType, body });
 
 		const asset = Asset.create({
 			name,
-			format: fileType,
+			fileType,
 			url,
 			height,
 			width,
-			metadata,
 			thumbnailUrl,
 		});
 

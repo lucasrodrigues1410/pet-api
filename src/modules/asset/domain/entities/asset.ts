@@ -4,12 +4,10 @@ import { UniqueEntityID } from "src/core/entities/unique-entity-id";
 export interface AssetProps {
 	name: string;
 	url: string;
-	format?: string;
-	alt?: string;
+	fileType?: string;
 	width?: number;
 	height?: number;
 	thumbnailUrl?: string;
-	metadata?: Record<string, unknown>;
 }
 
 export class Asset extends Entity<AssetProps> {
@@ -21,12 +19,8 @@ export class Asset extends Entity<AssetProps> {
 		return this.props.url;
 	}
 
-	get format() {
-		return this.props.format;
-	}
-
-	get alt() {
-		return this.props.alt;
+	get fileType() {
+		return this.props.fileType;
 	}
 
 	get width() {
@@ -39,10 +33,6 @@ export class Asset extends Entity<AssetProps> {
 
 	get thumbnailUrl() {
 		return this.props.thumbnailUrl;
-	}
-
-	get metadata() {
-		return this.props.metadata;
 	}
 
 	public static create(props: AssetProps, id?: UniqueEntityID): Asset {

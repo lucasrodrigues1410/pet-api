@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import ImageKit from "imagekit";
@@ -7,7 +8,6 @@ import {
 	UploadResponse,
 	Uploader,
 } from "../../domain/storage/uploader";
-import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 
 @Injectable()
 export class ImageKitStorageProvider implements Uploader {
@@ -40,7 +40,6 @@ export class ImageKitStorageProvider implements Uploader {
 			width: response.width,
 			height: response.height,
 			thumbnailUrl: response.thumbnailUrl,
-			metadata: response.metadata as unknown as Record<string, unknown>,
 		};
 	}
 }

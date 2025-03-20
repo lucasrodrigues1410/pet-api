@@ -6,6 +6,7 @@ import { AnimalPrismaRepository } from "./infra/database/repositories/prisma-ani
 import { AnimalController } from "./infra/http/controllers/animal.controller";
 
 @Module({
+	imports: [AnimalModule],
 	controllers: [AnimalController],
 	providers: [
 		CreateAnimalUseCase,

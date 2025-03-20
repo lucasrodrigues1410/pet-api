@@ -3,7 +3,7 @@ import { AssetRepository } from "@/modules/asset/domain/repositories/asset.repos
 
 export class InMemoryAssetRepository implements AssetRepository {
 	public items: Asset[] = [];
-    
+
 	async create(asset: Asset) {
 		this.items.push(asset);
 		await new Promise((resolve) => {

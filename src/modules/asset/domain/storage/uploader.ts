@@ -10,7 +10,6 @@ export interface UploadResponse {
 	width?: number;
 	height?: number;
 	thumbnailUrl?: string;
-	metadata?: Record<string, unknown>;
 }
 
 export abstract class Uploader {

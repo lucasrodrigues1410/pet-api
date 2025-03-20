@@ -1,5 +1,7 @@
+import { ResourceNotFoundError } from "@/core/errors/errors/resource-not-found.error";
+import { AssetRepository } from "@/modules/asset/domain/repositories/asset.repository";
 import { Injectable } from "@nestjs/common";
-import { Either, right } from "src/core/either";
+import { Either, left, right } from "src/core/either";
 import { UniqueEntityID } from "src/core/entities/unique-entity-id";
 import { Animal } from "../../domain/entities/animal.entity";
 import { AnimalRepository } from "../../domain/repositories/animal.repository";
@@ -10,10 +12,11 @@ interface CreateAnimalCaseRequest {
 	breedId: string;
 	weight: number;
 	userId: string;
+	assetId?: string;
 }
 
 type CreateAnimalCaseResponse = Either<
-	null,
+	ResourceNotFoundError,
 	{
 		animal: Animal;
 	}
@@ -21,7 +24,10 @@ type CreateAnimalCaseResponse = Either<
 
 @Injectable()
 export class CreateAnimalUseCase {
-	constructor(private readonly animalRepository: AnimalRepository) {}
+	constructor(
+		private readonly animalRepository: AnimalRepository,
+		private readonly assetRepository: AssetRepository,
+	) {}
 
 	async execute(
 		data: CreateAnimalCaseRequest,
@@ -32,9 +38,17 @@ export class CreateAnimalUseCase {
 			breedId: new UniqueEntityID(data.breedId),
 			weight: data.weight,
 			userId: new UniqueEntityID(data.userId),
+			assetId: data.assetId ? new UniqueEntityID(data.assetId) : undefined,
 		});
-		const result = await this.animalRepository.create(animal);
+		const existsAsset = animal.assetId
+			? await this.assetRepository.existsByIds([animal.assetId.toString()])
+			: true;
 
+		if (!existsAsset) {
+			return left(new ResourceNotFoundError());
+		}
+
+		const result = await this.animalRepository.create(animal);
 		return right({
 			animal: result,
 		});

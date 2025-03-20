@@ -19,5 +19,11 @@ import { ImageKitStorageProvider } from "./infra/storage/image-kit.storage";
 			useClass: PrismaAssetRepository,
 		},
 	],
+	exports: [
+		{
+			provide: AssetRepository,
+			useClass: PrismaAssetRepository,
+		},
+	],
 })
 export class AssetModule {}

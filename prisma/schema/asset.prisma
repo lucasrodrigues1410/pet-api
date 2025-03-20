@@ -1,19 +1,18 @@
 model Asset {
-  id           String    @id @default(uuid())
+  id           String  @id @default(uuid())
   name         String
   url          String
-  format       String?
-  alt          String?
+  fileType     String? @map("file_type")
   width        Int?
   height       Int?
   thumbnailUrl String?
-  metadata     Json?
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
   companyImage CompanyImage[]
+  animal Animal[]
 
   @@index([url])
   @@map("assets")

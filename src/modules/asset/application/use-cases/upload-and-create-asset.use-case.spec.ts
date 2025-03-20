@@ -1,7 +1,7 @@
 import { InMemoryAssetRepository } from "test/repositories/in-memory-asset.repository";
 import { FakeUploader } from "test/storage/fake-uploader";
-import { UploadAndCreateAssetUseCase } from "./upload-and-create-asset.use-case";
 import { InvalidAssetTypeError } from "../errors/invalid-asset-type.error";
+import { UploadAndCreateAssetUseCase } from "./upload-and-create-asset.use-case";
 
 let inMemoryAttachmentsRepository: InMemoryAssetRepository;
 let fakeUploader: FakeUploader;
