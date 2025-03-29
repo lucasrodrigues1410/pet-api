@@ -1,24 +1,25 @@
 model Service {
-  id           String            @id @default(cuid())
-  name         String
-  description  String?
-  price        Decimal           @db.Decimal(10, 2)
-  duration     Int?
-  companyId    String               @map("company_id")
-  isActive     Boolean           @default(true) @map("is_active")
-  details      Json
-  createdAt    DateTime          @default(now()) @map("created_at")
-  updatedAt    DateTime          @updatedAt @map("updated_at")
-  company      Company           @relation(fields: [companyId], references: [id])
-  appointments Appointment[]
-  categories   ServiceCategory[]
+  id             String            @id @default(cuid())
+  name           String
+  description    String?
+  price          Decimal           @db.Decimal(10, 2)
+  duration       Int?
+  companyId      String            @map("company_id")
+  isActive       Boolean           @default(true) @map("is_active")
+  details        Json
+  createdAt      DateTime          @default(now()) @map("created_at")
+  updatedAt      DateTime          @updatedAt @map("updated_at")
+  company        Company           @relation(fields: [companyId], references: [id])
+  appointments   Appointment[]
+  categories     ServiceCategory[]
+  priceVariation ServicePriceVariation[]
 
   @@map("services")
 }
 
 model ServiceCategory {
-  serviceId  String      @map("service_id")
-  categoryId String      @map("category_id")
+  serviceId  String   @map("service_id")
+  categoryId String   @map("category_id")
   assignedAt DateTime @default(now()) @map("assigned_at")
   service    Service  @relation(fields: [serviceId], references: [id])
   category   Category @relation(fields: [categoryId], references: [id])

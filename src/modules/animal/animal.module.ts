@@ -4,9 +4,10 @@ import { ListAnimalsFromUserUserUseCase } from "./application/use-cases/list-ani
 import { AnimalRepository } from "./domain/repositories/animal.repository";
 import { AnimalPrismaRepository } from "./infra/database/repositories/prisma-animal.repository";
 import { AnimalController } from "./infra/http/controllers/animal.controller";
+import { AssetModule } from "../asset/asset.module";
 
 @Module({
-	imports: [AnimalModule],
+	imports: [AssetModule],
 	controllers: [AnimalController],
 	providers: [
 		CreateAnimalUseCase,

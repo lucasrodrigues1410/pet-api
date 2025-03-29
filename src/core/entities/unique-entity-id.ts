@@ -1,4 +1,4 @@
-import { uuidv7 } from "uuidv7";
+import { randomUUIDv7 } from "bun";
 
 export class UniqueEntityID {
 	private value: string;
@@ -12,7 +12,7 @@ export class UniqueEntityID {
 	}
 
 	constructor(value?: string) {
-		this.value = value ?? uuidv7();
+		this.value = value ?? randomUUIDv7();
 	}
 
 	public equals(id: UniqueEntityID) {

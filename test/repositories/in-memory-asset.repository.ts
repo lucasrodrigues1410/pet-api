@@ -10,4 +10,8 @@ export class InMemoryAssetRepository implements AssetRepository {
 			resolve(asset);
 		});
 	}
+
+	async existsByIds(ids: string[]): Promise<boolean> {
+		return this.items.some((item) => ids.includes(item.id.toString()));
+	}
 }

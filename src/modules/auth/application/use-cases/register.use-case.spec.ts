@@ -1,3 +1,4 @@
+import { beforeEach, describe, it, expect } from 'bun:test';
 import { FakeHasher } from "test/cryptography/fake-hasher";
 import { InMemoryUserRepository } from "test/repositories/in-memory-user.repository";
 import { RegisterUseCase } from "./register.use-case";
