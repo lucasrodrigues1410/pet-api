@@ -6,12 +6,12 @@ model Company {
     createdAt                    DateTime                       @default(now())
     updatedAt                    DateTime                       @updatedAt
     logoAssetId                  String?
-    appointments                 Appointment[]
     companyUsers                 UserCompany[]
     companyAvailability          CompanyAvailability[]
     companyAvailabilityException CompanyAvailabilityException[]
     services                     Service[]
     companyLocations             CompanyLocation[]
+    appointment Appointment[] @relation("CompanyAppointments")
     companyImage                 CompanyImage[]
 
     @@map("companies")

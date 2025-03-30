@@ -1,24 +1,36 @@
 model Appointment {
-    id              String            @id @default(cuid())
-    userId          String            @map("user_id")
-    companyId       String            @map("company_id")
-    serviceId       String            @map("service_id")
-    appointmentDate DateTime          @map("appointment_date")
-    startTime       DateTime          @map("start_time")
-    endTime         DateTime          @map("end_time")
-    status          AppointmentStatus
-    createdAt       DateTime          @default(now()) @map("created_at")
-    updatedAt       DateTime          @updatedAt @map("updated_at")
-    user            User              @relation(fields: [userId], references: [id])
-    company         Company           @relation(fields: [companyId], references: [id])
-    service         Service           @relation(fields: [serviceId], references: [id])
+    id                String            @id @default(cuid())
+    startDate         DateTime
+    endDate           DateTime
+    status            AppointmentStatus @default(SCHEDULED)
+    notes             String?
+    priceAtScheduling Decimal?          @db.Decimal(10, 2)
 
-    @@map("appointments")
+    clientId  String
+    animalId  String
+    companyId String
+    serviceId String
+
+    payment Payment?
+    animal  Animal   @relation("AnimalAppointments", fields: [animalId], references: [id], onDelete: Cascade)
+    company Company  @relation("CompanyAppointments", fields: [companyId], references: [id], onDelete: Cascade)
+    service Service  @relation(fields: [serviceId], references: [id], onDelete: Restrict) // Não deletar serviço se houver agendamento
+    client  User     @relation("ClientAppointments", fields: [clientId], references: [id], onDelete: Cascade)
+
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    deletedAt DateTime?
+
+    @@index([clientId])
+    @@index([animalId])
+    @@index([status])
 }
 
 enum AppointmentStatus {
     SCHEDULED
+    CONFIRMED
+    IN_PROGRESS
     COMPLETED
-    CANCELLED
+    CANCELED
     NO_SHOW
 }

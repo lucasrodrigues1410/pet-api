@@ -10,6 +10,7 @@ model Animal {
     weight    Float?    @db.DoublePrecision
 
     asset     Asset?    @relation(fields: [assetId], references: [id])
+    appointment Appointment[] @relation("AnimalAppointments")
 
     createdAt DateTime  @default(now()) @map("created_at")
     updatedAt DateTime  @updatedAt @map("updated_at")

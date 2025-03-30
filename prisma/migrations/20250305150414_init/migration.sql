@@ -1,7 +1,4 @@
 -- CreateEnum
-CREATE TYPE "AppointmentStatus" AS ENUM ('SCHEDULED', 'COMPLETED', 'CANCELLED', 'NO_SHOW');
-
--- CreateEnum
 CREATE TYPE "ServiceType" AS ENUM ('PETSHOP');
 
 -- CreateEnum
@@ -45,7 +42,6 @@ CREATE TABLE "appointments" (
     "appointment_date" TIMESTAMP(3) NOT NULL,
     "start_time" TIMESTAMP(3) NOT NULL,
     "end_time" TIMESTAMP(3) NOT NULL,
-    "status" "AppointmentStatus" NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
