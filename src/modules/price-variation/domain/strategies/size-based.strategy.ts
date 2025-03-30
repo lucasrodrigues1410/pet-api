@@ -1,26 +1,33 @@
-import { PriceVariationInput, PriceVariationStrategy } from "./price-variation.strategy";
+import {
+	PriceVariationInput,
+	PriceVariationStrategy,
+} from "./price-variation.strategy";
 
 export class SizeBasedStrategy implements PriceVariationStrategy {
-  calculate({ animal, variationData }: PriceVariationInput): number | null {
-    const animalWeight = animal.weight;
+	calculate({ animal, variationData }: PriceVariationInput): number | null {
+		const animalWeight = animal.weight;
 
-    if (!animalWeight) {
-       return null;
-    }
+		if (!animalWeight) {
+			return null;
+		}
 
-    let isApplicable = false;
-    if (variationData.value === "SMALL" && animalWeight <= 10) {
-      isApplicable = true;
-    } else if (variationData.value === "MEDIUM" && animalWeight > 10 && animalWeight <= 25) {
-      isApplicable = true;
-    } else if (variationData.value === "LARGE" && animalWeight > 25) {
-      isApplicable = true;
-    }
+		let isApplicable = false;
+		switch (variationData.value) {
+			case "SMALL":
+				isApplicable = animalWeight <= 10;
+				break;
+			case "MEDIUM":
+				isApplicable = animalWeight > 10 && animalWeight <= 25;
+				break;
+			case "LARGE":
+				isApplicable = animalWeight > 25;
+				break;
+		}
 
-    if (isApplicable) {
-      return Number(variationData.price);
-    }
+		if (isApplicable) {
+			return Number(variationData.price);
+		}
 
-    return null;
-  }
+		return null;
+	}
 }

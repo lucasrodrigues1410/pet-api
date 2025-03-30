@@ -13,7 +13,7 @@ interface CalculatePriceVariationUseCaseRequest {
 }
 
 type CalculatePriceVariationUseCaseResponse = Either<
-	ResourceNotFoundError,
+	ResourceNotFoundError | NoApplicablePriceVariationError,
 	{
 		price: number;
 	}
@@ -24,7 +24,7 @@ export class CalculatePriceVariationUseCase {
 	constructor(
 		private readonly animalRepository: AnimalRepository,
 		private readonly priceVariationRepository: PriceVariationRepository,
-		private readonly strategyFactory: PriceStrategyProvider,
+		private readonly strategyProvider: PriceStrategyProvider,
 	) {}
 
 	async execute({
@@ -48,14 +48,9 @@ export class CalculatePriceVariationUseCase {
 		}
 
 		for (const variation of priceVariations) {
-			const strategy = this.strategyFactory.getStrategy(variation.variation);
+			const strategy = this.strategyProvider.getStrategy(variation.variation);
 
-			if (!strategy) {
-				console.warn(
-					`Skipping variation ${variation.id} due to missing strategy for type ${variation.variation}`,
-				);
-				continue;
-			}
+			if (!strategy) continue;
 
 			const calculationInput: PriceVariationInput = {
 				animal: animal,
