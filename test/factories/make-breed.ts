@@ -1,3 +1,4 @@
+import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 import { faker } from "@faker-js/faker";
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "src/core/infra/prisma/prisma.service";
@@ -7,11 +8,11 @@ import {
 } from "src/modules/breed/domain/entities/breed.entity";
 import { PrismaBreedMapper } from "src/modules/breed/infra/database/mappers/prisma-breed.mapper";
 
-export function makeBreed(override: Partial<Breed> = {}, id?: number) {
+export function makeBreed(override: Partial<Breed> = {}, id?: UniqueEntityID) {
 	const student = Breed.create(
 		{
 			name: faker.animal.type(),
-			animalTypeId: faker.number.int({ min: 1, max: 10 }),
+			animalTypeId: new UniqueEntityID(),
 			...override,
 		},
 		id,

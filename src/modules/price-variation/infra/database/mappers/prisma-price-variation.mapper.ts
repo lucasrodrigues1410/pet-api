@@ -1,0 +1,34 @@
+import { PriceVariation } from "@/modules/price-variation/domain/entities/price-variation.entity";
+import {
+	Prisma,
+	ServicePriceVariation as PrismaServiceVariation,
+} from "@prisma/client";
+import { UniqueEntityID } from "src/core/entities/unique-entity-id";
+
+export class PrismaPriceVariationMapper {
+	static toDomain(
+		prismaPriceVariation: PrismaServiceVariation,
+	): PriceVariation {
+		return PriceVariation.create(
+			{
+				price: prismaPriceVariation.price.toNumber(),
+				value: prismaPriceVariation.value,
+				variation: prismaPriceVariation.variation,
+                serviceId: prismaPriceVariation.serviceId
+			},
+			new UniqueEntityID(prismaPriceVariation.id),
+		);
+	}
+
+	static toPrisma(
+		priceVariation: PriceVariation,
+	): Prisma.ServicePriceVariationUncheckedCreateInput {
+		return {
+			id: priceVariation.id.toString(),
+            serviceId: priceVariation.serviceId.toString(),
+			price: priceVariation.price,
+			value: priceVariation.value,
+			variation: priceVariation.variation,
+		};
+	}
+}
