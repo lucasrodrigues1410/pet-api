@@ -22,6 +22,6 @@
 		"paths": {
 			"@/*": ["src/*"]
 		},
-		"types": ["multer","bun-types"]
+		"types": ["multer", "bun-types"]
 	}
 }

@@ -1,11 +1,11 @@
-import { beforeEach, describe, it, expect } from "bun:test";
-import { InMemoryPriceVariationRepository } from "test/repositories/in-memory-price-variation.repository";
-import { CalculatePriceVariationUseCase } from "./calculate-price-variation.use-case";
-import { InMemoryAnimalRepository } from "test/repositories/in-memory-animal.repository";
+import { beforeEach, describe, expect, it } from "bun:test";
+import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 import { makeAnimal } from "test/factories/make-animal";
 import { makePriceVariation } from "test/factories/make-price-variation";
-import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 import { MockPriceStrategyProvider } from "test/providers/price-strategy.provider";
+import { InMemoryAnimalRepository } from "test/repositories/in-memory-animal.repository";
+import { InMemoryPriceVariationRepository } from "test/repositories/in-memory-price-variation.repository";
+import { CalculatePriceVariationUseCase } from "./calculate-price-variation.use-case";
 
 let inMemoryPriceVariationRepository: InMemoryPriceVariationRepository;
 let inMemoryAnimalRepository: InMemoryAnimalRepository;
@@ -17,12 +17,12 @@ describe("List Animals from User", () => {
 	beforeEach(() => {
 		inMemoryPriceVariationRepository = new InMemoryPriceVariationRepository();
 		inMemoryAnimalRepository = new InMemoryAnimalRepository();
-        mockPriceStrategyFactory = new MockPriceStrategyProvider();
+		mockPriceStrategyFactory = new MockPriceStrategyProvider();
 
 		sut = new CalculatePriceVariationUseCase(
 			inMemoryAnimalRepository,
 			inMemoryPriceVariationRepository,
-            mockPriceStrategyFactory
+			mockPriceStrategyFactory,
 		);
 	});
 
@@ -64,25 +64,25 @@ describe("List Animals from User", () => {
 		});
 	});
 
-    it("should return an error if no variation is found", async () => {
-        const animal = makeAnimal({
-            weight: 27,
-        });
-        const serviceId = new UniqueEntityID().toString();
-        const priceVariations = [
-            makePriceVariation({
-                serviceId,
-                price: 10,
-                variation: "SIZE",
-                value: "SMALL",
-            }),
-        ];
-        inMemoryPriceVariationRepository.items = priceVariations;
-        inMemoryAnimalRepository.items.push(animal);
-        const response = await sut.execute({
-            animalId: animal.id.toString(),
-            serviceId: serviceId,
-        });
-        expect(response.isLeft()).toBeTruthy();
-    });
+	it("should return an error if no variation is found", async () => {
+		const animal = makeAnimal({
+			weight: 27,
+		});
+		const serviceId = new UniqueEntityID().toString();
+		const priceVariations = [
+			makePriceVariation({
+				serviceId,
+				price: 10,
+				variation: "SIZE",
+				value: "SMALL",
+			}),
+		];
+		inMemoryPriceVariationRepository.items = priceVariations;
+		inMemoryAnimalRepository.items.push(animal);
+		const response = await sut.execute({
+			animalId: animal.id.toString(),
+			serviceId: serviceId,
+		});
+		expect(response.isLeft()).toBeTruthy();
+	});
 });

@@ -1,17 +1,17 @@
 import { beforeEach, describe, expect, it } from "bun:test";
-import { InMemoryAppointmentRepository } from "test/repositories/in-memory-appointment.repository";
-import { ListAvailableDatesUseCase } from "./list-available-dates.use-case";
-import { addDays, getDay, set } from "date-fns";
-import { makeAppointment } from "test/factories/make-appointment";
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
-import { InMemoryCompanyAvailabilityRepository } from "test/repositories/in-memory-company-availability.repository";
-import { InMemoryServiceRepository } from "test/repositories/in-memory-service.repository";
-import { InMemoryCompanyAvailabilityExceptionRepository } from "test/repositories/in-memory-company-availability-exception.repository";
-import { makeService } from "test/factories/make-service";
-import { makeCompanyAvailability } from "test/factories/make-company-availability";
-import { DaysOfWeek } from "@/modules/company-availability/domain/entities/company-availability.entity";
 import { ResourceNotFoundError } from "@/core/errors/errors/resource-not-found.error";
 import { CompanyAvailabilityException } from "@/modules/company-availability/domain/entities/company-availability-exception.entity";
+import { DaysOfWeek } from "@/modules/company-availability/domain/entities/company-availability.entity";
+import { addDays, getDay, set } from "date-fns";
+import { makeAppointment } from "test/factories/make-appointment";
+import { makeCompanyAvailability } from "test/factories/make-company-availability";
+import { makeService } from "test/factories/make-service";
+import { InMemoryAppointmentRepository } from "test/repositories/in-memory-appointment.repository";
+import { InMemoryCompanyAvailabilityExceptionRepository } from "test/repositories/in-memory-company-availability-exception.repository";
+import { InMemoryCompanyAvailabilityRepository } from "test/repositories/in-memory-company-availability.repository";
+import { InMemoryServiceRepository } from "test/repositories/in-memory-service.repository";
+import { ListAvailableDatesUseCase } from "./list-available-dates.use-case";
 
 let inMemoryAppointmentRepository: InMemoryAppointmentRepository;
 let inMemoryCompanyAvailability: InMemoryCompanyAvailabilityRepository;
@@ -60,7 +60,7 @@ describe("ListAvailableDatesUseCase", () => {
 
 		expect(result.isRight()).toBeTruthy();
 		if (result.isRight()) {
-			expect(result.value.availableDate.timeSlots.length).toBeGreaterThan(0);
+			expect(result.value.availableDate.slots.length).toBeGreaterThan(0);
 		}
 	});
 
@@ -126,7 +126,7 @@ describe("ListAvailableDatesUseCase", () => {
 
 		expect(result.isRight()).toBeTruthy();
 		if (result.isRight()) {
-			expect(result.value.availableDate.timeSlots.length).toBe(0);
+			expect(result.value.availableDate.slots.length).toBe(0);
 		}
 	});
 
@@ -163,7 +163,7 @@ describe("ListAvailableDatesUseCase", () => {
 
 		expect(result.isRight()).toBeTruthy();
 		if (result.isRight()) {
-			const availableSlots = result.value.availableDate.timeSlots;
+			const availableSlots = result.value.availableDate.slots;
 			expect(availableSlots.some((slot) => slot.label === "08:00")).toBeFalsy();
 		}
 	});
@@ -200,7 +200,7 @@ describe("ListAvailableDatesUseCase", () => {
 
 		expect(result.isRight()).toBeTruthy();
 		if (result.isRight()) {
-			const availableSlots = result.value.availableDate.timeSlots;
+			const availableSlots = result.value.availableDate.slots;
 			expect(availableSlots.some((slot) => slot.label === "09:00")).toBeFalsy();
 		}
 	});

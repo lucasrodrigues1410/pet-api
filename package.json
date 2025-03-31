@@ -8,7 +8,7 @@
 	"scripts": {
 		"build": "nest build",
 		"start": "nest start",
-		"dev": "bun run src/main.ts --watch",
+		"dev": "bun --watch ./src/main.ts",
 		"start:prod": "bun run src/main.ts",
 		"test": "bun test"
 	},

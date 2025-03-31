@@ -10,6 +10,8 @@ import { JwtGuard } from "./modules/auth/infra/http/guards/jwt.guard";
 import { JwtStrategy } from "./modules/auth/infra/strategies/jwt.strategy";
 import { BreedModule } from "./modules/breed/breed.module";
 import { CompanyModule } from "./modules/company/company.module";
+import { PriceVariationModule } from "./modules/price-variation/price-variation.module";
+import { SchedulingModule } from "./modules/scheduling/scheduling.module";
 import { ServiceModule } from "./modules/service/service.module";
 import { UserModule } from "./modules/user/user.module";
 
@@ -24,6 +26,9 @@ import { UserModule } from "./modules/user/user.module";
 		BreedModule,
 		CompanyModule,
 		AssetModule,
+		SchedulingModule,
+		CompanyModule,
+		PriceVariationModule,
 	],
 	controllers: [],
 	providers: [

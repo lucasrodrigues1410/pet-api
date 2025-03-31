@@ -15,5 +15,11 @@ import { CompanyController } from "./infra/http/controllers/company.controller";
 			useClass: PrismaCompanyRepository,
 		},
 	],
+	exports: [
+		{
+			provide: CompanyRepository,
+			useClass: PrismaCompanyRepository,
+		},
+	],
 })
 export class CompanyModule {}

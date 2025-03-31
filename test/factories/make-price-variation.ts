@@ -8,8 +8,8 @@ import { faker } from "@faker-js/faker";
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "src/core/infra/prisma/prisma.service";
 
-const variation = ['SIZE'];
-const value = ['SMALL', 'MEDIUM', 'LARGE'];
+const variation = ["SIZE"];
+const value = ["SMALL", "MEDIUM", "LARGE"];
 
 export function makePriceVariation(
 	override: Partial<PriceVariation> = {},
@@ -20,7 +20,7 @@ export function makePriceVariation(
 			serviceId: new UniqueEntityID().toString(),
 			price: faker.number.float({ min: 10, max: 1000, fractionDigits: 2 }),
 			variation: faker.helpers.arrayElement(variation),
-            value: faker.helpers.arrayElement(value),
+			value: faker.helpers.arrayElement(value),
 			...override,
 		},
 		id,

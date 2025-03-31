@@ -1,11 +1,11 @@
-import { AnimalRepository } from "@/modules/animal/domain/repositories/animal.repository";
-import { PriceVariationRepository } from "../../domain/repositories/price-variation.repository";
-import { Injectable } from "@nestjs/common";
 import { Either, left, right } from "@/core/either";
 import { ResourceNotFoundError } from "@/core/errors/errors/resource-not-found.error";
-import { PriceStrategyProvider } from "../providers/price-strategy.provider";
-import { PriceVariationInput } from "../../domain/strategies/price-variation.strategy";
+import { AnimalRepository } from "@/modules/animal/domain/repositories/animal.repository";
+import { Injectable } from "@nestjs/common";
 import { NoApplicablePriceVariationError } from "../../domain/errors/no-applicable-price-variation.error";
+import { PriceVariationRepository } from "../../domain/repositories/price-variation.repository";
+import { PriceVariationInput } from "../../domain/strategies/price-variation.strategy";
+import { PriceStrategyProvider } from "../providers/price-strategy.provider";
 
 interface CalculatePriceVariationUseCaseRequest {
 	animalId: string;
@@ -48,7 +48,9 @@ export class CalculatePriceVariationUseCase {
 		}
 
 		for (const variation of priceVariations) {
-			const strategy = this.strategyProvider.getStrategy(variation.variation);
+			const strategy = this.strategyProvider.getStrategy(
+				variation.variation as any,
+			);
 
 			if (!strategy) continue;
 

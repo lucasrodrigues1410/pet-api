@@ -1,8 +1,8 @@
 import { PrismaService } from "@/core/infra/prisma/prisma.service";
-import { CompanyAvailabilityRepository } from "@/modules/company-availability/domain/repositories/company-availability.repository";
-import { PrismaCompanyAvailabilityMapper } from "../mappers/company-availability.mapper";
-import { Injectable } from "@nestjs/common";
 import { DaysOfWeek } from "@/modules/company-availability/domain/entities/company-availability.entity";
+import { CompanyAvailabilityRepository } from "@/modules/company-availability/domain/repositories/company-availability.repository";
+import { Injectable } from "@nestjs/common";
+import { PrismaCompanyAvailabilityMapper } from "../mappers/company-availability.mapper";
 
 @Injectable()
 export class PrismaCompanyAvailabilityRepository

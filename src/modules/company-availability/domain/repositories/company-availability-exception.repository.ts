@@ -6,6 +6,6 @@ export abstract class CompanyAvailabilityExcpetionRepository {
 		period: {
 			startDate: Date;
 			endDate: Date;
-		}
+		},
 	): Promise<CompanyAvailabilityException[] | null>;
 }

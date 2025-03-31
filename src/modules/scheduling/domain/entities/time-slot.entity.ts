@@ -6,11 +6,11 @@ export interface TimeSlotProps {
 }
 
 export class TimeSlot extends Entity<TimeSlotProps> {
-    get label(): string | undefined {
-        return this.props.label;
-    }
+	get label(): string | undefined {
+		return this.props.label;
+	}
 
-    static create(props: TimeSlotProps, id?: UniqueEntityID): TimeSlot {
-        return new TimeSlot(props, id);
-    }
+	static create(props: TimeSlotProps, id?: UniqueEntityID): TimeSlot {
+		return new TimeSlot(props, id);
+	}
 }

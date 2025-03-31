@@ -1,4 +1,7 @@
-import { CompanyAvailability, DaysOfWeek } from "../entities/company-availability.entity";
+import {
+	CompanyAvailability,
+	DaysOfWeek,
+} from "../entities/company-availability.entity";
 
 export abstract class CompanyAvailabilityRepository {
 	abstract findAllByCompanyId(

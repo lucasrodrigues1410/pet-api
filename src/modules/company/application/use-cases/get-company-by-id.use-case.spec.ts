@@ -1,4 +1,4 @@
-import { beforeEach, describe, it, expect } from 'bun:test';
+import { beforeEach, describe, expect, it } from "bun:test";
 import { makeCompany } from "test/factories/make-company";
 import { InMemoryCompanyRepository } from "test/repositories/in-memory-company.repository";
 import { GetCompanyByIdUseCase } from "./get-company-by-id.use-case";

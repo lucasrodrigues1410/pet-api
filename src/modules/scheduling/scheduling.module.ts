@@ -1,19 +1,20 @@
 import { Module } from "@nestjs/common";
+import { CompanyAvailabilityModule } from "../company-availability/company-availability.module";
+import { ServiceModule } from "../service/service.module";
+import { ListAvailableDatesUseCase } from "./application/use-cases/list-available-dates.use-case";
 import { AppointmentRepository } from "./domain/repositories/appointment.repository";
 import { PrismaAppointmentRepository } from "./infra/database/repositories/prisma-appointment.repository";
+import { AppointmentController } from "./infra/http/controllers/appointment.controller";
 
 @Module({
+	imports: [CompanyAvailabilityModule, ServiceModule],
+	controllers: [AppointmentController],
 	providers: [
+		ListAvailableDatesUseCase,
 		{
 			provide: AppointmentRepository,
 			useClass: PrismaAppointmentRepository,
 		},
 	],
-	exports: [
-		{
-			provide: AppointmentRepository,
-			useClass: PrismaAppointmentRepository,
-		},
-	]
 })
-export class schedulingModule {}
+export class SchedulingModule {}

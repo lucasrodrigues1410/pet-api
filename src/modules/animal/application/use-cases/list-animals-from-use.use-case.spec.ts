@@ -1,4 +1,4 @@
-import { beforeEach, describe, it, expect } from 'bun:test';
+import { beforeEach, describe, expect, it } from "bun:test";
 
 import { UniqueEntityID } from "src/core/entities/unique-entity-id";
 import { makeAnimal } from "test/factories/make-animal";

@@ -1,10 +1,10 @@
 import { Entity } from "@/core/entities/entity";
-import { TimeSlot } from "./time-slot.entity";
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
+import { TimeSlot } from "./time-slot.entity";
 
 export interface AvailableDateProps {
-    date: Date;
-    timeSlots: TimeSlot[];
+	date: Date;
+	slots: TimeSlot[];
 }
 
 export class AvailableDate extends Entity<AvailableDateProps> {
@@ -12,19 +12,19 @@ export class AvailableDate extends Entity<AvailableDateProps> {
 		return this.props.date;
 	}
 
-	get timeSlots() {
-		return this.props.timeSlots;
+	get slots() {
+		return this.props.slots;
 	}
 
-	addTimeSlot(timeSlot: TimeSlot) {
-		this.props.timeSlots.push(timeSlot);
+	addSlot(timeSlot: TimeSlot) {
+		this.props.slots.push(timeSlot);
 	}
 
 	static create(props: AvailableDateProps, id?: UniqueEntityID): AvailableDate {
 		return new AvailableDate(
 			{
 				...props,
-				timeSlots: props.timeSlots || [],
+				slots: props.slots || [],
 			},
 			id,
 		);

@@ -15,5 +15,11 @@ import { ServiceController } from "./infra/http/controllers/service.controller";
 			useClass: PrismaServiceRepository,
 		},
 	],
+	exports: [
+		{
+			provide: ServiceRepository,
+			useClass: PrismaServiceRepository,
+		},
+	],
 })
 export class ServiceModule {}

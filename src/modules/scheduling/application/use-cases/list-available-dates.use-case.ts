@@ -1,7 +1,10 @@
 import { Either, left, right } from "@/core/either";
+import { ResourceNotFoundError } from "@/core/errors/errors/resource-not-found.error";
+import { DaysOfWeek } from "@/modules/company-availability/domain/entities/company-availability.entity";
+import { CompanyAvailabilityExcpetionRepository } from "@/modules/company-availability/domain/repositories/company-availability-exception.repository";
+import { CompanyAvailabilityRepository } from "@/modules/company-availability/domain/repositories/company-availability.repository";
+import { ServiceRepository } from "@/modules/service/domain/repositories/service.repository";
 import { Injectable } from "@nestjs/common";
-import { AppointmentRepository } from "../../domain/repositories/appointment.repository";
-import { AvailableDate } from "../../domain/entities/available-date.entity";
 import {
 	addMinutes,
 	endOfDay,
@@ -11,12 +14,9 @@ import {
 	isWithinInterval,
 	startOfDay,
 } from "date-fns";
+import { AvailableDate } from "../../domain/entities/available-date.entity";
 import { TimeSlot } from "../../domain/entities/time-slot.entity";
-import { ResourceNotFoundError } from "@/core/errors/errors/resource-not-found.error";
-import { ServiceRepository } from "@/modules/service/domain/repositories/service.repository";
-import { CompanyAvailabilityRepository } from "@/modules/company-availability/domain/repositories/company-availability.repository";
-import { CompanyAvailabilityExcpetionRepository } from "@/modules/company-availability/domain/repositories/company-availability-exception.repository";
-import { DaysOfWeek } from "@/modules/company-availability/domain/entities/company-availability.entity";
+import { AppointmentRepository } from "../../domain/repositories/appointment.repository";
 
 type ListAvailableDatesUseCaseResponse = Either<
 	ResourceNotFoundError,
@@ -72,27 +72,26 @@ export class ListAvailableDatesUseCase {
 			return left(new ResourceNotFoundError());
 		}
 
-		
 		if ((service?.duration ?? 0) <= 0) {
 			return left(new Error("Service duration must be greater than 0"));
 		}
 
 		const availableDate = AvailableDate.create({
 			date,
-			timeSlots: [],
+			slots: [],
 		});
 
 		const isInRange =
-			format(date, "HH:mm") >= companyAvailability.startTime &&
-			format(date, "HH:mm") <= companyAvailability.endTime;
+			format(date, "HH:mm") >= companyAvailability.timeRange.startTime &&
+			format(date, "HH:mm") <= companyAvailability.timeRange.endTime;
 
 		if (!isInRange) {
 			return right({ availableDate });
 		}
 
 		const timeSlots = this.generateTimeSlots(
-			companyAvailability.startTime,
-			companyAvailability.endTime,
+			companyAvailability.timeRange.startTime,
+			companyAvailability.timeRange.endTime,
 			service.duration ?? 0,
 			date,
 		);
@@ -116,7 +115,7 @@ export class ListAvailableDatesUseCase {
 		});
 
 		for (const slot of availableSlots) {
-			availableDate.addTimeSlot(
+			availableDate.addSlot(
 				TimeSlot.create({
 					label: format(slot, "HH:mm"),
 				}),

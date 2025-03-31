@@ -13,8 +13,6 @@ export class PrismaCompanyAvailabilityMapper {
 				day: prismaPriceVariation.day,
 				startTime: prismaPriceVariation.startTime.toString(),
 				endTime: prismaPriceVariation.endTime.toString(),
-				createdAt: prismaPriceVariation.createdAt,
-				updatedAt: prismaPriceVariation.updatedAt,
 			},
 			new UniqueEntityID(prismaPriceVariation.id),
 		);
@@ -27,8 +25,8 @@ export class PrismaCompanyAvailabilityMapper {
 			id: companyAvailability.id.toString(),
 			companyId: companyAvailability.companyId,
 			day: companyAvailability.day,
-			startTime: new Date(companyAvailability.startTime),
-			endTime: new Date(companyAvailability.endTime),
+			startTime: new Date(companyAvailability.timeRange.startTime),
+			endTime: new Date(companyAvailability.timeRange.endTime),
 		};
 	}
 }

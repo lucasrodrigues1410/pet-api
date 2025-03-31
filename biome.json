@@ -20,7 +20,8 @@
 		"enabled": true,
 		"rules": {
 			"suspicious": {
-				"noImplicitAnyLet": "off"
+				"noImplicitAnyLet": "off",
+				"noExplicitAny": "off"
 			},
 			"complexity": {
 				"noStaticOnlyClass": "off"

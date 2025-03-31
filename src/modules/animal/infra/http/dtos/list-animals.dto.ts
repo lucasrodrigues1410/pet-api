@@ -1,4 +1,3 @@
-import { w } from "@faker-js/faker/dist/airline-CBNP41sR";
 import { createZodDto } from "nestjs-zod";
 import { z } from "zod";
 
