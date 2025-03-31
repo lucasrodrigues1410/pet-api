@@ -1,8 +1,10 @@
 import { PrismaService } from "@/core/infra/prisma/prisma.service";
-import { Appointment } from "@/modules/appointment/domain/entities/appointment.entity";
-import { AppointmentRepository } from "@/modules/appointment/domain/repositories/appointment.repository";
+import { Appointment } from "@/modules/scheduling/domain/entities/appointment.entity";
+import { AppointmentRepository } from "@/modules/scheduling/domain/repositories/appointment.repository";
 import { PrismaAppointementMapper } from "../mapper/prisma-appointment.mapper";
+import { Injectable } from "@nestjs/common";
 
+@Injectable()
 export class PrismaAppointmentRepository implements AppointmentRepository {
 	constructor(private prismaService: PrismaService) {}
 
@@ -14,15 +16,15 @@ export class PrismaAppointmentRepository implements AppointmentRepository {
 	}
 
     async getAppointmentsByPeriod(params: {
-        companyId: string;
+        serviceId: string;
         startDate: Date;
         endDate: Date;
     }) {
-        const { companyId, startDate, endDate } = params;
+        const { serviceId, startDate, endDate } = params;
 
         const appointments = await this.prismaService.appointment.findMany({
             where: {
-                companyId,
+                serviceId,
                 startDate: {
                     gte: startDate,
                 },

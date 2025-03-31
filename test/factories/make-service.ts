@@ -23,7 +23,7 @@ export function makeService(
 			duration: faker.datatype.boolean({ probability: 0.7 })
 				? faker.number.int({ min: 1, max: 1440 })
 				: null,
-			companyId: new UniqueEntityID(),
+			companyId: new UniqueEntityID().toString(),
 			details: {},
 			...override,
 		},

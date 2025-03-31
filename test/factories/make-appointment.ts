@@ -2,8 +2,8 @@ import {
 	Appointment,
 	AppointmentProps,
 	AppointmentStatus,
-} from "@/modules/appointment/domain/entities/appointment.entity";
-import { PrismaAppointementMapper } from "@/modules/appointment/infra/database/mapper/prisma-appointment.mapper";
+} from "@/modules/scheduling/domain/entities/appointment.entity";
+import { PrismaAppointementMapper } from "@/modules/scheduling/infra/database/mapper/prisma-appointment.mapper";
 import { faker } from "@faker-js/faker";
 import { Injectable } from "@nestjs/common";
 import { UniqueEntityID } from "src/core/entities/unique-entity-id";

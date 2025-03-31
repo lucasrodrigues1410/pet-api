@@ -1,30 +1,40 @@
-import { Injectable, Scope } from "@nestjs/common";
-import { ModuleRef } from "@nestjs/core";
-import { SizeBasedStrategy } from "../../domain/strategies/size-based.strategy";
-import { PriceVariationStrategy } from "../../domain/strategies/price-variation.strategy";
+import { Injectable, Logger } from '@nestjs/common';
+import { ModuleRef } from '@nestjs/core';
+import { SizeBasedStrategy } from '../../domain/strategies/size-based.strategy';
+import { PriceVariationStrategy } from '../../domain/strategies/price-variation.strategy';
 
-const strategyMap = {
-  SIZE: SizeBasedStrategy,
+export enum VariationTypeEnum {
+  SIZE = 'SIZE',
+}
+
+// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+type PriceVariationStrategyType = new (...args: any[]) => PriceVariationStrategy;
+
+const strategyMap: Record<VariationTypeEnum, PriceVariationStrategyType> = {
+  [VariationTypeEnum.SIZE]: SizeBasedStrategy,
 };
 
-export type VariationType = keyof typeof strategyMap;
-
-@Injectable({ scope: Scope.REQUEST })
+@Injectable()
 export class PriceStrategyProvider {
-  constructor(private moduleRef: ModuleRef) {}
+  private readonly logger = new Logger(PriceStrategyProvider.name);
 
-  getStrategy(variationType: string): PriceVariationStrategy | null {
-    const StrategyClass = strategyMap[variationType as VariationType];
+  constructor(private readonly moduleRef: ModuleRef) {}
+
+  getStrategy(variationType: VariationTypeEnum): PriceVariationStrategy | null {
+    const StrategyClass = strategyMap[variationType];
     if (!StrategyClass) {
-      console.warn(`No strategy found for variation type: ${variationType}`);
+      this.logger.warn(`No strategy found for variation type: ${variationType}`);
       return null;
     }
 
     try {
-        return this.moduleRef.get(StrategyClass, { strict: false });
+      return this.moduleRef.get(StrategyClass, { strict: false });
     } catch (error) {
-        console.error(`Could not get instance of strategy: ${StrategyClass.name}`, error);
-        return null;
+      this.logger.error(
+        `Could not get instance of strategy: ${StrategyClass.name}`,
+        error instanceof Error ? error.stack : String(error)
+      );
+      return null;
     }
   }
 }

@@ -32,7 +32,7 @@
         "@types/node": "^22.13.14",
         "@types/passport-jwt": "^4.0.1",
         "@types/supertest": "^6.0.3",
-        "bun-types": "^1.2.7",
+        "bun-types": "^1.2.8",
         "prisma": "^6.5.0",
         "source-map-support": "^0.5.21",
         "supertest": "^7.1.0",
@@ -471,7 +471,7 @@
 
     "buffer-from": ["buffer-from@1.1.2", "", {}, "sha512-E+XQCRwSbaaiChtv6k6Dwgc+bx+Bs6vuKJHHl5kox/BaKbhiXzqQOwK4cO22yElGp2OCmjwVhT3HmxgyPGnJfQ=="],
 
-    "bun-types": ["bun-types@1.2.7", "", { "dependencies": { "@types/node": "*", "@types/ws": "*" } }, "sha512-P4hHhk7kjF99acXqKvltyuMQ2kf/rzIw3ylEDpCxDS9Xa0X0Yp/gJu/vDCucmWpiur5qJ0lwB2bWzOXa2GlHqA=="],
+    "bun-types": ["bun-types@1.2.8", "", { "dependencies": { "@types/node": "*", "@types/ws": "*" } }, "sha512-D5npfxKIGuYe9dTHLK1hi4XFmbMdKYoLrgyd25rrUyCrnyU4ljmQW7vDdonvibKeyU72mZuixIhQ2J+q6uM0Mg=="],
 
     "busboy": ["busboy@1.6.0", "", { "dependencies": { "streamsearch": "^1.1.0" } }, "sha512-8SFQbg/0hQ9xy3UNTB0YEnsNBbWfhf7RtnzpL7TkBiTBRfrQ9Fxcnz7VJsleJpyp6rVLvXiuORqjlHi5q+PYuA=="],
 

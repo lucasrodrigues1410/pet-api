@@ -2,7 +2,7 @@ import { Service } from "src/modules/service/domain/entities/service.entity";
 import { ServiceRepository } from "src/modules/service/domain/repositories/service.repository";
 
 export class InMemoryServiceRepository implements ServiceRepository {
-	private items: Service[] = [];
+	public items: Service[] = [];
 
 	findById(id: string): Promise<Service | undefined> {
 		return Promise.resolve(

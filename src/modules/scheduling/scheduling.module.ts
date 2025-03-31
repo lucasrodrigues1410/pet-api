@@ -16,4 +16,4 @@ import { PrismaAppointmentRepository } from "./infra/database/repositories/prism
 		},
 	]
 })
-export class AppointmentModule {}
+export class schedulingModule {}

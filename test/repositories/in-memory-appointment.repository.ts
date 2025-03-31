@@ -1,5 +1,5 @@
-import { Appointment } from "@/modules/appointment/domain/entities/appointment.entity";
-import { AppointmentRepository } from "@/modules/appointment/domain/repositories/appointment.repository";
+import { Appointment } from "@/modules/scheduling/domain/entities/appointment.entity";
+import { AppointmentRepository } from "@/modules/scheduling/domain/repositories/appointment.repository";
 
 export class InMemoryAppointmentRepository implements AppointmentRepository {
 	public items: Appointment[] = [];
@@ -9,16 +9,15 @@ export class InMemoryAppointmentRepository implements AppointmentRepository {
 	}
 
 	async getAppointmentsByPeriod(params: {
-		companyId: string;
+		serviceId: string;
 		startDate: Date;
 		endDate: Date;
 	}) {
-		const { companyId, startDate, endDate } = params;
+		const { serviceId, startDate, endDate } = params;
 		return this.items.filter((appointment) => {
 			return (
-				appointment.companyId === companyId &&
-				appointment.startDate >= startDate &&
-				appointment.endDate <= endDate
+				appointment.serviceId === serviceId &&
+				appointment.startDate >= startDate
 			);
 		});
 	}
