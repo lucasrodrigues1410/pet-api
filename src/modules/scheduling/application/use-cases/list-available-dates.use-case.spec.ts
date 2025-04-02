@@ -3,6 +3,7 @@ import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 import { ResourceNotFoundError } from "@/core/errors/errors/resource-not-found.error";
 import { CompanyAvailabilityException } from "@/modules/company-availability/domain/entities/company-availability-exception.entity";
 import { DaysOfWeek } from "@/modules/company-availability/domain/entities/company-availability.entity";
+import { TimeRange } from "@/modules/company-availability/domain/entities/value-objects/time-range";
 import { addDays, getDay, set } from "date-fns";
 import { makeAppointment } from "test/factories/make-appointment";
 import { makeCompanyAvailability } from "test/factories/make-company-availability";
@@ -52,11 +53,11 @@ describe("ListAvailableDatesUseCase", () => {
 
 		inMemoryCompanyAvailability.items.push(availableDate);
 
-		const result = await sut.execute(
-			companyId.toString(),
-			service.id.toString(),
-			startDate,
-		);
+		const result = await sut.execute({
+			companyId: companyId.toString(),
+			serviceId: service.id.toString(),
+			date: startDate,
+		});
 
 		expect(result.isRight()).toBeTruthy();
 		if (result.isRight()) {
@@ -72,11 +73,11 @@ describe("ListAvailableDatesUseCase", () => {
 
 		inMemoryServiceRepository.items.push(service);
 
-		const result = await sut.execute(
-			companyId.toString(),
-			service.id.toString(),
-			startDate,
-		);
+		const result = await sut.execute({
+			companyId: companyId.toString(),
+			serviceId: service.id.toString(),
+			date: startDate,
+		});
 
 		expect(result.isLeft()).toBeTruthy();
 		if (result.isLeft()) {
@@ -89,11 +90,11 @@ describe("ListAvailableDatesUseCase", () => {
 		const companyId = new UniqueEntityID();
 		const startDate = set(new Date(), { hours: 8, minutes: 0, seconds: 0 });
 
-		const result = await sut.execute(
-			companyId.toString(),
-			"non-existent-service-id",
-			startDate,
-		);
+		const result = await sut.execute({
+			companyId: companyId.toString(),
+			serviceId: "non-existent-service-id",
+			date: startDate,
+		});
 
 		expect(result.isLeft()).toBeTruthy();
 		if (result.isLeft()) {
@@ -105,8 +106,12 @@ describe("ListAvailableDatesUseCase", () => {
 	it("should return no slots when date is outside company availability", async () => {
 		const companyId = new UniqueEntityID();
 		const service = makeService({ companyId, duration: 30 });
-		const startDate = new Date();
-		const outsideDate = addDays(startDate, 1); // Fora da disponibilidade configurada
+		const startDate = set(new Date(), { hours: 8, minutes: 0, seconds: 0 });
+		const outsideDate = set(startDate, {
+			hours: 19,
+			minutes: 0,
+			seconds: 0,
+		});
 
 		inMemoryServiceRepository.items.push(service);
 		const availableDate = makeCompanyAvailability({
@@ -118,11 +123,11 @@ describe("ListAvailableDatesUseCase", () => {
 
 		inMemoryCompanyAvailability.items.push(availableDate);
 
-		const result = await sut.execute(
-			companyId.toString(),
-			service.id.toString(),
-			outsideDate,
-		);
+		const result = await sut.execute({
+			companyId: companyId.toString(),
+			serviceId: service.id.toString(),
+			date: outsideDate,
+		});
 
 		expect(result.isRight()).toBeTruthy();
 		if (result.isRight()) {
@@ -155,11 +160,11 @@ describe("ListAvailableDatesUseCase", () => {
 
 		inMemoryAppointmentRepository.items.push(appointment);
 
-		const result = await sut.execute(
-			companyId.toString(),
-			service.id.toString(),
-			startDate,
-		);
+		const result = await sut.execute({
+			companyId: companyId.toString(),
+			serviceId: service.id.toString(),
+			date: startDate,
+		});
 
 		expect(result.isRight()).toBeTruthy();
 		if (result.isRight()) {
@@ -192,11 +197,11 @@ describe("ListAvailableDatesUseCase", () => {
 
 		inMemoryCompanyAvailabilityException.items.push(exception);
 
-		const result = await sut.execute(
-			companyId.toString(),
-			service.id.toString(),
-			startDate,
-		);
+		const result = await sut.execute({
+			companyId: companyId.toString(),
+			serviceId: service.id.toString(),
+			date: startDate,
+		});
 
 		expect(result.isRight()).toBeTruthy();
 		if (result.isRight()) {
@@ -221,11 +226,11 @@ describe("ListAvailableDatesUseCase", () => {
 
 		inMemoryCompanyAvailability.items.push(availableDate);
 
-		const result = await sut.execute(
-			companyId.toString(),
-			service.id.toString(),
-			startDate,
-		);
+		const result = await sut.execute({
+			companyId: companyId.toString(),
+			serviceId: service.id.toString(),
+			date: startDate,
+		});
 
 		expect(result.isLeft()).toBeTruthy();
 	});
@@ -238,11 +243,11 @@ describe("ListAvailableDatesUseCase", () => {
 
 		inMemoryServiceRepository.items.push(service);
 
-		const result = await sut.execute(
-			companyId.toString(),
-			service.id.toString(),
-			invalidDate,
-		);
+		const result = await sut.execute({
+			companyId: companyId.toString(),
+			serviceId: service.id.toString(),
+			date: invalidDate,
+		});
 
 		expect(result.isLeft()).toBeTruthy();
 	});

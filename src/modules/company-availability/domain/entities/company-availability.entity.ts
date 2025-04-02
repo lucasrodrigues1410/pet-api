@@ -12,8 +12,10 @@ export enum DaysOfWeek {
 	SATURDAY = "SATURDAY",
 }
 
+export const daysOfWeek = Object.values(DaysOfWeek);
+
 export interface CompanyAvailabilityProps {
-	companyId: string;
+	companyId: UniqueEntityID;
 	day: keyof typeof DaysOfWeek;
 	timeRange: TimeRange;
 }

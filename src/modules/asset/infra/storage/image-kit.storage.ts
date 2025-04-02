@@ -1,4 +1,3 @@
-import { randomUUID } from "node:crypto";
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";

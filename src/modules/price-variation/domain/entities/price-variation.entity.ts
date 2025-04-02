@@ -2,7 +2,7 @@ import { Entity } from "@/core/entities/entity";
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 
 export interface PriceVariationProps {
-	serviceId: string;
+	serviceId: UniqueEntityID;
 	price: number;
 	variation: string;
 	value: string;

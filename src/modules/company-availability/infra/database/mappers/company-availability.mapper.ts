@@ -9,7 +9,7 @@ export class PrismaCompanyAvailabilityMapper {
 	static toDomain(prismaPriceVariation: PrismaCompanyAvailability) {
 		return CompanyAvailability.create(
 			{
-				companyId: prismaPriceVariation.companyId,
+				companyId: new UniqueEntityID(prismaPriceVariation.companyId),
 				day: prismaPriceVariation.day,
 				startTime: prismaPriceVariation.startTime.toString(),
 				endTime: prismaPriceVariation.endTime.toString(),
@@ -23,7 +23,7 @@ export class PrismaCompanyAvailabilityMapper {
 	): Prisma.CompanyAvailabilityUncheckedCreateInput {
 		return {
 			id: companyAvailability.id.toString(),
-			companyId: companyAvailability.companyId,
+			companyId: companyAvailability.companyId.toString(),
 			day: companyAvailability.day,
 			startTime: new Date(companyAvailability.timeRange.startTime),
 			endTime: new Date(companyAvailability.timeRange.endTime),

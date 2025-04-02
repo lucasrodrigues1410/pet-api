@@ -10,8 +10,8 @@ model User {
     
     animals     Animal[]
     appointment Appointment[] @relation("ClientAppointments")
-    payment Payment[] @relation("Payer")
     userCompany UserCompany[]
+    payments Payment[] @relation("PayerPayments")
 
     @@index([email], name: "idx_user_email")
     @@map("users")

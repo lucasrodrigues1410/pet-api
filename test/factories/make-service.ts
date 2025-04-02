@@ -20,10 +20,8 @@ export function makeService(
 				: null,
 			price: faker.number.float({ min: 10, max: 1000, fractionDigits: 2 }),
 			isActive: faker.datatype.boolean(),
-			duration: faker.datatype.boolean({ probability: 0.7 })
-				? faker.number.int({ min: 1, max: 1440 })
-				: null,
-			companyId: new UniqueEntityID().toString(),
+			duration: 10,
+			companyId: new UniqueEntityID(),
 			details: {},
 			...override,
 		},

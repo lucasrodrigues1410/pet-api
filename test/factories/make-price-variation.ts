@@ -17,7 +17,7 @@ export function makePriceVariation(
 ) {
 	const student = PriceVariation.create(
 		{
-			serviceId: new UniqueEntityID().toString(),
+			serviceId: new UniqueEntityID(),
 			price: faker.number.float({ min: 10, max: 1000, fractionDigits: 2 }),
 			variation: faker.helpers.arrayElement(variation),
 			value: faker.helpers.arrayElement(value),

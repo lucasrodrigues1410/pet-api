@@ -8,7 +8,7 @@ export class InMemoryPriceVariationRepository
 
 	getAllByServiceId(serviceId: string): Promise<PriceVariation[]> {
 		const priceVariations = this.items.filter(
-			(priceVariation) => priceVariation.serviceId === serviceId,
+			(priceVariation) => priceVariation.serviceId.toString() === serviceId,
 		);
 		return Promise.resolve(priceVariations);
 	}

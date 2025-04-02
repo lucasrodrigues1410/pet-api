@@ -25,11 +25,11 @@ export class AppointmentController {
 		@Param() { serviceId, companyId, date }: ListAvailableDatesRequestDto,
 	) {
 		const parsedDate = new Date(date);
-		const result = await this.listAvailableDatesUseCase.execute(
+		const result = await this.listAvailableDatesUseCase.execute({
 			companyId,
 			serviceId,
-			parsedDate,
-		);
+			date: parsedDate,
+		});
 
 		if (result.isLeft()) {
 			throw new NotFoundException();

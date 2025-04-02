@@ -11,15 +11,20 @@ import { format } from "date-fns";
 import { UniqueEntityID } from "src/core/entities/unique-entity-id";
 
 export function makeCompanyAvailability(
-	override: Partial<CompanyAvailability> = {},
+	override: Partial<
+		Omit<CompanyAvailability, "timeRange"> & {
+			startTime: string;
+			endTime: string;
+		}
+	> = {},
 	id?: UniqueEntityID,
 ) {
 	const companyAvailability = CompanyAvailability.create(
 		{
-			companyId: new UniqueEntityID().toString(),
+			companyId: new UniqueEntityID(),
 			day: faker.helpers.arrayElement(Object.values(DaysOfWeek)),
-			endTime: format(faker.date.soon(), "HH:mm:ss"),
-			startTime: format(faker.date.past(), "HH:mm:ss"),
+			endTime: "17:00",
+			startTime: "08:00",
 			...override,
 		},
 		id,

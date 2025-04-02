@@ -5,40 +5,40 @@ import { CompanyAvailabilityExcpetionRepository } from "@/modules/company-availa
 import { CompanyAvailabilityRepository } from "@/modules/company-availability/domain/repositories/company-availability.repository";
 import { ServiceRepository } from "@/modules/service/domain/repositories/service.repository";
 import { Injectable } from "@nestjs/common";
-import {
-	addMinutes,
-	endOfDay,
-	format,
-	getDay,
-	isBefore,
-	isWithinInterval,
-	startOfDay,
-} from "date-fns";
+import { endOfDay, format, getDay, startOfDay } from "date-fns";
 import { AvailableDate } from "../../domain/entities/available-date.entity";
-import { TimeSlot } from "../../domain/entities/time-slot.entity";
 import { AppointmentRepository } from "../../domain/repositories/appointment.repository";
+import { AvailableSlotsService } from "../services/available-slots.service";
+import { TimeSlotGeneratorService } from "../services/time-slot-generator.service";
+
+interface ListAvailableDatesUseCaseRequest {
+	companyId: string;
+	serviceId: string;
+	date: Date;
+}
 
 type ListAvailableDatesUseCaseResponse = Either<
-	ResourceNotFoundError,
-	{
-		availableDate: AvailableDate;
-	}
+	ResourceNotFoundError | Error,
+	{ availableDate: AvailableDate }
 >;
 
 @Injectable()
 export class ListAvailableDatesUseCase {
+	private timeSlotGenerator = new TimeSlotGeneratorService();
+	private availableSlotsService = new AvailableSlotsService();
+
 	constructor(
-		private appointmentRepository: AppointmentRepository,
-		private companyAvailability: CompanyAvailabilityRepository,
-		private companyAvailabilityException: CompanyAvailabilityExcpetionRepository,
-		private serviceRepository: ServiceRepository,
+		private readonly appointmentRepository: AppointmentRepository,
+		private readonly companyAvailability: CompanyAvailabilityRepository,
+		private readonly companyAvailabilityException: CompanyAvailabilityExcpetionRepository,
+		private readonly serviceRepository: ServiceRepository,
 	) {}
 
-	async execute(
-		companyId: string,
-		serviceId: string,
-		date: Date,
-	): Promise<ListAvailableDatesUseCaseResponse> {
+	async execute({
+		companyId,
+		serviceId,
+		date,
+	}: ListAvailableDatesUseCaseRequest): Promise<ListAvailableDatesUseCaseResponse> {
 		const dayOfWeek = Object.values(DaysOfWeek)[getDay(date)];
 		const startDate = startOfDay(date);
 		const endDate = endOfDay(date);
@@ -76,77 +76,41 @@ export class ListAvailableDatesUseCase {
 			return left(new Error("Service duration must be greater than 0"));
 		}
 
+		// Cria a entidade AvailableDate
 		const availableDate = AvailableDate.create({
 			date,
 			slots: [],
 		});
 
+		// Aqui podemos optar por gerar os slots mesmo se o horário do dia não estiver dentro do range,
+		// mas se necessário, você pode verificar se a data atual está dentro do range da empresa.
 		const isInRange =
 			format(date, "HH:mm") >= companyAvailability.timeRange.startTime &&
 			format(date, "HH:mm") <= companyAvailability.timeRange.endTime;
-
 		if (!isInRange) {
 			return right({ availableDate });
 		}
 
-		const timeSlots = this.generateTimeSlots(
+		// Gera os possíveis time slots para o dia
+		const timeSlots = this.timeSlotGenerator.generateTimeSlots(
 			companyAvailability.timeRange.startTime,
 			companyAvailability.timeRange.endTime,
-			service.duration ?? 0,
+			service.duration || 0,
 			date,
 		);
 
-		const availableSlots = timeSlots.filter((slot) => {
-			const slotEnd = addMinutes(slot, service.duration ?? 0);
-
-			const hasAppointment = appointments.some((appointment) =>
-				isWithinInterval(slotEnd, {
-					start: new Date(appointment.startDate),
-					end: new Date(appointment.endDate),
-				}),
-			);
-			const hasException = companyAvailabilityExceptions?.some((exception) =>
-				isWithinInterval(slotEnd, {
-					start: new Date(exception.startDate),
-					end: new Date(exception.endDate),
-				}),
-			);
-			return !hasAppointment && !hasException;
-		});
+		// Filtra os slots removendo os que possuem agendamento ou exceção
+		const availableSlots = this.availableSlotsService.filterAvailableSlots(
+			timeSlots,
+			service.duration || 0,
+			appointments,
+			companyAvailabilityExceptions ?? [],
+		);
 
 		for (const slot of availableSlots) {
-			availableDate.addSlot(
-				TimeSlot.create({
-					label: format(slot, "HH:mm"),
-				}),
-			);
+			availableDate.addSlot(slot);
 		}
 
 		return right({ availableDate });
-	}
-
-	private generateTimeSlots(
-		startTime: string,
-		endTime: string,
-		duration: number,
-		baseDate: Date,
-	): Date[] {
-		const slots: Date[] = [];
-		const [startHour, startMinute] = startTime.split(":").map(Number);
-		const [endHour, endMinute] = endTime.split(":").map(Number);
-
-		const start = new Date(baseDate);
-		start.setHours(startHour, startMinute, 0, 0);
-
-		const end = new Date(baseDate);
-		end.setHours(endHour, endMinute, 0, 0);
-
-		let currentSlot = start;
-		while (isBefore(currentSlot, end)) {
-			slots.push(new Date(currentSlot));
-			currentSlot = addMinutes(currentSlot, duration);
-		}
-
-		return slots;
 	}
 }

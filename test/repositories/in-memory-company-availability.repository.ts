@@ -11,7 +11,7 @@ export class InMemoryCompanyAvailabilityRepository
 
 	findAllByCompanyId(companyId: string) {
 		const companyAvailability = this.items.filter(
-			(availability) => availability.companyId === companyId,
+			(availability) => availability.companyId.toString() === companyId,
 		);
 
 		if (companyAvailability.length === 0) {
@@ -22,10 +22,12 @@ export class InMemoryCompanyAvailabilityRepository
 	}
 
 	async findByCompanyIdAndDayOfWeek(companyId: string, dayOfWeek: DaysOfWeek) {
-		const companyAvailability = this.items.find(
-			(availability) =>
-				companyId === availability.companyId && dayOfWeek === availability.day,
-		);
+		const companyAvailability = this.items.find((availability) => {
+			return (
+				availability.companyId.toString() === companyId &&
+				availability.day === dayOfWeek
+			);
+		});
 
 		if (!companyAvailability) {
 			return Promise.resolve(null);

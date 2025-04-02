@@ -14,7 +14,7 @@ export class PrismaPriceVariationMapper {
 				price: prismaPriceVariation.price.toNumber(),
 				value: prismaPriceVariation.value,
 				variation: prismaPriceVariation.variation,
-				serviceId: prismaPriceVariation.serviceId,
+				serviceId: new UniqueEntityID(prismaPriceVariation.serviceId),
 			},
 			new UniqueEntityID(prismaPriceVariation.id),
 		);
