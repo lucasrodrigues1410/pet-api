@@ -45,7 +45,7 @@ describe("ListAvailableDatesUseCase", () => {
 
 		inMemoryServiceRepository.items.push(service);
 		const availableDate = makeCompanyAvailability({
-			companyId: companyId.toString(),
+			companyId: companyId,
 			day: Object.values(DaysOfWeek)[getDay(startDate)],
 			startTime: "08:00",
 			endTime: "17:00",
@@ -115,7 +115,7 @@ describe("ListAvailableDatesUseCase", () => {
 
 		inMemoryServiceRepository.items.push(service);
 		const availableDate = makeCompanyAvailability({
-			companyId: companyId.toString(),
+			companyId: companyId,
 			day: Object.values(DaysOfWeek)[getDay(outsideDate)],
 			startTime: "08:00",
 			endTime: "17:00",
@@ -143,7 +143,7 @@ describe("ListAvailableDatesUseCase", () => {
 
 		inMemoryServiceRepository.items.push(service);
 		const availableDate = makeCompanyAvailability({
-			companyId: companyId.toString(),
+			companyId: companyId,
 			day: Object.values(DaysOfWeek)[getDay(startDate)],
 			startTime: "08:00",
 			endTime: "17:00",
@@ -181,7 +181,7 @@ describe("ListAvailableDatesUseCase", () => {
 
 		inMemoryServiceRepository.items.push(service);
 		const availableDate = makeCompanyAvailability({
-			companyId: companyId.toString(),
+			companyId: companyId,
 			day: Object.values(DaysOfWeek)[getDay(startDate)],
 			startTime: "08:00",
 			endTime: "17:00",
@@ -218,7 +218,7 @@ describe("ListAvailableDatesUseCase", () => {
 
 		inMemoryServiceRepository.items.push(service);
 		const availableDate = makeCompanyAvailability({
-			companyId: companyId.toString(),
+			companyId: companyId,
 			day: Object.values(DaysOfWeek)[getDay(startDate)],
 			startTime: "08:00",
 			endTime: "17:00",
