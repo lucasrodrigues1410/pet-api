@@ -38,7 +38,7 @@ export class CalculatePriceVariationUseCase {
 
 		const priceVariations =
 			await this.priceVariationRepository.getAllByServiceId(serviceId);
-			
+
 		if (!priceVariations || priceVariations.length === 0) {
 			return left(
 				new NoApplicablePriceVariationError(

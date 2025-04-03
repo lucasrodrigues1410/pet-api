@@ -1,4 +1,6 @@
 import { Public } from "@/modules/auth/infra/http/decorators/public.decorator";
+import { User } from "@/modules/auth/infra/http/decorators/user.decorator";
+import { CreateAppointmentUseCase } from "@/modules/scheduling/application/use-cases/create-appointment.use-case";
 import { ListAvailableDatesUseCase } from "@/modules/scheduling/application/use-cases/list-available-dates.use-case";
 import {
 	BadRequestException,
@@ -10,11 +12,9 @@ import {
 	Post,
 } from "@nestjs/common";
 import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { CreateAppointmentRequestDto } from "../dtos/create-appointment.dto";
 import { ListAvailableDatesRequestDto } from "../dtos/list-available-dates.request.dto";
 import { ListAvailableDatesResponseDto } from "../dtos/list-available-dates.response.dto";
-import { CreateAppointmentUseCase } from "@/modules/scheduling/application/use-cases/create-appointment.use-case";
-import { User } from "@/modules/auth/infra/http/decorators/user.decorator";
-import { CreateAppointmentRequestDto } from "../dtos/create-appointment.dto";
 
 @ApiTags("Agendamentos")
 @Controller("appointments")

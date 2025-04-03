@@ -29,19 +29,18 @@ export class CreateCheckoutSessionUseCase {
 	async execute(
 		param: CreateCheckoutSessionUseCaseRequest,
 	): Promise<CreateCheckoutSessionUseCaseResponse> {
-		const checkoutSession =
-			await this.paymentGatewayRepository.createIntent({
-				successUrl: param.successUrl,
-				cancelUrl: param.cancelUrl,
-				items: [
-					{
-						name: param.item.name,
-						amount: param.item.amount,
-						quantity: 1,
-					},
-				],
-				metadata: param.metadata,
-			});
+		const checkoutSession = await this.paymentGatewayRepository.createIntent({
+			successUrl: param.successUrl,
+			cancelUrl: param.cancelUrl,
+			items: [
+				{
+					name: param.item.name,
+					amount: param.item.amount,
+					quantity: 1,
+				},
+			],
+			metadata: param.metadata,
+		});
 
 		if (checkoutSession.isLeft()) {
 			return left(checkoutSession.value);

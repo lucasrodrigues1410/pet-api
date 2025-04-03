@@ -1,6 +1,6 @@
+import { UnitOfWork } from "@/core/contracts/unit-of-work.interface";
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "./prisma.service";
-import { UnitOfWork } from "@/core/contracts/unit-of-work.interface";
 
 @Injectable()
 export class PrismaUnitOfWork implements UnitOfWork {

@@ -5,7 +5,7 @@ export async function createUser(prisma: PrismaClient) {
 		where: { id: "user-1" },
 		update: {},
 		create: {
-            id: "user-1",
+			id: "user-1",
 			email: "vitor@gmail.com",
 			password: await Bun.password.hash("123456"),
 			name: "Vitor",
@@ -22,6 +22,6 @@ export async function createUser(prisma: PrismaClient) {
 			password: await Bun.password.hash("123456"),
 			name: "Vitor Empresa",
 			type: "COMPANY",
-		}
-	})
+		},
+	});
 }

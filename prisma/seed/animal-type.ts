@@ -5,7 +5,7 @@ export async function createAnimalType(prisma: PrismaClient) {
 		where: { id: "animal-type-1" },
 		update: {},
 		create: {
-            id: "animal-type-1",
+			id: "animal-type-1",
 			name: "Dog",
 		},
 	});

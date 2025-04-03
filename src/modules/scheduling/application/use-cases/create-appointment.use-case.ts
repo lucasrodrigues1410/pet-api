@@ -1,17 +1,17 @@
 import { Either, left, right } from "@/core/either";
+import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 import { ResourceNotFoundError } from "@/core/errors/errors/resource-not-found.error";
+import { PaymentProcessorService } from "@/modules/payment/application/services/payment-processor.service";
+import { CheckoutSessionCreationError } from "@/modules/payment/domain/errors/checkout-session-creation-error";
 import { CalculatePriceVariationUseCase } from "@/modules/price-variation/application/use-cases/calculate-price-variation.use-case";
+import { NoApplicablePriceVariationError } from "@/modules/price-variation/domain/errors/no-applicable-price-variation.error";
 import { ServiceRepository } from "@/modules/service/domain/repositories/service.repository";
 import { Injectable } from "@nestjs/common";
+import { addMinutes } from "date-fns";
 import { Appointment } from "../../domain/entities/appointment.entity";
 import { AppointmentRepository } from "../../domain/repositories/appointment.repository";
-import { AppointmentAvailabilityService } from "../services/appointment-availability.service";
 import { TimeSlotUnavailableError } from "../errors/time-slot-unavailable.error";
-import { NoApplicablePriceVariationError } from "@/modules/price-variation/domain/errors/no-applicable-price-variation.error";
-import { CheckoutSessionCreationError } from "@/modules/payment/domain/errors/checkout-session-creation-error";
-import { addMinutes } from "date-fns";
-import { PaymentProcessorService } from "@/modules/payment/application/services/payment-processor.service";
-import { UniqueEntityID } from "@/core/entities/unique-entity-id";
+import { AppointmentAvailabilityService } from "../services/appointment-availability.service";
 
 interface CreateAppointmentUseCaseRequest {
 	serviceId: string;

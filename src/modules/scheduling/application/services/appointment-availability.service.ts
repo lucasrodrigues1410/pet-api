@@ -45,7 +45,7 @@ export class AppointmentAvailabilityService {
 				endDate,
 			}),
 		]);
-		
+
 		if (!companyAvailability || exceptions?.length || appointments?.length) {
 			return { isAvailable: false };
 		}
