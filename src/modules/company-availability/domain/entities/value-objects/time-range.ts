@@ -8,7 +8,6 @@ interface TimeRangeProps {
 export class TimeRange extends ValueObject<TimeRangeProps> {
 	constructor(props: TimeRangeProps) {
 		const { startTime, endTime } = props;
-
 		const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
 		if (!timeRegex.test(startTime) || !timeRegex.test(endTime)) {
 			throw new Error("Formato de hora inválido. Use HH:mm.");

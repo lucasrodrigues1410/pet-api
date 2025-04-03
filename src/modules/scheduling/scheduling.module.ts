@@ -7,6 +7,8 @@ import { ListAvailableDatesUseCase } from "./application/use-cases/list-availabl
 import { AppointmentRepository } from "./domain/repositories/appointment.repository";
 import { PrismaAppointmentRepository } from "./infra/database/repositories/prisma-appointment.repository";
 import { AppointmentController } from "./infra/http/controllers/appointment.controller";
+import { CreateAppointmentUseCase } from "./application/use-cases/create-appointment.use-case";
+import { AppointmentAvailabilityService } from "./application/services/appointment-availability.service";
 
 @Module({
 	imports: [
@@ -18,6 +20,8 @@ import { AppointmentController } from "./infra/http/controllers/appointment.cont
 	controllers: [AppointmentController],
 	providers: [
 		ListAvailableDatesUseCase,
+		CreateAppointmentUseCase,
+		AppointmentAvailabilityService,
 		{
 			provide: AppointmentRepository,
 			useClass: PrismaAppointmentRepository,

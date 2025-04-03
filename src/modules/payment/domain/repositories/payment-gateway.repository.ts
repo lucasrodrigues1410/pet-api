@@ -2,20 +2,20 @@ import { Either } from "@/core/either";
 import { CheckoutSessionCreationError } from "../errors/checkout-session-creation-error";
 
 export abstract class PaymentGatewayRepository {
-	abstract createCheckoutSession(param: {
+	abstract createIntent(param: {
 		successUrl: string;
-		cancelUrl: string;
 		items: Array<{
 			name: string;
 			amount: number;
 			quantity: number;
+			description?: string;
+			images?: string[];
 		}>;
 		metadata?: Record<string, string>;
 	}): Promise<
 		Either<
 			CheckoutSessionCreationError,
 			{
-				intentId: string;
 				url: string;
 			}
 		>

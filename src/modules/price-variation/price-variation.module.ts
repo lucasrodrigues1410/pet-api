@@ -4,16 +4,21 @@ import { PriceStrategyProvider } from "./application/providers/price-strategy.pr
 import { CalculatePriceVariationUseCase } from "./application/use-cases/calculate-price-variation.use-case";
 import { PriceVariationRepository } from "./domain/repositories/price-variation.repository";
 import { PrismaPriceVariationRepository } from "./infra/database/repositories/prisma-price-variation.repository";
+import { SizeBasedStrategy } from "./domain/strategies/size-based.strategy";
 
 @Module({
 	imports: [AnimalModule],
 	providers: [
 		CalculatePriceVariationUseCase,
 		PriceStrategyProvider,
+		SizeBasedStrategy,
 		{
 			provide: PriceVariationRepository,
 			useClass: PrismaPriceVariationRepository,
 		},
 	],
+	exports: [
+		CalculatePriceVariationUseCase,
+	]
 })
 export class PriceVariationModule {}

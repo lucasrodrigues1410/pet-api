@@ -4,10 +4,12 @@ import { PaymentGatewayRepository } from "./domain/repositories/payment-gateway.
 import { PaymentRepository } from "./domain/repositories/payment.repository";
 import { PrismaPaymentRepository } from "./infra/database/repositories/prisma-payment.repository";
 import { StripePaymentGateway } from "./infra/gateways/stripe.gateway";
+import { PaymentProcessorService } from "./application/services/payment-processor.service";
 
 @Module({
 	providers: [
 		CreateCheckoutSessionUseCase,
+		PaymentProcessorService,
 		{
 			provide: PaymentRepository,
 			useClass: PrismaPaymentRepository,
@@ -15,6 +17,14 @@ import { StripePaymentGateway } from "./infra/gateways/stripe.gateway";
 		{
 			provide: PaymentGatewayRepository,
 			useClass: StripePaymentGateway,
+		},
+	],
+	exports: [
+		CreateCheckoutSessionUseCase,
+		PaymentProcessorService,
+		{
+			provide: PaymentRepository,
+			useClass: PrismaPaymentRepository,
 		},
 	],
 })

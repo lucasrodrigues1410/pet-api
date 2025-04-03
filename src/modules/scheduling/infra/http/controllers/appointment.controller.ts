@@ -1,15 +1,27 @@
 import { Public } from "@/modules/auth/infra/http/decorators/public.decorator";
 import { ListAvailableDatesUseCase } from "@/modules/scheduling/application/use-cases/list-available-dates.use-case";
-import { Controller, Get, NotFoundException, Param } from "@nestjs/common";
+import {
+	BadRequestException,
+	Body,
+	Controller,
+	Get,
+	NotFoundException,
+	Param,
+	Post,
+} from "@nestjs/common";
 import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { ListAvailableDatesRequestDto } from "../dtos/list-available-dates.request.dto";
 import { ListAvailableDatesResponseDto } from "../dtos/list-available-dates.response.dto";
+import { CreateAppointmentUseCase } from "@/modules/scheduling/application/use-cases/create-appointment.use-case";
+import { User } from "@/modules/auth/infra/http/decorators/user.decorator";
+import { CreateAppointmentRequestDto } from "../dtos/create-appointment.dto";
 
 @ApiTags("Agendamentos")
 @Controller("appointments")
 export class AppointmentController {
 	constructor(
 		private readonly listAvailableDatesUseCase: ListAvailableDatesUseCase,
+		private readonly createAppointmentUseCase: CreateAppointmentUseCase,
 	) {}
 
 	@ApiOperation({
@@ -36,5 +48,32 @@ export class AppointmentController {
 		}
 
 		return result.value.availableDate;
+	}
+
+	@Post("create")
+	@ApiOperation({
+		summary: "Cria um novo agendamento",
+	})
+	@ApiOkResponse({
+		description: "Retorna o agendamento criado",
+	})
+	async createAppointment(
+		@User("sub") userId: string,
+		@Body() params: CreateAppointmentRequestDto,
+	) {
+		const response = await this.createAppointmentUseCase.execute({
+			...params,
+			userId,
+			date: new Date(params.date),
+		});
+
+		if (response.isLeft()) {
+			if (response.value instanceof NotFoundException) {
+				throw new NotFoundException();
+			}
+			throw new BadRequestException("Error creating appointment");
+		}
+
+		return response.value;
 	}
 }

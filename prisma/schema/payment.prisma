@@ -7,7 +7,7 @@ model Payment {
     payerId                String        @map("payer_id")
 
     payer                  User?                    @relation("PayerPayments", fields: [payerId], references: [id], onDelete: Cascade)
-    appointmentTransaction AppointmentTransaction[]
+    appointment Appointment[]
 
     createdAt DateTime  @default(now()) @map("created_at")
     updatedAt DateTime  @updatedAt @map("updated_at")

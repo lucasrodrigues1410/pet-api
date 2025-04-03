@@ -6,6 +6,7 @@ export interface AppointmentProps {
 	clientId: string;
 	companyId: string;
 	serviceId: string;
+	paymentId: UniqueEntityID;
 	startDate: Date;
 	endDate: Date;
 	status?: AppointmentStatus;
@@ -48,6 +49,9 @@ export class Appointment extends Entity<AppointmentProps> {
 	}
 	get endDate() {
 		return this.props.endDate;
+	}
+	get paymentId() {
+		return this.props.paymentId;
 	}
 
 	public static create(

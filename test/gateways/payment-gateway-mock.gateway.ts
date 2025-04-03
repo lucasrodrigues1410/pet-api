@@ -3,7 +3,7 @@ import { CheckoutSessionCreationError } from "@/modules/payment/domain/errors/ch
 import { PaymentGatewayRepository } from "@/modules/payment/domain/repositories/payment-gateway.repository";
 
 type CreateCheckoutSessionParams = Parameters<
-	PaymentGatewayRepository["createCheckoutSession"]
+	PaymentGatewayRepository["createIntent"]
 >[0];
 type CreateCheckoutSessionSuccess = { intentId: string; url: string };
 type CreateCheckoutSessionResult = Either<
@@ -14,7 +14,7 @@ type CreateCheckoutSessionResult = Either<
 export class PaymentGatewayMock implements PaymentGatewayRepository {
 	public lastCallParams?: CreateCheckoutSessionParams;
 
-	async createCheckoutSession(
+	async createIntent(
 		params: CreateCheckoutSessionParams,
 	): Promise<CreateCheckoutSessionResult> {
 		this.lastCallParams = params;

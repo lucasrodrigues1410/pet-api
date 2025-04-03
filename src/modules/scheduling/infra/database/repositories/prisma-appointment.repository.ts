@@ -8,16 +8,10 @@ import { PrismaAppointementMapper } from "../mapper/prisma-appointment.mapper";
 export class PrismaAppointmentRepository implements AppointmentRepository {
 	constructor(private prismaService: PrismaService) {}
 
-	async create(appointment: Appointment, paymentId: string) {
+	async create(appointment: Appointment) {
 		const persistence = PrismaAppointementMapper.toPrisma(appointment);
 		await this.prismaService.appointment.create({
 			data: persistence,
-		});
-		await this.prismaService.appointmentTransaction.create({
-			data: {
-				appointmentId: appointment.id.toString(),
-				paymentId,
-			},
 		});
 	}
 

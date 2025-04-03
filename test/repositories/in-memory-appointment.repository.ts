@@ -1,4 +1,5 @@
 import { Appointment } from "@/modules/scheduling/domain/entities/appointment.entity";
+import { AppointmentPaymentRepository } from "@/modules/scheduling/domain/repositories/appointment-payment.repository";
 import { AppointmentRepository } from "@/modules/scheduling/domain/repositories/appointment.repository";
 
 export class InMemoryAppointmentRepository implements AppointmentRepository {
@@ -20,5 +21,18 @@ export class InMemoryAppointmentRepository implements AppointmentRepository {
 				appointment.startDate >= startDate
 			);
 		});
+	}
+}
+
+export class InMemoryAppointmentPaymentRepository
+	implements AppointmentPaymentRepository
+{
+	public items: any[] = [];
+
+	async create(params: {
+		appointmentId: string;
+		paymentId: string;
+	}) {
+		this.items.push(params);
 	}
 }

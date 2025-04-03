@@ -7,6 +7,7 @@ export class PrismaAppointementMapper {
 		return Appointment.create(
 			{
 				animalId: prismaAppointment.animalId,
+				paymentId: new UniqueEntityID(prismaAppointment.paymentId),
 				clientId: prismaAppointment.clientId,
 				companyId: prismaAppointment.companyId,
 				startDate: prismaAppointment.startDate,
@@ -28,6 +29,7 @@ export class PrismaAppointementMapper {
 		return {
 			animalId: appointment.animalId,
 			clientId: appointment.clientId,
+			paymentId: appointment.paymentId.toString(),
 			companyId: appointment.companyId,
 			serviceId: appointment.serviceId,
 			startDate: appointment.startDate,

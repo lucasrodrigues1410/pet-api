@@ -18,7 +18,7 @@ model Company {
 }
 
 model UserCompany {
-    id        Int    @id @default(autoincrement())
+    id        String    @id @default(cuid())
     userId    String
     companyId String
     role      Role

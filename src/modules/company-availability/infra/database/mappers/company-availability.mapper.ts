@@ -3,6 +3,7 @@ import {
 	Prisma,
 	CompanyAvailability as PrismaCompanyAvailability,
 } from "@prisma/client";
+import { format } from "date-fns";
 import { UniqueEntityID } from "src/core/entities/unique-entity-id";
 
 export class PrismaCompanyAvailabilityMapper {
@@ -11,8 +12,8 @@ export class PrismaCompanyAvailabilityMapper {
 			{
 				companyId: new UniqueEntityID(prismaPriceVariation.companyId),
 				day: prismaPriceVariation.day,
-				startTime: prismaPriceVariation.startTime.toString(),
-				endTime: prismaPriceVariation.endTime.toString(),
+				startTime: format(prismaPriceVariation.startTime, "HH:mm"),
+				endTime: format(prismaPriceVariation.endTime, "HH:mm"),
 			},
 			new UniqueEntityID(prismaPriceVariation.id),
 		);

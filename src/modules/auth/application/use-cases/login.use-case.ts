@@ -45,7 +45,7 @@ export class LoginUseCase {
 		}
 
 		const accessToken = await this.encrypter.encrypt({
-			sub: user.id,
+			sub: user.id.toString(),
 			name: user.name,
 			email: user.email,
 			type: user.type,

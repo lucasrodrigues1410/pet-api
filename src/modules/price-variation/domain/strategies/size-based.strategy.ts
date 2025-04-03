@@ -1,8 +1,10 @@
+import { Injectable } from "@nestjs/common";
 import {
 	PriceVariationInput,
 	PriceVariationStrategy,
 } from "./price-variation.strategy";
 
+@Injectable()
 export class SizeBasedStrategy implements PriceVariationStrategy {
 	calculate({ animal, variationData }: PriceVariationInput): number | null {
 		const animalWeight = animal.weight;

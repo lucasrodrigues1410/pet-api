@@ -13,7 +13,7 @@ import { makeUser } from "test/factories/make-user";
 import { PaymentGatewayMock } from "test/gateways/payment-gateway-mock.gateway";
 import { MockPriceStrategyProvider } from "test/providers/price-strategy.provider";
 import { InMemoryAnimalRepository } from "test/repositories/in-memory-animal.repository";
-import { InMemoryAppointmentRepository } from "test/repositories/in-memory-appointment.repository";
+import { InMemoryAppointmentPaymentRepository, InMemoryAppointmentRepository } from "test/repositories/in-memory-appointment.repository";
 import { InMemoryCompanyAvailabilityExceptionRepository } from "test/repositories/in-memory-company-availability-exception.repository";
 import { InMemoryCompanyAvailabilityRepository } from "test/repositories/in-memory-company-availability.repository";
 import { InMemoryPaymentRepository } from "test/repositories/in-memory-payment.repository";
@@ -21,6 +21,7 @@ import { InMemoryPriceVariationRepository } from "test/repositories/in-memory-pr
 import { InMemoryServiceRepository } from "test/repositories/in-memory-service.repository";
 import { AppointmentAvailabilityService } from "../services/appointment-availability.service";
 import { CreateAppointmentUseCase } from "./create-appointment.use-case";
+import { MockUnitOfWork } from "test/mocks/mock-unit-of-work";
 
 // Declaração das variáveis já fornecidas
 let inMemoryAppointmentRepository: InMemoryAppointmentRepository;
@@ -31,7 +32,9 @@ let inMemoryAnimalRepository: InMemoryAnimalRepository;
 let inMemoryPriceVariationRepository: InMemoryPriceVariationRepository;
 let strategyProvider: MockPriceStrategyProvider;
 let inMemoryPaymentRepository: InMemoryPaymentRepository;
+let inMemoryAppointmentPaymentRepository: InMemoryAppointmentPaymentRepository;
 let mockPaymentGateway: PaymentGatewayRepository;
+let mockUnitOfWork: MockUnitOfWork
 
 let appointmentAvailabilityService: AppointmentAvailabilityService;
 let createCheckoutSession: CreateCheckoutSessionUseCase;
@@ -53,6 +56,9 @@ describe("CreateAppointmentUseCase", () => {
 		strategyProvider = new MockPriceStrategyProvider();
 		inMemoryPaymentRepository = new InMemoryPaymentRepository();
 		mockPaymentGateway = new PaymentGatewayMock();
+		mockUnitOfWork = new MockUnitOfWork();
+		inMemoryAppointmentPaymentRepository =
+			new InMemoryAppointmentPaymentRepository();
 
 		appointmentAvailabilityService = new AppointmentAvailabilityService(
 			inMemoryAppointmentRepository,
@@ -67,16 +73,18 @@ describe("CreateAppointmentUseCase", () => {
 		);
 
 		createCheckoutSession = new CreateCheckoutSessionUseCase(
-			inMemoryPaymentRepository,
 			mockPaymentGateway,
 		);
 
 		sut = new CreateAppointmentUseCase(
+			mockUnitOfWork,
 			appointmentAvailabilityService,
 			inMemoryServiceRepository,
 			createCheckoutSession,
 			calculatePriceVariation,
 			inMemoryAppointmentRepository,
+			inMemoryPaymentRepository,
+			inMemoryAppointmentPaymentRepository,
 		);
 	});
 
