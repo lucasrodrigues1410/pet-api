@@ -1,9 +1,11 @@
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { APP_GUARD, APP_PIPE } from "@nestjs/core";
+import { EventEmitterModule } from "@nestjs/event-emitter";
 import { ZodValidationPipe } from "nestjs-zod";
 import { PrismaModule } from "./core/infra/prisma/prisma.module";
 import { AnimalModule } from "./modules/animal/animal.module";
+import { AppointmentModule } from "./modules/appointment/appointment.module";
 import { AssetModule } from "./modules/asset/asset.module";
 import { AuthModule } from "./modules/auth/auth.module";
 import { JwtGuard } from "./modules/auth/infra/http/guards/jwt.guard";
@@ -12,11 +14,9 @@ import { BreedModule } from "./modules/breed/breed.module";
 import { CompanyModule } from "./modules/company/company.module";
 import { PaymentModule } from "./modules/payment/payment.module";
 import { PriceVariationModule } from "./modules/price-variation/price-variation.module";
-import { AppointmentModule } from "./modules/appointment/appointment.module";
+import { SchedulingPaymentOrchestratorModule } from "./modules/scheduling-payment-orchestrator/scheduling-payment-orchestrator.module";
 import { ServiceModule } from "./modules/service/service.module";
 import { UserModule } from "./modules/user/user.module";
-import { SchedulingPaymentOrchestratorModule } from "./modules/scheduling-payment-orchestrator/scheduling-payment-orchestrator.module";
-import { EventEmitterModule } from "@nestjs/event-emitter";
 
 @Module({
 	imports: [
@@ -33,7 +33,7 @@ import { EventEmitterModule } from "@nestjs/event-emitter";
 		PriceVariationModule,
 		PaymentModule,
 		AppointmentModule,
-		SchedulingPaymentOrchestratorModule
+		SchedulingPaymentOrchestratorModule,
 	],
 	providers: [
 		{

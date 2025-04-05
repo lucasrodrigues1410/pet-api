@@ -1,5 +1,5 @@
-import { Public } from "@/modules/auth/infra/http/decorators/public.decorator";
 import { ListAvailableDatesUseCase } from "@/modules/appointment/application/use-cases/list-available-dates.use-case";
+import { Public } from "@/modules/auth/infra/http/decorators/public.decorator";
 import { Controller, Get, NotFoundException, Param } from "@nestjs/common";
 import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import {

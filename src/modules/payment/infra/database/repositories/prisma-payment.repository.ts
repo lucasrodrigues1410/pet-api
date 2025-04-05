@@ -1,5 +1,8 @@
 import { PrismaService } from "@/core/infra/prisma/prisma.service";
-import { Payment, PaymentProps } from "@/modules/payment/domain/entities/payment.entity";
+import {
+	Payment,
+	PaymentProps,
+} from "@/modules/payment/domain/entities/payment.entity";
 import { PaymentRepository } from "@/modules/payment/domain/repositories/payment.repository";
 import { Injectable } from "@nestjs/common";
 import { PrismaPaymentMapper } from "../mappers/prisma-payment.mapper";

@@ -1,19 +1,19 @@
+import { Public } from "@/modules/auth/infra/http/decorators/public.decorator";
+import { PaymentWebhookReceivedEvent } from "@/modules/payment/application/events/payment-webhook-received.event";
 import { InvalidWebhookSignatureError } from "@/modules/payment/domain/errors/invalid-webhook-signature.error";
 import { PaymentGateway } from "@/modules/payment/domain/repositories/payment-gateway.repository";
 import {
 	Controller,
-	Post,
 	Headers,
-	Req,
 	HttpException,
 	HttpStatus,
 	Logger,
+	Post,
 	RawBodyRequest,
+	Req,
 } from "@nestjs/common";
-import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { EventEmitter2 } from "@nestjs/event-emitter";
-import { PaymentWebhookReceivedEvent } from "@/modules/payment/application/events/payment-webhook-received.event";
-import { Public } from "@/modules/auth/infra/http/decorators/public.decorator";
+import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { Request } from "express";
 
 @ApiTags("Pagamentos - Webhook")

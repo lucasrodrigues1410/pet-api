@@ -6,11 +6,11 @@ import { CompanyAvailabilityRepository } from "@/modules/company-availability/do
 import { ServiceRepository } from "@/modules/service/domain/repositories/service.repository";
 import { Injectable } from "@nestjs/common";
 import { endOfDay, format, getDay, startOfDay } from "date-fns";
+import { TimeSlot } from "../../domain/entities/time-slot.entity";
+import { AppointmentIntentRepository } from "../../domain/repositories/appointment-intent.repository";
 import { AppointmentRepository } from "../../domain/repositories/appointment.repository";
 import { AvailableSlotsService } from "../services/available-slots.service";
 import { TimeSlotGeneratorService } from "../services/time-slot-generator.service";
-import { AppointmentIntentRepository } from "../../domain/repositories/appointment-intent.repository";
-import { TimeSlot } from "../../domain/entities/time-slot.entity";
 
 interface ListAvailableDatesUseCaseRequest {
 	companyId: string;

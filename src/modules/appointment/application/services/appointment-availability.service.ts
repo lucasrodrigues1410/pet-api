@@ -11,8 +11,8 @@ import {
 	setMinutes,
 	startOfDay,
 } from "date-fns";
-import { AppointmentRepository } from "../../domain/repositories/appointment.repository";
 import { AppointmentIntentRepository } from "../../domain/repositories/appointment-intent.repository";
+import { AppointmentRepository } from "../../domain/repositories/appointment.repository";
 
 @Injectable()
 export class AppointmentAvailabilityService {

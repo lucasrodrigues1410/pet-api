@@ -1,6 +1,6 @@
+import { PaymentWebhookReceivedEvent } from "@/modules/payment/application/events/payment-webhook-received.event"; // Importa a definição do evento
 import { Injectable, Logger } from "@nestjs/common";
 import { OnEvent } from "@nestjs/event-emitter";
-import { PaymentWebhookReceivedEvent } from "@/modules/payment/application/events/payment-webhook-received.event"; // Importa a definição do evento
 import { ConfirmPaymentAndSchedulingUseCase } from "../use-cases/confirm-payment-and-scheduling.use-case";
 
 @Injectable()

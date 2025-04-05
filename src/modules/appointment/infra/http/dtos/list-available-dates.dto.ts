@@ -15,11 +15,9 @@ const listAvailableDatesResponse = z.object({
 	),
 });
 
-
 export class ListAvailableDatesRequestDto extends createZodCustomDto(
 	listAvailableDatesRequest,
 ) {}
-
 
 export class ListAvailableDatesResponseDto extends createZodCustomDto(
 	listAvailableDatesResponse,

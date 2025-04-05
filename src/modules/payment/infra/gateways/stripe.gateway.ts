@@ -3,12 +3,12 @@ import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import Stripe from "stripe";
 import { CheckoutSessionCreationError } from "../../domain/errors/checkout-session-creation-error";
+import { InvalidWebhookSignatureError } from "../../domain/errors/invalid-webhook-signature.error";
 import {
 	PaymentGateway,
 	ValidatedWebhookPayload,
 	VerifyWebhookResult,
 } from "../../domain/repositories/payment-gateway.repository";
-import { InvalidWebhookSignatureError } from "../../domain/errors/invalid-webhook-signature.error";
 
 type CreateSessionParams = Parameters<PaymentGateway["createCheckoutUrl"]>[0];
 type CreateSessionResponse = ReturnType<PaymentGateway["createCheckoutUrl"]>;

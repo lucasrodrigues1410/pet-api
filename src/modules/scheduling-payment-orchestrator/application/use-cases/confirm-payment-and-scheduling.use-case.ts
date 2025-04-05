@@ -1,9 +1,9 @@
-import { Injectable } from "@nestjs/common";
-import { AppointmentRepository } from "@/modules/appointment/domain/repositories/appointment.repository";
-import { AppointmentIntentRepository } from "@/modules/appointment/domain/repositories/appointment-intent.repository";
 import { Appointment } from "@/modules/appointment/domain/entities/appointment.entity";
-import { PaymentRepository } from "@/modules/payment/domain/repositories/payment.repository";
+import { AppointmentIntentRepository } from "@/modules/appointment/domain/repositories/appointment-intent.repository";
+import { AppointmentRepository } from "@/modules/appointment/domain/repositories/appointment.repository";
 import { Payment } from "@/modules/payment/domain/entities/payment.entity";
+import { PaymentRepository } from "@/modules/payment/domain/repositories/payment.repository";
+import { Injectable } from "@nestjs/common";
 
 type ConfirmPaymentAndSchedulingUseCaseRequest = {
 	scheduleData: {

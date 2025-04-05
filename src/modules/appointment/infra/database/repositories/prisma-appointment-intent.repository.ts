@@ -1,7 +1,7 @@
 import { PrismaService } from "@/core/infra/prisma/prisma.service";
-import { Injectable } from "@nestjs/common";
-import { AppointmentIntentRepository } from "@/modules/appointment/domain/repositories/appointment-intent.repository";
 import { AppointmentIntent } from "@/modules/appointment/domain/entities/appointment-intent.entity";
+import { AppointmentIntentRepository } from "@/modules/appointment/domain/repositories/appointment-intent.repository";
+import { Injectable } from "@nestjs/common";
 import { PrismaAppointmentIntentMapper } from "../mapper/prisma-appointment-intent.mapper";
 
 @Injectable()
