@@ -86,7 +86,7 @@ export class InitiateAppointmentCreationUseCase {
 
 		// Cria a intenção de agendamento
 		await this.appointmentIntentRepository.create(appointmentIntent);
-
+		
 		// Cria a sessão de checkout
 		const checkout = await this.paymentService.createCheckoutSession({
 			items: [

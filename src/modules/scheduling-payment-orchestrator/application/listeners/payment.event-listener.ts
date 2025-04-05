@@ -17,45 +17,30 @@ export class PaymentEventListener {
 			`Received event: ${PaymentWebhookReceivedEvent.EVENT_NAME} for payment ${event.gatewayPaymentId}, type: ${event.webhookEventType}`,
 		);
 
-		switch (event.webhookEventType) {
-			case "payment_intent.succeeded":
-				if (!event.appointmentIntentId) {
-					this.logger.warn(
-						`Cannot process scheduling confirmation for payment ${event.gatewayPaymentId}: Missing appointmentIntentId.`,
-					);
-					return;
-				}
-
-				try {
-					this.logger.log(
-						`Executing ConfirmPaymentAndSchedulingUseCase for payment ${event.gatewayPaymentId}`,
-					);
-					await this.confirmPaymentAndSchedulingUseCase.execute({
-						scheduleData: {
-							appointmentIntentId: event.appointmentIntentId,
-						},
-					});
-					this.logger.log(
-						`Successfully processed scheduling confirmation for payment ${event.gatewayPaymentId}`,
-					);
-				} catch (error) {
-					this.logger.error(
-						`Error processing event for payment ${event.gatewayPaymentId}: ${error.message}`,
-						error.stack,
-					);
-					// TODO: Implementar estratégias de retry ou notificação de falha se necessário
-				}
-				break;
-
-			case "payment_intent.payment_failed":
+		if (
+			event.webhookEventType === "checkout.session.completed" &&
+			"appointmentIntentId" in event.metadata &&
+			String(event.metadata.appointmentIntentId).length > 0
+		) {
+			try {
 				this.logger.log(
-					`Payment failed for intent associated with payment ${event.gatewayPaymentId}.`,
+					`Executing ConfirmPaymentAndSchedulingUseCase for payment ${event.gatewayPaymentId}`,
 				);
-				break;
-			default:
+				await this.confirmPaymentAndSchedulingUseCase.execute({
+					scheduleData: {
+						appointmentIntentId: event.metadata.appointmentIntentId,
+					},
+				});
 				this.logger.log(
-					`Ignoring unhandled webhook event type: ${event.webhookEventType}`,
+					`Successfully processed scheduling confirmation for payment ${event.gatewayPaymentId}`,
 				);
+			} catch (error) {
+				this.logger.error(
+					`Error processing event for payment ${event.gatewayPaymentId}: ${(error as Error).message}`,
+					(error as Error).stack,
+				);
+				// TODO: Implementar estratégias de retry ou notificação de falha se necessário
+			}
 		}
 	}
 }

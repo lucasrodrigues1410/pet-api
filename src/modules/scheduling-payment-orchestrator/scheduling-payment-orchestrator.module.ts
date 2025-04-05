@@ -6,6 +6,7 @@ import { ConfirmPaymentAndSchedulingUseCase } from "./application/use-cases/conf
 import { SchedulingPaymentOrchestratorController } from "./infra/http/controllers/scheduling-payment-orchestrator.controller";
 import { ServiceModule } from "../service/service.module";
 import { PriceVariationModule } from "../price-variation/price-variation.module";
+import { PaymentEventListener } from "./application/listeners/payment.event-listener";
 
 @Module({
 	imports: [
@@ -16,6 +17,7 @@ import { PriceVariationModule } from "../price-variation/price-variation.module"
 	],
 	controllers: [SchedulingPaymentOrchestratorController],
 	providers: [
+		PaymentEventListener,
 		InitiateAppointmentCreationUseCase,
 		ConfirmPaymentAndSchedulingUseCase,
 	],

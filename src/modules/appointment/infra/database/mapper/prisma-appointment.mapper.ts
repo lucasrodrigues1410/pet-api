@@ -23,6 +23,7 @@ export class PrismaAppointmentMapper {
 		appointment: Appointment,
 	): Prisma.AppointmentUncheckedCreateInput {
 		return {
+			id: appointment.id.toString(),
 			animalId: appointment.animalId.toString(),
 			clientId: appointment.clientId.toString(),
 			paymentId: appointment.paymentId.toString(),

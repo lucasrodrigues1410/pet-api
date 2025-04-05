@@ -29,6 +29,7 @@ export class PrismaAppointmentIntentMapper {
 		appointment: AppointmentIntent,
 	): Prisma.AppointmentIntentUncheckedCreateInput {
 		return {
+			id: appointment.id.toString(),
 			animalId: appointment.animalId.toString(),
 			clientId: appointment.clientId.toString(),
 			serviceId: appointment.serviceId.toString(),

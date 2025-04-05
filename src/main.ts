@@ -2,13 +2,13 @@ import { NestFactory } from "@nestjs/core";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { patchNestJsSwagger } from "nestjs-zod";
 import { AppModule } from "./app.module";
+import { NestExpressApplication } from "@nestjs/platform-express";
 
 patchNestJsSwagger();
 
 async function bootstrap() {
-	const app = await NestFactory.create(AppModule, {
+	const app = await NestFactory.create<NestExpressApplication>(AppModule, {
 		rawBody: true,
-		bodyParser: true,
 	});
 
 	const config = new DocumentBuilder()
@@ -18,11 +18,12 @@ async function bootstrap() {
 		)
 		.setVersion("1.0")
 		.build();
+	
 	const documentFactory = () => SwaggerModule.createDocument(app, config);
 	SwaggerModule.setup("docs", app, documentFactory, {
 		jsonDocumentUrl: "swagger/json",
 	});
-
+	
 	await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();

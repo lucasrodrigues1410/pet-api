@@ -25,7 +25,6 @@ export class ConfirmPaymentAndSchedulingUseCase {
 		const appointmentIntent = await this.appointmentIntentRepository.findById(
 			scheduleData.appointmentIntentId,
 		);
-
 		if (!appointmentIntent) {
 			throw new Error("Failed to find appointment intent");
 		}
@@ -43,6 +42,7 @@ export class ConfirmPaymentAndSchedulingUseCase {
 			paymentId: payment.id,
 		});
 
+		//TODO: Implementar atomização de transações
 		await this.paymentRepository.create(payment);
 		await this.appointmentRepository.create(appointment);
 	}

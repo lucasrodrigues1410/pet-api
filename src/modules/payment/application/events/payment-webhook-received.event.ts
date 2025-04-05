@@ -10,7 +10,6 @@ export class PaymentWebhookReceivedEvent {
     public readonly status: string,
     public readonly paidAt: Date | null,
     public readonly metadata: Record<string, any>,
-    public readonly appointmentIntentId: string | null,
     public readonly webhookEventType: string,
   ) {}
 }

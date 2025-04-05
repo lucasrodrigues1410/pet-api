@@ -19,8 +19,8 @@ export type VerifyWebhookResult = Either<
 export abstract class PaymentGateway {
 	abstract verifyAndParseWebhook(params: {
 		signature: string;
-		payload: unknown;
-	}): VerifyWebhookResult;
+		payload: Buffer;
+	}): Promise<VerifyWebhookResult>;
 	abstract createCheckoutUrl(param: {
 		successUrl: string;
 		items: Array<{

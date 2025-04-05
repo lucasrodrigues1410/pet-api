@@ -35,7 +35,7 @@ export class PrismaAppointmentIntentRepository
 					lte: endDate,
 				},
 				validUntil: {
-					gte: endDate,
+					gte: new Date(),
 				},
 			},
 		});
