@@ -2,8 +2,8 @@ import {
 	Appointment,
 	AppointmentProps,
 	AppointmentStatus,
-} from "@/modules/scheduling/domain/entities/appointment.entity";
-import { PrismaAppointementMapper } from "@/modules/scheduling/infra/database/mapper/prisma-appointment.mapper";
+} from "@/modules/appointment/domain/entities/appointment.entity";
+import { PrismaAppointmentMapper } from "@/modules/appointment/infra/database/mapper/prisma-appointment.mapper";
 import { faker } from "@faker-js/faker";
 import { Injectable } from "@nestjs/common";
 import { UniqueEntityID } from "src/core/entities/unique-entity-id";
@@ -27,12 +27,11 @@ export function makeAppointment(
 			startDate: faker.date.past(),
 			endDate: faker.date.future(),
 			status: faker.helpers.arrayElement(statusAvailable),
-			notes: faker.lorem.sentence(),
-			priceAtScheduling: faker.number.float({ min: 1, max: 100 }),
-			companyId: new UniqueEntityID().toString(),
-			serviceId: new UniqueEntityID().toString(),
-			clientId: new UniqueEntityID().toString(),
-			animalId: new UniqueEntityID().toString(),
+			price: faker.number.float({ min: 1, max: 100 }),
+			serviceId: new UniqueEntityID(),
+			clientId: new UniqueEntityID(),
+			animalId: new UniqueEntityID(),
+			paymentId: new UniqueEntityID(),
 			...override,
 		},
 		id,
@@ -51,7 +50,7 @@ export class AppointmentFactory {
 		const appointment = makeAppointment(data);
 
 		await this.prisma.appointment.create({
-			data: PrismaAppointementMapper.toPrisma(appointment),
+			data: PrismaAppointmentMapper.toPersistence(appointment),
 		});
 
 		return appointment;

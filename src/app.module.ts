@@ -12,13 +12,16 @@ import { BreedModule } from "./modules/breed/breed.module";
 import { CompanyModule } from "./modules/company/company.module";
 import { PaymentModule } from "./modules/payment/payment.module";
 import { PriceVariationModule } from "./modules/price-variation/price-variation.module";
-import { SchedulingModule } from "./modules/scheduling/scheduling.module";
+import { AppointmentModule } from "./modules/appointment/appointment.module";
 import { ServiceModule } from "./modules/service/service.module";
 import { UserModule } from "./modules/user/user.module";
+import { SchedulingPaymentOrchestratorModule } from "./modules/scheduling-payment-orchestrator/scheduling-payment-orchestrator.module";
+import { EventEmitterModule } from "@nestjs/event-emitter";
 
 @Module({
 	imports: [
 		ConfigModule.forRoot({ isGlobal: true }),
+		EventEmitterModule.forRoot(),
 		PrismaModule,
 		AuthModule,
 		UserModule,
@@ -26,10 +29,11 @@ import { UserModule } from "./modules/user/user.module";
 		ServiceModule,
 		BreedModule,
 		AssetModule,
-		SchedulingModule,
 		CompanyModule,
 		PriceVariationModule,
 		PaymentModule,
+		AppointmentModule,
+		SchedulingPaymentOrchestratorModule
 	],
 	providers: [
 		{

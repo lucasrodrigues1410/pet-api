@@ -6,7 +6,10 @@ import { AppModule } from "./app.module";
 patchNestJsSwagger();
 
 async function bootstrap() {
-	const app = await NestFactory.create(AppModule);
+	const app = await NestFactory.create(AppModule, {
+		rawBody: true,
+		bodyParser: true,
+	});
 
 	const config = new DocumentBuilder()
 		.setTitle("API de Cuidados com Animais")

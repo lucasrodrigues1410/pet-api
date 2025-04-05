@@ -13,6 +13,7 @@ model Service {
   appointments   Appointment[]
   categories     ServiceCategory[]
   priceVariation ServicePriceVariation[]
+  appointmentIntent AppointmentIntent[]
 
   @@map("services")
 }

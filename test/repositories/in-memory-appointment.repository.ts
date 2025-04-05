@@ -1,6 +1,7 @@
-import { Appointment } from "@/modules/scheduling/domain/entities/appointment.entity";
-import { AppointmentPaymentRepository } from "@/modules/scheduling/domain/repositories/appointment-payment.repository";
-import { AppointmentRepository } from "@/modules/scheduling/domain/repositories/appointment.repository";
+import { AppointmentIntent } from "@/modules/appointment/domain/entities/appointment-intent.entity";
+import { Appointment } from "@/modules/appointment/domain/entities/appointment.entity";
+import { AppointmentIntentRepository } from "@/modules/appointment/domain/repositories/appointment-intent.repository";
+import { AppointmentRepository } from "@/modules/appointment/domain/repositories/appointment.repository";
 
 export class InMemoryAppointmentRepository implements AppointmentRepository {
 	public items: Appointment[] = [];
@@ -9,7 +10,7 @@ export class InMemoryAppointmentRepository implements AppointmentRepository {
 		this.items.push(appointment);
 	}
 
-	async getAppointmentsByPeriod(params: {
+	async getByPeriod(params: {
 		serviceId: string;
 		startDate: Date;
 		endDate: Date;
@@ -17,22 +18,43 @@ export class InMemoryAppointmentRepository implements AppointmentRepository {
 		const { serviceId, startDate, endDate } = params;
 		return this.items.filter((appointment) => {
 			return (
-				appointment.serviceId === serviceId &&
+				appointment.serviceId.toString() === serviceId &&
 				appointment.startDate >= startDate
 			);
 		});
 	}
 }
 
-export class InMemoryAppointmentPaymentRepository
-	implements AppointmentPaymentRepository
+export class InMemoryAppointmentIntentRepository
+	implements AppointmentIntentRepository
 {
-	public items: any[] = [];
+	public items: AppointmentIntent[] = [];
 
-	async create(params: {
-		appointmentId: string;
-		paymentId: string;
+	async create(appointment: AppointmentIntent) {
+		this.items.push(appointment);
+	}
+
+	async findById(id: string) {
+		const appointment = this.items.find((item) => item.id.toString() === id);
+		if (!appointment) {
+			return null;
+		}
+		return appointment;
+	}
+
+	async findValidInRange(params: {
+		serviceId: string;
+		startDate: Date;
+		endDate: Date;
 	}) {
-		this.items.push(params);
+		const { serviceId, startDate, endDate } = params;
+		return this.items.filter((appointment) => {
+			return (
+				appointment.serviceId.toString() === serviceId &&
+				appointment.startDate >= startDate &&
+				appointment.endDate <= endDate &&
+				appointment.validUntil >= new Date()
+			);
+		});
 	}
 }
