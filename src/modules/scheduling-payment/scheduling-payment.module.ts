@@ -5,7 +5,7 @@ import { PriceVariationModule } from "../price-variation/price-variation.module"
 import { ServiceModule } from "../service/service.module";
 import { ConfirmPaymentAndSchedulingUseCase } from "./application/use-cases/confirm-payment-and-scheduling.use-case";
 import { InitiateAppointmentCreationUseCase } from "./application/use-cases/initiate-appointment-creation.use-case";
-import { SchedulingPaymentOrchestratorController } from "./infra/http/controllers/scheduling-payment-orchestrator.controller";
+import { SchedulingPaymentController } from "./infra/http/controllers/scheduling-payment.controller";
 import { SchedulingPaymentProcessor } from "./infra/queue/processors/scheduling-payment.processor";
 
 @Module({
@@ -15,11 +15,11 @@ import { SchedulingPaymentProcessor } from "./infra/queue/processors/scheduling-
 		PriceVariationModule,
 		AppointmentModule,
 	],
-	controllers: [SchedulingPaymentOrchestratorController],
+	controllers: [SchedulingPaymentController],
 	providers: [
 		SchedulingPaymentProcessor,
 		InitiateAppointmentCreationUseCase,
 		ConfirmPaymentAndSchedulingUseCase,
 	],
 })
-export class SchedulingPaymentOrchestratorModule {}
+export class SchedulingPaymentModule {}

@@ -1,5 +1,5 @@
 import { Either } from "@/core/either";
-import { CheckoutSessionCreationError } from "../errors/checkout-session-creation-error";
+import { CheckoutSessionCreationError } from "../errors/checkout-session-creation.error";
 import { InvalidWebhookSignatureError } from "../errors/invalid-webhook-signature.error";
 
 export interface ValidatedWebhookPayload {

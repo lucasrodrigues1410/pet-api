@@ -1,5 +1,5 @@
 import { PaymentWebhookReceivedEvent } from "@/modules/payment/domain/events/payment-webhook-received.event";
-import { ConfirmPaymentAndSchedulingUseCase } from "@/modules/scheduling-payment-orchestrator/application/use-cases/confirm-payment-and-scheduling.use-case";
+import { ConfirmPaymentAndSchedulingUseCase } from "@/modules/scheduling-payment/application/use-cases/confirm-payment-and-scheduling.use-case";
 import { Process, Processor } from "@nestjs/bull";
 import { Injectable, Logger } from "@nestjs/common";
 import { Job } from "bull";

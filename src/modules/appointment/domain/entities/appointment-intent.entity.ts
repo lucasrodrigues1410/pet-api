@@ -62,7 +62,7 @@ export class AppointmentIntent extends Entity<AppointmentIntentProps> {
 		return new AppointmentIntent(
 			{
 				createdAt: new Date(),
-				validUntil: addMinutes(new Date(), Number(10)),
+				validUntil: addMinutes(new Date(), Number(5)),
 				...props,
 			},
 			id,

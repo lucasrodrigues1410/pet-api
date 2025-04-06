@@ -1,5 +1,5 @@
 import { User } from "@/modules/auth/infra/http/decorators/user.decorator";
-import { InitiateAppointmentCreationUseCase } from "@/modules/scheduling-payment-orchestrator/application/use-cases/initiate-appointment-creation.use-case";
+import { InitiateAppointmentCreationUseCase } from "@/modules/scheduling-payment/application/use-cases/initiate-appointment-creation.use-case";
 import {
 	BadRequestException,
 	Body,
@@ -12,7 +12,7 @@ import { CreateAppointmentRequestDto } from "../dtos/create-appointment.dto";
 
 @ApiTags("Agendamentos")
 @Controller("appointments/payment-orchestrator")
-export class SchedulingPaymentOrchestratorController {
+export class SchedulingPaymentController {
 	constructor(
 		private readonly createAppointmentUseCase: InitiateAppointmentCreationUseCase,
 	) {}

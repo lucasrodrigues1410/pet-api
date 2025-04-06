@@ -2,7 +2,7 @@ import { left, right } from "@/core/either";
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import Stripe from "stripe";
-import { CheckoutSessionCreationError } from "../../domain/errors/checkout-session-creation-error";
+import { CheckoutSessionCreationError } from "../../domain/errors/checkout-session-creation.error";
 import { InvalidWebhookSignatureError } from "../../domain/errors/invalid-webhook-signature.error";
 import {
 	PaymentGateway,
@@ -12,6 +12,14 @@ import {
 
 type CreateSessionParams = Parameters<PaymentGateway["createCheckoutUrl"]>[0];
 type CreateSessionResponse = ReturnType<PaymentGateway["createCheckoutUrl"]>;
+
+type Item = {
+	name: string;
+	amount: number;
+	quantity: number;
+	images?: string[];
+	description?: string;
+};
 
 @Injectable()
 export class StripePaymentGateway implements PaymentGateway {
@@ -52,32 +60,20 @@ export class StripePaymentGateway implements PaymentGateway {
 				return left(new InvalidWebhookSignatureError());
 			}
 
-			console.error("Webhook processing error:", err);
 			return left(new Error(`Webhook Error: ${(err as Error).message}`));
 		}
 	}
 
 	async createCheckoutUrl(params: CreateSessionParams): CreateSessionResponse {
-		const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] =
-			params.items.map((item) => ({
-				price_data: {
-					currency: "brl",
-					product_data: {
-						name: item.name,
-						images: item.images,
-						description: item.description,
-					},
-					unit_amount: item.amount * 100,
-				},
-				quantity: item.quantity,
-			}));
+		const lineItems = this.createLineItems(params.items);
 
 		try {
 			const session = await this.stripe.checkout.sessions.create({
 				success_url: params.successUrl,
 				line_items: lineItems,
 				mode: "payment",
-				metadata: params.metadata,
+				metadata: params.metadata || {},
+				payment_method_types: ["card"], 
 			});
 
 			if (!session.url) {
@@ -86,9 +82,33 @@ export class StripePaymentGateway implements PaymentGateway {
 
 			return right({
 				url: session.url,
+				sessionId: session.id,
 			});
 		} catch (error) {
-			return left(new CheckoutSessionCreationError());
+			return left(
+				error instanceof Stripe.errors.StripeError
+					? new CheckoutSessionCreationError(error.message)
+					: new CheckoutSessionCreationError(),
+			);
 		}
+	}
+
+	private createLineItems(
+		items: Item[],
+	): Stripe.Checkout.SessionCreateParams.LineItem[] {
+		return items.map((item) => {
+			return {
+				price_data: {
+					currency: "brl",
+					product_data: {
+						name: item.name,
+						images: item.images,
+						description: item.description?.substring(0, 500),
+					},
+					unit_amount: Math.round(item.amount * 100),
+				},
+				quantity: item.quantity,
+			};
+		});
 	}
 }

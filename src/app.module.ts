@@ -14,7 +14,7 @@ import { BreedModule } from "./modules/breed/breed.module";
 import { CompanyModule } from "./modules/company/company.module";
 import { PaymentModule } from "./modules/payment/payment.module";
 import { PriceVariationModule } from "./modules/price-variation/price-variation.module";
-import { SchedulingPaymentOrchestratorModule } from "./modules/scheduling-payment-orchestrator/scheduling-payment-orchestrator.module";
+import { SchedulingPaymentModule } from "./modules/scheduling-payment/scheduling-payment.module";
 import { ServiceModule } from "./modules/service/service.module";
 import { UserModule } from "./modules/user/user.module";
 
@@ -44,7 +44,7 @@ import { UserModule } from "./modules/user/user.module";
 		PriceVariationModule,
 		PaymentModule,
 		AppointmentModule,
-		SchedulingPaymentOrchestratorModule,
+		SchedulingPaymentModule,
 	],
 	providers: [
 		{

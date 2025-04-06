@@ -6,7 +6,7 @@ import { AppointmentAvailabilityService } from "@/modules/appointment/applicatio
 import { AppointmentIntent } from "@/modules/appointment/domain/entities/appointment-intent.entity";
 import { AppointmentIntentRepository } from "@/modules/appointment/domain/repositories/appointment-intent.repository";
 import { PaymentService } from "@/modules/payment/application/services/payment-service";
-import { CheckoutSessionCreationError } from "@/modules/payment/domain/errors/checkout-session-creation-error";
+import { CheckoutSessionCreationError } from "@/modules/payment/domain/errors/checkout-session-creation.error";
 import { CalculatePriceVariationUseCase } from "@/modules/price-variation/application/use-cases/calculate-price-variation.use-case";
 import { NoApplicablePriceVariationError } from "@/modules/price-variation/domain/errors/no-applicable-price-variation.error";
 import { ServiceRepository } from "@/modules/service/domain/repositories/service.repository";
