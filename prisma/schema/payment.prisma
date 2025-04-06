@@ -4,9 +4,7 @@ model Payment {
     status                 PaymentStatus @default(PENDING)
     type                   PaymentType
     gatewayPaymentIntentId String?       @unique @map("gateway_payment_intent_id")
-    payerId                String        @map("payer_id")
 
-    payer                  User?                    @relation("PayerPayments", fields: [payerId], references: [id], onDelete: Cascade)
     appointment Appointment[]
 
     createdAt DateTime  @default(now()) @map("created_at")

@@ -1,20 +1,17 @@
 model Appointment {
-    id                String            @id @default(cuid())
-    startDate         DateTime
-    endDate           DateTime
-    status            AppointmentStatus @default(SCHEDULED)
-    notes             String?
-    priceAtScheduling Decimal?          @db.Decimal(10, 2)
+    id        String            @id @default(cuid())
+    startDate DateTime
+    endDate   DateTime
+    status    AppointmentStatus @default(SCHEDULED)
+    price     Decimal           @db.Decimal(10, 2)
 
     clientId  String
     animalId  String
-    companyId String
     serviceId String
     paymentId String
 
     payment Payment @relation(fields: [paymentId], references: [id], onDelete: Cascade)
     animal  Animal  @relation("AnimalAppointments", fields: [animalId], references: [id], onDelete: Cascade)
-    company Company @relation("CompanyAppointments", fields: [companyId], references: [id], onDelete: Cascade)
     service Service @relation(fields: [serviceId], references: [id], onDelete: Restrict) // Não deletar serviço se houver agendamento
     client  User    @relation("ClientAppointments", fields: [clientId], references: [id], onDelete: Cascade)
 
@@ -33,5 +30,23 @@ enum AppointmentStatus {
     IN_PROGRESS
     COMPLETED
     CANCELED
-    NO_SHOW
+}
+
+model AppointmentIntent {
+    id        String   @id @default(cuid())
+    startDate DateTime
+    endDate   DateTime
+    price     Decimal  @db.Decimal(10, 2)
+    validUntil DateTime
+
+    clientId  String
+    animalId  String
+    serviceId String
+
+    client  User    @relation(fields: [clientId], references: [id], onDelete: Cascade)
+    animal  Animal  @relation(fields: [animalId], references: [id], onDelete: Cascade)
+    service Service @relation(fields: [serviceId], references: [id], onDelete: Restrict)
+
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
 }

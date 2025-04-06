@@ -22,7 +22,6 @@ export interface PaymentProps {
 	status: PaymentStatus;
 	type: PaymentType;
 	gatewayPaymentIntentId?: string;
-	payerId: string;
 }
 
 export class Payment extends Entity<PaymentProps> {
@@ -38,8 +37,8 @@ export class Payment extends Entity<PaymentProps> {
 		return this.props.type;
 	}
 
-	get payerId() {
-		return this.props.payerId;
+	get gatewayPaymentIntentId() {
+		return this.props.gatewayPaymentIntentId;
 	}
 
 	static create(

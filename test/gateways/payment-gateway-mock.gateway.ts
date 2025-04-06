@@ -1,9 +1,9 @@
 import { Either, right } from "@/core/either";
-import { CheckoutSessionCreationError } from "@/modules/payment/domain/errors/checkout-session-creation-error";
-import { PaymentGatewayRepository } from "@/modules/payment/domain/repositories/payment-gateway.repository";
+import { CheckoutSessionCreationError } from "@/modules/payment/domain/errors/checkout-session-creation.error";
+import { PaymentGateway } from "@/modules/payment/domain/repositories/payment-gateway.repository";
 
 type CreateCheckoutSessionParams = Parameters<
-	PaymentGatewayRepository["createIntent"]
+	PaymentGateway["createCheckoutUrl"]
 >[0];
 type CreateCheckoutSessionSuccess = { intentId: string; url: string };
 type CreateCheckoutSessionResult = Either<
@@ -11,10 +11,10 @@ type CreateCheckoutSessionResult = Either<
 	CreateCheckoutSessionSuccess
 >;
 
-export class PaymentGatewayMock implements PaymentGatewayRepository {
+export class PaymentGatewayMock implements PaymentGateway {
 	public lastCallParams?: CreateCheckoutSessionParams;
 
-	async createIntent(
+	async createCheckoutUrl(
 		params: CreateCheckoutSessionParams,
 	): Promise<CreateCheckoutSessionResult> {
 		this.lastCallParams = params;

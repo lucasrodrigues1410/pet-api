@@ -15,7 +15,6 @@ export class PrismaPaymentMapper {
 				type: prismaPayment.type as PaymentType,
 				gatewayPaymentIntentId:
 					prismaPayment.gatewayPaymentIntentId ?? undefined,
-				payerId: prismaPayment.payerId ?? undefined,
 			},
 			new UniqueEntityID(prismaPayment.id),
 		);
@@ -27,7 +26,6 @@ export class PrismaPaymentMapper {
 			amount: Prisma.Decimal(payment.amount),
 			status: payment.status,
 			type: payment.type,
-			payerId: payment.payerId,
 		};
 	}
 }

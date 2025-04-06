@@ -11,7 +11,6 @@ model Company {
     companyAvailabilityException CompanyAvailabilityException[]
     services                     Service[]
     companyLocations             CompanyLocation[]
-    appointment Appointment[] @relation("CompanyAppointments")
     companyImage                 CompanyImage[]
 
     @@map("companies")
