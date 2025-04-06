@@ -1,20 +1,21 @@
 import { Public } from "@/modules/auth/infra/http/decorators/public.decorator";
-import { PaymentWebhookReceivedEvent } from "@/modules/payment/application/events/payment-webhook-received.event";
 import { InvalidWebhookSignatureError } from "@/modules/payment/domain/errors/invalid-webhook-signature.error";
+import { PaymentWebhookReceivedEvent } from "@/modules/payment/domain/events/payment-webhook-received.event";
 import { PaymentGateway } from "@/modules/payment/domain/repositories/payment-gateway.repository";
 import {
 	Controller,
 	Headers,
+	HttpCode,
 	HttpException,
 	HttpStatus,
 	Logger,
 	Post,
-	RawBodyRequest,
+	type RawBodyRequest,
 	Req,
 } from "@nestjs/common";
-import { EventEmitter2 } from "@nestjs/event-emitter";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { Request } from "express";
+import { PaymentQueue } from "../../queue/payment.queue";
 
 @ApiTags("Pagamentos - Webhook")
 @Controller("payments/webhook")
@@ -23,7 +24,7 @@ export class StripeWebhookController {
 
 	constructor(
 		private readonly paymentGateway: PaymentGateway,
-		private eventEmitter: EventEmitter2,
+		private readonly paymentQueue: PaymentQueue,
 	) {}
 
 	@ApiOperation({
@@ -31,16 +32,16 @@ export class StripeWebhookController {
 		description:
 			"Handles Stripe webhook events. Validates the signature and processes the event.",
 	})
+	@HttpCode(HttpStatus.NO_CONTENT)
 	@Post("stripe")
 	@Public()
 	async handleStripeWebhook(
 		@Headers("stripe-signature") signature: string,
-		@Req() req: any,
+		@Req() req: RawBodyRequest<Request>,
 	) {
 		this.logger.log("Stripe webhook received.");
 
 		if (!signature) {
-			this.logger.warn("Missing stripe-signature header.");
 			throw new HttpException(
 				"Missing stripe-signature header",
 				HttpStatus.BAD_REQUEST,
@@ -49,22 +50,10 @@ export class StripeWebhookController {
 
 		const verificationResult = await this.paymentGateway.verifyAndParseWebhook({
 			signature,
-			payload: req.rawBody,
+			payload: req.rawBody as Buffer,
 		});
 
 		if (verificationResult.isLeft()) {
-			const error = verificationResult.value;
-			if (error instanceof InvalidWebhookSignatureError) {
-				this.logger.warn("Invalid webhook signature.");
-				throw new HttpException(
-					"Invalid webhook signature",
-					HttpStatus.UNAUTHORIZED,
-				);
-			}
-
-			this.logger.error(
-				`Webhook verification failed: ${(error as Error).message}`,
-			);
 			throw new HttpException(
 				"Webhook verification error",
 				HttpStatus.BAD_REQUEST,
@@ -72,50 +61,17 @@ export class StripeWebhookController {
 		}
 
 		const { type, payload } = verificationResult.value;
-		this.logger.log(`Webhook event type received: ${type}`);
-
-		if (payload) {
-			// Cria a instância do evento com todos os dados relevantes
+		if (type === "checkout.session.completed" && payload) {
 			const eventPayload = new PaymentWebhookReceivedEvent(
-				"stripe",
-				payload.gatewayPaymentId,
 				payload.amount,
-				payload.currency,
-				payload.status,
-				payload.paidAt,
 				payload.metadata,
 				type,
 			);
 
-			try {
-				this.logger.log(
-					`Emitting event: ${PaymentWebhookReceivedEvent.EVENT_NAME} for payment ${payload.gatewayPaymentId}`,
-				);
-				this.eventEmitter.emit(
-					PaymentWebhookReceivedEvent.EVENT_NAME,
-					eventPayload,
-				);
-				return { received: true, processed: true };
-			} catch (e) {
-				const error = e as Error;
-				this.logger.error(
-					`Failed to emit event ${PaymentWebhookReceivedEvent.EVENT_NAME}: ${error.message}`,
-					error.stack,
-				);
-				throw new HttpException(
-					"Error processing payment",
-					HttpStatus.INTERNAL_SERVER_ERROR,
-				);
-			}
-		} else {
 			this.logger.log(
-				`Webhook event type ${type} received without relevant payload data. Ignoring.`,
+				`Emitting event: ${type} for payment ${payload?.gatewayPaymentId}`,
 			);
+			this.paymentQueue.addPaymentWebhookJob(eventPayload);
 		}
-
-		this.logger.log(
-			"Webhook processed successfully, returning 200 OK to Stripe.",
-		);
-		return { received: true };
 	}
 }

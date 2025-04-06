@@ -40,7 +40,9 @@ export class SchedulingPaymentOrchestratorController {
 			if (response.value instanceof NotFoundException) {
 				throw new NotFoundException();
 			}
-			throw new BadRequestException(`Error creating appointment: ${response.value.message}`);
+			throw new BadRequestException(
+				`Error creating appointment: ${response.value.message}`,
+			);
 		}
 
 		return response.value;

@@ -16,6 +16,7 @@
 		"test": "bun test"
 	},
 	"dependencies": {
+		"@nestjs/bull": "^11.0.2",
 		"@nestjs/common": "^11.0.13",
 		"@nestjs/config": "^4.0.2",
 		"@nestjs/core": "^11.0.13",
@@ -26,6 +27,7 @@
 		"@nestjs/platform-express": "^11.0.13",
 		"@nestjs/swagger": "^11.1.1",
 		"@prisma/client": "^6.5.0",
+		"bull": "^4.16.5",
 		"date-fns": "^4.1.0",
 		"imagekit": "^6.0.0",
 		"nestjs-zod": "^4.3.1",
@@ -59,6 +61,7 @@
 		"@scarf/scarf",
 		"@swc/core",
 		"esbuild",
+		"msgpackr-extract",
 		"prisma"
 	]
 }
