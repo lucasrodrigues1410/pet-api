@@ -1,5 +1,5 @@
-import { Entity } from "@/core/entities/entity";
-import { UniqueEntityID } from "@/core/entities/unique-entity-id";
+import { Entity } from "@/core/domain/entities/entity";
+import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { TimeRange } from "./value-objects/time-range";
 
 export enum DaysOfWeek {

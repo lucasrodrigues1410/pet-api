@@ -1,6 +1,6 @@
+import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { Appointment } from "@/modules/appointment/domain/entities/appointment.entity";
 import { Prisma, Appointment as PrismaAppointment } from "@prisma/client";
-import { UniqueEntityID } from "src/core/entities/unique-entity-id";
 
 export class PrismaAppointmentMapper {
 	static toDomain(prismaAppointment: PrismaAppointment): Appointment {

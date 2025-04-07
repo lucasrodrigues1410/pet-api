@@ -16,6 +16,15 @@ export class AnimalPrismaRepository implements AnimalRepository {
 		return AnimalPrismaMapper.toDomain(response);
 	}
 
+	async update(animal: Animal) {
+		const data = AnimalPrismaMapper.toPrisma(animal);
+		const response = await this.prismaService.animal.update({
+			where: { id: animal.id.toString() },
+			data,
+		});
+		return AnimalPrismaMapper.toDomain(response);
+	}
+
 	async getById(animalId: string): Promise<Animal | null> {
 		const response = await this.prismaService.animal.findUnique({
 			where: { id: animalId.toString() },

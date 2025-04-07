@@ -1,4 +1,4 @@
-import { UseCaseError } from "src/core/errors/use-case-error";
+import { UseCaseError } from "@/shared/errors/use-case-error";
 
 export class InvalidAssetTypeError extends Error implements UseCaseError {
 	constructor(type: string) {

@@ -1,6 +1,4 @@
-import { Either, left, right } from "@/core/either";
-import { UniqueEntityID } from "@/core/entities/unique-entity-id";
-import { ResourceNotFoundError } from "@/core/errors/errors/resource-not-found.error";
+import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { TimeSlotUnavailableError } from "@/modules/appointment/application/errors/time-slot-unavailable.error";
 import { AppointmentAvailabilityService } from "@/modules/appointment/application/services/appointment-availability.service";
 import { AppointmentIntent } from "@/modules/appointment/domain/entities/appointment-intent.entity";
@@ -10,6 +8,8 @@ import { CheckoutSessionCreationError } from "@/modules/payment/domain/errors/ch
 import { CalculatePriceVariationUseCase } from "@/modules/price-variation/application/use-cases/calculate-price-variation.use-case";
 import { NoApplicablePriceVariationError } from "@/modules/price-variation/domain/errors/no-applicable-price-variation.error";
 import { ServiceRepository } from "@/modules/service/domain/repositories/service.repository";
+import { Either, left, right } from "@/shared/either";
+import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
 import { Injectable } from "@nestjs/common";
 import { addMinutes } from "date-fns";
 

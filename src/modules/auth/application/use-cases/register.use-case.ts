@@ -1,5 +1,5 @@
+import { Either, left, right } from "@/shared/either";
 import { Inject, Injectable } from "@nestjs/common";
-import { Either, left, right } from "src/core/either";
 import { User } from "src/modules/user/domain/entities/user.entity";
 import { UserRepository } from "src/modules/user/domain/repositories/user.repository";
 import { UserAlreadyExistError } from "../../domain/errors/user-already-exists.error";

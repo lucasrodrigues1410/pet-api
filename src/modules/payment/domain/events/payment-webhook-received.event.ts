@@ -1,5 +1,7 @@
-export class PaymentWebhookReceivedEvent {
-	public static readonly EVENT_NAME = "payment.webhook.received";
+import { DomainEvent } from "@/core/domain/interfaces/event-dispatcher.interface";
+
+export class PaymentWebhookReceivedEvent implements DomainEvent {
+	readonly name = "payment.webhook.received";
 
 	constructor(
 		public readonly amount: number,

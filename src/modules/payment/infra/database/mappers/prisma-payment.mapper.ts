@@ -1,4 +1,4 @@
-import { UniqueEntityID } from "@/core/entities/unique-entity-id";
+import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import {
 	Payment,
 	PaymentStatus,

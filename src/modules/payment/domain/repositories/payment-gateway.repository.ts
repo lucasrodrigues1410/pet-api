@@ -1,4 +1,4 @@
-import { Either } from "@/core/either";
+import { Either } from "@/shared/either";
 import { CheckoutSessionCreationError } from "../errors/checkout-session-creation.error";
 import { InvalidWebhookSignatureError } from "../errors/invalid-webhook-signature.error";
 

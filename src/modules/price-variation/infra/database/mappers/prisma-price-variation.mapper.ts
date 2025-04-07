@@ -1,9 +1,9 @@
+import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { PriceVariation } from "@/modules/price-variation/domain/entities/price-variation.entity";
 import {
 	Prisma,
 	ServicePriceVariation as PrismaServiceVariation,
 } from "@prisma/client";
-import { UniqueEntityID } from "src/core/entities/unique-entity-id";
 
 export class PrismaPriceVariationMapper {
 	static toDomain(

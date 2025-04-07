@@ -1,20 +1,24 @@
 import { beforeEach, describe, expect, it } from "bun:test";
-import { UniqueEntityID } from "@/core/entities/unique-entity-id";
-import { ResourceNotFoundError } from "@/core/errors/errors/resource-not-found.error";
+import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { CompanyAvailabilityException } from "@/modules/company-availability/domain/entities/company-availability-exception.entity";
 import { DaysOfWeek } from "@/modules/company-availability/domain/entities/company-availability.entity";
 import { TimeRange } from "@/modules/company-availability/domain/entities/value-objects/time-range";
+import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
 import { addDays, getDay, set } from "date-fns";
 import { makeAppointment } from "test/factories/make-appointment";
 import { makeCompanyAvailability } from "test/factories/make-company-availability";
 import { makeService } from "test/factories/make-service";
-import { InMemoryAppointmentRepository } from "test/repositories/in-memory-appointment.repository";
+import {
+	InMemoryAppointmentIntentRepository,
+	InMemoryAppointmentRepository,
+} from "test/repositories/in-memory-appointment.repository";
 import { InMemoryCompanyAvailabilityExceptionRepository } from "test/repositories/in-memory-company-availability-exception.repository";
 import { InMemoryCompanyAvailabilityRepository } from "test/repositories/in-memory-company-availability.repository";
 import { InMemoryServiceRepository } from "test/repositories/in-memory-service.repository";
 import { ListAvailableDatesUseCase } from "./list-available-dates.use-case";
 
 let inMemoryAppointmentRepository: InMemoryAppointmentRepository;
+let inMemoryAppointmentIntentRepository: InMemoryAppointmentIntentRepository;
 let inMemoryCompanyAvailability: InMemoryCompanyAvailabilityRepository;
 let inMemoryCompanyAvailabilityException: InMemoryCompanyAvailabilityExceptionRepository;
 let inMemoryServiceRepository: InMemoryServiceRepository;
@@ -28,12 +32,15 @@ describe("ListAvailableDatesUseCase", () => {
 		inMemoryCompanyAvailabilityException =
 			new InMemoryCompanyAvailabilityExceptionRepository();
 		inMemoryServiceRepository = new InMemoryServiceRepository();
+		inMemoryAppointmentIntentRepository =
+			new InMemoryAppointmentIntentRepository();
 
 		sut = new ListAvailableDatesUseCase(
 			inMemoryAppointmentRepository,
 			inMemoryCompanyAvailability,
 			inMemoryCompanyAvailabilityException,
 			inMemoryServiceRepository,
+			inMemoryAppointmentIntentRepository,
 		);
 	});
 
@@ -61,7 +68,7 @@ describe("ListAvailableDatesUseCase", () => {
 
 		expect(result.isRight()).toBeTruthy();
 		if (result.isRight()) {
-			expect(result.value.availableDate.slots.length).toBeGreaterThan(0);
+			expect(result.value.slots.length).toBeGreaterThan(0);
 		}
 	});
 
@@ -131,7 +138,7 @@ describe("ListAvailableDatesUseCase", () => {
 
 		expect(result.isRight()).toBeTruthy();
 		if (result.isRight()) {
-			expect(result.value.availableDate.slots.length).toBe(0);
+			expect(result.value.slots.length).toBe(0);
 		}
 	});
 
@@ -152,8 +159,7 @@ describe("ListAvailableDatesUseCase", () => {
 		inMemoryCompanyAvailability.items.push(availableDate);
 
 		const appointment = makeAppointment({
-			companyId: companyId.toString(),
-			serviceId: service.id.toString(),
+			serviceId: service.id,
 			startDate: set(startDate, { hours: 8, minutes: 0, seconds: 0 }),
 			endDate: set(startDate, { hours: 8, minutes: 20, seconds: 0 }),
 		});
@@ -168,7 +174,7 @@ describe("ListAvailableDatesUseCase", () => {
 
 		expect(result.isRight()).toBeTruthy();
 		if (result.isRight()) {
-			const availableSlots = result.value.availableDate.slots;
+			const availableSlots = result.value.slots;
 			expect(availableSlots.some((slot) => slot.label === "08:00")).toBeFalsy();
 		}
 	});
@@ -205,7 +211,7 @@ describe("ListAvailableDatesUseCase", () => {
 
 		expect(result.isRight()).toBeTruthy();
 		if (result.isRight()) {
-			const availableSlots = result.value.availableDate.slots;
+			const availableSlots = result.value.slots;
 			expect(availableSlots.some((slot) => slot.label === "09:00")).toBeFalsy();
 		}
 	});

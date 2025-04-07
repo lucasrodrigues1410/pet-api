@@ -1,8 +1,8 @@
-import { ResourceNotFoundError } from "@/core/errors/errors/resource-not-found.error";
+import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { AssetRepository } from "@/modules/asset/domain/repositories/asset.repository";
+import { Either, left, right } from "@/shared/either";
+import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
 import { Injectable } from "@nestjs/common";
-import { Either, left, right } from "src/core/either";
-import { UniqueEntityID } from "src/core/entities/unique-entity-id";
 import { Animal } from "../../domain/entities/animal.entity";
 import { AnimalRepository } from "../../domain/repositories/animal.repository";
 

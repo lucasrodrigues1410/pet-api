@@ -1,3 +1,4 @@
+import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import {
 	Payment,
 	PaymentProps,
@@ -7,7 +8,6 @@ import {
 import { PrismaPaymentMapper } from "@/modules/payment/infra/database/mappers/prisma-payment.mapper";
 import { faker } from "@faker-js/faker";
 import { Injectable } from "@nestjs/common";
-import { UniqueEntityID } from "src/core/entities/unique-entity-id";
 import { PrismaService } from "src/core/infra/prisma/prisma.service";
 import {
 	Animal,

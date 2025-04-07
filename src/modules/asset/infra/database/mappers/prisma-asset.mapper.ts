@@ -1,5 +1,5 @@
+import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { Prisma, Asset as PrismaAsset } from "@prisma/client";
-import { UniqueEntityID } from "src/core/entities/unique-entity-id";
 import { Asset } from "src/modules/asset/domain/entities/asset";
 
 export class PrismaAssetMapper {

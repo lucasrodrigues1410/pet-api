@@ -1,4 +1,4 @@
-import { ValueObject } from "@/core/entities/value-object";
+import { ValueObject } from "@/core/domain/entities/value-object";
 
 interface TimeRangeProps {
 	startTime: string;

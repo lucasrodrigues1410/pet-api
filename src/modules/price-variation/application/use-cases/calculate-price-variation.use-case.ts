@@ -1,6 +1,6 @@
-import { Either, left, right } from "@/core/either";
-import { ResourceNotFoundError } from "@/core/errors/errors/resource-not-found.error";
 import { AnimalRepository } from "@/modules/animal/domain/repositories/animal.repository";
+import { Either, left, right } from "@/shared/either";
+import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
 import { Injectable } from "@nestjs/common";
 import { NoApplicablePriceVariationError } from "../../domain/errors/no-applicable-price-variation.error";
 import { PriceVariationRepository } from "../../domain/repositories/price-variation.repository";

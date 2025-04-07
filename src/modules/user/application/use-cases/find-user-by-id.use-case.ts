@@ -1,6 +1,6 @@
+import { Either, left, right } from "@/shared/either";
+import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
 import { Injectable } from "@nestjs/common";
-import { Either, left, right } from "src/core/either";
-import { ResourceNotFoundError } from "src/core/errors/errors/resource-not-found.error";
 import { User } from "../../domain/entities/user.entity";
 import { UserRepository } from "../../domain/repositories/user.repository";
 

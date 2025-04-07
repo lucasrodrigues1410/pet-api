@@ -1,6 +1,6 @@
+import { calculateLocationBounds } from "@/shared/utils/geo-location.util";
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "src/core/infra/prisma/prisma.service";
-import { calculateLocationBounds } from "src/core/utils/geo-location.util";
 import { Company } from "src/modules/company/domain/entities/company.entity";
 import { CompanyRepository } from "src/modules/company/domain/repositories/company.repository";
 import { PrismaCompanyMapper } from "../mappers/prisma-company.mapper";

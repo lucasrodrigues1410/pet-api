@@ -1,3 +1,4 @@
+import { EventDispatcher } from "@/core/domain/interfaces/event-dispatcher.interface";
 import { Public } from "@/modules/auth/infra/http/decorators/public.decorator";
 import { InvalidWebhookSignatureError } from "@/modules/payment/domain/errors/invalid-webhook-signature.error";
 import { PaymentWebhookReceivedEvent } from "@/modules/payment/domain/events/payment-webhook-received.event";
@@ -15,7 +16,6 @@ import {
 } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { Request } from "express";
-import { PaymentQueue } from "../../queue/payment.queue";
 
 @ApiTags("Pagamentos - Webhook")
 @Controller("payments/webhook")
@@ -24,7 +24,7 @@ export class StripeWebhookController {
 
 	constructor(
 		private readonly paymentGateway: PaymentGateway,
-		private readonly paymentQueue: PaymentQueue,
+		private readonly eventDispatcher: EventDispatcher,
 	) {}
 
 	@ApiOperation({
@@ -71,7 +71,7 @@ export class StripeWebhookController {
 			this.logger.log(
 				`Emitting event: ${type} for payment ${payload?.gatewayPaymentId}`,
 			);
-			this.paymentQueue.addPaymentWebhookJob(eventPayload);
+			this.eventDispatcher.dispatch(eventPayload);
 		}
 	}
 }

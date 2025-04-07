@@ -6,7 +6,6 @@ import { PaymentRepository } from "./domain/repositories/payment.repository";
 import { PrismaPaymentRepository } from "./infra/database/repositories/prisma-payment.repository";
 import { StripePaymentGateway } from "./infra/gateways/stripe.gateway";
 import { StripeWebhookController } from "./infra/http/controllers/stripe.webhook.controller";
-import { PaymentQueue } from "./infra/queue/payment.queue";
 
 @Module({
 	imports: [
@@ -16,7 +15,6 @@ import { PaymentQueue } from "./infra/queue/payment.queue";
 	],
 	providers: [
 		PaymentService,
-		PaymentQueue,
 		{
 			provide: PaymentRepository,
 			useClass: PrismaPaymentRepository,

@@ -11,6 +11,10 @@ export class InMemoryAssetRepository implements AssetRepository {
 		});
 	}
 
+	async delete(id: string): Promise<void> {
+		this.items = this.items.filter((item) => item.id.toString() !== id);
+	}
+
 	async existsByIds(ids: string[]): Promise<boolean> {
 		return this.items.some((item) => ids.includes(item.id.toString()));
 	}

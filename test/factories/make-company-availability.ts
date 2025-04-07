@@ -1,3 +1,4 @@
+import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { PrismaService } from "@/core/infra/prisma/prisma.service";
 import {
 	CompanyAvailability,
@@ -8,7 +9,6 @@ import { PrismaCompanyAvailabilityMapper } from "@/modules/company-availability/
 import { faker } from "@faker-js/faker";
 import { Injectable } from "@nestjs/common";
 import { format } from "date-fns";
-import { UniqueEntityID } from "src/core/entities/unique-entity-id";
 
 export function makeCompanyAvailability(
 	override: Partial<
