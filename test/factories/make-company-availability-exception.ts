@@ -1,3 +1,4 @@
+import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { PrismaService } from "@/core/infra/prisma/prisma.service";
 import {
 	CompanyAvailabilityException,
@@ -6,7 +7,6 @@ import {
 import { PrismaCompanyAvailabilityExceptionMapper } from "@/modules/company-availability/infra/database/mappers/company-availability-exception.mapper";
 import { faker } from "@faker-js/faker";
 import { Injectable } from "@nestjs/common";
-import { UniqueEntityID } from "src/core/entities/unique-entity-id";
 
 export function makeCompanyAvailabilityException(
 	override: Partial<CompanyAvailabilityExceptionProps> = {},

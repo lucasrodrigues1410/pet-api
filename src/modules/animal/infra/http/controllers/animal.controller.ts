@@ -1,4 +1,4 @@
-import { ResourceNotFoundError } from "@/core/errors/errors/resource-not-found.error";
+import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
 import {
 	BadRequestException,
 	Body,

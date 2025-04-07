@@ -1,6 +1,6 @@
-import { UnitOfWork } from "@/core/contracts/unit-of-work.interface";
+import { UnitOfWork } from "@/core/domain/interfaces/unit-of-work.interface.js";
 import { Global, Module } from "@nestjs/common";
-import { PrismaUnitOfWork } from "./prisma-unit-of-work.service.ts";
+import { PrismaUnitOfWork } from "./prisma-unit-of-work.service";
 import { PrismaService } from "./prisma.service";
 
 @Global()

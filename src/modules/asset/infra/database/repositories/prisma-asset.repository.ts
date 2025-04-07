@@ -14,6 +14,14 @@ export class PrismaAssetRepository implements AssetRepository {
 		});
 	}
 
+	async delete(id: string): Promise<void> {
+		await this.prismaService.asset.delete({
+			where: {
+				id,
+			},
+		});
+	}
+
 	async existsByIds(ids: string[]): Promise<boolean> {
 		const assets = await this.prismaService.asset.count({
 			where: {

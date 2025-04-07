@@ -1,5 +1,5 @@
+import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { Prisma, User as PrismaUser } from "@prisma/client";
-import { UniqueEntityID } from "src/core/entities/unique-entity-id";
 import { User } from "src/modules/user/domain/entities/user.entity";
 
 export class PrismaUserMapper {

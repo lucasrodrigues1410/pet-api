@@ -1,17 +1,17 @@
+import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import {
 	Prisma,
 	Category as PrismaCategory,
 	Company as PrismaCompany,
-	Service as PrismaSerivce,
+	Service as PrismaService,
 } from "@prisma/client";
-import { UniqueEntityID } from "src/core/entities/unique-entity-id";
 import { Category } from "src/modules/category/domain/entities/category.entity";
 import { PrismaCompanyMapper } from "src/modules/company/infra/database/mappers/prisma-company.mapper";
 import { Service } from "src/modules/service/domain/entities/service.entity";
 
 export class PrismaServiceMapper {
 	static toDomain(
-		prismaService: PrismaSerivce & {
+		prismaService: PrismaService & {
 			categories?: PrismaCategory[];
 			company?: PrismaCompany;
 		},

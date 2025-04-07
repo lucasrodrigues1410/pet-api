@@ -1,3 +1,4 @@
+import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { PrismaAssetMapper } from "@/modules/asset/infra/database/mappers/prisma-asset.mapper";
 import { PrismaBreedMapper } from "@/modules/breed/infra/database/mappers/prisma-breed.mapper";
 import {
@@ -6,7 +7,6 @@ import {
 	Asset as PrismaAsset,
 	Breed as PrismaBreed,
 } from "@prisma/client";
-import { UniqueEntityID } from "src/core/entities/unique-entity-id";
 import { Animal } from "src/modules/animal/domain/entities/animal.entity";
 
 export class AnimalPrismaMapper {

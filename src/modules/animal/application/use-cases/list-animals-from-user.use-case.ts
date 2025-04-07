@@ -1,5 +1,5 @@
+import { Either, right } from "@/shared/either";
 import { Injectable } from "@nestjs/common";
-import { Either, right } from "src/core/either";
 import { Animal } from "../../domain/entities/animal.entity";
 import { AnimalRepository } from "../../domain/repositories/animal.repository";
 

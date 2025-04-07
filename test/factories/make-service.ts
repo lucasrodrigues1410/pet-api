@@ -1,6 +1,6 @@
+import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { faker } from "@faker-js/faker";
 import { Injectable } from "@nestjs/common";
-import { UniqueEntityID } from "src/core/entities/unique-entity-id";
 import { PrismaService } from "src/core/infra/prisma/prisma.service";
 import {
 	Service,

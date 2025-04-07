@@ -10,6 +10,19 @@ export class InMemoryAnimalRepository implements AnimalRepository {
 			resolve(animal);
 		});
 	}
+
+	async update(animal: Animal) {
+		const index = this.items.findIndex(
+			(existingAnimal) => existingAnimal.id === animal.id,
+		);
+
+		if (index === -1) {
+			throw new Error("Animal not found");
+		}
+		this.items[index] = animal;
+		return animal;
+	}
+
 	getById(animalId: string): Promise<Animal | null> {
 		return new Promise((resolve) => {
 			const animal = this.items.find(

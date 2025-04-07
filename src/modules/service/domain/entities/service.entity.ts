@@ -1,5 +1,5 @@
-import { Entity } from "src/core/entities/entity";
-import { UniqueEntityID } from "src/core/entities/unique-entity-id";
+import { Entity } from "@/core/domain/entities/entity";
+import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { Category } from "src/modules/category/domain/entities/category.entity";
 import { Company } from "src/modules/company/domain/entities/company.entity";
 

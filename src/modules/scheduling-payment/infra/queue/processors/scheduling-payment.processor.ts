@@ -4,7 +4,7 @@ import { Process, Processor } from "@nestjs/bull";
 import { Injectable, Logger } from "@nestjs/common";
 import { Job } from "bull";
 
-@Processor("payment")
+@Processor("domain-events")
 @Injectable()
 export class SchedulingPaymentProcessor {
 	private readonly logger = new Logger(SchedulingPaymentProcessor.name);
@@ -13,7 +13,7 @@ export class SchedulingPaymentProcessor {
 		private readonly confirmPaymentAndSchedulingUseCase: ConfirmPaymentAndSchedulingUseCase,
 	) {}
 
-	@Process(PaymentWebhookReceivedEvent.EVENT_NAME)
+	@Process("payment.webhook.received")
 	async handleStripeWebhook(job: Job<PaymentWebhookReceivedEvent>) {
 		try {
 			const event = job.data;

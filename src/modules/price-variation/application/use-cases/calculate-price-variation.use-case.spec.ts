@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "bun:test";
-import { UniqueEntityID } from "@/core/entities/unique-entity-id";
+import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { makeAnimal } from "test/factories/make-animal";
 import { makePriceVariation } from "test/factories/make-price-variation";
 import { MockPriceStrategyProvider } from "test/providers/price-strategy.provider";

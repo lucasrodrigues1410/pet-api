@@ -1,4 +1,4 @@
-import { UnitOfWork } from "@/core/contracts/unit-of-work.interface";
+import { UnitOfWork } from "@/core/domain/interfaces/unit-of-work.interface";
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "./prisma.service";
 

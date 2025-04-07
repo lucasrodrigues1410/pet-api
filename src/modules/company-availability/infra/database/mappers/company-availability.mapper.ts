@@ -1,10 +1,10 @@
+import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { CompanyAvailability } from "@/modules/company-availability/domain/entities/company-availability.entity";
 import {
 	Prisma,
 	CompanyAvailability as PrismaCompanyAvailability,
 } from "@prisma/client";
 import { format } from "date-fns";
-import { UniqueEntityID } from "src/core/entities/unique-entity-id";
 
 export class PrismaCompanyAvailabilityMapper {
 	static toDomain(prismaPriceVariation: PrismaCompanyAvailability) {

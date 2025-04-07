@@ -1,4 +1,4 @@
-import { left, right } from "@/core/either";
+import { left, right } from "@/shared/either";
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import Stripe from "stripe";
@@ -73,7 +73,7 @@ export class StripePaymentGateway implements PaymentGateway {
 				line_items: lineItems,
 				mode: "payment",
 				metadata: params.metadata || {},
-				payment_method_types: ["card"], 
+				payment_method_types: ["card"],
 			});
 
 			if (!session.url) {

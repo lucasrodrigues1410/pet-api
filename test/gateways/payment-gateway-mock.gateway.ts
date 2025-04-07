@@ -1,6 +1,6 @@
-import { Either, right } from "@/core/either";
 import { CheckoutSessionCreationError } from "@/modules/payment/domain/errors/checkout-session-creation.error";
 import { PaymentGateway } from "@/modules/payment/domain/repositories/payment-gateway.repository";
+import { Either, right } from "@/shared/either";
 
 type CreateCheckoutSessionParams = Parameters<
 	PaymentGateway["createCheckoutUrl"]

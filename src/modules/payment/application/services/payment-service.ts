@@ -1,4 +1,4 @@
-import { Either, left, right } from "@/core/either";
+import { Either, left, right } from "@/shared/either";
 import { Injectable } from "@nestjs/common";
 import { Payment } from "../../domain/entities/payment.entity";
 import { CheckoutSessionCreationError } from "../../domain/errors/checkout-session-creation.error";

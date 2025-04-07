@@ -1,9 +1,9 @@
+import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { AppointmentIntent } from "@/modules/appointment/domain/entities/appointment-intent.entity";
 import {
 	Prisma,
 	AppointmentIntent as PrismaAppointmentIntent,
 } from "@prisma/client";
-import { UniqueEntityID } from "src/core/entities/unique-entity-id";
 
 export class PrismaAppointmentIntentMapper {
 	static toDomain(

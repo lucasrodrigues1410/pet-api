@@ -1,3 +1,4 @@
+import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import {
 	AppointmentIntent,
 	AppointmentIntentProps,
@@ -6,7 +7,6 @@ import { Appointment } from "@/modules/appointment/domain/entities/appointment.e
 import { PrismaAppointmentIntentMapper } from "@/modules/appointment/infra/database/mapper/prisma-appointment-intent.mapper";
 import { faker } from "@faker-js/faker";
 import { Injectable } from "@nestjs/common";
-import { UniqueEntityID } from "src/core/entities/unique-entity-id";
 import { PrismaService } from "src/core/infra/prisma/prisma.service";
 
 export function makeAppointmentIntent(

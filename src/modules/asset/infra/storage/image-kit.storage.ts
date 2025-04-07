@@ -1,4 +1,4 @@
-import { UniqueEntityID } from "@/core/entities/unique-entity-id";
+import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import ImageKit from "imagekit";

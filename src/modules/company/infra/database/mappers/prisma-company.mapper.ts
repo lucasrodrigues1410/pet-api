@@ -1,3 +1,4 @@
+import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { PrismaCompanyAvailabilityExceptionMapper } from "@/modules/company-availability/infra/database/mappers/company-availability-exception.mapper";
 import { PrismaCompanyAvailabilityMapper } from "@/modules/company-availability/infra/database/mappers/company-availability.mapper";
 import {
@@ -6,7 +7,6 @@ import {
 	CompanyAvailability as PrismaCompanyAvailability,
 	CompanyAvailabilityException as PrismaCompanyAvailabilityException,
 } from "@prisma/client";
-import { UniqueEntityID } from "src/core/entities/unique-entity-id";
 import { Company } from "src/modules/company/domain/entities/company.entity";
 
 export class PrismaCompanyMapper {

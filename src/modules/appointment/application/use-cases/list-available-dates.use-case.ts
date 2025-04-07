@@ -1,9 +1,9 @@
-import { Either, left, right } from "@/core/either";
-import { ResourceNotFoundError } from "@/core/errors/errors/resource-not-found.error";
 import { DaysOfWeek } from "@/modules/company-availability/domain/entities/company-availability.entity";
 import { CompanyAvailabilityExcpetionRepository } from "@/modules/company-availability/domain/repositories/company-availability-exception.repository";
 import { CompanyAvailabilityRepository } from "@/modules/company-availability/domain/repositories/company-availability.repository";
 import { ServiceRepository } from "@/modules/service/domain/repositories/service.repository";
+import { Either, left, right } from "@/shared/either";
+import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
 import { Injectable } from "@nestjs/common";
 import { endOfDay, format, getDay, startOfDay } from "date-fns";
 import { TimeSlot } from "../../domain/entities/time-slot.entity";
