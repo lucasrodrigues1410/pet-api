@@ -1,5 +1,5 @@
 import { User } from "@/modules/auth/infra/http/decorators/user.decorator";
-import { InitiateAppointmentCreationUseCase } from "@/modules/scheduling-payment/application/use-cases/initiate-appointment-creation.use-case";
+import { AppointmentBookingUseCase } from "@/modules/scheduling-payment/application/use-cases/appointment-booking.use-case";
 import {
 	BadRequestException,
 	Body,
@@ -14,7 +14,7 @@ import { CreateAppointmentRequestDto } from "../dtos/create-appointment.dto";
 @Controller("appointments/payment-orchestrator")
 export class SchedulingPaymentController {
 	constructor(
-		private readonly createAppointmentUseCase: InitiateAppointmentCreationUseCase,
+		private readonly createAppointmentUseCase: AppointmentBookingUseCase,
 	) {}
 
 	@Post("create")

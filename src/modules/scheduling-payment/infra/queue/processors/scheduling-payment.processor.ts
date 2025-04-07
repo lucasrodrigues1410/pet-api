@@ -1,5 +1,5 @@
 import { PaymentWebhookReceivedEvent } from "@/modules/payment/domain/events/payment-webhook-received.event";
-import { ConfirmPaymentAndSchedulingUseCase } from "@/modules/scheduling-payment/application/use-cases/confirm-payment-and-scheduling.use-case";
+import { FinalizePaymentAndAppointmentUseCase } from "@/modules/scheduling-payment/application/use-cases/finalize-payment-and-appointment.use-case";
 import { Process, Processor } from "@nestjs/bull";
 import { Injectable, Logger } from "@nestjs/common";
 import { Job } from "bull";
@@ -10,7 +10,7 @@ export class SchedulingPaymentProcessor {
 	private readonly logger = new Logger(SchedulingPaymentProcessor.name);
 
 	constructor(
-		private readonly confirmPaymentAndSchedulingUseCase: ConfirmPaymentAndSchedulingUseCase,
+		private readonly confirmPaymentAndSchedulingUseCase: FinalizePaymentAndAppointmentUseCase,
 	) {}
 
 	@Process("payment.webhook.received")

@@ -29,11 +29,6 @@ export class AppointmentAvailabilityService {
 		startDate: Date,
 		serviceDuration: number,
 	) {
-		const today = new Date();
-		if (isBefore(startDate, today)) {
-			return { isAvailable: false };
-		}
-
 		const endDate = addMinutes(startDate, serviceDuration);
 		const dayOfWeek = daysOfWeek[startDate.getDay()];
 

@@ -1,5 +1,6 @@
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
-import { TimeSlotUnavailableError } from "@/modules/appointment/application/errors/time-slot-unavailable.error";
+import { TimeSlotUnavailableError } from "@/modules/scheduling-payment/application/errors/time-slot-unavailable.error";
+import { InvalidAppointmentDateError } from "@/modules/scheduling-payment/application/errors/invalid-appointment-date.error";
 import { AppointmentAvailabilityService } from "@/modules/appointment/application/services/appointment-availability.service";
 import { AppointmentIntent } from "@/modules/appointment/domain/entities/appointment-intent.entity";
 import { AppointmentIntentRepository } from "@/modules/appointment/domain/repositories/appointment-intent.repository";
@@ -11,25 +12,26 @@ import { ServiceRepository } from "@/modules/service/domain/repositories/service
 import { Either, left, right } from "@/shared/either";
 import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
 import { Injectable } from "@nestjs/common";
-import { addMinutes } from "date-fns";
+import { addMinutes, isBefore } from "date-fns";
 
-interface InitiateAppointmentCreationUseCaseRequest {
+interface AppointmentBookingUseCaseRequest {
 	serviceId: string;
 	animalId: string;
 	clientId: string;
 	date: Date;
 }
 
-type InitiateAppointmentCreationUseCaseResponse = Either<
+type AppointmentBookingUseCaseResponse = Either<
 	| ResourceNotFoundError
 	| TimeSlotUnavailableError
 	| NoApplicablePriceVariationError
-	| CheckoutSessionCreationError,
+	| CheckoutSessionCreationError
+	| InvalidAppointmentDateError,
 	{ url: string }
 >;
 
 @Injectable()
-export class InitiateAppointmentCreationUseCase {
+export class AppointmentBookingUseCase {
 	constructor(
 		private readonly appointmentAvailabilityService: AppointmentAvailabilityService,
 		private readonly serviceRepository: ServiceRepository,
@@ -43,11 +45,16 @@ export class InitiateAppointmentCreationUseCase {
 		clientId,
 		animalId,
 		date,
-	}: InitiateAppointmentCreationUseCaseRequest): Promise<InitiateAppointmentCreationUseCaseResponse> {
+	}: AppointmentBookingUseCaseRequest): Promise<AppointmentBookingUseCaseResponse> {
+		const today = new Date();
+		if (isBefore(date, today)) {
+			return left(new InvalidAppointmentDateError());
+		}
+
 		// Valida existência do serviço
 		const service = await this.serviceRepository.findById(serviceId);
 		if (!service) {
-			return left(new ResourceNotFoundError("Service"));
+			return left(new ResourceNotFoundError("Serviço não encontrado"));
 		}
 
 		const startDate = new Date(date);
@@ -63,7 +70,7 @@ export class InitiateAppointmentCreationUseCase {
 				serviceDuration,
 			);
 		if (!isAvailable || !timeRange) {
-			return left(new TimeSlotUnavailableError());
+			return left(new TimeSlotUnavailableError("Horário indisponível"));
 		}
 
 		// Calcula variação de preço

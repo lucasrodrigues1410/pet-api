@@ -1,4 +1,4 @@
-import { createZodCustomDto } from "@/core/infra/http/dtos/zod-custom-dto";
+import { createZodCustomDto } from "@/shared/dtos/zod-custom-dto";
 import { z } from "zod";
 
 const listAvailableDatesRequest = z.object({

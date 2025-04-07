@@ -1,27 +1,27 @@
 import { Appointment } from "@/modules/appointment/domain/entities/appointment.entity";
 import { AppointmentIntentRepository } from "@/modules/appointment/domain/repositories/appointment-intent.repository";
 import { AppointmentRepository } from "@/modules/appointment/domain/repositories/appointment.repository";
+import { PaymentService } from "@/modules/payment/application/services/payment-service";
 import { Payment } from "@/modules/payment/domain/entities/payment.entity";
-import { PaymentRepository } from "@/modules/payment/domain/repositories/payment.repository";
 import { Injectable } from "@nestjs/common";
 
-type ConfirmPaymentAndSchedulingUseCaseRequest = {
+type FinalizePaymentAndAppointmentUseCaseRequest = {
 	scheduleData: {
 		appointmentIntentId: string;
 	};
 };
 
 @Injectable()
-export class ConfirmPaymentAndSchedulingUseCase {
+export class FinalizePaymentAndAppointmentUseCase {
 	constructor(
-		private readonly paymentRepository: PaymentRepository,
+		private readonly paymentService: PaymentService,
 		private readonly appointmentRepository: AppointmentRepository,
 		private readonly appointmentIntentRepository: AppointmentIntentRepository,
 	) {}
 
 	async execute({
 		scheduleData,
-	}: ConfirmPaymentAndSchedulingUseCaseRequest): Promise<void> {
+	}: FinalizePaymentAndAppointmentUseCaseRequest): Promise<void> {
 		const appointmentIntent = await this.appointmentIntentRepository.findById(
 			scheduleData.appointmentIntentId,
 		);
@@ -43,7 +43,7 @@ export class ConfirmPaymentAndSchedulingUseCase {
 		});
 
 		//TODO: Implementar atomização de transações
-		await this.paymentRepository.create(payment);
+		await this.paymentService.createPaymentRecord(payment);
 		await this.appointmentRepository.create(appointment);
 	}
 }
