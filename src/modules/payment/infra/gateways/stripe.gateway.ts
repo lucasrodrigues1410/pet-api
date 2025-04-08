@@ -1,5 +1,5 @@
 import { left, right } from "@/shared/either";
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import Stripe from "stripe";
 import { CheckoutSessionCreationError } from "../../domain/errors/checkout-session-creation.error";
@@ -9,6 +9,7 @@ import {
 	ValidatedWebhookPayload,
 	VerifyWebhookResult,
 } from "../../domain/repositories/payment-gateway.repository";
+import { addMinutes, getUnixTime } from "date-fns";
 
 type CreateSessionParams = Parameters<PaymentGateway["createCheckoutUrl"]>[0];
 type CreateSessionResponse = ReturnType<PaymentGateway["createCheckoutUrl"]>;
@@ -25,6 +26,8 @@ type Item = {
 export class StripePaymentGateway implements PaymentGateway {
 	private stripe: Stripe;
 	private readonly webhookSecret: string;
+
+	private readonly logger = new Logger(StripePaymentGateway.name);
 
 	constructor(private readonly configService: ConfigService) {
 		const apiKey = this.configService.get("STRIPE_API_KEY");
@@ -56,7 +59,7 @@ export class StripePaymentGateway implements PaymentGateway {
 			return right({ type: event.type, payload: genericPayload });
 		} catch (err) {
 			if (err instanceof Stripe.errors.StripeSignatureVerificationError) {
-				console.error("Webhook signature verification failed:", err.message);
+				this.logger.error('Invalid webhook signature', err);
 				return left(new InvalidWebhookSignatureError());
 			}
 
@@ -74,6 +77,7 @@ export class StripePaymentGateway implements PaymentGateway {
 				mode: "payment",
 				metadata: params.metadata || {},
 				payment_method_types: ["card"],
+				expires_at: getUnixTime(addMinutes(new Date(), 5)),
 			});
 
 			if (!session.url) {

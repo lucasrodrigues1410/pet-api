@@ -40,6 +40,7 @@ export class PrismaServiceMapper {
 				duration: prismaService.duration,
 				isActive: prismaService.isActive,
 				name: prismaService.name,
+				capacity: prismaService.capacity ?? undefined,
 				companyId: new UniqueEntityID(prismaService.companyId),
 				categories,
 				company,
@@ -56,6 +57,7 @@ export class PrismaServiceMapper {
 			isActive: service.isActive,
 			name: service.name,
 			companyId: service.companyId.toString(),
+			capacity: service.capacity,
 			details: service.details as Prisma.JsonObject,
 		};
 	}

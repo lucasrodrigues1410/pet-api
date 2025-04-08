@@ -9,6 +9,7 @@ export interface ServiceProps {
 	price: number;
 	isActive: boolean;
 	duration?: number | null;
+	capacity?: number;
 	companyId: UniqueEntityID;
 	details?: Record<string, unknown> | null;
 	categories?: Category[];
@@ -38,6 +39,10 @@ export class Service extends Entity<ServiceProps> {
 
 	get companyId() {
 		return this.props.companyId;
+	}
+
+	get capacity() {
+		return this.props.capacity;
 	}
 
 	get details() {

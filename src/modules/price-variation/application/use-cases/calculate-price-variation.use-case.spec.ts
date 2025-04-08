@@ -30,7 +30,7 @@ describe("List Animals from User", () => {
 		const animal = makeAnimal({
 			weight: 11,
 		});
-		const serviceId = new UniqueEntityID().toString();
+		const serviceId = new UniqueEntityID();
 		const priceVariations = [
 			makePriceVariation({
 				serviceId,
@@ -56,7 +56,7 @@ describe("List Animals from User", () => {
 
 		const response = await sut.execute({
 			animalId: animal.id.toString(),
-			serviceId: serviceId,
+			serviceId: serviceId.toString(),
 		});
 
 		expect(response.value).toEqual({
@@ -68,7 +68,7 @@ describe("List Animals from User", () => {
 		const animal = makeAnimal({
 			weight: 27,
 		});
-		const serviceId = new UniqueEntityID().toString();
+		const serviceId = new UniqueEntityID();
 		const priceVariations = [
 			makePriceVariation({
 				serviceId,
@@ -81,7 +81,7 @@ describe("List Animals from User", () => {
 		inMemoryAnimalRepository.items.push(animal);
 		const response = await sut.execute({
 			animalId: animal.id.toString(),
-			serviceId: serviceId,
+			serviceId: serviceId.toString(),
 		});
 		expect(response.isLeft()).toBeTruthy();
 	});
