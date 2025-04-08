@@ -62,14 +62,14 @@ export class AppointmentBookingUseCase {
 		const endDate = addMinutes(startDate, serviceDuration);
 
 		// Verifica se o horário está disponível
-		const { isAvailable, timeRange } =
+		const isAvailable =
 			await this.appointmentAvailabilityService.getAvailability(
 				service.companyId.toString(),
 				serviceId,
 				startDate,
 				serviceDuration,
 			);
-		if (!isAvailable || !timeRange) {
+		if (!isAvailable) {
 			return left(new TimeSlotUnavailableError("Horário indisponível"));
 		}
 
@@ -107,6 +107,7 @@ export class AppointmentBookingUseCase {
 			metadata: {
 				appointmentIntentId: appointmentIntent.id.toString(),
 			},
+			expirationDate: appointmentIntent.validUntil,
 			successUrl: `${process.env.APP_URL}/appointments/${appointmentIntent.id.toString()}`,
 		});
 

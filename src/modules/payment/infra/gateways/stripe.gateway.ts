@@ -76,7 +76,7 @@ export class StripePaymentGateway implements PaymentGateway {
 				mode: "payment",
 				metadata: params.metadata || {},
 				payment_method_types: ["card"],
-				expires_at: getUnixTime(addMinutes(new Date(), 5)),
+				expires_at: params.expirationDate ? getUnixTime(params.expirationDate) : undefined,
 			});
 
 			if (!session.url) {

@@ -30,6 +30,7 @@ export abstract class PaymentGateway {
 			description?: string;
 			images?: string[];
 		}>;
+		expirationDate?: Date;
 		metadata?: Record<string, string>;
 	}): Promise<
 		Either<

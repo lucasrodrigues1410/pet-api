@@ -60,7 +60,7 @@ export class AppointmentAvailabilityService {
 			appointments?.length ||
 			appointmentIntents?.length
 		) {
-			return { isAvailable: false };
+			return true;
 		}
 
 		const isValid = this.isValid(
@@ -69,14 +69,8 @@ export class AppointmentAvailabilityService {
 			companyAvailability.timeRange.startTime,
 			companyAvailability.timeRange.endTime,
 		);
-		if (!isValid) {
-			return { isAvailable: false };
-		}
 
-		return {
-			isAvailable: true,
-			timeRange: companyAvailability.timeRange,
-		};
+		return isValid;
 	}
 
 	isValid(
