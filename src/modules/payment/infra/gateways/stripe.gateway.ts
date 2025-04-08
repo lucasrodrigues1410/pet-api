@@ -26,7 +26,6 @@ type Item = {
 export class StripePaymentGateway implements PaymentGateway {
 	private stripe: Stripe;
 	private readonly webhookSecret: string;
-
 	private readonly logger = new Logger(StripePaymentGateway.name);
 
 	constructor(private readonly configService: ConfigService) {
