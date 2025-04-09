@@ -12,6 +12,7 @@ import {
 	Param,
 	Post,
 	Put,
+	Query,
 } from "@nestjs/common";
 import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { UserTypeDecorator } from "src/modules/auth/infra/http/decorators/user-type.decorator";
@@ -22,8 +23,15 @@ import {
 	CreateAnimalRequestDto,
 	CreateAnimalResponseDto,
 } from "../dtos/create-animal.dto";
-import { ListAnimalsResponseDto } from "../dtos/list-animals.dto";
+import {
+	ListAnimalsResponseDto,
+} from "../dtos/list-animals.dto";
+import { ApiCreatedResponse } from '@nestjs/swagger';
 import { UpdateAnimalRequestDto } from "../dtos/update-animal.dto";
+import { AnimalPresenter } from "../presenters/animal.presenter";
+import { PaginationParamsQuery } from "@/core/pagination/pagination-params";
+import { PaginationResultPresenter } from "@/core/pagination/pagination-presenter";
+
 
 @ApiTags("Animais")
 @Controller("animal")
@@ -61,35 +69,28 @@ export class AnimalController {
 	}
 
 	@ApiOperation({ summary: "Listar todos os animais de um usuário" })
-	@ApiOkResponse({
-		description: "Animais listados com sucesso",
-		type: ListAnimalsResponseDto,
-	})
+	@ApiCreatedResponse({type: ListAnimalsResponseDto})
 	@Get("user/:id")
 	@UserTypeDecorator("CUSTOMER")
-	async listAll(@Param("id") userId: string) {
-		const result = await this.listAnimalsFromUserUseCase.execute({ userId });
+	async listAll(
+		@Param("id") userId: string,
+		@Query() query: PaginationParamsQuery,
+	) {
+
+		const result = await this.listAnimalsFromUserUseCase.execute({
+			userId,
+			...query,
+		});
+
+
 		if (result.isLeft()) {
 			throw new BadRequestException();
 		}
 		return {
-			results: result.value.animals.map((animal) => ({
-				id: animal.id,
-				name: animal.name,
-				birthdate: animal.birthdate,
-				weight: animal.weight,
-				breed: {
-					name: animal.breed?.name,
-				},
-				image: animal.asset
-					? {
-							url: animal.asset?.url,
-							thumbnailUrl: animal.asset?.thumbnailUrl,
-							width: animal.asset?.width,
-							height: animal.asset?.height,
-						}
-					: undefined,
-			})),
+			...PaginationResultPresenter.toHTTP({
+				...result.value,
+				items: result.value.items.map(AnimalPresenter.toHTTP),
+			}),
 		};
 	}
 

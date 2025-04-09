@@ -1,8 +1,10 @@
-import { createZodDto } from "nestjs-zod";
+import { paginationResultSchema } from "@/core/pagination/pagination-result";
+import { createZodDto } from "@anatine/zod-nestjs";
+import { extendApi } from "@anatine/zod-openapi";
 import { z } from "zod";
 
-const listAnimalsResponse = z.object({
-	results: z.array(
+const listAnimalsResponse = extendApi(
+	paginationResultSchema(
 		z.object({
 			id: z.string(),
 			name: z.string(),
@@ -21,6 +23,10 @@ const listAnimalsResponse = z.object({
 				.optional(),
 		}),
 	),
-});
+	{
+		title: "List animals response",
+		description: "List animals response",
+	},
+);
 
 export class ListAnimalsResponseDto extends createZodDto(listAnimalsResponse) {}

@@ -17,6 +17,8 @@
 		"test": "bun test"
 	},
 	"dependencies": {
+		"@anatine/zod-nestjs": "^2.0.12",
+		"@anatine/zod-openapi": "^2.2.8",
 		"@nestjs/bull": "^11.0.2",
 		"@nestjs/common": "^11.0.14",
 		"@nestjs/config": "^4.0.2",
@@ -30,7 +32,7 @@
 		"bull": "^4.16.5",
 		"date-fns": "^4.1.0",
 		"imagekit": "^6.0.0",
-		"nestjs-zod": "^4.3.1",
+		"openapi3-ts": "^4.4.0",
 		"passport-jwt": "^4.0.1",
 		"reflect-metadata": "^0.2.2",
 		"stripe": "^18.0.0",

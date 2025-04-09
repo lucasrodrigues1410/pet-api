@@ -1,3 +1,6 @@
+import { PaginationParams } from "@/core/pagination/pagination-params";
+import { PaginationResult } from "@/core/pagination/pagination-result";
+import { paginate } from "@/core/pagination/paginator";
 import { Animal } from "src/modules/animal/domain/entities/animal.entity";
 import { AnimalRepository } from "src/modules/animal/domain/repositories/animal.repository";
 
@@ -39,12 +42,20 @@ export class InMemoryAnimalRepository implements AnimalRepository {
 			resolve();
 		});
 	}
-	getAllByUser(userId: string): Promise<Animal[]> {
-		return new Promise((resolve) => {
-			const animals = this.items.filter(
-				(animal) => animal.userId.toString() === userId,
-			);
-			resolve(animals);
-		});
+
+	async getAllByUser(
+		params: { userId: string } & PaginationParams,
+	): Promise<PaginationResult<Animal>> {
+		return paginate(
+			async () =>
+				this.items.filter(
+					(animal) => animal.userId.toString() === params.userId,
+				),
+			async () =>
+				this.items.filter(
+					(animal) => animal.userId.toString() === params.userId,
+				).length,
+			params,
+		);
 	}
 }

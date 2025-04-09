@@ -23,9 +23,13 @@ describe("List Animals from User", () => {
 		for (const animal of animals) {
 			inMemoryAnimalsRepository.items.push(animal);
 		}
-		const result = await sut.execute({ userId: uniqueId.toString() });
+		const result = await sut.execute({
+			userId: uniqueId.toString(),
+			page: 1,
+			limit: 5,
+		});
 
 		expect(result.isRight()).toBe(true);
-		expect(result.value?.animals).toHaveLength(5);
+		expect(result.value?.items).toHaveLength(5);
 	});
 });

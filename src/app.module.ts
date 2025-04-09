@@ -1,8 +1,6 @@
-import { BullModule } from "@nestjs/bull";
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { APP_GUARD, APP_PIPE } from "@nestjs/core";
-import { ZodValidationPipe } from "nestjs-zod";
 import { BullEventDispatcherModule } from "./core/infra/bull/bull-event-dispatcher.module";
 import { PrismaModule } from "./core/infra/prisma/prisma.module";
 import { AnimalModule } from "./modules/animal/animal.module";
@@ -18,6 +16,7 @@ import { PriceVariationModule } from "./modules/price-variation/price-variation.
 import { SchedulingPaymentModule } from "./modules/scheduling-payment/scheduling-payment.module";
 import { ServiceModule } from "./modules/service/service.module";
 import { UserModule } from "./modules/user/user.module";
+import { ZodValidationPipe } from "@anatine/zod-nestjs";
 
 @Module({
 	imports: [

@@ -3,6 +3,8 @@ import { Injectable } from "@nestjs/common";
 import { Animal } from "../../../domain/entities/animal.entity";
 import { AnimalRepository } from "../../../domain/repositories/animal.repository";
 import { AnimalPrismaMapper } from "../mappers/prisma-animal.mapper";
+import { paginate } from "@/core/pagination/paginator";
+import { PaginationParams } from "@/core/pagination/pagination-params";
 
 @Injectable()
 export class AnimalPrismaRepository implements AnimalRepository {
@@ -44,13 +46,25 @@ export class AnimalPrismaRepository implements AnimalRepository {
 		});
 	}
 
-	async getAllByUser(userId: string) {
-		const response = await this.prismaService.animal.findMany({
-			where: { userId, deletedAt: null },
-			include: {
-				breed: true,
-			},
-		});
-		return response.map((animal) => AnimalPrismaMapper.toDomain(animal));
+	async getAllByUser(params: { userId: string } & PaginationParams) {
+		const { items, ...rest } = await paginate(
+			({ skip, take }) =>
+				this.prismaService.animal.findMany({
+					skip,
+					take,
+					orderBy: { createdAt: "desc" },
+					where: { userId: params.userId, deletedAt: null },
+					include: {
+						breed: true,
+					},
+				}),
+			() => this.prismaService.animal.count(),
+			params,
+		);
+
+		return {
+			items: items.map((animal) => AnimalPrismaMapper.toDomain(animal)),
+			...rest,
+		};
 	}
 }

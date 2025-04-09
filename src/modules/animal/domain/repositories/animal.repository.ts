@@ -1,9 +1,13 @@
+import { PaginationResult } from "@/core/pagination/pagination-result";
 import { Animal } from "../entities/animal.entity";
+import { PaginationParams } from "@/core/pagination/pagination-params";
 
 export abstract class AnimalRepository {
 	abstract create(animal: Animal): Promise<Animal>;
 	abstract update(animal: Animal): Promise<Animal>;
 	abstract getById(animalId: string): Promise<Animal | null>;
 	abstract delete(animalId: string): Promise<void>;
-	abstract getAllByUser(userId: string): Promise<Animal[]>;
+	abstract getAllByUser(
+		params: { userId: string } & PaginationParams,
+	): Promise<PaginationResult<Animal>>;
 }

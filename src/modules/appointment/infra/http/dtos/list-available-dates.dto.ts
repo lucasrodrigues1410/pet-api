@@ -1,4 +1,4 @@
-import { createZodCustomDto } from "@/shared/dtos/zod-custom-dto";
+import { createZodDto } from "@anatine/zod-nestjs";
 import { z } from "zod";
 
 const listAvailableDatesRequest = z.object({
@@ -15,10 +15,10 @@ const listAvailableDatesResponse = z.object({
 	),
 });
 
-export class ListAvailableDatesRequestDto extends createZodCustomDto(
+export class ListAvailableDatesRequestDto extends createZodDto(
 	listAvailableDatesRequest,
 ) {}
 
-export class ListAvailableDatesResponseDto extends createZodCustomDto(
+export class ListAvailableDatesResponseDto extends createZodDto(
 	listAvailableDatesResponse,
 ) {}

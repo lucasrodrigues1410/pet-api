@@ -1,5 +1,5 @@
 import { set } from "date-fns";
-import { createZodDto } from "nestjs-zod";
+import { createZodDto } from "@anatine/zod-nestjs";
 import { z } from "zod";
 
 const createAppointmentRequest = z.object({

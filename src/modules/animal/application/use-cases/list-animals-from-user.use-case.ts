@@ -2,28 +2,26 @@ import { Either, right } from "@/shared/either";
 import { Injectable } from "@nestjs/common";
 import { Animal } from "../../domain/entities/animal.entity";
 import { AnimalRepository } from "../../domain/repositories/animal.repository";
+import { PaginationParams } from "@/core/pagination/pagination-params";
+import { PaginationResult } from "@/core/pagination/pagination-result";
 
-interface ListAnimalsFromUserUseCaseRequest {
+type ListAnimalsFromUserUseCaseRequest = {
 	userId: string;
-}
+} & PaginationParams;
 
 type ListAnimalsFromUserUseCaseResponse = Either<
 	null,
-	{
-		animals: Animal[];
-	}
+	PaginationResult<Animal>
 >;
 
 @Injectable()
 export class ListAnimalsFromUserUserUseCase {
 	constructor(private readonly animalRepository: AnimalRepository) {}
 
-	async execute({
-		userId,
-	}: ListAnimalsFromUserUseCaseRequest): Promise<ListAnimalsFromUserUseCaseResponse> {
-		const animals = await this.animalRepository.getAllByUser(userId);
-		return right({
-			animals,
-		});
+	async execute(
+		params: ListAnimalsFromUserUseCaseRequest,
+	): Promise<ListAnimalsFromUserUseCaseResponse> {
+		const response = await this.animalRepository.getAllByUser(params);
+		return right(response);
 	}
 }
