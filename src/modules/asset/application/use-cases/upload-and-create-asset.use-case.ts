@@ -1,3 +1,4 @@
+import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { Either, left, right } from "@/shared/either";
 import { Injectable } from "@nestjs/common";
 import { Asset } from "../../domain/entities/asset";
@@ -9,6 +10,7 @@ interface UploadAndCreateAssetRequest {
 	fileName: string;
 	fileType: string;
 	body: Buffer;
+	userId: string;
 }
 
 type UploadAndCreateAssetResponse = Either<
@@ -29,13 +31,14 @@ export class UploadAndCreateAssetUseCase {
 		fileName,
 		fileType,
 		body,
+		userId,
 	}: UploadAndCreateAssetRequest): Promise<UploadAndCreateAssetResponse> {
 		const allowedFileTypes = ["image/jpeg", "image/png", "application/pdf"];
 		if (!allowedFileTypes.includes(fileType)) {
 			return left(new InvalidAssetTypeError(fileType));
 		}
 
-		const { url, name, height, width, thumbnailUrl } =
+		const { url, name, id, height, width, thumbnailUrl } =
 			await this.uploader.upload({ fileName, fileType, body });
 
 		const asset = Asset.create({
@@ -43,8 +46,10 @@ export class UploadAndCreateAssetUseCase {
 			fileType,
 			url,
 			height,
+			fileId: id,
 			width,
 			thumbnailUrl,
+			userId: new UniqueEntityID(userId),
 		});
 
 		await this.assetRepository.create(asset);

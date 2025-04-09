@@ -29,7 +29,7 @@ export class DeleteAnimalUseCase {
 
 		if (animal.assetId) {
 			this.eventDispatcher.dispatch(
-				new AssetUnlinkedEvent(`${animal.assetId}`),
+				new AssetUnlinkedEvent(`${animal.assetId}`, data.userId),
 			);
 		}
 

@@ -34,11 +34,16 @@ export class ImageKitStorageProvider implements Uploader {
 		});
 
 		return {
+			id: response.fileId,
 			name: response.name,
 			url: response.url,
 			width: response.width,
 			height: response.height,
 			thumbnailUrl: response.thumbnailUrl,
 		};
+	}
+
+	async delete(fileId: string): Promise<void> {
+		await this.client.deleteFile(fileId);
 	}
 }

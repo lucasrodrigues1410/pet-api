@@ -6,13 +6,15 @@ model Asset {
   width        Int?
   height       Int?
   thumbnailUrl String?
+  fileId       String? @map("file_id")
+  userId       String  @map("user_id")
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
   companyImage CompanyImage[]
-  animal Animal[]
+  animal       Animal[]
 
   @@index([url])
   @@map("assets")

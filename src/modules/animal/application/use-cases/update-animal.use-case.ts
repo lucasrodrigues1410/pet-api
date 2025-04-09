@@ -63,7 +63,9 @@ export class UpdateAnimalUseCase {
 		}
 
 		if (data.assetId && data.assetId !== animal.assetId?.toString()) {
-			this.eventDispatcher.dispatch(new AssetUnlinkedEvent(`${data.assetId}`));
+			this.eventDispatcher.dispatch(
+				new AssetUnlinkedEvent(`${data.assetId}`, data.userId),
+			);
 		}
 
 		const result = await this.animalRepository.update(newAnimal);

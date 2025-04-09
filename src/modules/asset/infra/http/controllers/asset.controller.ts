@@ -1,3 +1,4 @@
+import { User } from "@/modules/auth/infra/http/decorators/user.decorator";
 import {
 	BadRequestException,
 	Controller,
@@ -25,6 +26,7 @@ export class AssetController {
 	@ApiConsumes("multipart/form-data")
 	@UseInterceptors(FileInterceptor("file"))
 	async handle(
+		@User("sub") userId: string,
 		@UploadedFile(
 			new ParseFilePipe({
 				validators: [
@@ -43,6 +45,7 @@ export class AssetController {
 			fileName: file.originalname,
 			fileType: file.mimetype,
 			body: file.buffer,
+			userId,
 		});
 
 		if (result.isLeft()) {

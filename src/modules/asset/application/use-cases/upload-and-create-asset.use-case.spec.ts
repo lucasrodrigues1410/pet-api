@@ -1,18 +1,18 @@
 import { beforeEach, describe, expect, it } from "bun:test";
+import { MockUploader } from "test/mocks/mock-uploader";
 import { InMemoryAssetRepository } from "test/repositories/in-memory-asset.repository";
-import { FakeUploader } from "test/storage/fake-uploader";
 import { InvalidAssetTypeError } from "../errors/invalid-asset-type.error";
 import { UploadAndCreateAssetUseCase } from "./upload-and-create-asset.use-case";
 
 let inMemoryAttachmentsRepository: InMemoryAssetRepository;
-let fakeUploader: FakeUploader;
+let fakeUploader: MockUploader;
 
 let sut: UploadAndCreateAssetUseCase;
 
 describe("Upload and create attachment", () => {
 	beforeEach(() => {
 		inMemoryAttachmentsRepository = new InMemoryAssetRepository();
-		fakeUploader = new FakeUploader();
+		fakeUploader = new MockUploader();
 
 		sut = new UploadAndCreateAssetUseCase(
 			inMemoryAttachmentsRepository,
@@ -25,14 +25,15 @@ describe("Upload and create attachment", () => {
 			fileName: "profile.png",
 			fileType: "image/png",
 			body: Buffer.from(""),
+			userId: "user-id",
 		});
 
 		expect(result.isRight()).toBe(true);
 		expect(result.value).toEqual({
 			asset: inMemoryAttachmentsRepository.items[0],
 		});
-		expect(fakeUploader.uploads).toHaveLength(1);
-		expect(fakeUploader.uploads[0]).toEqual(
+		expect(fakeUploader.items).toHaveLength(1);
+		expect(fakeUploader.items[0]).toEqual(
 			expect.objectContaining({
 				fileName: "profile.png",
 			}),
@@ -44,6 +45,7 @@ describe("Upload and create attachment", () => {
 			fileName: "profile.mp3",
 			fileType: "audio/mpeg",
 			body: Buffer.from(""),
+			userId: "user-id",
 		});
 
 		expect(result.isLeft()).toBe(true);

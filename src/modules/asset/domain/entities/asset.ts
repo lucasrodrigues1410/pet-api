@@ -8,6 +8,8 @@ export interface AssetProps {
 	width?: number;
 	height?: number;
 	thumbnailUrl?: string;
+	fileId?: string;
+	userId: UniqueEntityID;
 }
 
 export class Asset extends Entity<AssetProps> {
@@ -17,6 +19,10 @@ export class Asset extends Entity<AssetProps> {
 
 	get url() {
 		return this.props.url;
+	}
+
+	get userId() {
+		return this.props.userId;
 	}
 
 	get fileType() {
@@ -33,6 +39,10 @@ export class Asset extends Entity<AssetProps> {
 
 	get thumbnailUrl() {
 		return this.props.thumbnailUrl;
+	}
+
+	get fileId() {
+		return this.props.fileId;
 	}
 
 	public static create(props: AssetProps, id?: UniqueEntityID): Asset {

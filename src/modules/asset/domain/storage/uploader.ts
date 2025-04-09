@@ -5,6 +5,7 @@ export interface UploadParams {
 }
 
 export interface UploadResponse {
+	id: string;
 	name: string;
 	url: string;
 	width?: number;
@@ -14,4 +15,5 @@ export interface UploadResponse {
 
 export abstract class Uploader {
 	abstract upload(params: UploadParams): Promise<UploadResponse>;
+	abstract delete(fileId: string): Promise<void>;
 }

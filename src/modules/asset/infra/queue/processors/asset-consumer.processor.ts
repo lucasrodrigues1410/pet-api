@@ -7,9 +7,9 @@ import { Job } from "bull";
 export class AssetProcessor {
 	constructor(private readonly deleteAssetById: DeleteAssetByIdUseCase) {}
 
-	@Process("delete-asset")
+	@Process("asset.unlinked")
 	async handleDeleteAsset(job: Job<AssetUnlinkedEvent>) {
-		const { assetId } = job.data;
-		await this.deleteAssetById.execute({ id: assetId });
+		const { assetId, userId } = job.data;
+		await this.deleteAssetById.execute({ assetId, userId });
 	}
 }

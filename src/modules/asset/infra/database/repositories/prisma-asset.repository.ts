@@ -33,4 +33,18 @@ export class PrismaAssetRepository implements AssetRepository {
 
 		return assets === ids.length;
 	}
+
+	async findById(id: string): Promise<Asset | null> {
+		const asset = await this.prismaService.asset.findUnique({
+			where: {
+				id,
+			},
+		});
+
+		if (!asset) {
+			return null;
+		}
+
+		return PrismaAssetMapper.toDomain(asset);
+	}
 }

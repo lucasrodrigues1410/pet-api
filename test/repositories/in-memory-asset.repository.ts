@@ -15,6 +15,16 @@ export class InMemoryAssetRepository implements AssetRepository {
 		this.items = this.items.filter((item) => item.id.toString() !== id);
 	}
 
+	async findById(id: string): Promise<Asset | null> {
+		const asset = this.items.find((item) => item.id.toString() === id);
+
+		if (!asset) {
+			return null;
+		}
+
+		return asset;
+	}
+
 	async existsByIds(ids: string[]): Promise<boolean> {
 		return this.items.some((item) => ids.includes(item.id.toString()));
 	}

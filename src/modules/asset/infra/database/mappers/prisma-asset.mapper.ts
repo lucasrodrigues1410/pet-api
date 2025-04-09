@@ -12,6 +12,8 @@ export class PrismaAssetMapper {
 				width: asset.width || undefined,
 				height: asset.height || undefined,
 				thumbnailUrl: asset.thumbnailUrl || undefined,
+				fileId: asset.fileId || undefined,
+				userId: new UniqueEntityID(asset.userId),
 			},
 			new UniqueEntityID(asset.id),
 		);
@@ -26,6 +28,8 @@ export class PrismaAssetMapper {
 			width: asset.width,
 			height: asset.height,
 			thumbnailUrl: asset.thumbnailUrl,
+			fileId: asset.fileId,
+			userId: asset.userId.toString(),
 		};
 	}
 }
