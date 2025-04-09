@@ -40,4 +40,7 @@ export abstract class PaymentGateway {
 			}
 		>
 	>;
+	abstract cancelPayment(params: {
+		gatewayPaymentId: string;
+	}): Promise<Either<Error, void>>;
 }

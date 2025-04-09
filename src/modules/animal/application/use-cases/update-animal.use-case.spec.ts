@@ -30,7 +30,8 @@ describe("Update", () => {
 
 		const newAnimal = makeAnimal();
 		const response = await sut.execute({
-			id: oldAnimal.id.toString(),
+			animalId: oldAnimal.id.toString(),
+			userId: oldAnimal.userId.toString(),
 			name: newAnimal.name,
 			birthdate: newAnimal.birthdate,
 			weight: newAnimal.weight,
@@ -47,7 +48,25 @@ describe("Update", () => {
 
 		const newAnimal = makeAnimal();
 		const response = await sut.execute({
-			id: "non-existing-id",
+			animalId: "non-existing-id",
+			userId: oldAnimal.userId.toString(),
+			name: newAnimal.name,
+			birthdate: newAnimal.birthdate,
+			weight: newAnimal.weight,
+		});
+
+		expect(response.isLeft()).toBeTruthy();
+		expect(inMemoryAnimalRepository.items).toHaveLength(1);
+	});
+
+	it("should not be able to update an animal of another user", async () => {
+		const oldAnimal = makeAnimal();
+		await inMemoryAnimalRepository.create(oldAnimal);
+
+		const newAnimal = makeAnimal();
+		const response = await sut.execute({
+			animalId: oldAnimal.id.toString(),
+			userId: newAnimal.userId.toString(),
 			name: newAnimal.name,
 			birthdate: newAnimal.birthdate,
 			weight: newAnimal.weight,

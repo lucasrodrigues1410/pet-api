@@ -7,5 +7,6 @@ export class PaymentWebhookReceivedEvent implements DomainEvent {
 		public readonly amount: number,
 		public readonly metadata: Record<string, any>,
 		public readonly webhookEventType: string,
+		public readonly intentId: string,
 	) {}
 }

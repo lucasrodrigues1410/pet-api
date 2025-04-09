@@ -1,6 +1,7 @@
-import { left, right } from "@/shared/either";
+import { Either, left, right } from "@/shared/either";
 import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
+import { addMinutes, getUnixTime } from "date-fns";
 import Stripe from "stripe";
 import { CheckoutSessionCreationError } from "../../domain/errors/checkout-session-creation.error";
 import { InvalidWebhookSignatureError } from "../../domain/errors/invalid-webhook-signature.error";
@@ -9,7 +10,6 @@ import {
 	ValidatedWebhookPayload,
 	VerifyWebhookResult,
 } from "../../domain/repositories/payment-gateway.repository";
-import { addMinutes, getUnixTime } from "date-fns";
 
 type CreateSessionParams = Parameters<PaymentGateway["createCheckoutUrl"]>[0];
 type CreateSessionResponse = ReturnType<PaymentGateway["createCheckoutUrl"]>;
@@ -58,7 +58,7 @@ export class StripePaymentGateway implements PaymentGateway {
 			return right({ type: event.type, payload: genericPayload });
 		} catch (err) {
 			if (err instanceof Stripe.errors.StripeSignatureVerificationError) {
-				this.logger.error('Invalid webhook signature', err);
+				this.logger.error("Invalid webhook signature", err);
 				return left(new InvalidWebhookSignatureError());
 			}
 
@@ -76,7 +76,12 @@ export class StripePaymentGateway implements PaymentGateway {
 				mode: "payment",
 				metadata: params.metadata || {},
 				payment_method_types: ["card"],
-				expires_at: params.expirationDate ? getUnixTime(params.expirationDate) : undefined,
+				payment_intent_data: {
+					capture_method: "manual",
+				},
+				expires_at: params.expirationDate
+					? getUnixTime(params.expirationDate)
+					: undefined,
 			});
 
 			if (!session.url) {
@@ -113,5 +118,18 @@ export class StripePaymentGateway implements PaymentGateway {
 				quantity: item.quantity,
 			};
 		});
+	}
+
+	async cancelPayment(params: {
+		gatewayPaymentId: string;
+	}): Promise<Either<Error, void>> {
+		try {
+			await this.stripe.paymentIntents.cancel(params.gatewayPaymentId);
+			return right(undefined);
+		} catch (error) {
+			return left(
+				new Error(`Failed to cancel payment: ${(error as Error).message}`),
+			);
+		}
 	}
 }

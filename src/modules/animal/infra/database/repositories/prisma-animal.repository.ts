@@ -19,7 +19,7 @@ export class AnimalPrismaRepository implements AnimalRepository {
 	async update(animal: Animal) {
 		const data = AnimalPrismaMapper.toPrisma(animal);
 		const response = await this.prismaService.animal.update({
-			where: { id: animal.id.toString() },
+			where: { id: animal.id.toString(), deletedAt: null },
 			data,
 		});
 		return AnimalPrismaMapper.toDomain(response);
@@ -27,7 +27,7 @@ export class AnimalPrismaRepository implements AnimalRepository {
 
 	async getById(animalId: string): Promise<Animal | null> {
 		const response = await this.prismaService.animal.findUnique({
-			where: { id: animalId.toString() },
+			where: { id: animalId.toString(), deletedAt: null },
 		});
 
 		if (!response) {
@@ -38,12 +38,15 @@ export class AnimalPrismaRepository implements AnimalRepository {
 	}
 
 	async delete(petId: string) {
-		await this.prismaService.animal.delete({ where: { id: petId } });
+		await this.prismaService.animal.update({
+			where: { id: petId },
+			data: { deletedAt: new Date() },
+		});
 	}
 
 	async getAllByUser(userId: string) {
 		const response = await this.prismaService.animal.findMany({
-			where: { userId },
+			where: { userId, deletedAt: null },
 			include: {
 				breed: true,
 			},

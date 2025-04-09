@@ -1,3 +1,4 @@
+import { UserTypeDecorator } from "@/modules/auth/infra/http/decorators/user-type.decorator";
 import { User } from "@/modules/auth/infra/http/decorators/user.decorator";
 import { AppointmentBookingUseCase } from "@/modules/scheduling-payment/application/use-cases/appointment-booking.use-case";
 import {
@@ -26,6 +27,7 @@ export class SchedulingPaymentController {
 	@ApiOkResponse({
 		description: "Retorna o agendamento criado",
 	})
+	@UserTypeDecorator("CUSTOMER")
 	async createAppointment(
 		@User("sub") userId: string,
 		@Body() params: CreateAppointmentRequestDto,

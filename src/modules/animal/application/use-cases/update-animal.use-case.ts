@@ -9,7 +9,8 @@ import { Animal } from "../../domain/entities/animal.entity";
 import { AnimalRepository } from "../../domain/repositories/animal.repository";
 
 interface UpdateAnimalUseCaseRequest {
-	id: string;
+	animalId: string;
+	userId: string;
 	name?: string | null;
 	birthdate?: Date | null;
 	weight?: number | null;
@@ -34,9 +35,9 @@ export class UpdateAnimalUseCase {
 	async execute(
 		data: UpdateAnimalUseCaseRequest,
 	): Promise<UpdateAnimalUseCaseResponse> {
-		const animal = await this.animalRepository.getById(data.id);
-		if (!animal) {
-			return left(new ResourceNotFoundError());
+		const animal = await this.animalRepository.getById(data.animalId);
+		if (!animal || animal.userId.toString() !== data.userId) {
+			return left(new ResourceNotFoundError("Animal não encontrado"));
 		}
 
 		const newAnimal = Animal.create(

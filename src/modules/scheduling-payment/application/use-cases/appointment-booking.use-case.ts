@@ -1,6 +1,4 @@
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
-import { TimeSlotUnavailableError } from "@/modules/scheduling-payment/application/errors/time-slot-unavailable.error";
-import { InvalidAppointmentDateError } from "@/modules/scheduling-payment/application/errors/invalid-appointment-date.error";
 import { AppointmentAvailabilityService } from "@/modules/appointment/application/services/appointment-availability.service";
 import { AppointmentIntent } from "@/modules/appointment/domain/entities/appointment-intent.entity";
 import { AppointmentIntentRepository } from "@/modules/appointment/domain/repositories/appointment-intent.repository";
@@ -8,6 +6,8 @@ import { PaymentService } from "@/modules/payment/application/services/payment-s
 import { CheckoutSessionCreationError } from "@/modules/payment/domain/errors/checkout-session-creation.error";
 import { CalculatePriceVariationUseCase } from "@/modules/price-variation/application/use-cases/calculate-price-variation.use-case";
 import { NoApplicablePriceVariationError } from "@/modules/price-variation/domain/errors/no-applicable-price-variation.error";
+import { InvalidAppointmentDateError } from "@/modules/scheduling-payment/application/errors/invalid-appointment-date.error";
+import { TimeSlotUnavailableError } from "@/modules/scheduling-payment/application/errors/time-slot-unavailable.error";
 import { ServiceRepository } from "@/modules/service/domain/repositories/service.repository";
 import { Either, left, right } from "@/shared/either";
 import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
@@ -107,7 +107,7 @@ export class AppointmentBookingUseCase {
 			metadata: {
 				appointmentIntentId: appointmentIntent.id.toString(),
 			},
-			expirationDate: appointmentIntent.validUntil,
+			// expirationDate: appointmentIntent.validUntil,
 			successUrl: `${process.env.APP_URL}/appointments/${appointmentIntent.id.toString()}`,
 		});
 

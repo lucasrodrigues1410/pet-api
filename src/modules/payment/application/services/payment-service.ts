@@ -46,4 +46,10 @@ export class PaymentService {
 			url: checkout.value.url,
 		});
 	}
+
+	async cancelPayment(params: {
+		gatewayPaymentId: string;
+	}): Promise<Either<Error, void>> {
+		return this.paymentGateway.cancelPayment(params);
+	}
 }

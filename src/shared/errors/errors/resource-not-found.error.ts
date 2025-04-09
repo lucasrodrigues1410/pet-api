@@ -2,6 +2,6 @@ import { UseCaseError } from "../use-case-error";
 
 export class ResourceNotFoundError extends Error implements UseCaseError {
 	constructor(msg?: string) {
-		super(msg ?? "Resource not found");
+		super(msg ?? "Recurso não encontrado");
 	}
 }
