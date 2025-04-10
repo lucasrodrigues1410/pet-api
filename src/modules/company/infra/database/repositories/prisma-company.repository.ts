@@ -4,19 +4,23 @@ import { PrismaService } from "src/core/infra/prisma/prisma.service";
 import { Company } from "src/modules/company/domain/entities/company.entity";
 import { CompanyRepository } from "src/modules/company/domain/repositories/company.repository";
 import { PrismaCompanyMapper } from "../mappers/prisma-company.mapper";
+import { PaginationParams } from "@/core/pagination/pagination-params";
+import { paginate } from "@/core/pagination/paginator";
+import { Prisma } from "@prisma/client";
 
 @Injectable()
 export class PrismaCompanyRepository implements CompanyRepository {
 	constructor(private prismaService: PrismaService) {}
 
-	async searchCompanies(params: {
-		location?: {
-			latitude: number;
-			longitude: number;
-		};
-		query?: string;
-		page?: number;
-	}): Promise<Company[]> {
+	async searchCompanies(
+		params: {
+			location?: {
+				latitude: number;
+				longitude: number;
+			};
+			query?: string;
+		} & PaginationParams,
+	) {
 		const query = params.query || "";
 		const page = params.page || 1;
 
@@ -25,42 +29,56 @@ export class PrismaCompanyRepository implements CompanyRepository {
 			longitude: params.location?.longitude,
 		});
 
-		const result = await this.prismaService.company.findMany({
-			where: {
-				OR: [
-					{
-						name: { contains: query, mode: "insensitive" },
-					},
-					{
-						services: {
-							some: {
-								OR: [
-									{ name: { contains: query, mode: "insensitive" } },
-									{ description: { contains: query, mode: "insensitive" } },
-								],
-							},
+		const filterOptions = {
+			OR: [
+				{
+					name: { contains: query, mode: "insensitive" },
+				},
+				{
+					services: {
+						some: {
+							OR: [
+								{ name: { contains: query, mode: "insensitive" } },
+								{ description: { contains: query, mode: "insensitive" } },
+							],
 						},
 					},
-				],
-				companyLocations: {
-					some: {
-						location: {
-							latitude: {
-								gte: bounds?.minLat,
-								lte: bounds?.maxLat,
-							},
-							longitude: {
-								gte: bounds?.minLon,
-								lte: bounds?.maxLon,
-							},
+				},
+			],
+			companyLocations: {
+				some: {
+					location: {
+						latitude: {
+							gte: bounds?.minLat,
+							lte: bounds?.maxLat,
+						},
+						longitude: {
+							gte: bounds?.minLon,
+							lte: bounds?.maxLon,
 						},
 					},
 				},
 			},
-			take: 10,
-			skip: (page - 1) * 10,
-		});
-		return result.map((company) => PrismaCompanyMapper.toDomain(company));
+		} as Prisma.CompanyWhereInput;
+
+		const { items, ...rest } = await paginate(
+			({ skip, take }) =>
+				this.prismaService.company.findMany({
+					where: filterOptions,
+					take,
+					skip,
+				}),
+			() =>
+				this.prismaService.company.count({
+					where: filterOptions,
+				}),
+			params,
+		);
+
+		return {
+			items: items.map((company) => PrismaCompanyMapper.toDomain(company)),
+			...rest,
+		};
 	}
 
 	async findById(id: string): Promise<Company | null> {

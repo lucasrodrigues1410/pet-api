@@ -2,9 +2,8 @@ import { NestFactory } from "@nestjs/core";
 import { NestExpressApplication } from "@nestjs/platform-express";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { AppModule } from "./app.module";
-import { patchNestjsSwagger } from '@anatine/zod-nestjs';
-
-patchNestjsSwagger();
+import { patchNestjsSwagger } from "@anatine/zod-nestjs";
+import { ValidationPipe } from "@nestjs/common";
 
 async function bootstrap() {
 	const app = await NestFactory.create<NestExpressApplication>(AppModule, {
@@ -18,12 +17,19 @@ async function bootstrap() {
 		)
 		.setVersion("1.0")
 		.build();
+	patchNestjsSwagger();
 
 	const documentFactory = () => SwaggerModule.createDocument(app, config);
 	SwaggerModule.setup("docs", app, documentFactory, {
 		jsonDocumentUrl: "swagger/json",
 	});
 
+	app.useGlobalPipes(
+		new ValidationPipe({
+			transform: true,
+			transformOptions: { enableImplicitConversion: true },
+		}),
+	);
 	await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();

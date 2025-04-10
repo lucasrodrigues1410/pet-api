@@ -20,9 +20,11 @@ describe("List services by company", () => {
 		}
 		const result = await sut.execute({
 			query: "",
+			page: 1,
+			limit: 10,
 		});
 
 		expect(result.isRight()).toBe(true);
-		expect(result.value?.companies).toHaveLength(5);
+		expect(result.value?.items).toHaveLength(5);
 	});
 });

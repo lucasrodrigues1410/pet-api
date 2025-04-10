@@ -2,21 +2,20 @@ import { Either, right } from "@/shared/either";
 import { Injectable } from "@nestjs/common";
 import { Company } from "../../domain/entities/company.entity";
 import { CompanyRepository } from "../../domain/repositories/company.repository";
+import { PaginationParams } from "@/core/pagination/pagination-params";
+import { PaginationResult } from "@/core/pagination/pagination-result";
 
-interface SearchCompaniesUseCaseRequest {
+type SearchCompaniesUseCaseRequest = {
 	location?: {
 		latitude: number;
 		longitude: number;
 	};
 	query?: string;
-	page?: number;
-}
+} & PaginationParams
 
 type SearchCompaniesUseCaseResponse = Either<
 	null,
-	{
-		companies: Company[];
-	}
+	PaginationResult<Company>
 >;
 
 @Injectable()
@@ -26,9 +25,7 @@ export class SearchCompaniesUseCase {
 	async execute(
 		params: SearchCompaniesUseCaseRequest,
 	): Promise<SearchCompaniesUseCaseResponse> {
-		const companies = await this.companyRepository.searchCompanies(params);
-		return right({
-			companies,
-		});
+		const response = await this.companyRepository.searchCompanies(params);
+		return right(response);
 	}
 }

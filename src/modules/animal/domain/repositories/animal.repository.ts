@@ -7,7 +7,7 @@ export abstract class AnimalRepository {
 	abstract update(animal: Animal): Promise<Animal>;
 	abstract getById(animalId: string): Promise<Animal | null>;
 	abstract delete(animalId: string): Promise<void>;
-	abstract getAllByUser(
+	abstract fetchAllAnimalsByUser(
 		params: { userId: string } & PaginationParams,
 	): Promise<PaginationResult<Animal>>;
 }

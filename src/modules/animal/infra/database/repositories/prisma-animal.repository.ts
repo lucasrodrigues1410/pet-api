@@ -46,7 +46,7 @@ export class AnimalPrismaRepository implements AnimalRepository {
 		});
 	}
 
-	async getAllByUser(params: { userId: string } & PaginationParams) {
+	async fetchAllAnimalsByUser(params: { userId: string } & PaginationParams) {
 		const { items, ...rest } = await paginate(
 			({ skip, take }) =>
 				this.prismaService.animal.findMany({

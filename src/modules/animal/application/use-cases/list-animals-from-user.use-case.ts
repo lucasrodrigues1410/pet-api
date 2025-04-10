@@ -21,7 +21,7 @@ export class ListAnimalsFromUserUserUseCase {
 	async execute(
 		params: ListAnimalsFromUserUseCaseRequest,
 	): Promise<ListAnimalsFromUserUseCaseResponse> {
-		const response = await this.animalRepository.getAllByUser(params);
+		const response = await this.animalRepository.fetchAllAnimalsByUser(params);
 		return right(response);
 	}
 }

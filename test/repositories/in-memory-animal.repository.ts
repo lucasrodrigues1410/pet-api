@@ -43,7 +43,7 @@ export class InMemoryAnimalRepository implements AnimalRepository {
 		});
 	}
 
-	async getAllByUser(
+	async fetchAllAnimalsByUser(
 		params: { userId: string } & PaginationParams,
 	): Promise<PaginationResult<Animal>> {
 		return paginate(

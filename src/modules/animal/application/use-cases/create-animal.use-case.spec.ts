@@ -32,7 +32,7 @@ describe("Create Animal", () => {
 
 		await sut.execute(params);
 
-		const animals = await inMemoryAnimalRepository.getAllByUser({
+		const animals = await inMemoryAnimalRepository.fetchAllAnimalsByUser({
 			limit: 10,
 			page: 1,
 			userId: params.userId,

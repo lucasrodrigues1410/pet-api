@@ -1,3 +1,5 @@
+import { PaginationParams } from "@/core/pagination/pagination-params";
+import { paginate } from "@/core/pagination/paginator";
 import { Company } from "src/modules/company/domain/entities/company.entity";
 import { CompanyRepository } from "src/modules/company/domain/repositories/company.repository";
 
@@ -9,13 +11,19 @@ export class InMemoryCompanyRepository implements CompanyRepository {
 			this.items.find((company) => company.id.toString() === id) || null,
 		);
 	}
-	searchCompanies(params: {
-		location?: { latitude: number; longitude: number };
-		query?: string;
-		page?: number;
-	}): Promise<Company[]> {
-		return Promise.resolve(
-			this.items.filter((company) => company.name.includes(params.query || "")),
+	searchCompanies(
+		params: {
+			location?: { latitude: number; longitude: number };
+			query?: string;
+		} & PaginationParams,
+	) {
+		return paginate(
+			async () =>
+				this.items.filter((company) =>
+					company.name.includes(params.query || ""),
+				),
+			async () => this.items.length,
+			params,
 		);
 	}
 

@@ -3,27 +3,14 @@ import { z } from "zod";
 
 export const paginationParams = z.object({
 	page: z
-		.string()
-		.refine((val) => !Number.isNaN(Number(val)), {
-			message: "Page must be a number",
-		})
-		.transform((val) => Number(val))
-		.refine((val) => val > 0, {
-			message: "Page must be greater than 0",
-		})
-		.optional()
-		.default("1"),
+		.number({ coerce: true })
+		.min(1, { message: "A página deve ser maior que 0" })
+		.optional(),
 	limit: z
-		.string()
-		.refine((val) => !Number.isNaN(Number(val)), {
-			message: "Limit must be a number",
-		})
-		.transform((val) => Number(val))
-		.refine((val) => val > 0, {
-			message: "Limit must be greater than 0",
-		})
-		.optional()
-		.default("10"),
+		.number({ coerce: true })
+		.min(1, { message: "O limite deve ser maior que 0" })
+		.max(100, { message: "O limite deve ser menor que 100" })
+		.optional(),
 });
 
 export type PaginationParams = z.output<typeof paginationParams>;
