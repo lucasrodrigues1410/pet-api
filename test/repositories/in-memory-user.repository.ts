@@ -18,4 +18,9 @@ export class InMemoryUserRepository implements UserRepository {
 		this.items.push(user);
 		return Promise.resolve();
 	}
+	update(user: User): Promise<void> {
+		const index = this.items.findIndex((item) => item.id === user.id);
+		this.items[index] = user;
+		return Promise.resolve();
+	}
 }

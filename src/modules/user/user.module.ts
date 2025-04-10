@@ -3,11 +3,13 @@ import { FindUserByIdUseCase } from "./application/use-cases/find-user-by-id.use
 import { UserRepository } from "./domain/repositories/user.repository";
 import { PrismaUserRepository } from "./infra/database/repositories/prisma-user.repository";
 import { UserController } from "./infra/http/controllers/user.controller";
+import { UpdateUserProfileUseCase } from "./application/use-cases/update-user-profile.use-case";
 
 @Module({
 	controllers: [UserController],
 	providers: [
 		FindUserByIdUseCase,
+		UpdateUserProfileUseCase,
 		{
 			provide: UserRepository,
 			useClass: PrismaUserRepository,
