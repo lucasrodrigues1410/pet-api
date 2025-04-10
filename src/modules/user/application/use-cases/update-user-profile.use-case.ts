@@ -26,17 +26,9 @@ export class UpdateUserProfileUseCase {
 			return left(new ResourceNotFoundError("Usuário não encontrado"));
 		}
 
-		const newUser = User.create(
-			{
-				email: params.profileData.email ?? user.email,
-				name: params.profileData.name ?? user.name,
-				password: user.password,
-				type: user.type,
-			},
-			user.id,
-		);
-
-		await this.userRepository.update(newUser);
+		user.update(params.profileData);
+		
+		await this.userRepository.update(user);
 		return right(undefined);
 	}
 }

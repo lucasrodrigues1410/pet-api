@@ -31,4 +31,11 @@ export class User extends Entity<UserProps> {
 		const user = new User(props, id);
 		return user;
 	}
+
+	public update(data: Partial<UserProps>): void {
+		this.props = {
+			...this.props,
+			...data,
+		};
+	}
 }
