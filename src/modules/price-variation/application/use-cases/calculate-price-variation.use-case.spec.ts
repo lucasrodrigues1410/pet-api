@@ -64,7 +64,7 @@ describe("List Animals from User", () => {
 		});
 	});
 
-	it("should return an error if no variation is found", async () => {
+	it("should return 0 if no variation is found", async () => {
 		const animal = makeAnimal({
 			weight: 27,
 		});
@@ -83,6 +83,9 @@ describe("List Animals from User", () => {
 			animalId: animal.id.toString(),
 			serviceId: serviceId.toString(),
 		});
-		expect(response.isLeft()).toBeTruthy();
+		expect(response.isRight()).toBeTruthy();
+		expect(response.value).toEqual({
+			price: 0,
+		});
 	});
 });

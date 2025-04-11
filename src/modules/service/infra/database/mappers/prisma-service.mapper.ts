@@ -1,9 +1,11 @@
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
+import { PrismaPriceVariationMapper } from "@/modules/price-variation/infra/database/mappers/prisma-price-variation.mapper";
 import {
 	Prisma,
 	Category as PrismaCategory,
 	Company as PrismaCompany,
 	Service as PrismaService,
+	ServicePriceVariation as PrismaServicePriceVariation,
 } from "@prisma/client";
 import { Category } from "src/modules/category/domain/entities/category.entity";
 import { PrismaCompanyMapper } from "src/modules/company/infra/database/mappers/prisma-company.mapper";
@@ -14,6 +16,7 @@ export class PrismaServiceMapper {
 		prismaService: PrismaService & {
 			categories?: PrismaCategory[];
 			company?: PrismaCompany;
+			priceVariations?: PrismaServicePriceVariation[];
 		},
 	): Service {
 		const categories = prismaService.categories
@@ -28,6 +31,10 @@ export class PrismaServiceMapper {
 					),
 				)
 			: [];
+
+		const priceVariations = prismaService.priceVariations?.map(
+			PrismaPriceVariationMapper.toDomain,
+		);
 
 		const company = prismaService.company
 			? PrismaCompanyMapper.toDomain(prismaService.company)
@@ -44,6 +51,7 @@ export class PrismaServiceMapper {
 				companyId: new UniqueEntityID(prismaService.companyId),
 				categories,
 				company,
+				priceVariations,
 			},
 			new UniqueEntityID(prismaService.id),
 		);

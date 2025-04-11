@@ -9,7 +9,7 @@ export class PrismaPriceVariationRepository
 {
 	constructor(private prismaService: PrismaService) {}
 
-	async getAllByServiceId(serviceId: string) {
+	async findByServiceId(serviceId: string) {
 		const result = await this.prismaService.servicePriceVariation.findMany({
 			where: {
 				serviceId,

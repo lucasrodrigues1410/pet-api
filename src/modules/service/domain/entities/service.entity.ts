@@ -1,5 +1,6 @@
 import { Entity } from "@/core/domain/entities/entity";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
+import { PriceVariation } from "@/modules/price-variation/domain/entities/price-variation.entity";
 import { Category } from "src/modules/category/domain/entities/category.entity";
 import { Company } from "src/modules/company/domain/entities/company.entity";
 
@@ -14,6 +15,7 @@ export interface ServiceProps {
 	details?: Record<string, unknown> | null;
 	categories?: Category[];
 	company?: Company;
+	priceVariations?: PriceVariation[];
 }
 
 export class Service extends Entity<ServiceProps> {
@@ -55,6 +57,10 @@ export class Service extends Entity<ServiceProps> {
 
 	get company() {
 		return this.props.company;
+	}
+
+	get priceVariations() {
+		return this.props.priceVariations;
 	}
 
 	public static create(props: ServiceProps, id?: UniqueEntityID): Service {

@@ -2,7 +2,6 @@ import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { AppointmentAvailabilityService } from "@/modules/appointment/application/services/appointment-availability.service";
 import { CheckoutSessionCreationError } from "@/modules/payment/domain/errors/checkout-session-creation.error";
 import { CalculatePriceVariationUseCase } from "@/modules/price-variation/application/use-cases/calculate-price-variation.use-case";
-import { NoApplicablePriceVariationError } from "@/modules/price-variation/domain/errors/no-applicable-price-variation.error";
 import { ServiceRepository } from "@/modules/service/domain/repositories/service.repository";
 import { Either, left, right } from "@/shared/either";
 import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
@@ -23,7 +22,6 @@ interface AppointmentBookingUseCaseRequest {
 type AppointmentBookingUseCaseResponse = Either<
 	| ResourceNotFoundError
 	| TimeSlotUnavailableError
-	| NoApplicablePriceVariationError
 	| CheckoutSessionCreationError
 	| InvalidAppointmentDateError,
 	{
@@ -88,7 +86,7 @@ export class AppointmentBookingUseCase {
 			animalId: new UniqueEntityID(animalId),
 			startDate,
 			endDate,
-			price: priceResult.value.price,
+			price: priceResult.value.price + service.price,
 		});
 
 		await this.appointmentRepository.create(appointmentIntent);

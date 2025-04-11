@@ -13,6 +13,7 @@ export class PrismaServiceRepository implements ServiceRepository {
 			where: { id },
 			include: {
 				company: true,
+				priceVariation: true,
 				categories: {
 					include: {
 						category: {
@@ -36,6 +37,7 @@ export class PrismaServiceRepository implements ServiceRepository {
 		return PrismaServiceMapper.toDomain({
 			...result,
 			company: result.company,
+			priceVariations: result.priceVariation,
 			categories: result.categories.map((category) => ({
 				...category.category,
 				description: null,
@@ -51,33 +53,14 @@ export class PrismaServiceRepository implements ServiceRepository {
 				companyId,
 			},
 			include: {
-				company: true,
-				categories: {
-					include: {
-						category: {
-							select: {
-								id: true,
-								name: true,
-								type: true,
-								createdAt: true,
-								updatedAt: true,
-							},
-						},
-					},
-				},
+				priceVariation: true,
 			},
-			take: 10,
 		});
 
-		return result.map(({ categories, company, ...service }) =>
+		return result.map(({ ...service }) =>
 			PrismaServiceMapper.toDomain({
 				...service,
-				company,
-				categories: categories.map((category) => ({
-					...category.category,
-					description: null,
-					parentId: null,
-				})),
+				priceVariations: service.priceVariation,
 			}),
 		);
 	}

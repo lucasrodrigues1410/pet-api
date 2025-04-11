@@ -2,7 +2,6 @@ import { AnimalRepository } from "@/modules/animal/domain/repositories/animal.re
 import { Either, left, right } from "@/shared/either";
 import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
 import { Injectable } from "@nestjs/common";
-import { NoApplicablePriceVariationError } from "../../domain/errors/no-applicable-price-variation.error";
 import { PriceVariationRepository } from "../../domain/repositories/price-variation.repository";
 import { PriceVariationInput } from "../../domain/strategies/price-variation.strategy";
 import { PriceStrategyProvider } from "../providers/price-strategy.provider";
@@ -13,7 +12,7 @@ interface CalculatePriceVariationUseCaseRequest {
 }
 
 type CalculatePriceVariationUseCaseResponse = Either<
-	ResourceNotFoundError | NoApplicablePriceVariationError,
+	ResourceNotFoundError,
 	{
 		price: number;
 	}
@@ -33,19 +32,13 @@ export class CalculatePriceVariationUseCase {
 	}: CalculatePriceVariationUseCaseRequest): Promise<CalculatePriceVariationUseCaseResponse> {
 		const animal = await this.animalRepository.getById(animalId);
 		if (!animal) {
-			return left(new ResourceNotFoundError("Animal not found"));
+			return left(new ResourceNotFoundError("Animal não encontrado"));
 		}
 
 		const priceVariations =
-			await this.priceVariationRepository.getAllByServiceId(serviceId);
+			await this.priceVariationRepository.findByServiceId(serviceId);
 
-		if (!priceVariations || priceVariations.length === 0) {
-			return left(
-				new NoApplicablePriceVariationError(
-					`No price variations found for service ${serviceId}`,
-				),
-			);
-		}
+		let prices = 0;
 
 		for (const variation of priceVariations) {
 			const strategy = this.strategyProvider.getStrategy(
@@ -58,20 +51,11 @@ export class CalculatePriceVariationUseCase {
 				animal: animal,
 				variationData: variation,
 			};
-
-			const calculatedPrice = strategy.calculate(calculationInput);
-
-			if (calculatedPrice !== null) {
-				return right({
-					price: calculatedPrice,
-				});
-			}
+			prices += strategy.calculate(calculationInput) || 0;
 		}
 
-		return left(
-			new NoApplicablePriceVariationError(
-				`No applicable price variation found for animal ${animalId} and service ${serviceId}`,
-			),
-		);
+		return right({
+			price: prices,
+		});
 	}
 }
