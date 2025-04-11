@@ -13,7 +13,6 @@ export class PrismaAppointmentMapper {
 				endDate: prismaAppointment.endDate,
 				price: prismaAppointment.price.toNumber(),
 				status: prismaAppointment.status,
-				paymentId: new UniqueEntityID(prismaAppointment.paymentId),
 			},
 			new UniqueEntityID(prismaAppointment.id),
 		);
@@ -26,7 +25,6 @@ export class PrismaAppointmentMapper {
 			id: appointment.id.toString(),
 			animalId: appointment.animalId.toString(),
 			clientId: appointment.clientId.toString(),
-			paymentId: appointment.paymentId.toString(),
 			serviceId: appointment.serviceId.toString(),
 			startDate: appointment.startDate,
 			endDate: appointment.endDate,

@@ -7,7 +7,6 @@ import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found
 import { Injectable } from "@nestjs/common";
 import { endOfDay, format, getDay, startOfDay } from "date-fns";
 import { TimeSlot } from "../../domain/entities/time-slot.entity";
-import { AppointmentIntentRepository } from "../../domain/repositories/appointment-intent.repository";
 import { AppointmentRepository } from "../../domain/repositories/appointment.repository";
 import { AvailableSlotsService } from "../services/available-slots.service";
 import { TimeSlotGeneratorService } from "../services/time-slot-generator.service";
@@ -33,7 +32,6 @@ export class ListAvailableDatesUseCase {
 		private readonly companyAvailability: CompanyAvailabilityRepository,
 		private readonly companyAvailabilityException: CompanyAvailabilityExcpetionRepository,
 		private readonly serviceRepository: ServiceRepository,
-		private readonly appointmentIntentRepository: AppointmentIntentRepository,
 	) {}
 
 	async execute({
@@ -50,7 +48,6 @@ export class ListAvailableDatesUseCase {
 			companyAvailabilityExceptions,
 			service,
 			appointments,
-			intents,
 		] = await Promise.all([
 			this.companyAvailability.findByCompanyIdAndDayOfWeek(
 				companyId,
@@ -65,11 +62,6 @@ export class ListAvailableDatesUseCase {
 			),
 			this.serviceRepository.findById(serviceId),
 			this.appointmentRepository.getByPeriod({
-				serviceId,
-				startDate,
-				endDate,
-			}),
-			this.appointmentIntentRepository.findValidInRange({
 				serviceId,
 				startDate,
 				endDate,
@@ -111,10 +103,6 @@ export class ListAvailableDatesUseCase {
 				appointments.map((a) => ({
 					startDate: a.startDate,
 					endDate: a.endDate,
-				})),
-				intents.map((i) => ({
-					startDate: i.startDate,
-					endDate: i.endDate,
 				})),
 				(companyAvailabilityExceptions ?? []).map((exception) => ({
 					startDate: exception.startDate,

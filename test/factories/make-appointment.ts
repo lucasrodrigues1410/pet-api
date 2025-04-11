@@ -31,7 +31,6 @@ export function makeAppointment(
 			serviceId: new UniqueEntityID(),
 			clientId: new UniqueEntityID(),
 			animalId: new UniqueEntityID(),
-			paymentId: new UniqueEntityID(),
 			...override,
 		},
 		id,

@@ -1,17 +1,30 @@
 import { ListAvailableDatesUseCase } from "@/modules/appointment/application/use-cases/list-available-dates.use-case";
 import { Public } from "@/modules/auth/infra/http/decorators/public.decorator";
-import { Controller, Get, NotFoundException, Param } from "@nestjs/common";
+import {
+	BadRequestException,
+	Body,
+	Controller,
+	Get,
+	NotFoundException,
+	Param,
+	Post,
+} from "@nestjs/common";
 import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import {
 	ListAvailableDatesRequestDto,
 	ListAvailableDatesResponseDto,
 } from "../dtos/list-available-dates.dto";
+import { UserTypeDecorator } from "@/modules/auth/infra/http/decorators/user-type.decorator";
+import { User } from "@/modules/auth/infra/http/decorators/user.decorator";
+import { CreateAppointmentRequestDto } from "../dtos/create-appointment.dto";
+import { AppointmentBookingUseCase } from "@/modules/appointment/application/use-cases/appointment-booking.use-case";
 
 @ApiTags("Agendamentos")
 @Controller("appointments")
 export class AppointmentController {
 	constructor(
 		private readonly listAvailableDatesUseCase: ListAvailableDatesUseCase,
+		private readonly createAppointmentUseCase: AppointmentBookingUseCase,
 	) {}
 
 	@ApiOperation({
@@ -41,6 +54,38 @@ export class AppointmentController {
 			slots: result.value.slots.map((slot) => ({
 				label: slot.label || "",
 			})),
+		};
+	}
+
+	@Post("create")
+	@ApiOperation({
+		summary: "Cria um agendamento, iniciando o processo de pagamento",
+		description:
+			"Inicia o processo de criação de um agendamento, verificando a disponibilidade do horário e criando uma intenção de agendamento.",
+	})
+	@ApiOkResponse({
+		description: "Retorna o agendamento criado",
+	})
+	@UserTypeDecorator("CUSTOMER")
+	async createAppointment(
+		@User("sub") userId: string,
+		@Body() params: CreateAppointmentRequestDto,
+	) {
+		const response = await this.createAppointmentUseCase.execute({
+			...params,
+			clientId: userId,
+			date: new Date(params.date),
+		});
+
+		if (response.isLeft()) {
+			if (response.value instanceof NotFoundException) {
+				throw new NotFoundException();
+			}
+			throw new BadRequestException(`${response.value.message}`);
+		}
+
+		return {
+			appointmentId: response.value.appointmentId,
 		};
 	}
 }

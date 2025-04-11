@@ -2,14 +2,12 @@ import { beforeEach, describe, expect, it } from "bun:test";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { CompanyAvailabilityException } from "@/modules/company-availability/domain/entities/company-availability-exception.entity";
 import { DaysOfWeek } from "@/modules/company-availability/domain/entities/company-availability.entity";
-import { TimeRange } from "@/modules/company-availability/domain/entities/value-objects/time-range";
 import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
-import { addDays, getDay, set } from "date-fns";
+import { getDay, set } from "date-fns";
 import { makeAppointment } from "test/factories/make-appointment";
 import { makeCompanyAvailability } from "test/factories/make-company-availability";
 import { makeService } from "test/factories/make-service";
 import {
-	InMemoryAppointmentIntentRepository,
 	InMemoryAppointmentRepository,
 } from "test/repositories/in-memory-appointment.repository";
 import { InMemoryCompanyAvailabilityExceptionRepository } from "test/repositories/in-memory-company-availability-exception.repository";
@@ -18,7 +16,6 @@ import { InMemoryServiceRepository } from "test/repositories/in-memory-service.r
 import { ListAvailableDatesUseCase } from "./list-available-dates.use-case";
 
 let inMemoryAppointmentRepository: InMemoryAppointmentRepository;
-let inMemoryAppointmentIntentRepository: InMemoryAppointmentIntentRepository;
 let inMemoryCompanyAvailability: InMemoryCompanyAvailabilityRepository;
 let inMemoryCompanyAvailabilityException: InMemoryCompanyAvailabilityExceptionRepository;
 let inMemoryServiceRepository: InMemoryServiceRepository;
@@ -32,15 +29,12 @@ describe("ListAvailableDatesUseCase", () => {
 		inMemoryCompanyAvailabilityException =
 			new InMemoryCompanyAvailabilityExceptionRepository();
 		inMemoryServiceRepository = new InMemoryServiceRepository();
-		inMemoryAppointmentIntentRepository =
-			new InMemoryAppointmentIntentRepository();
 
 		sut = new ListAvailableDatesUseCase(
 			inMemoryAppointmentRepository,
 			inMemoryCompanyAvailability,
 			inMemoryCompanyAvailabilityException,
 			inMemoryServiceRepository,
-			inMemoryAppointmentIntentRepository,
 		);
 	});
 
