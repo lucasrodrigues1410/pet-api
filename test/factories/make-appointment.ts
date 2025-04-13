@@ -3,9 +3,11 @@ import {
 	Appointment,
 	AppointmentProps,
 	AppointmentStatus,
+	CoatType,
 } from "@/modules/appointment/domain/entities/appointment.entity";
 import { PrismaAppointmentMapper } from "@/modules/appointment/infra/database/mapper/prisma-appointment.mapper";
 import { faker } from "@faker-js/faker";
+import { O } from "@faker-js/faker/dist/airline-CBNP41sR";
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "src/core/infra/prisma/prisma.service";
 
@@ -29,7 +31,8 @@ export function makeAppointment(
 			status: faker.helpers.arrayElement(statusAvailable),
 			price: faker.number.float({ min: 1, max: 100 }),
 			serviceId: new UniqueEntityID(),
-			clientId: new UniqueEntityID(),
+			staffId: new UniqueEntityID(),
+			coatType: faker.helpers.arrayElement(Object.values(CoatType)),
 			animalId: new UniqueEntityID(),
 			...override,
 		},

@@ -1,4 +1,3 @@
-import { ListAvailableDatesUseCase } from "@/modules/appointment/application/use-cases/list-available-dates.use-case";
 import { Public } from "@/modules/auth/infra/http/decorators/public.decorator";
 import {
 	BadRequestException,
@@ -17,11 +16,12 @@ import {
 import { UserTypeDecorator } from "@/modules/auth/infra/http/decorators/user-type.decorator";
 import { User } from "@/modules/auth/infra/http/decorators/user.decorator";
 import { CreateAppointmentRequestDto } from "../dtos/create-appointment.dto";
-import { AppointmentBookingUseCase } from "@/modules/appointment/application/use-cases/appointment-booking.use-case";
+import { ListAvailableDatesUseCase } from "@/modules/booking/application/use-cases/list-available-dates.use-case";
+import { AppointmentBookingUseCase } from "@/modules/booking/application/use-cases/appointment-booking.use-case";
 
-@ApiTags("Agendamentos")
-@Controller("appointments")
-export class AppointmentController {
+@ApiTags("Reservas")
+@Controller("booking")
+export class BookingController {
 	constructor(
 		private readonly listAvailableDatesUseCase: ListAvailableDatesUseCase,
 		private readonly createAppointmentUseCase: AppointmentBookingUseCase,

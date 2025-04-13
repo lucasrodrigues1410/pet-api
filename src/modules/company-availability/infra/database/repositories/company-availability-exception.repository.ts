@@ -2,6 +2,7 @@ import { PrismaService } from "@/core/infra/prisma/prisma.service";
 import { CompanyAvailabilityExcpetionRepository } from "@/modules/company-availability/domain/repositories/company-availability-exception.repository";
 import { Injectable } from "@nestjs/common";
 import { PrismaCompanyAvailabilityExceptionMapper } from "../mappers/company-availability-exception.mapper";
+import type { DateRange } from "@/shared/types/date-range";
 
 @Injectable()
 export class PrismaCompanyAvailabilityExceptionRepository
@@ -11,10 +12,7 @@ export class PrismaCompanyAvailabilityExceptionRepository
 
 	async findExceptionsByCompanyAndPeriod(
 		companyId: string,
-		period: {
-			startDate: Date;
-			endDate: Date;
-		},
+		period: DateRange,
 	) {
 		const companyAvailabilityExc =
 			await this.prismaService.companyAvailabilityException.findMany({

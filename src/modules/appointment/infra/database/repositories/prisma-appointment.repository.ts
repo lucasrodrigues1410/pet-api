@@ -3,6 +3,7 @@ import { Appointment } from "@/modules/appointment/domain/entities/appointment.e
 import { AppointmentRepository } from "@/modules/appointment/domain/repositories/appointment.repository";
 import { Injectable } from "@nestjs/common";
 import { PrismaAppointmentMapper } from "../mapper/prisma-appointment.mapper";
+import type { DateRange } from "@/shared/types/date-range";
 
 @Injectable()
 export class PrismaAppointmentRepository implements AppointmentRepository {
@@ -17,19 +18,21 @@ export class PrismaAppointmentRepository implements AppointmentRepository {
 
 	async getByPeriod(params: {
 		serviceId: string;
-		startDate: Date;
-		endDate: Date;
+		range: DateRange;
 	}) {
-		const { serviceId, startDate, endDate } = params;
+		const {
+			serviceId,
+			range: { startDate: start, endDate: end },
+		} = params;
 
 		const appointments = await this.prismaService.appointment.findMany({
 			where: {
 				serviceId,
 				startDate: {
-					gte: startDate,
+					gte: start,
 				},
 				endDate: {
-					lte: endDate,
+					lte: end,
 				},
 			},
 		});

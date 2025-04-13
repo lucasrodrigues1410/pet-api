@@ -1,16 +1,12 @@
 import { PriceStrategyProvider } from "@/modules/price-variation/application/providers/price-strategy.provider";
+import { VariationType } from "@/modules/price-variation/domain/entities/price-variation.entity";
 import { SizeBasedStrategy } from "@/modules/price-variation/domain/strategies/size-based.strategy";
-import { ModuleRef } from "@nestjs/core";
 
 export class MockPriceStrategyProvider extends PriceStrategyProvider {
-	constructor() {
-		super({} as ModuleRef);
-	}
-
-	getStrategy(variationType: string) {
-		if (variationType === "SIZE") {
+	getStrategy(type: VariationType) {
+		if (type === "SIZE") {
 			return new SizeBasedStrategy();
 		}
-		return null;
+		return undefined;
 	}
 }

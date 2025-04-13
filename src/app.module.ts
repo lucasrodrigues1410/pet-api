@@ -13,10 +13,11 @@ import { BreedModule } from "./modules/breed/breed.module";
 import { CompanyModule } from "./modules/company/company.module";
 import { PaymentModule } from "./modules/payment/payment.module";
 import { PriceVariationModule } from "./modules/price-variation/price-variation.module";
-import { SchedulingPaymentModule } from "./modules/scheduling-payment/scheduling-payment.module";
 import { ServiceModule } from "./modules/service/service.module";
 import { UserModule } from "./modules/user/user.module";
 import { ZodValidationPipe } from "@anatine/zod-nestjs";
+import { BookingModule } from "./modules/booking/booking.module";
+import { StaffModule } from "./modules/staff/staff.module";
 
 @Module({
 	imports: [
@@ -33,7 +34,8 @@ import { ZodValidationPipe } from "@anatine/zod-nestjs";
 		PriceVariationModule,
 		PaymentModule,
 		AppointmentModule,
-		SchedulingPaymentModule,
+		BookingModule,
+		StaffModule
 	],
 	providers: [
 		{

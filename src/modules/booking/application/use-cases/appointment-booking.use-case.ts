@@ -1,22 +1,28 @@
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
-import { AppointmentAvailabilityService } from "@/modules/appointment/application/services/appointment-availability.service";
 import { CheckoutSessionCreationError } from "@/modules/payment/domain/errors/checkout-session-creation.error";
-import { CalculatePriceVariationUseCase } from "@/modules/price-variation/application/use-cases/calculate-price-variation.use-case";
 import { ServiceRepository } from "@/modules/service/domain/repositories/service.repository";
 import { Either, left, right } from "@/shared/either";
 import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
 import { Injectable } from "@nestjs/common";
 import { addMinutes, isBefore } from "date-fns";
-import { AppointmentRepository } from "../../domain/repositories/appointment.repository";
-import { Appointment } from "../../domain/entities/appointment.entity";
-import { TimeSlotUnavailableError } from "../errors/time-slot-unavailable.error";
+import { AppointmentRepository } from "../../../appointment/domain/repositories/appointment.repository";
+import {
+	Appointment,
+	CoatType,
+} from "../../../appointment/domain/entities/appointment.entity";
+import { PriceCalculator } from "@/modules/price-variation/application/services/price-calculator.service";
+import { AnimalRepository } from "@/modules/animal/domain/repositories/animal.repository";
+import { VariationType } from "@/modules/price-variation/domain/entities/price-variation.entity";
 import { InvalidAppointmentDateError } from "../errors/invalid-appointment-date.error";
+import { TimeSlotUnavailableError } from "../errors/time-slot-unavailable.error";
+import { AppointmentAvailabilityService } from "../services/appointment-availability.service";
 
 interface AppointmentBookingUseCaseRequest {
 	serviceId: string;
 	animalId: string;
 	clientId: string;
 	date: Date;
+	coatType: CoatType;
 }
 
 type AppointmentBookingUseCaseResponse = Either<
@@ -34,7 +40,8 @@ export class AppointmentBookingUseCase {
 	constructor(
 		private readonly appointmentAvailabilityService: AppointmentAvailabilityService,
 		private readonly serviceRepository: ServiceRepository,
-		private readonly calculatePriceVariation: CalculatePriceVariationUseCase,
+		private readonly priceCalculator: PriceCalculator,
+		private readonly animalRepository: AnimalRepository,
 		private readonly appointmentRepository: AppointmentRepository,
 	) {}
 
@@ -43,7 +50,9 @@ export class AppointmentBookingUseCase {
 		clientId,
 		animalId,
 		date,
+		coatType,
 	}: AppointmentBookingUseCaseRequest): Promise<AppointmentBookingUseCaseResponse> {
+		// Valida se a data é válida
 		const today = new Date();
 		if (isBefore(date, today)) {
 			return left(new InvalidAppointmentDateError());
@@ -55,38 +64,40 @@ export class AppointmentBookingUseCase {
 			return left(new ResourceNotFoundError("Serviço não encontrado"));
 		}
 
+		// Valida existência do animal
+		const animal = await this.animalRepository.findById(animalId);
+		if (!animal) {
+			return left(new ResourceNotFoundError("Animal não encontrado"));
+		}
+
 		const startDate = new Date(date);
 		const serviceDuration = service.duration || 0;
 		const endDate = addMinutes(startDate, serviceDuration);
 
 		// Verifica se o horário está disponível
-		const isAvailable =
-			await this.appointmentAvailabilityService.getAvailability(
-				service.companyId.toString(),
-				serviceId,
-				startDate,
-				serviceDuration,
-			);
-		if (!isAvailable) {
+		const available = await this.appointmentAvailabilityService.getAvailability(
+			service.companyId.toString(),
+			startDate,
+			serviceDuration,
+		);
+		if (!available.isValid || !available.staffChoiced) {
 			return left(new TimeSlotUnavailableError("Horário indisponível"));
 		}
 
 		// Calcula variação de preço
-		const priceResult = await this.calculatePriceVariation.execute({
-			animalId,
-			serviceId,
-		});
-		if (priceResult.isLeft()) {
-			return left(priceResult.value);
-		}
+		const price = await this.priceCalculator.calculate(
+			service.priceVariations ?? [],
+			[{ type: VariationType.SIZE, value: animal.weight ?? 0 }],
+		);
 
 		const appointmentIntent = Appointment.create({
 			serviceId: new UniqueEntityID(serviceId),
-			clientId: new UniqueEntityID(clientId),
+			staffId: available.staffChoiced.id,
 			animalId: new UniqueEntityID(animalId),
 			startDate,
 			endDate,
-			price: priceResult.value.price + service.price,
+			price: price + service.price,
+			coatType,
 		});
 
 		await this.appointmentRepository.create(appointmentIntent);

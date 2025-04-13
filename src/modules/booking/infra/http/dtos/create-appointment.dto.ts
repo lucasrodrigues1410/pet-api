@@ -1,6 +1,7 @@
 import { set } from "date-fns";
 import { createZodDto } from "@anatine/zod-nestjs";
 import { z } from "zod";
+import { CoatType } from "@/modules/appointment/domain/entities/appointment.entity";
 
 const createAppointmentRequest = z.object({
 	date: z
@@ -14,6 +15,7 @@ const createAppointmentRequest = z.object({
 		),
 	serviceId: z.string(),
 	animalId: z.string(),
+	coatType: z.nativeEnum(CoatType)
 });
 
 export class CreateAppointmentRequestDto extends createZodDto(

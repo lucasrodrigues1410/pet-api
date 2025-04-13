@@ -1,6 +1,6 @@
 import { daysOfWeek } from "@/modules/company-availability/domain/entities/company-availability.entity";
-import { CompanyAvailabilityExcpetionRepository } from "@/modules/company-availability/domain/repositories/company-availability-exception.repository";
 import { CompanyAvailabilityRepository } from "@/modules/company-availability/domain/repositories/company-availability.repository";
+import { StaffRepository } from "@/modules/staff/domain/repositories/staff.repository";
 import { Injectable } from "@nestjs/common";
 import {
 	addMinutes,
@@ -11,56 +11,38 @@ import {
 	setMinutes,
 	startOfDay,
 } from "date-fns";
-import { AppointmentIntentRepository } from "../../domain/repositories/appointment-intent.repository";
-import { AppointmentRepository } from "../../domain/repositories/appointment.repository";
 
 @Injectable()
 export class AppointmentAvailabilityService {
 	constructor(
-		private readonly appointmentRepository: AppointmentRepository,
-		private readonly appointmentIntentRepository: AppointmentIntentRepository,
 		private readonly companyAvailabilityRepo: CompanyAvailabilityRepository,
-		private readonly companyAvailabilityExceptionRepo: CompanyAvailabilityExcpetionRepository,
+		private readonly staffRepo: StaffRepository,
 	) {}
 
 	async getAvailability(
 		companyId: string,
-		serviceId: string,
 		startDate: Date,
 		serviceDuration: number,
 	) {
 		const endDate = addMinutes(startDate, serviceDuration);
 		const dayOfWeek = daysOfWeek[startDate.getDay()];
 
-		const [companyAvailability, exceptions, appointments, appointmentIntents] =
-			await Promise.all([
-				this.companyAvailabilityRepo.findByCompanyIdAndDayOfWeek(
-					companyId,
-					dayOfWeek,
-				),
-				this.companyAvailabilityExceptionRepo.findExceptionsByCompanyAndPeriod(
-					companyId,
-					{ startDate, endDate },
-				),
-				this.appointmentRepository.getByPeriod({
-					serviceId,
-					startDate,
-					endDate,
-				}),
-				this.appointmentIntentRepository.findValidInRange({
-					serviceId,
-					startDate,
-					endDate,
-				}),
-			]);
+		const [companyAvailability, staffMembers] = await Promise.all([
+			this.companyAvailabilityRepo.findByCompanyIdAndDayOfWeek(
+				companyId,
+				dayOfWeek,
+			),
+			this.staffRepo.findAvailableForSlot(companyId, {
+				startDate: startDate,
+				endDate: endDate,
+			}),
+		]);
 
-		if (
-			!companyAvailability ||
-			exceptions?.length ||
-			appointments?.length ||
-			appointmentIntents?.length
-		) {
-			return true;
+		if (!companyAvailability || !staffMembers.length) {
+			return {
+				isValid: false,
+				staffChoiced: null,
+			};
 		}
 
 		const isValid = this.isValid(
@@ -70,7 +52,11 @@ export class AppointmentAvailabilityService {
 			companyAvailability.timeRange.endTime,
 		);
 
-		return isValid;
+		const randomIndex = Math.floor(Math.random() * staffMembers.length);
+		return {
+			isValid,
+			staffChoiced: staffMembers[randomIndex],
+		};
 	}
 
 	isValid(

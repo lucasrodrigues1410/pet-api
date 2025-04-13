@@ -1,14 +1,21 @@
 import { Entity } from "@/core/domain/entities/entity";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 
+export enum CoatType {
+	SHORT = "SHORT",
+	MEDIUM = "MEDIUM",
+	LONG = "LONG",
+}
+
 export interface AppointmentProps {
 	animalId: UniqueEntityID;
-	clientId: UniqueEntityID;
+	staffId: UniqueEntityID;
 	serviceId: UniqueEntityID;
 	startDate: Date;
 	endDate: Date;
 	status: AppointmentStatus;
 	price: number;
+	coatType: CoatType;
 }
 
 export type AppointmentStatus =
@@ -23,8 +30,8 @@ export class Appointment extends Entity<AppointmentProps> {
 		return this.props.animalId;
 	}
 
-	get clientId() {
-		return this.props.clientId;
+	get staffId() {
+		return this.props.staffId;
 	}
 
 	get serviceId() {
@@ -45,6 +52,10 @@ export class Appointment extends Entity<AppointmentProps> {
 
 	get endDate() {
 		return this.props.endDate;
+	}
+
+	get coatType() {
+		return this.props.coatType;
 	}
 
 	public static create(

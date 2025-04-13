@@ -31,7 +31,6 @@ describe("ListAvailableDatesUseCase", () => {
 		inMemoryServiceRepository = new InMemoryServiceRepository();
 
 		sut = new ListAvailableDatesUseCase(
-			inMemoryAppointmentRepository,
 			inMemoryCompanyAvailability,
 			inMemoryCompanyAvailabilityException,
 			inMemoryServiceRepository,

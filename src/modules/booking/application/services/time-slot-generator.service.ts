@@ -1,15 +1,15 @@
+import { TimeRange } from "@/modules/company-availability/domain/entities/value-objects/time-range";
 import { addMinutes, isBefore } from "date-fns";
 
 export class TimeSlotGeneratorService {
 	generateTimeSlots(
-		startTime: string,
-		endTime: string,
+		timeRange: TimeRange,
 		duration: number,
 		baseDate: Date,
 	): Date[] {
 		const slots: Date[] = [];
-		const [startHour, startMinute] = startTime.split(":").map(Number);
-		const [endHour, endMinute] = endTime.split(":").map(Number);
+		const [startHour, startMinute] = timeRange.startTime.split(":").map(Number);
+		const [endHour, endMinute] = timeRange.endTime.split(":").map(Number);
 
 		const start = new Date(baseDate);
 		start.setHours(startHour, startMinute, 0, 0);

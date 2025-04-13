@@ -1,10 +1,21 @@
 import { Entity } from "@/core/domain/entities/entity";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 
+export interface VariationContext {
+	type: VariationType;
+	value: string | number;
+}
+
+export enum VariationType {
+	SIZE = "SIZE",
+	COAT = "COAT",
+	AGE = "AGE",
+}
+
 export interface PriceVariationProps {
 	serviceId: UniqueEntityID;
 	price: number;
-	variation: string;
+	variation: VariationType;
 	value: string;
 }
 

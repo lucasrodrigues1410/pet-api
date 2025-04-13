@@ -5,7 +5,7 @@ import { PaginationParams } from "@/core/pagination/pagination-params";
 export abstract class AnimalRepository {
 	abstract create(animal: Animal): Promise<Animal>;
 	abstract update(animal: Animal): Promise<Animal>;
-	abstract getById(animalId: string): Promise<Animal | null>;
+	abstract findById(animalId: string): Promise<Animal | null>;
 	abstract delete(animalId: string): Promise<void>;
 	abstract fetchAllAnimalsByUser(
 		params: { userId: string } & PaginationParams,
