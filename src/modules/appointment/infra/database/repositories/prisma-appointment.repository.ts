@@ -1,13 +1,43 @@
 import { PrismaService } from "@/core/infra/prisma/prisma.service";
-import { Appointment } from "@/modules/appointment/domain/entities/appointment.entity";
+import {
+	Appointment,
+	AppointmentWithDetails,
+} from "@/modules/appointment/domain/entities/appointment.entity";
 import { AppointmentRepository } from "@/modules/appointment/domain/repositories/appointment.repository";
 import type { DateRange } from "@/shared/types/date-range";
 import { Injectable } from "@nestjs/common";
 import { PrismaAppointmentMapper } from "../mapper/prisma-appointment.mapper";
+import { PrismaAnimalMapper } from "@/modules/animal/infra/database/mappers/prisma-animal.mapper";
+import { PrismaUserMapper } from "@/modules/user/infra/database/mappers/prisma-user.mapper";
+import { PrismaServiceMapper } from "@/modules/service/infra/database/mappers/prisma-service.mapper";
+import { PrismaCompanyMapper } from "@/modules/company/infra/database/mappers/prisma-company.mapper";
 
 @Injectable()
 export class PrismaAppointmentRepository implements AppointmentRepository {
 	constructor(private prismaService: PrismaService) {}
+
+	async findById(id: string) {
+		const appointment = await this.prismaService.appointment.findUnique({
+			where: { id },
+			include: {
+				animal: true,
+				client: true,
+				service: true,
+				company: true,
+			},
+		});
+		if (!appointment) {
+			return null;
+		}
+
+		return {
+			...PrismaAppointmentMapper.toDomain(appointment),
+			animal: PrismaAnimalMapper.toDomain(appointment.animal),
+			client: PrismaUserMapper.toDomain(appointment.client),
+			service: PrismaServiceMapper.toDomain(appointment.service),
+			company: PrismaCompanyMapper.toDomain(appointment.company),
+		} as AppointmentWithDetails;
+	}
 
 	async create(appointment: Appointment) {
 		const persistence = PrismaAppointmentMapper.toPersistence(appointment);

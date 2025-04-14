@@ -12,18 +12,19 @@ model Company {
     services                     Service[]
     companyLocations             CompanyLocation[]
     companyImage                 CompanyImage[]
+    appointment                  Appointment[]
 
     @@map("companies")
 }
 
 model UserCompany {
-    id        String    @id @default(cuid())
+    id        String @id @default(cuid())
     userId    String
     companyId String
     role      Role
 
-    user    User    @relation(fields: [userId], references: [id])
-    company Company @relation(fields: [companyId], references: [id])
+    user        User          @relation(fields: [userId], references: [id])
+    company     Company       @relation(fields: [companyId], references: [id])
     appointment Appointment[]
 
     @@unique([userId, companyId])

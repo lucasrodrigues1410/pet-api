@@ -6,7 +6,7 @@ import {
 	Animal,
 	AnimalProps,
 } from "src/modules/animal/domain/entities/animal.entity";
-import { AnimalPrismaMapper } from "src/modules/animal/infra/database/mappers/prisma-animal.mapper";
+import { PrismaAnimalMapper } from "src/modules/animal/infra/database/mappers/prisma-animal.mapper";
 
 export function makeAnimal(
 	override: Partial<Animal> = {},
@@ -35,7 +35,7 @@ export class AnimalFactory {
 		const animal = makeAnimal(data);
 
 		await this.prisma.animal.create({
-			data: AnimalPrismaMapper.toPrisma(animal),
+			data: PrismaAnimalMapper.toPrisma(animal),
 		});
 
 		return animal;

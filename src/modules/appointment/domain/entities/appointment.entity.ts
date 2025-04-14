@@ -1,5 +1,9 @@
 import { Entity } from "@/core/domain/entities/entity";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
+import { Animal } from "@/modules/animal/domain/entities/animal.entity";
+import { Company } from "@/modules/company/domain/entities/company.entity";
+import { Service } from "@/modules/service/domain/entities/service.entity";
+import { User } from "@/modules/user/domain/entities/user.entity";
 
 export enum CoatType {
 	SHORT = "SHORT",
@@ -10,7 +14,9 @@ export enum CoatType {
 export interface AppointmentProps {
 	animalId: UniqueEntityID;
 	staffId: UniqueEntityID;
+	clientId: UniqueEntityID;
 	serviceId: UniqueEntityID;
+	companyId: UniqueEntityID;
 	startDate: Date;
 	endDate: Date;
 	status: AppointmentStatus;
@@ -58,6 +64,14 @@ export class Appointment extends Entity<AppointmentProps> {
 		return this.props.coatType;
 	}
 
+	get clientId() {
+		return this.props.clientId;
+	}
+
+	get companyId() {
+		return this.props.companyId;
+	}
+
 	public static create(
 		props: Omit<AppointmentProps, "status"> & {
 			status?: AppointmentStatus;
@@ -73,3 +87,10 @@ export class Appointment extends Entity<AppointmentProps> {
 		);
 	}
 }
+
+export type AppointmentWithDetails = Appointment & {
+	animal: Animal;
+	client: User;
+	service: Service;
+	company: Company;
+};

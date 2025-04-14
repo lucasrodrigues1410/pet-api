@@ -95,6 +95,7 @@ export class AppointmentBookingUseCase {
 			serviceId: new UniqueEntityID(serviceId),
 			staffId: available.staffChoiced.id,
 			animalId: new UniqueEntityID(animalId),
+			clientId: new UniqueEntityID(clientId),
 			startDate,
 			endDate,
 			price: price + service.price,
