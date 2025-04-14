@@ -1,66 +1,78 @@
-import { addMinutes, isBefore, isAfter } from "date-fns";
+import { addMinutes, isBefore, isAfter, format } from "date-fns";
 import { TimeSlot } from "../../domain/entities/time-slot.entity";
 import type { DateRange } from "@/shared/types/date-range";
+import { TimeRange } from "@/modules/company-availability/domain/entities/value-objects/time-range";
 
 interface FilterParams {
-  slots: Date[];
-  duration: number;
-  staffsData: {
-    staffId: string;
-    unavailablePeriods: DateRange[];
-  }[];
-  companyExceptions: DateRange[];
+	slots: Date[];
+	duration: number;
+	staffsData: {
+		staffId: string;
+		unavailablePeriods: DateRange[];
+	}[];
+	companyExceptions: DateRange[];
+	launchTime: TimeRange;
 }
 
 export class AvailableSlotsService {
-  filterAvailableSlots(params: FilterParams): TimeSlot[] {
-    const { slots, duration, staffsData, companyExceptions } = params;
-    const totalStaffCount = staffsData.length;
+	filterAvailableSlots(params: FilterParams): TimeSlot[] {
+		const { slots, duration, staffsData, companyExceptions } = params;
+		const totalStaffCount = staffsData.length;
 
-    // Validação inicial
-    if (totalStaffCount === 0 || duration <= 0 || !slots.length) {
-      return [];
-    }
+		// Validação inicial
+		if (totalStaffCount === 0 || duration <= 0 || !slots.length) {
+			return [];
+		}
 
-    const availableSlotsOutput: Date[] = [];
+		const availableSlotsOutput: Date[] = [];
 
-    for (const potentialSlotStart of slots) {
-      const potentialSlotEnd = addMinutes(potentialSlotStart, duration);
+		for (const potentialSlotStart of slots) {
+			const potentialSlotEnd = addMinutes(potentialSlotStart, duration);
+			const slotStartTime = format(potentialSlotStart, "HH:mm");
+			const slotEndTime = format(potentialSlotEnd, "HH:mm");
 
-      // Verificar sobreposição com exceções da empresa
-      const overlapsWithCompanyException = companyExceptions.some(
-        (exception) =>
-          isBefore(potentialSlotStart, exception.endDate) &&
-          isAfter(potentialSlotEnd, exception.startDate)
-      );
+			// Verificar se o slot está dentro do horário de almoço
+			if (
+				slotStartTime < params.launchTime.endTime &&
+				slotEndTime > params.launchTime.startTime
+			) {
+				continue;
+			}
 
-      if (overlapsWithCompanyException) {
-        continue;
-      }
+			// Verificar sobreposição com exceções da empresa
+			const overlapsWithCompanyException = companyExceptions.some(
+				(exception) =>
+					isBefore(potentialSlotStart, exception.endDate) &&
+					isAfter(potentialSlotEnd, exception.startDate),
+			);
 
-      // Verificar se pelo menos um funcionário está disponível
-      const isAnyStaffAvailable = staffsData.some((staffInfo) => {
-        const isStaffBusy = staffInfo.unavailablePeriods.some(
-          (period) =>
-            isBefore(potentialSlotStart, period.endDate) &&
-            isAfter(potentialSlotEnd, period.startDate)
-        );
-        return !isStaffBusy;
-      });
+			if (overlapsWithCompanyException) {
+				continue;
+			}
 
-      if (isAnyStaffAvailable) {
-        availableSlotsOutput.push(potentialSlotStart);
-      }
-    }
+			// Verificar se pelo menos um funcionário está disponível
+			const isAnyStaffAvailable = staffsData.some((staffInfo) => {
+				const isStaffBusy = staffInfo.unavailablePeriods.some(
+					(period) =>
+						isBefore(potentialSlotStart, period.endDate) &&
+						isAfter(potentialSlotEnd, period.startDate),
+				);
+				return !isStaffBusy;
+			});
 
-    // Mapear os slots disponíveis para o formato TimeSlot
-    return availableSlotsOutput.map((slot) =>
-      TimeSlot.create({
-        label: slot.toLocaleTimeString("pt-BR", {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
-      })
-    );
-  }
+			if (isAnyStaffAvailable) {
+				availableSlotsOutput.push(potentialSlotStart);
+			}
+		}
+
+		// Mapear os slots disponíveis para o formato TimeSlot
+		return availableSlotsOutput.map((slot) =>
+			TimeSlot.create({
+				label: slot.toLocaleTimeString("pt-BR", {
+					hour: "2-digit",
+					minute: "2-digit",
+				}),
+			}),
+		);
+	}
 }

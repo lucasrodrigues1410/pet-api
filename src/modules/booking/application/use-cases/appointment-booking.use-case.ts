@@ -16,6 +16,7 @@ import { VariationType } from "@/modules/price-variation/domain/entities/price-v
 import { InvalidAppointmentDateError } from "../errors/invalid-appointment-date.error";
 import { TimeSlotUnavailableError } from "../errors/time-slot-unavailable.error";
 import { AppointmentAvailabilityService } from "../services/appointment-availability.service";
+import { SizeBasedStrategy } from "@/modules/price-variation/domain/strategies/size-based.strategy";
 
 interface AppointmentBookingUseCaseRequest {
 	serviceId: string;

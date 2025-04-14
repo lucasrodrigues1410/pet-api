@@ -18,6 +18,7 @@ export interface CompanyAvailabilityProps {
 	companyId: UniqueEntityID;
 	day: keyof typeof DaysOfWeek;
 	timeRange: TimeRange;
+	launchTime: TimeRange;
 }
 
 export class CompanyAvailability extends Entity<CompanyAvailabilityProps> {
@@ -33,10 +34,16 @@ export class CompanyAvailability extends Entity<CompanyAvailabilityProps> {
 		return this.props.timeRange;
 	}
 
+	get launchTime() {
+		return this.props.launchTime;
+	}
+
 	static create(
-		props: Omit<CompanyAvailabilityProps, "timeRange"> & {
+		props: Omit<CompanyAvailabilityProps, "timeRange" | 'launchTime'> & {
 			startTime: string;
 			endTime: string;
+			lunchStartTime: string;
+			lunchEndTime: string;
 		},
 		id?: UniqueEntityID,
 	): CompanyAvailability {
@@ -46,13 +53,17 @@ export class CompanyAvailability extends Entity<CompanyAvailabilityProps> {
 				`Invalid day: ${props.day}. Must be one of ${daysOfWeek.join(", ")}`,
 			);
 		}
-
+		console.log(props.lunchStartTime, props.lunchEndTime)
 		const companyAvailability = new CompanyAvailability(
 			{
 				...props,
 				timeRange: new TimeRange({
 					startTime: props.startTime,
 					endTime: props.endTime,
+				}),
+				launchTime: new TimeRange({
+					startTime: props.lunchStartTime,
+					endTime: props.lunchEndTime,
 				}),
 			},
 			id,

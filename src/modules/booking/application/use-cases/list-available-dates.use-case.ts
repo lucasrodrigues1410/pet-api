@@ -78,7 +78,6 @@ export class ListAvailableDatesUseCase {
 				new ResourceNotFoundError("Disponibilidade da empresa não encontrada"),
 			);
 		}
-
 		// Verifica se a data está no intervalo de operação da empresa
 		const { startTime, endTime } = companyAvailability.timeRange;
 		const isDateInRange = this.isDateWithinRange(date, startTime, endTime);
@@ -102,6 +101,7 @@ export class ListAvailableDatesUseCase {
 				unavailablePeriods: staff.appointments ?? [],
 			})),
 			companyExceptions: companyAvailabilityExceptions ?? [],
+			launchTime: companyAvailability.launchTime,
 		});
 
 		return right({ slots: availableSlots });

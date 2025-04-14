@@ -9,14 +9,16 @@ enum DayOfWeek {
 }
 
 model CompanyAvailability {
-    id        String    @id @default(cuid())
-    companyId String       @map("company_id")
-    day       DayOfWeek
-    startTime DateTime  @map("start_time") @db.Time(1)
-    endTime   DateTime  @map("end_time") @db.Time(1)
-    createdAt DateTime  @default(now()) @map("created_at")
-    updatedAt DateTime  @updatedAt @map("updated_at")
-    company   Company   @relation(fields: [companyId], references: [id])
+    id             String    @id @default(cuid())
+    companyId      String    @map("company_id")
+    day            DayOfWeek
+    startTime      DateTime  @map("start_time") @db.Time(1)
+    endTime        DateTime  @map("end_time") @db.Time(1)
+    lunchStartTime DateTime  @map("lunch_start_time") @db.Time(1)
+    lunchEndTime   DateTime  @map("lunch_end_time") @db.Time(1)
+    createdAt      DateTime  @default(now()) @map("created_at")
+    updatedAt      DateTime  @updatedAt @map("updated_at")
+    company        Company   @relation(fields: [companyId], references: [id])
 
     @@map("company_availabilities")
 }
