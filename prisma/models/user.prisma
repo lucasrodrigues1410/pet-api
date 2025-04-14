@@ -6,9 +6,7 @@ model User {
     type     UserType
 
     animals           Animal[]
-    appointment       Appointment[]       @relation("ClientAppointments")
     userCompany       UserCompany[]
-    appointmentIntent AppointmentIntent[]
 
     createdAt DateTime  @default(now()) @map("created_at")
     updatedAt DateTime  @updatedAt @map("updated_at")

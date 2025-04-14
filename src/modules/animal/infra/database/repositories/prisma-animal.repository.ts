@@ -1,10 +1,10 @@
 import { PrismaService } from "@/core/infra/prisma/prisma.service";
+import { PaginationParams } from "@/core/pagination/pagination-params";
+import { paginate } from "@/core/pagination/paginator";
 import { Injectable } from "@nestjs/common";
 import { Animal } from "../../../domain/entities/animal.entity";
 import { AnimalRepository } from "../../../domain/repositories/animal.repository";
 import { AnimalPrismaMapper } from "../mappers/prisma-animal.mapper";
-import { paginate } from "@/core/pagination/paginator";
-import { PaginationParams } from "@/core/pagination/pagination-params";
 
 @Injectable()
 export class AnimalPrismaRepository implements AnimalRepository {
@@ -27,7 +27,7 @@ export class AnimalPrismaRepository implements AnimalRepository {
 		return AnimalPrismaMapper.toDomain(response);
 	}
 
-	async getById(animalId: string): Promise<Animal | null> {
+	async findById(animalId: string): Promise<Animal | null> {
 		const response = await this.prismaService.animal.findUnique({
 			where: { id: animalId.toString(), deletedAt: null },
 		});

@@ -1,4 +1,4 @@
-import { z, ZodTypeAny } from "zod";
+import { ZodTypeAny, z } from "zod";
 
 export const paginationResultSchema = <T extends ZodTypeAny>(itemSchema: T) =>
 	z.object({
@@ -15,4 +15,4 @@ export type PaginationResult<T> = {
 	page: number;
 	limit: number;
 	totalPages: number;
-}
+};

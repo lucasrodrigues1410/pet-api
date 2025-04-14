@@ -2,21 +2,15 @@ import { createZodDto } from "@anatine/zod-nestjs";
 import { z } from "zod";
 
 const listServicesByCompanyResponse = z.object({
-	id: z.string(),
-	name: z.string(),
-	description: z.string().nullable(),
-	price: z.number(),
-	categories: z.array(
+	items: z.array(
 		z.object({
 			id: z.string(),
 			name: z.string(),
-			type: z.enum(["PETSHOP"]),
+			description: z.string().nullable(),
+			price: z.number(),
+			pricesRange: z.array(z.number()),
 		}),
 	),
-	company: z.object({
-		id: z.string(),
-		name: z.string(),
-	}),
 });
 
 export class ListServicesByCompanyResponseDto extends createZodDto(

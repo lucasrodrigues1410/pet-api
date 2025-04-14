@@ -1,11 +1,14 @@
-import { Animal } from "@/modules/animal/domain/entities/animal.entity";
-import { PriceVariation } from "../entities/price-variation.entity";
+import {
+	PriceVariation,
+	VariationType,
+} from "../entities/price-variation.entity";
 
-export interface PriceVariationInput {
-	animal: Animal;
-	variationData: PriceVariation;
-}
+export type PriceVariationInput = {
+	contextValue?: string | number;
+	variation: PriceVariation;
+};
 
 export interface PriceVariationStrategy {
+	supportedType: VariationType;
 	calculate(input: PriceVariationInput): number | null;
 }

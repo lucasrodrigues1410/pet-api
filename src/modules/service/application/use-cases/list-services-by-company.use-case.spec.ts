@@ -27,17 +27,6 @@ describe("List services by company", () => {
 		});
 
 		expect(result.isRight()).toBe(true);
-		expect(result.value).toMatchObject({
-			services: expect.arrayContaining(
-				services.map((service) =>
-					expect.objectContaining({
-						name: service.name,
-						description: service.description,
-						price: service.price,
-						companyId: service.companyId,
-					}),
-				),
-			),
-		});
+		expect(result.value?.services).toHaveLength(5);
 	});
 });

@@ -1,20 +1,23 @@
 import { Injectable } from "@nestjs/common";
-import {
+import { VariationType } from "../entities/price-variation.entity";
+import type {
 	PriceVariationInput,
 	PriceVariationStrategy,
 } from "./price-variation.strategy";
 
 @Injectable()
 export class SizeBasedStrategy implements PriceVariationStrategy {
-	calculate({ animal, variationData }: PriceVariationInput): number | null {
-		const animalWeight = animal.weight;
+	supportedType = VariationType.SIZE;
 
-		if (!animalWeight) {
+	calculate({ contextValue, variation }: PriceVariationInput): number | null {
+		if (!contextValue || Number.isNaN(contextValue)) {
 			return null;
 		}
 
+		const animalWeight = Number(contextValue);
+
 		let isApplicable = false;
-		switch (variationData.value) {
+		switch (variation.value) {
 			case "SMALL":
 				isApplicable = animalWeight <= 10;
 				break;
@@ -27,7 +30,7 @@ export class SizeBasedStrategy implements PriceVariationStrategy {
 		}
 
 		if (isApplicable) {
-			return Number(variationData.price);
+			return Number(variation.price);
 		}
 
 		return null;

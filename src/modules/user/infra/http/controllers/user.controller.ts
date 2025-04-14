@@ -1,4 +1,5 @@
 import { FindUserByIdUseCase } from "@/modules/user/application/use-cases/find-user-by-id.use-case";
+import { UpdateUserProfileUseCase } from "@/modules/user/application/use-cases/update-user-profile.use-case";
 import {
 	BadRequestException,
 	Body,
@@ -10,9 +11,8 @@ import {
 } from "@nestjs/common";
 import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { User } from "src/modules/auth/infra/http/decorators/user.decorator";
-import { UserResponseDto } from "../dtos/user.dto";
-import { UpdateUserProfileUseCase } from "@/modules/user/application/use-cases/update-user-profile.use-case";
 import { UpdateUserRequestDto } from "../dtos/update-user.dto";
+import { UserResponseDto } from "../dtos/user.dto";
 
 @ApiTags("Usuários")
 @Controller("users")
@@ -57,7 +57,7 @@ export class UserController {
 			profileData: params,
 		});
 
-		if(response.isLeft()) {
+		if (response.isLeft()) {
 			throw new BadRequestException(response.value.message);
 		}
 	}

@@ -26,7 +26,7 @@ export class InMemoryAnimalRepository implements AnimalRepository {
 		return animal;
 	}
 
-	getById(animalId: string): Promise<Animal | null> {
+	findById(animalId: string): Promise<Animal | null> {
 		return new Promise((resolve) => {
 			const animal = this.items.find(
 				(animal) => animal.id.toString() === animalId,

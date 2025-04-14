@@ -14,6 +14,8 @@ export class PrismaCompanyAvailabilityMapper {
 				day: prismaPriceVariation.day,
 				startTime: format(prismaPriceVariation.startTime, "HH:mm"),
 				endTime: format(prismaPriceVariation.endTime, "HH:mm"),
+				lunchStartTime: format(prismaPriceVariation.lunchStartTime, "HH:mm"),
+				lunchEndTime: format(prismaPriceVariation.lunchEndTime, "HH:mm"),
 			},
 			new UniqueEntityID(prismaPriceVariation.id),
 		);
@@ -28,6 +30,8 @@ export class PrismaCompanyAvailabilityMapper {
 			day: companyAvailability.day,
 			startTime: new Date(companyAvailability.timeRange.startTime),
 			endTime: new Date(companyAvailability.timeRange.endTime),
+			lunchEndTime: new Date(companyAvailability.launchTime.endTime),
+			lunchStartTime: new Date(companyAvailability.launchTime.startTime),
 		};
 	}
 }

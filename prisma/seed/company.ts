@@ -42,6 +42,18 @@ export async function createCompany(prisma: PrismaClient) {
 					seconds: 0,
 					milliseconds: 0,
 				}).toISOString(),
+				lunchStartTime: set(new Date(), {
+					hours: 12,
+					minutes: 0,
+					seconds: 0,
+					milliseconds: 0,
+				}).toISOString(),
+				lunchEndTime: set(new Date(), {
+					hours: 13,
+					minutes: 0,
+					seconds: 0,
+					milliseconds: 0,
+				}).toISOString(),
 			},
 		});
 	}

@@ -6,7 +6,7 @@ export class InMemoryPriceVariationRepository
 {
 	public items: PriceVariation[] = [];
 
-	getAllByServiceId(serviceId: string): Promise<PriceVariation[]> {
+	findByServiceId(serviceId: string): Promise<PriceVariation[]> {
 		const priceVariations = this.items.filter(
 			(priceVariation) => priceVariation.serviceId.toString() === serviceId,
 		);

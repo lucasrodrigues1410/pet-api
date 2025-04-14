@@ -35,7 +35,7 @@ export class UpdateAnimalUseCase {
 	async execute(
 		data: UpdateAnimalUseCaseRequest,
 	): Promise<UpdateAnimalUseCaseResponse> {
-		const animal = await this.animalRepository.getById(data.animalId);
+		const animal = await this.animalRepository.findById(data.animalId);
 		if (!animal || animal.userId.toString() !== data.userId) {
 			return left(new ResourceNotFoundError("Animal não encontrado"));
 		}

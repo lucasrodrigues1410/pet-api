@@ -11,6 +11,7 @@ import { GetServiceByIdUseCase } from "src/modules/service/application/use-cases
 import { ListServicesByCompanyUseCase } from "src/modules/service/application/use-cases/list-services-by-company.use-case";
 import { ListServicesByCompanyResponseDto } from "src/modules/service/infra/http/dtos/list-services-by-company.response.dto";
 import { ServiceByIdResponseDTO } from "src/modules/service/infra/http/dtos/service-by-id-response.dto";
+import { ServicePresenter } from "../presenters/service.presenter";
 
 @ApiTags("Serviços")
 @Controller("service")
@@ -38,21 +39,8 @@ export class ServiceController {
 		}
 
 		const service = result.value.service;
-		const company = service.company;
-		const categories =
-			service.categories?.map((category) => ({
-				id: category.id,
-				name: category.name,
-				type: category.type,
-			})) || [];
-
 		return {
-			id: service.id,
-			name: service.name,
-			description: service.description || null,
-			price: service.price,
-			categories,
-			company,
+			item: ServicePresenter.toHTTP(service),
 		};
 	}
 
@@ -73,17 +61,7 @@ export class ServiceController {
 		}
 
 		return {
-			results: result.value.services.map((service) => ({
-				id: service.id,
-				name: service.name,
-				description: service.description,
-				price: service.price,
-				categories: service.categories?.map((category) => ({
-					id: category.id,
-					name: category.name,
-					type: category.type,
-				})),
-			})),
+			items: result.value.services.map(ServicePresenter.toHTTP),
 		};
 	}
 }

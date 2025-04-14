@@ -1,8 +1,7 @@
 import { Either, left, right } from "@/shared/either";
-import { User } from "../../domain/entities/user.entity";
-import { UserRepository } from "../../domain/repositories/user.repository";
 import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
 import { Injectable } from "@nestjs/common";
+import { UserRepository } from "../../domain/repositories/user.repository";
 
 type UpdateUserProfileInput = {
 	userId: string;
@@ -27,7 +26,7 @@ export class UpdateUserProfileUseCase {
 		}
 
 		user.update(params.profileData);
-		
+
 		await this.userRepository.update(user);
 		return right(undefined);
 	}
