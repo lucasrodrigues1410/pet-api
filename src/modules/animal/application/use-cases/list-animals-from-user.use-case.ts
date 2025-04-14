@@ -1,9 +1,9 @@
+import { PaginationParams } from "@/core/pagination/pagination-params";
+import { PaginationResult } from "@/core/pagination/pagination-result";
 import { Either, right } from "@/shared/either";
 import { Injectable } from "@nestjs/common";
 import { Animal } from "../../domain/entities/animal.entity";
 import { AnimalRepository } from "../../domain/repositories/animal.repository";
-import { PaginationParams } from "@/core/pagination/pagination-params";
-import { PaginationResult } from "@/core/pagination/pagination-result";
 
 type ListAnimalsFromUserUseCaseRequest = {
 	userId: string;

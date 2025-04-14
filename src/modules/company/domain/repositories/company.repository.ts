@@ -1,6 +1,6 @@
 import { PaginationParams } from "@/core/pagination/pagination-params";
-import { Company } from "../entities/company.entity";
 import { PaginationResult } from "@/core/pagination/pagination-result";
+import { Company } from "../entities/company.entity";
 
 export abstract class CompanyRepository {
 	abstract findById(id: string): Promise<Company | null>;

@@ -11,7 +11,7 @@ export class InMemoryAppointmentRepository implements AppointmentRepository {
 
 	async getByPeriod(params: {
 		serviceId: string;
-		range: DateRange
+		range: DateRange;
 	}) {
 		const { serviceId, range } = params;
 		return this.items.filter((appointment) => {

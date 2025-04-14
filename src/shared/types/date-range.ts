@@ -1,4 +1,4 @@
 export type DateRange = {
-    startDate: Date;
-    endDate: Date;
+	startDate: Date;
+	endDate: Date;
 };

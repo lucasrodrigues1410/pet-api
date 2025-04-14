@@ -2,6 +2,7 @@ import { daysOfWeek } from "@/modules/company-availability/domain/entities/compa
 import { CompanyAvailabilityExcpetionRepository } from "@/modules/company-availability/domain/repositories/company-availability-exception.repository";
 import { CompanyAvailabilityRepository } from "@/modules/company-availability/domain/repositories/company-availability.repository";
 import { ServiceRepository } from "@/modules/service/domain/repositories/service.repository";
+import { StaffRepository } from "@/modules/staff/domain/repositories/staff.repository";
 import { Either, left, right } from "@/shared/either";
 import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
 import { Injectable } from "@nestjs/common";
@@ -9,7 +10,6 @@ import { endOfDay, format, getDay, isValid, startOfDay } from "date-fns";
 import { TimeSlot } from "../../domain/entities/time-slot.entity";
 import { AvailableSlotsService } from "../services/available-slots.service";
 import { TimeSlotGeneratorService } from "../services/time-slot-generator.service";
-import { StaffRepository } from "@/modules/staff/domain/repositories/staff.repository";
 
 interface ListAvailableDatesUseCaseRequest {
 	companyId: string;

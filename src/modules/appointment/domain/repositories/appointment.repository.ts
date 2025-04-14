@@ -5,6 +5,6 @@ export abstract class AppointmentRepository {
 	abstract create(appointment: Appointment): Promise<void>;
 	abstract getByPeriod(params: {
 		serviceId: string;
-		range: DateRange
+		range: DateRange;
 	}): Promise<Appointment[]>;
 }

@@ -1,9 +1,9 @@
 import { Injectable } from "@nestjs/common";
+import { VariationType } from "../entities/price-variation.entity";
 import type {
 	PriceVariationInput,
 	PriceVariationStrategy,
 } from "./price-variation.strategy";
-import { VariationType } from "../entities/price-variation.entity";
 
 @Injectable()
 export class SizeBasedStrategy implements PriceVariationStrategy {

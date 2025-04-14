@@ -16,7 +16,7 @@ export class PrismaServiceRepository implements ServiceRepository {
 				priceVariation: true,
 				categories: {
 					include: {
-						category: true
+						category: true,
 					},
 				},
 			},

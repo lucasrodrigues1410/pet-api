@@ -3,8 +3,8 @@ import { PrismaAppointmentMapper } from "@/modules/appointment/infra/database/ma
 import { Staff, StaffRole } from "@/modules/staff/domain/entities/staff.entity";
 import {
 	Prisma,
-	UserCompany as PrismaUserCompany,
 	Appointment as PrismaAppointment,
+	UserCompany as PrismaUserCompany,
 } from "@prisma/client";
 
 export class PrismaStaffMapper {

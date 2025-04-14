@@ -1,5 +1,9 @@
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
-import { Staff, StaffProps, StaffRole } from "@/modules/staff/domain/entities/staff.entity";
+import {
+	Staff,
+	StaffProps,
+	StaffRole,
+} from "@/modules/staff/domain/entities/staff.entity";
 import { PrismaStaffMapper } from "@/modules/staff/infra/database/mappers/prisma-staff.mapper";
 import { faker } from "@faker-js/faker";
 import { Injectable } from "@nestjs/common";
@@ -10,10 +14,7 @@ import {
 } from "src/modules/animal/domain/entities/animal.entity";
 import { AnimalPrismaMapper } from "src/modules/animal/infra/database/mappers/prisma-animal.mapper";
 
-export function makeStaff(
-	override: Partial<Staff> = {},
-	id?: UniqueEntityID,
-) {
+export function makeStaff(override: Partial<Staff> = {}, id?: UniqueEntityID) {
 	const staff = Staff.create(
 		{
 			companyId: new UniqueEntityID(),

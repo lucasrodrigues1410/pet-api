@@ -1,3 +1,5 @@
+import { PaginationParamsQuery } from "@/core/pagination/pagination-params";
+import { PaginationResultPresenter } from "@/core/pagination/pagination-presenter";
 import { DeleteAnimalUseCase } from "@/modules/animal/application/use-cases/delete-animal.use-case";
 import { UpdateAnimalUseCase } from "@/modules/animal/application/use-cases/update-animal.use-case";
 import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
@@ -15,6 +17,7 @@ import {
 	Query,
 } from "@nestjs/common";
 import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { ApiCreatedResponse } from "@nestjs/swagger";
 import { UserTypeDecorator } from "src/modules/auth/infra/http/decorators/user-type.decorator";
 import { User } from "src/modules/auth/infra/http/decorators/user.decorator";
 import { CreateAnimalUseCase } from "../../../application/use-cases/create-animal.use-case";
@@ -23,15 +26,9 @@ import {
 	CreateAnimalRequestDto,
 	CreateAnimalResponseDto,
 } from "../dtos/create-animal.dto";
-import {
-	ListAnimalsResponseDto,
-} from "../dtos/list-animals.dto";
-import { ApiCreatedResponse } from '@nestjs/swagger';
+import { ListAnimalsResponseDto } from "../dtos/list-animals.dto";
 import { UpdateAnimalRequestDto } from "../dtos/update-animal.dto";
 import { AnimalPresenter } from "../presenters/animal.presenter";
-import { PaginationParamsQuery } from "@/core/pagination/pagination-params";
-import { PaginationResultPresenter } from "@/core/pagination/pagination-presenter";
-
 
 @ApiTags("Animais")
 @Controller("animal")
@@ -69,19 +66,17 @@ export class AnimalController {
 	}
 
 	@ApiOperation({ summary: "Listar todos os animais de um usuário" })
-	@ApiCreatedResponse({type: ListAnimalsResponseDto})
+	@ApiCreatedResponse({ type: ListAnimalsResponseDto })
 	@Get("user/:id")
 	@UserTypeDecorator("CUSTOMER")
 	async listAll(
 		@Param("id") userId: string,
 		@Query() query: PaginationParamsQuery,
 	) {
-
 		const result = await this.listAnimalsFromUserUseCase.execute({
 			userId,
 			...query,
 		});
-
 
 		if (result.isLeft()) {
 			throw new BadRequestException();

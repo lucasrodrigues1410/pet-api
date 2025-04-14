@@ -40,7 +40,7 @@ export class ServiceController {
 
 		const service = result.value.service;
 		return {
-			item: ServicePresenter.toHTTP(service)
+			item: ServicePresenter.toHTTP(service),
 		};
 	}
 

@@ -1,9 +1,9 @@
 import { PrismaService } from "@/core/infra/prisma/prisma.service";
 import { Staff } from "@/modules/staff/domain/entities/staff.entity";
 import { StaffRepository } from "@/modules/staff/domain/repositories/staff.repository";
-import { PrismaStaffMapper } from "../mappers/prisma-staff.mapper";
-import { Injectable } from "@nestjs/common";
 import { DateRange } from "@/shared/types/date-range";
+import { Injectable } from "@nestjs/common";
+import { PrismaStaffMapper } from "../mappers/prisma-staff.mapper";
 
 @Injectable()
 export class PrismaStaffRepository implements StaffRepository {
@@ -45,10 +45,7 @@ export class PrismaStaffRepository implements StaffRepository {
 		return staff.map(PrismaStaffMapper.toDomain);
 	}
 
-	async findAvailableForSlot(
-		companyId: string,
-		range: DateRange,
-	) {
+	async findAvailableForSlot(companyId: string, range: DateRange) {
 		const staff = await this.prismaService.userCompany.findMany({
 			where: {
 				companyId: companyId,

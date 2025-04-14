@@ -1,12 +1,13 @@
 import { Injectable } from "@nestjs/common";
+import {
+	PriceVariation,
+	VariationContext,
+} from "../../domain/entities/price-variation.entity";
 import { PriceStrategyProvider } from "../providers/price-strategy.provider";
-import { PriceVariation, VariationContext } from "../../domain/entities/price-variation.entity";
 
 @Injectable()
 export class PriceCalculator {
-	constructor(
-		private readonly strategyProvider: PriceStrategyProvider,
-	) {}
+	constructor(private readonly strategyProvider: PriceStrategyProvider) {}
 
 	async calculate(
 		variations: PriceVariation[],

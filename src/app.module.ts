@@ -1,3 +1,4 @@
+import { ZodValidationPipe } from "@anatine/zod-nestjs";
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { APP_GUARD, APP_PIPE } from "@nestjs/core";
@@ -9,15 +10,14 @@ import { AssetModule } from "./modules/asset/asset.module";
 import { AuthModule } from "./modules/auth/auth.module";
 import { JwtGuard } from "./modules/auth/infra/http/guards/jwt.guard";
 import { JwtStrategy } from "./modules/auth/infra/strategies/jwt.strategy";
+import { BookingModule } from "./modules/booking/booking.module";
 import { BreedModule } from "./modules/breed/breed.module";
 import { CompanyModule } from "./modules/company/company.module";
 import { PaymentModule } from "./modules/payment/payment.module";
 import { PriceVariationModule } from "./modules/price-variation/price-variation.module";
 import { ServiceModule } from "./modules/service/service.module";
-import { UserModule } from "./modules/user/user.module";
-import { ZodValidationPipe } from "@anatine/zod-nestjs";
-import { BookingModule } from "./modules/booking/booking.module";
 import { StaffModule } from "./modules/staff/staff.module";
+import { UserModule } from "./modules/user/user.module";
 
 @Module({
 	imports: [
@@ -35,7 +35,7 @@ import { StaffModule } from "./modules/staff/staff.module";
 		PaymentModule,
 		AppointmentModule,
 		BookingModule,
-		StaffModule
+		StaffModule,
 	],
 	providers: [
 		{

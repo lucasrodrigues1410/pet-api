@@ -7,14 +7,14 @@ import { PrismaStaffRepository } from "./infra/database/repositories/prisma-staf
 	providers: [
 		{
 			provide: StaffRepository,
-			useClass: PrismaStaffRepository
+			useClass: PrismaStaffRepository,
 		},
 	],
 	exports: [
 		{
 			provide: StaffRepository,
-			useClass: PrismaStaffRepository
+			useClass: PrismaStaffRepository,
 		},
-	]
+	],
 })
 export class StaffModule {}

@@ -39,7 +39,7 @@ export class CompanyAvailability extends Entity<CompanyAvailabilityProps> {
 	}
 
 	static create(
-		props: Omit<CompanyAvailabilityProps, "timeRange" | 'launchTime'> & {
+		props: Omit<CompanyAvailabilityProps, "timeRange" | "launchTime"> & {
 			startTime: string;
 			endTime: string;
 			lunchStartTime: string;

@@ -25,7 +25,7 @@ describe("List services by company", () => {
 		const result = await sut.execute({
 			companyId: companyId.toString(),
 		});
-		
+
 		expect(result.isRight()).toBe(true);
 		expect(result.value?.services).toHaveLength(5);
 	});

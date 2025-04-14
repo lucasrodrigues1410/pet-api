@@ -1,9 +1,9 @@
+import { PaginationParams } from "@/core/pagination/pagination-params";
+import { PaginationResult } from "@/core/pagination/pagination-result";
 import { Either, right } from "@/shared/either";
 import { Injectable } from "@nestjs/common";
 import { Company } from "../../domain/entities/company.entity";
 import { CompanyRepository } from "../../domain/repositories/company.repository";
-import { PaginationParams } from "@/core/pagination/pagination-params";
-import { PaginationResult } from "@/core/pagination/pagination-result";
 
 type SearchCompaniesUseCaseRequest = {
 	location?: {
@@ -11,12 +11,9 @@ type SearchCompaniesUseCaseRequest = {
 		longitude: number;
 	};
 	query?: string;
-} & PaginationParams
+} & PaginationParams;
 
-type SearchCompaniesUseCaseResponse = Either<
-	null,
-	PaginationResult<Company>
->;
+type SearchCompaniesUseCaseResponse = Either<null, PaginationResult<Company>>;
 
 @Injectable()
 export class SearchCompaniesUseCase {

@@ -1,22 +1,22 @@
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
+import { AnimalRepository } from "@/modules/animal/domain/repositories/animal.repository";
 import { CheckoutSessionCreationError } from "@/modules/payment/domain/errors/checkout-session-creation.error";
+import { PriceCalculator } from "@/modules/price-variation/application/services/price-calculator.service";
+import { VariationType } from "@/modules/price-variation/domain/entities/price-variation.entity";
+import { SizeBasedStrategy } from "@/modules/price-variation/domain/strategies/size-based.strategy";
 import { ServiceRepository } from "@/modules/service/domain/repositories/service.repository";
 import { Either, left, right } from "@/shared/either";
 import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
 import { Injectable } from "@nestjs/common";
 import { addMinutes, isBefore } from "date-fns";
-import { AppointmentRepository } from "../../../appointment/domain/repositories/appointment.repository";
 import {
 	Appointment,
 	CoatType,
 } from "../../../appointment/domain/entities/appointment.entity";
-import { PriceCalculator } from "@/modules/price-variation/application/services/price-calculator.service";
-import { AnimalRepository } from "@/modules/animal/domain/repositories/animal.repository";
-import { VariationType } from "@/modules/price-variation/domain/entities/price-variation.entity";
+import { AppointmentRepository } from "../../../appointment/domain/repositories/appointment.repository";
 import { InvalidAppointmentDateError } from "../errors/invalid-appointment-date.error";
 import { TimeSlotUnavailableError } from "../errors/time-slot-unavailable.error";
 import { AppointmentAvailabilityService } from "../services/appointment-availability.service";
-import { SizeBasedStrategy } from "@/modules/price-variation/domain/strategies/size-based.strategy";
 
 interface AppointmentBookingUseCaseRequest {
 	serviceId: string;

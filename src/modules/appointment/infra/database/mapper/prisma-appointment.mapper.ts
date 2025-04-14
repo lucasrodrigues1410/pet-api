@@ -1,5 +1,8 @@
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
-import { Appointment, CoatType } from "@/modules/appointment/domain/entities/appointment.entity";
+import {
+	Appointment,
+	CoatType,
+} from "@/modules/appointment/domain/entities/appointment.entity";
 import { Prisma, Appointment as PrismaAppointment } from "@prisma/client";
 
 export class PrismaAppointmentMapper {
