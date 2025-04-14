@@ -25,6 +25,8 @@ export function makeCompanyAvailability(
 			day: faker.helpers.arrayElement(Object.values(DaysOfWeek)),
 			endTime: "17:00",
 			startTime: "08:00",
+			lunchEndTime: "13:00",
+			lunchStartTime: "12:00",
 			...override,
 		},
 		id,

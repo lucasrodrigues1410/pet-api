@@ -53,7 +53,6 @@ export class CompanyAvailability extends Entity<CompanyAvailabilityProps> {
 				`Invalid day: ${props.day}. Must be one of ${daysOfWeek.join(", ")}`,
 			);
 		}
-		console.log(props.lunchStartTime, props.lunchEndTime)
 		const companyAvailability = new CompanyAvailability(
 			{
 				...props,

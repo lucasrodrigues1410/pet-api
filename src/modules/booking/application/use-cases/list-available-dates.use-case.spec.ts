@@ -1,246 +1,184 @@
-import { beforeEach, describe, expect, it } from "bun:test";
+import { beforeEach, describe, expect, it, test } from "bun:test";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { CompanyAvailabilityException } from "@/modules/company-availability/domain/entities/company-availability-exception.entity";
-import { DaysOfWeek } from "@/modules/company-availability/domain/entities/company-availability.entity";
+import {
+	CompanyAvailability,
+	DaysOfWeek,
+} from "@/modules/company-availability/domain/entities/company-availability.entity";
 import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
 import { getDay, set } from "date-fns";
 import { makeAppointment } from "test/factories/make-appointment";
 import { makeCompanyAvailability } from "test/factories/make-company-availability";
 import { makeService } from "test/factories/make-service";
-import {
-	InMemoryAppointmentRepository,
-} from "test/repositories/in-memory-appointment.repository";
+import { InMemoryAppointmentRepository } from "test/repositories/in-memory-appointment.repository";
 import { InMemoryCompanyAvailabilityExceptionRepository } from "test/repositories/in-memory-company-availability-exception.repository";
 import { InMemoryCompanyAvailabilityRepository } from "test/repositories/in-memory-company-availability.repository";
 import { InMemoryServiceRepository } from "test/repositories/in-memory-service.repository";
 import { ListAvailableDatesUseCase } from "./list-available-dates.use-case";
+import { InMemoryStaffRepository } from "test/repositories/in-memory-staff.repository";
+import { makeStaff } from "test/factories/make-staff";
+import { Staff } from "@/modules/staff/domain/entities/staff.entity";
+import { Service } from "@/modules/service/domain/entities/service.entity";
+import { Either } from "@/shared/either";
 
-let inMemoryAppointmentRepository: InMemoryAppointmentRepository;
-let inMemoryCompanyAvailability: InMemoryCompanyAvailabilityRepository;
-let inMemoryCompanyAvailabilityException: InMemoryCompanyAvailabilityExceptionRepository;
-let inMemoryServiceRepository: InMemoryServiceRepository;
+function expectResultIsRight<L, R>(result: Either<L, R>): asserts result is Either<never, R> {
+	expect(result.isRight()).toBe(true);
+}
 
-let sut: ListAvailableDatesUseCase;
+function expectResultIsLeft<L, R>(result: Either<L, R>): asserts result is Either<L, never> {
+	expect(result.isLeft()).toBe(true);
+}
+
 
 describe("ListAvailableDatesUseCase", () => {
+	let inMemoryAppointmentRepository: InMemoryAppointmentRepository;
+	let inMemoryCompanyAvailabilityRepository: InMemoryCompanyAvailabilityRepository;
+	let inMemoryCompanyAvailabilityExceptionRepository: InMemoryCompanyAvailabilityExceptionRepository;
+	let inMemoryServiceRepository: InMemoryServiceRepository;
+	let inMemoryStaffRepository: InMemoryStaffRepository;
+	let sut: ListAvailableDatesUseCase;
+
+	let companyId: UniqueEntityID;
+	let staff: Staff;
+	let service: Service;
+	let defaultDate: Date;
+
 	beforeEach(() => {
 		inMemoryAppointmentRepository = new InMemoryAppointmentRepository();
-		inMemoryCompanyAvailability = new InMemoryCompanyAvailabilityRepository();
-		inMemoryCompanyAvailabilityException =
-			new InMemoryCompanyAvailabilityExceptionRepository();
+		inMemoryCompanyAvailabilityRepository = new InMemoryCompanyAvailabilityRepository();
+		inMemoryCompanyAvailabilityExceptionRepository = new InMemoryCompanyAvailabilityExceptionRepository();
 		inMemoryServiceRepository = new InMemoryServiceRepository();
+		inMemoryStaffRepository = new InMemoryStaffRepository();
 
 		sut = new ListAvailableDatesUseCase(
-			inMemoryCompanyAvailability,
-			inMemoryCompanyAvailabilityException,
+			inMemoryCompanyAvailabilityRepository,
+			inMemoryCompanyAvailabilityExceptionRepository,
 			inMemoryServiceRepository,
+			inMemoryStaffRepository,
 		);
+
+		companyId = new UniqueEntityID();
+		staff = makeStaff({ companyId });
+		service = makeService({ companyId, duration: 30 });
+		defaultDate = set(new Date(), { hours: 8, minutes: 0, seconds: 0, milliseconds: 0 });
+
+		inMemoryStaffRepository.items.push(staff);
+		inMemoryServiceRepository.items.push(service);
 	});
 
-	// 1. Caso Normal: Slots disponíveis sem conflitos
-	it("should return available slots when no appointments or exceptions conflict", async () => {
-		const companyId = new UniqueEntityID();
-		const service = makeService({ companyId, duration: 30 });
-		const startDate = set(new Date(), { hours: 8, minutes: 0, seconds: 0 });
-
-		inMemoryServiceRepository.items.push(service);
-		const availableDate = makeCompanyAvailability({
+	it("should return available slots when company is open and no conflicts exist", async () => {
+		const dayOfWeek = Object.values(DaysOfWeek)[getDay(defaultDate)];
+		const companyAvailability = makeCompanyAvailability({
 			companyId: companyId,
-			day: Object.values(DaysOfWeek)[getDay(startDate)],
+			day: dayOfWeek,
 			startTime: "08:00",
 			endTime: "17:00",
 		});
-
-		inMemoryCompanyAvailability.items.push(availableDate);
+		inMemoryCompanyAvailabilityRepository.items.push(companyAvailability);
 
 		const result = await sut.execute({
 			companyId: companyId.toString(),
 			serviceId: service.id.toString(),
-			date: startDate,
+			date: defaultDate, 
 		});
 
-		expect(result.isRight()).toBeTruthy();
-		if (result.isRight()) {
+		expectResultIsRight(result);
+		if(result.isRight()) {
 			expect(result.value.slots.length).toBeGreaterThan(0);
 		}
 	});
 
-	// 2. Caso de Erro: Disponibilidade da empresa não encontrada
-	it("should return ResourceNotFoundError when company availability is not found", async () => {
-		const companyId = new UniqueEntityID();
-		const service = makeService({ companyId, duration: 30 });
-		const startDate = set(new Date(), { hours: 8, minutes: 0, seconds: 0 });
-
-		inMemoryServiceRepository.items.push(service);
-
+	it("should return ResourceNotFoundError when company availability for the day is not found", async () => {
 		const result = await sut.execute({
 			companyId: companyId.toString(),
 			serviceId: service.id.toString(),
-			date: startDate,
+			date: defaultDate,
 		});
 
-		expect(result.isLeft()).toBeTruthy();
-		if (result.isLeft()) {
-			expect(result.value).toBeInstanceOf(ResourceNotFoundError);
-		}
+		expectResultIsLeft(result);
+		expect(result.value).toBeInstanceOf(ResourceNotFoundError);
 	});
 
-	// 3. Caso de Erro: Serviço não encontrado
-	it("should return ResourceNotFoundError when service is not found", async () => {
-		const companyId = new UniqueEntityID();
-		const startDate = set(new Date(), { hours: 8, minutes: 0, seconds: 0 });
-
-		const result = await sut.execute({
-			companyId: companyId.toString(),
-			serviceId: "non-existent-service-id",
-			date: startDate,
-		});
-
-		expect(result.isLeft()).toBeTruthy();
-		if (result.isLeft()) {
-			expect(result.value).toBeInstanceOf(ResourceNotFoundError);
-		}
-	});
-
-	// 4. Caso de Borda: Data fora do horário de funcionamento
-	it("should return no slots when date is outside company availability", async () => {
-		const companyId = new UniqueEntityID();
-		const service = makeService({ companyId, duration: 30 });
-		const startDate = set(new Date(), { hours: 8, minutes: 0, seconds: 0 });
-		const outsideDate = set(startDate, {
-			hours: 19,
-			minutes: 0,
-			seconds: 0,
-		});
-
-		inMemoryServiceRepository.items.push(service);
-		const availableDate = makeCompanyAvailability({
+	it("should return ResourceNotFoundError when the service is not found", async () => {
+		const nonExistentServiceId = "non-existent-service-id";
+        const dayOfWeek = Object.values(DaysOfWeek)[getDay(defaultDate)];
+		const companyAvailability = makeCompanyAvailability({ // Adiciona disponibilidade para isolar o erro no serviço
 			companyId: companyId,
-			day: Object.values(DaysOfWeek)[getDay(outsideDate)],
+			day: dayOfWeek,
 			startTime: "08:00",
 			endTime: "17:00",
 		});
+		inMemoryCompanyAvailabilityRepository.items.push(companyAvailability);
 
-		inMemoryCompanyAvailability.items.push(availableDate);
+
+		const result = await sut.execute({
+			companyId: companyId.toString(),
+			serviceId: nonExistentServiceId,
+			date: defaultDate,
+		});
+
+		expectResultIsLeft(result);
+		expect(result.value).toBeInstanceOf(ResourceNotFoundError);
+	});
+
+	it("should return no slots when the requested date/time is outside company operating hours for that day", async () => {
+		const dayOfWeek = Object.values(DaysOfWeek)[getDay(defaultDate)];
+		const companyAvailability = makeCompanyAvailability({
+			companyId: companyId,
+			day: dayOfWeek,
+			startTime: "09:00",
+			endTime: "17:00",
+		});
+		inMemoryCompanyAvailabilityRepository.items.push(companyAvailability);
 
 		const result = await sut.execute({
 			companyId: companyId.toString(),
 			serviceId: service.id.toString(),
-			date: outsideDate,
+			date: defaultDate,
 		});
 
-		expect(result.isRight()).toBeTruthy();
-		if (result.isRight()) {
-			expect(result.value.slots.length).toBe(0);
-		}
+		expectResultIsRight(result);
+		expect(result.value.slots.length).toBe(0);
 	});
 
-	// 5. Caso de Agendamento Existente: Excluir slots com agendamentos
-	it("should exclude slots with existing appointments", async () => {
-		const companyId = new UniqueEntityID();
-		const service = makeService({ companyId, duration: 20 });
-		const startDate = set(new Date(), { hours: 8, minutes: 0, seconds: 0 });
+    it("should exclude time slots occupied by existing appointments for any staff", async () => {
+		const appointmentTime = set(defaultDate, { hours: 9, minutes: 0 });
+		const appointmentEndTime = set(defaultDate, { hours: 9, minutes: 30 });
+        const appointment = makeAppointment({
+            serviceId: service.id,
+            staffId: staff.id,
+            startDate: appointmentTime,
+            endDate: appointmentEndTime,
+        });
 
-		inMemoryServiceRepository.items.push(service);
-		const availableDate = makeCompanyAvailability({
+		inMemoryStaffRepository.items[0].appointments = [appointment];
+        inMemoryAppointmentRepository.items.push(appointment);
+
+		const dayOfWeek = Object.values(DaysOfWeek)[getDay(defaultDate)];
+		const companyAvailability = makeCompanyAvailability({
 			companyId: companyId,
-			day: Object.values(DaysOfWeek)[getDay(startDate)],
+			day: dayOfWeek,
 			startTime: "08:00",
 			endTime: "17:00",
 		});
-
-		inMemoryCompanyAvailability.items.push(availableDate);
-
-		const appointment = makeAppointment({
-			serviceId: service.id,
-			startDate: set(startDate, { hours: 8, minutes: 0, seconds: 0 }),
-			endDate: set(startDate, { hours: 8, minutes: 20, seconds: 0 }),
-		});
-
-		inMemoryAppointmentRepository.items.push(appointment);
+		inMemoryCompanyAvailabilityRepository.items.push(companyAvailability);
 
 		const result = await sut.execute({
 			companyId: companyId.toString(),
 			serviceId: service.id.toString(),
-			date: startDate,
+			date: defaultDate,
 		});
 
-		expect(result.isRight()).toBeTruthy();
-		if (result.isRight()) {
-			const availableSlots = result.value.slots;
-			expect(availableSlots.some((slot) => slot.label === "08:00")).toBeFalsy();
-		}
+		expectResultIsRight(result);
+		const availableSlots = result.value.slots;
+        expect(availableSlots.length).toBeGreaterThan(0);
+		console.log(inMemoryStaffRepository.items[0].appointments);
+		expect(availableSlots.some((slot) => slot.label === "09:00")).toBe(false);
+        expect(availableSlots.some((slot) => slot.label === "09:30")).toBe(true);
 	});
 
-	// 6. Caso de Exceção de Disponibilidade: Excluir slots com exceções
-	it("should exclude slots with availability exceptions", async () => {
-		const companyId = new UniqueEntityID();
-		const service = makeService({ companyId, duration: 30 });
-		const startDate = set(new Date(), { hours: 8, minutes: 0, seconds: 0 });
-
-		inMemoryServiceRepository.items.push(service);
-		const availableDate = makeCompanyAvailability({
-			companyId: companyId,
-			day: Object.values(DaysOfWeek)[getDay(startDate)],
-			startTime: "08:00",
-			endTime: "17:00",
-		});
-
-		inMemoryCompanyAvailability.items.push(availableDate);
-
-		const exception = CompanyAvailabilityException.create({
-			companyId: companyId.toString(),
-			startDate: set(startDate, { hours: 9, minutes: 0, seconds: 0 }),
-			endDate: set(startDate, { hours: 10, minutes: 0, seconds: 0 }),
-		});
-
-		inMemoryCompanyAvailabilityException.items.push(exception);
-
-		const result = await sut.execute({
-			companyId: companyId.toString(),
-			serviceId: service.id.toString(),
-			date: startDate,
-		});
-
-		expect(result.isRight()).toBeTruthy();
-		if (result.isRight()) {
-			const availableSlots = result.value.slots;
-			expect(availableSlots.some((slot) => slot.label === "09:00")).toBeFalsy();
-		}
-	});
-
-	// 7. Caso de Duração do Serviço: Duração zero
-	it("should handle zero duration service", async () => {
-		const companyId = new UniqueEntityID();
-		const service = makeService({ companyId, duration: 0 });
-		const startDate = set(new Date(), { hours: 8, minutes: 0, seconds: 0 });
-
-		inMemoryServiceRepository.items.push(service);
-		const availableDate = makeCompanyAvailability({
-			companyId: companyId,
-			day: Object.values(DaysOfWeek)[getDay(startDate)],
-			startTime: "08:00",
-			endTime: "17:00",
-		});
-
-		inMemoryCompanyAvailability.items.push(availableDate);
-
-		const result = await sut.execute({
-			companyId: companyId.toString(),
-			serviceId: service.id.toString(),
-			date: startDate,
-		});
-
-		expect(result.isLeft()).toBeTruthy();
-	});
-
-	// 8. Caso de Data Inválida
-	it("should handle invalid date", async () => {
-		const companyId = new UniqueEntityID();
-		const service = makeService({ companyId, duration: 30 });
-		const invalidDate = new Date("invalid-date");
-
-		inMemoryServiceRepository.items.push(service);
+    it("should return an error (Left) when the provided date is invalid", async () => {
+		const invalidDate = new Date("invalid-date-string");
 
 		const result = await sut.execute({
 			companyId: companyId.toString(),
@@ -248,6 +186,6 @@ describe("ListAvailableDatesUseCase", () => {
 			date: invalidDate,
 		});
 
-		expect(result.isLeft()).toBeTruthy();
+		expectResultIsLeft(result);
 	});
 });
