@@ -25,7 +25,6 @@ export class AuthController {
 		private registerUseCase: RegisterUseCase,
 	) {}
 
-	
 	@Post("login")
 	@ApiOperation({ summary: "Login de usuário" })
 	@ApiResponse({

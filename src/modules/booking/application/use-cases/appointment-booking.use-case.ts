@@ -1,6 +1,8 @@
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { AnimalRepository } from "@/modules/animal/domain/repositories/animal.repository";
 import { CheckoutSessionCreationError } from "@/modules/payment/domain/errors/checkout-session-creation.error";
+import { PriceCalculator } from "@/modules/price-variation/application/services/price-calculator.service";
+import { VariationType } from "@/modules/price-variation/domain/entities/price-variation.entity";
 import { ServiceRepository } from "@/modules/service/domain/repositories/service.repository";
 import { Either, left, right } from "@/shared/either";
 import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
@@ -14,8 +16,6 @@ import { AppointmentRepository } from "../../../appointment/domain/repositories/
 import { InvalidAppointmentDateError } from "../errors/invalid-appointment-date.error";
 import { TimeSlotUnavailableError } from "../errors/time-slot-unavailable.error";
 import { AppointmentAvailabilityService } from "../services/appointment-availability.service";
-import { PriceCalculator } from "@/modules/price-variation/application/services/price-calculator.service";
-import { VariationType } from "@/modules/price-variation/domain/entities/price-variation.entity";
 
 interface AppointmentBookingUseCaseRequest {
 	serviceId: string;

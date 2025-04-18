@@ -9,7 +9,9 @@ import { PrismaCompanyMapper } from "@/modules/company/infra/database/mappers/pr
 import { PrismaServiceMapper } from "@/modules/service/infra/database/mappers/prisma-service.mapper";
 import { PrismaUserMapper } from "@/modules/user/infra/database/mappers/prisma-user.mapper";
 import type { DateRange } from "@/shared/types/date-range";
+import { paginate } from "@/shared/utils/paginator";
 import { Injectable } from "@nestjs/common";
+import { Prisma } from "@prisma/client";
 import { PrismaAppointmentMapper } from "../mapper/prisma-appointment.mapper";
 
 @Injectable()
@@ -37,6 +39,33 @@ export class PrismaAppointmentRepository implements AppointmentRepository {
 			service: PrismaServiceMapper.toDomain(appointment.service),
 			company: PrismaCompanyMapper.toDomain(appointment.company),
 		} as AppointmentWithDetails;
+	}
+
+	async findByUserId(
+		params: Parameters<AppointmentRepository["findByUserId"]>[0],
+	) {
+		const filter = {
+			clientId: params.userId,
+		} as Prisma.AppointmentWhereInput;
+
+		const appointments = await paginate(
+			({ skip, take }) =>
+				this.prismaService.appointment.findMany({
+					skip,
+					take,
+					orderBy: { createdAt: "desc" },
+					where: filter,
+				}),
+			() =>
+				this.prismaService.appointment.count({
+					where: filter,
+				}),
+			params.query,
+		);
+		return {
+			...appointments,
+			items: appointments.items.map(PrismaAppointmentMapper.toDomain),
+		};
 	}
 
 	async create(appointment: Appointment) {

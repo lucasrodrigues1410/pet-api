@@ -1,6 +1,6 @@
+import { PaginationQuery } from "@/core/infra/dtos/pagination-query.dto";
 import { PaginationResult } from "@/core/infra/dtos/pagination.dto";
 import { Animal } from "../entities/animal.entity";
-import { PaginationQuery } from "@/core/infra/dtos/pagination-query.dto";
 
 export abstract class AnimalRepository {
 	abstract create(animal: Animal): Promise<Animal>;

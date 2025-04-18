@@ -1,6 +1,10 @@
-import { Appointment } from "@/modules/appointment/domain/entities/appointment.entity";
+import {
+	Appointment,
+	AppointmentWithDetails,
+} from "@/modules/appointment/domain/entities/appointment.entity";
 import { AppointmentRepository } from "@/modules/appointment/domain/repositories/appointment.repository";
 import { DateRange } from "@/shared/types/date-range";
+import { paginate } from "@/shared/utils/paginator";
 
 export class InMemoryAppointmentRepository implements AppointmentRepository {
 	public items: Appointment[] = [];
@@ -10,6 +14,21 @@ export class InMemoryAppointmentRepository implements AppointmentRepository {
 			(appointment) => appointment.id.toString() === id,
 		);
 		if (!result) return null;
+		return result as AppointmentWithDetails;
+	}
+
+	async findByUserId(
+		params: Parameters<AppointmentRepository["findByUserId"]>[0],
+	) {
+		const result = await paginate(
+			async () =>
+				this.items.filter((appointment) => {
+					return appointment.clientId.toString() === params.userId;
+				}),
+			async () => this.items.length,
+			params.query,
+		);
+
 		return result;
 	}
 

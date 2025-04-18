@@ -1,6 +1,6 @@
+import { Appointment } from "@/modules/appointment/domain/entities/appointment.entity";
 import { z } from "zod";
 import { AppointmentDto } from "../dtos/appointment.dto";
-import { Appointment } from "@/modules/appointment/domain/entities/appointment.entity";
 
 export class AppointmentPresenter {
 	protected schema = AppointmentDto;

@@ -1,11 +1,11 @@
 import { calculateLocationBounds } from "@/shared/utils/geo-location.util";
+import { paginate } from "@/shared/utils/paginator";
 import { Injectable } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
 import { PrismaService } from "src/core/infra/prisma/prisma.service";
 import { Company } from "src/modules/company/domain/entities/company.entity";
 import { CompanyRepository } from "src/modules/company/domain/repositories/company.repository";
 import { PrismaCompanyMapper } from "../mappers/prisma-company.mapper";
-import { paginate } from "@/shared/utils/paginator";
 
 @Injectable()
 export class PrismaCompanyRepository implements CompanyRepository {

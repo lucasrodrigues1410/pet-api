@@ -11,9 +11,9 @@ import {
 } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { User } from "src/modules/auth/infra/http/decorators/user.decorator";
-import { UserPresenter } from "../presenters/user.presenter";
 import { UpdateUserRequestDto } from "../dtos/update-user.dto";
 import { UserResponse } from "../dtos/user.response.dto";
+import { UserPresenter } from "../presenters/user.presenter";
 
 @ApiTags("Usuários")
 @Controller("users")

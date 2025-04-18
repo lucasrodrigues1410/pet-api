@@ -1,4 +1,3 @@
-
 import { Company } from "@/modules/company/domain/entities/company.entity";
 import { z } from "zod";
 import { companyDto } from "../dtos/company.dto";

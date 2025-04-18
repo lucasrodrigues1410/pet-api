@@ -3,10 +3,12 @@ import { GetAppointmentByIdUseCase } from "./application/use-cases/get-appointme
 import { AppointmentRepository } from "./domain/repositories/appointment.repository";
 import { PrismaAppointmentRepository } from "./infra/database/repositories/prisma-appointment.repository";
 import { AppointmentController } from "./infra/http/controllers/appointment.controller";
+import { GetAppointmentByUserIdUseCase } from "./application/use-cases/get-appointment-by-user-id.use-case";
 
 @Module({
 	providers: [
 		GetAppointmentByIdUseCase,
+		GetAppointmentByUserIdUseCase,
 		{
 			provide: AppointmentRepository,
 			useClass: PrismaAppointmentRepository,

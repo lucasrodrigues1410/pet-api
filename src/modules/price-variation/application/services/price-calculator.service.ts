@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { VariationContext } from "../../domain/entities/price-variation.entity";
-import { PriceStrategyProvider } from "../providers/price-strategy.provider";
 import { PriceVariationRepository } from "../../domain/repositories/price-variation.repository";
+import { PriceStrategyProvider } from "../providers/price-strategy.provider";
 
 @Injectable()
 export class PriceCalculator {

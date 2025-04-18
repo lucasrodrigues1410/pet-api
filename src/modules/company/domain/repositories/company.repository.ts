@@ -1,6 +1,6 @@
 import { PaginationQuery } from "@/core/infra/dtos/pagination-query.dto";
-import { Company } from "../entities/company.entity";
 import { PaginationResult } from "@/core/infra/dtos/pagination.dto";
+import { Company } from "../entities/company.entity";
 
 export abstract class CompanyRepository {
 	abstract findById(id: string): Promise<Company | null>;

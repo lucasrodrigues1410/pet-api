@@ -1,3 +1,5 @@
+import { PaginationQueryDto } from "@/core/infra/dtos/pagination-query.dto";
+import { PaginationPresenter } from "@/core/infra/presenters/pagination.presenter";
 import { SearchCompaniesRequestDto } from "@/modules/company/infra/http/dtos/search-companies.dto";
 import {
 	BadRequestException,
@@ -9,21 +11,15 @@ import {
 	Post,
 	Query,
 } from "@nestjs/common";
-import {
-	ApiOperation,
-	ApiResponse,
-	ApiTags,
-} from "@nestjs/swagger";
+import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Public } from "src/modules/auth/infra/http/decorators/public.decorator";
 import { GetCompanyByIdUseCase } from "src/modules/company/application/use-cases/get-company-by-id.use-case";
 import { SearchCompaniesUseCase } from "src/modules/company/application/use-cases/search-companies.use-case";
-import { CompanyPresenter } from "../presenters/company.presenter";
-import { PaginationPresenter } from "@/core/infra/presenters/pagination.presenter";
 import {
 	CompanyPaginatedResponse,
 	CompanyResponse,
 } from "../dtos/company.response.dto";
-import { PaginationQueryDto } from "@/core/infra/dtos/pagination-query.dto";
+import { CompanyPresenter } from "../presenters/company.presenter";
 
 @ApiTags("Empresas")
 @Controller("company")

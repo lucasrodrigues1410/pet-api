@@ -1,10 +1,10 @@
+import { PaginationQuery } from "@/core/infra/dtos/pagination-query.dto";
 import { PrismaService } from "@/core/infra/prisma/prisma.service";
-import { PaginationParams } from "@/core/pagination/pagination-params";
+import { paginate } from "@/shared/utils/paginator";
 import { Injectable } from "@nestjs/common";
 import { Animal } from "../../../domain/entities/animal.entity";
 import { AnimalRepository } from "../../../domain/repositories/animal.repository";
 import { PrismaAnimalMapper } from "../mappers/prisma-animal.mapper";
-import { paginate } from "@/shared/utils/paginator";
 
 @Injectable()
 export class AnimalPrismaRepository implements AnimalRepository {
@@ -46,7 +46,7 @@ export class AnimalPrismaRepository implements AnimalRepository {
 		});
 	}
 
-	async fetchAllAnimalsByUser(params: { userId: string } & PaginationParams) {
+	async fetchAllAnimalsByUser(params: { userId: string } & PaginationQuery) {
 		const { items, ...rest } = await paginate(
 			({ skip, take }) =>
 				this.prismaService.animal.findMany({

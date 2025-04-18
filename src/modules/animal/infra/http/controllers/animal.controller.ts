@@ -1,3 +1,5 @@
+import { PaginationQueryDto } from "@/core/infra/dtos/pagination-query.dto";
+import { PaginationPresenter } from "@/core/infra/presenters/pagination.presenter";
 import { DeleteAnimalUseCase } from "@/modules/animal/application/use-cases/delete-animal.use-case";
 import { UpdateAnimalUseCase } from "@/modules/animal/application/use-cases/update-animal.use-case";
 import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
@@ -19,12 +21,10 @@ import { UserTypeDecorator } from "src/modules/auth/infra/http/decorators/user-t
 import { User } from "src/modules/auth/infra/http/decorators/user.decorator";
 import { CreateAnimalUseCase } from "../../../application/use-cases/create-animal.use-case";
 import { ListAnimalsFromUserUserUseCase } from "../../../application/use-cases/list-animals-from-user.use-case";
+import { AnimalPaginatedResponse } from "../dtos/animal.response.dto";
 import { CreateAnimalRequestDto } from "../dtos/create-animal.dto";
 import { UpdateAnimalRequestDto } from "../dtos/update-animal.dto";
 import { AnimalPresenter } from "../presenters/animal.presenter";
-import { PaginationQueryDto } from "@/core/infra/dtos/pagination-query.dto";
-import { PaginationPresenter } from "@/core/infra/presenters/pagination.presenter";
-import { AnimalPaginatedResponse } from "../dtos/animal.response.dto";
 
 @ApiTags("Animais")
 @Controller("animal")

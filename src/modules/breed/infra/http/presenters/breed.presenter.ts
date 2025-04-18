@@ -9,5 +9,4 @@ export class BreedPresenter {
 			name: breed.name,
 		};
 	}
-	
 }

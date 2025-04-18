@@ -1,9 +1,9 @@
+import { PaginationQuery } from "@/core/infra/dtos/pagination-query.dto";
+import { PaginationResult } from "@/core/infra/dtos/pagination.dto";
 import { Either, right } from "@/shared/either";
 import { Injectable } from "@nestjs/common";
 import { Animal } from "../../domain/entities/animal.entity";
 import { AnimalRepository } from "../../domain/repositories/animal.repository";
-import { PaginationResult } from "@/core/infra/dtos/pagination.dto";
-import { PaginationQuery } from "@/core/infra/dtos/pagination-query.dto";
 
 type ListAnimalsFromUserUseCaseRequest = {
 	userId: string;

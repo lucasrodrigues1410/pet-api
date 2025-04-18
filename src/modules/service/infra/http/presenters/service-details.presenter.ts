@@ -2,13 +2,13 @@ import { CategoryPresenter } from "@/modules/category/infra/http/presenters/cate
 import { CompanyPresenter } from "@/modules/company/infra/http/presenters/company.presenter";
 import { ServiceWithRelations } from "@/modules/service/domain/entities/service.entity";
 import { z } from "zod";
+import { serviceDetailsDto } from "../dtos/service-details.dto";
 import { ServicePresenter } from "./service.presenter";
-import { serviceDetatilsDto } from "../dtos/service-details.dto";
 
 export class ServiceDetailsPresenter {
 	static toHTTP(
 		service: ServiceWithRelations,
-	): z.infer<typeof serviceDetatilsDto> {
+	): z.infer<typeof serviceDetailsDto> {
 		return {
 			...ServicePresenter.toHTTP(service),
 			company: CompanyPresenter.toHTTP(service.company),

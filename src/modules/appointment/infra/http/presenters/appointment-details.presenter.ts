@@ -1,11 +1,11 @@
-import { z } from "zod";
-import { AppointmentWithDetails } from "@/modules/appointment/domain/entities/appointment.entity";
-import { AppointmentPresenter } from "./appointment.presenter";
-import { AppointmentDetailsDto } from "../dtos/appointment-details.dto";
 import { AnimalPresenter } from "@/modules/animal/infra/http/presenters/animal.presenter";
-import { UserPresenter } from "@/modules/user/infra/http/presenters/user.presenter";
-import { ServicePresenter } from "@/modules/service/infra/http/presenters/service.presenter";
+import { AppointmentWithDetails } from "@/modules/appointment/domain/entities/appointment.entity";
 import { CompanyPresenter } from "@/modules/company/infra/http/presenters/company.presenter";
+import { ServicePresenter } from "@/modules/service/infra/http/presenters/service.presenter";
+import { UserPresenter } from "@/modules/user/infra/http/presenters/user.presenter";
+import { z } from "zod";
+import { AppointmentDetailsDto } from "../dtos/appointment-details.dto";
+import { AppointmentPresenter } from "./appointment.presenter";
 
 export class AppointmentDetailsPresenter {
 	static toHTTP(

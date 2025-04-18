@@ -1,4 +1,4 @@
-import { z, ZodTypeAny } from "zod";
+import { ZodTypeAny, z } from "zod";
 
 export const PaginationMetaDto = z.object({
 	total: z.number(),
@@ -23,4 +23,4 @@ export type PaginatedDtoType<T extends ZodTypeAny> = z.infer<
 export type PaginationResult<T> = {
 	items: T[];
 	meta: PaginationMeta;
-}
+};

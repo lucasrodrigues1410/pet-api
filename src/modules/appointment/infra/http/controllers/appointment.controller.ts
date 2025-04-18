@@ -1,21 +1,34 @@
+import { PaginationQueryDto } from "@/core/infra/dtos/pagination-query.dto";
+import { PaginationPresenter } from "@/core/infra/presenters/pagination.presenter";
 import { GetAppointmentByIdUseCase } from "@/modules/appointment/application/use-cases/get-appointment-by-id.use-case";
+import { GetAppointmentByUserIdUseCase } from "@/modules/appointment/application/use-cases/get-appointment-by-user-id.use-case";
 import { UserTypeDecorator } from "@/modules/auth/infra/http/decorators/user-type.decorator";
 import { User } from "@/modules/auth/infra/http/decorators/user.decorator";
-import { Controller, Get, NotFoundException, Param } from "@nestjs/common";
+import {
+	Controller,
+	Get,
+	NotFoundException,
+	Param,
+	Query,
+} from "@nestjs/common";
 import {
 	ApiOkResponse,
 	ApiOperation,
 	ApiResponse,
 	ApiTags,
 } from "@nestjs/swagger";
+import {
+	AppointmentDetailsPaginatedResponse,
+	AppointmentResponse,
+} from "../dtos/appointment.response.dto";
 import { AppointmentPresenter } from "../presenters/appointment.presenter";
-import { AppointmentResponse } from "../dtos/appointment.response.dto";
 
 @ApiTags("Agendamentos")
 @Controller("appointment")
 export class AppointmentController {
 	constructor(
 		private readonly getAppointmentByIdUseCase: GetAppointmentByIdUseCase,
+		private readonly getAppointmentByUserIdUseCase: GetAppointmentByUserIdUseCase,
 	) {}
 
 	@Get(":id")
@@ -41,5 +54,33 @@ export class AppointmentController {
 		}
 
 		return AppointmentPresenter.toHTTP(response.value);
+	}
+
+	@Get("/user")
+	@ApiOperation({
+		summary: "Retorna todos os agendamentos do cliente",
+	})
+	@ApiResponse({
+		status: 200,
+		type: AppointmentDetailsPaginatedResponse,
+	})
+	@UserTypeDecorator("CUSTOMER")
+	async getAllAppointments(
+		@User("sub") userId: string,
+		@Query() query: PaginationQueryDto,
+	) {
+		const response = await this.getAppointmentByUserIdUseCase.execute({
+			userId,
+			query,
+		});
+
+		if (response.isLeft()) {
+			throw new NotFoundException();
+		}
+
+		return PaginationPresenter.toHTTP({
+			meta: response.value.meta,
+			items: response.value.items.map(AppointmentPresenter.toHTTP),
+		});
 	}
 }

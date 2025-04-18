@@ -1,10 +1,10 @@
 import { createZodDto } from "@anatine/zod-nestjs";
-import { serviceDetatilsDto } from "./service-details.dto";
 import { z } from "zod";
+import { serviceDetailsDto } from "./service-details.dto";
 
-export class ServiceDetailsResponse extends createZodDto(serviceDetatilsDto) {}
+export class ServiceDetailsResponse extends createZodDto(serviceDetailsDto) {}
 export class ServiceDetailsListResponse extends createZodDto(
 	z.object({
-		items: z.array(serviceDetatilsDto),
+		items: z.array(serviceDetailsDto),
 	}),
 ) {}
