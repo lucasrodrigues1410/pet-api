@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it } from "bun:test";
+import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
+import { makeAppointment } from "test/factories/make-appointment";
 import { InMemoryAppointmentRepository } from "test/repositories/in-memory-appointment.repository";
 import { GetAppointmentByIdUseCase } from "./get-appointment-by-id.use-case";
-import { makeAppointment } from "test/factories/make-appointment";
-import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
 
 describe("GetAppointmentByIdUseCase", () => {
 	let inMemoryAppointmentRepository: InMemoryAppointmentRepository;

@@ -1,5 +1,8 @@
 import type { DateRange } from "@/shared/types/date-range";
-import { Appointment, type AppointmentWithDetails } from "../entities/appointment.entity";
+import {
+	Appointment,
+	type AppointmentWithDetails,
+} from "../entities/appointment.entity";
 
 export abstract class AppointmentRepository {
 	abstract findById(id: string): Promise<AppointmentWithDetails | null>;

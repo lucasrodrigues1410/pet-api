@@ -25,13 +25,13 @@ export class AuthController {
 		private registerUseCase: RegisterUseCase,
 	) {}
 
+	
+	@Post("login")
 	@ApiOperation({ summary: "Login de usuário" })
 	@ApiResponse({
 		status: 200,
-		description: "Usuário autenticado com sucesso",
 		type: LoginResponseDto,
 	})
-	@Post("login")
 	@Public()
 	@HttpCode(HttpStatus.OK)
 	async login(@Body() body: LoginRequestDto) {
@@ -60,9 +60,9 @@ export class AuthController {
 		};
 	}
 
-	@ApiOperation({ summary: "Registro de usuário" })
-	@ApiResponse({ status: 201, description: "Usuário registrado com sucesso" })
 	@Post("register")
+	@ApiOperation({ summary: "Registro de usuário" })
+	@ApiResponse({ status: 201 })
 	@Public()
 	@HttpCode(HttpStatus.CREATED)
 	async register(@Body() body: RegisterRequestDto) {

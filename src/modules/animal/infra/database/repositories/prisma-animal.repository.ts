@@ -1,10 +1,10 @@
 import { PrismaService } from "@/core/infra/prisma/prisma.service";
 import { PaginationParams } from "@/core/pagination/pagination-params";
-import { paginate } from "@/core/pagination/paginator";
 import { Injectable } from "@nestjs/common";
 import { Animal } from "../../../domain/entities/animal.entity";
 import { AnimalRepository } from "../../../domain/repositories/animal.repository";
 import { PrismaAnimalMapper } from "../mappers/prisma-animal.mapper";
+import { paginate } from "@/shared/utils/paginator";
 
 @Injectable()
 export class AnimalPrismaRepository implements AnimalRepository {

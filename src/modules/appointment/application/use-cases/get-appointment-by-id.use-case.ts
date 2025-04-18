@@ -29,7 +29,9 @@ export class GetAppointmentByIdUseCase {
 
 		if (appointment.clientId.toString() !== userId) {
 			return left(
-				new ResourceNotFoundError('Você não tem permissão para acessar este agendamento'),
+				new ResourceNotFoundError(
+					"Você não tem permissão para acessar este agendamento",
+				),
 			);
 		}
 

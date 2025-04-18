@@ -1,6 +1,6 @@
-import { PaginationParams } from "@/core/pagination/pagination-params";
-import { PaginationResult } from "@/core/pagination/pagination-result";
+import { PaginationResult } from "@/core/infra/dtos/pagination.dto";
 import { Animal } from "../entities/animal.entity";
+import { PaginationQuery } from "@/core/infra/dtos/pagination-query.dto";
 
 export abstract class AnimalRepository {
 	abstract create(animal: Animal): Promise<Animal>;
@@ -8,6 +8,6 @@ export abstract class AnimalRepository {
 	abstract findById(animalId: string): Promise<Animal | null>;
 	abstract delete(animalId: string): Promise<void>;
 	abstract fetchAllAnimalsByUser(
-		params: { userId: string } & PaginationParams,
+		params: { userId: string } & PaginationQuery,
 	): Promise<PaginationResult<Animal>>;
 }

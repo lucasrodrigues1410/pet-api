@@ -6,7 +6,9 @@ export class InMemoryAppointmentRepository implements AppointmentRepository {
 	public items: Appointment[] = [];
 
 	async findById(id: string) {
-		const result = this.items.find((appointment) => appointment.id.toString() === id);
+		const result = this.items.find(
+			(appointment) => appointment.id.toString() === id,
+		);
 		if (!result) return null;
 		return result;
 	}

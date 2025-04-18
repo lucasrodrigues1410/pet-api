@@ -1,3 +1,4 @@
+import { EnvModule } from "@/core/infra/env/env.module";
 import { Module } from "@nestjs/common";
 import { DeleteAssetByIdUseCase } from "./application/use-cases/delete-asset-by-id.use-case";
 import { UploadAndCreateAssetUseCase } from "./application/use-cases/upload-and-create-asset.use-case";
@@ -9,6 +10,7 @@ import { AssetProcessor } from "./infra/queue/processors/asset-consumer.processo
 import { ImageKitStorageProvider } from "./infra/storage/image-kit.storage";
 
 @Module({
+	imports: [EnvModule],
 	controllers: [AssetController],
 	providers: [
 		UploadAndCreateAssetUseCase,

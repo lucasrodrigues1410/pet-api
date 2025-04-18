@@ -1,6 +1,6 @@
-import { PaginationParams } from "@/core/pagination/pagination-params";
-import { PaginationResult } from "@/core/pagination/pagination-result";
+import { PaginationQuery } from "@/core/infra/dtos/pagination-query.dto";
 import { Company } from "../entities/company.entity";
+import { PaginationResult } from "@/core/infra/dtos/pagination.dto";
 
 export abstract class CompanyRepository {
 	abstract findById(id: string): Promise<Company | null>;
@@ -11,7 +11,7 @@ export abstract class CompanyRepository {
 				longitude: number;
 			};
 			query?: string;
-		} & PaginationParams,
+		} & PaginationQuery,
 	): Promise<PaginationResult<Company>>;
 	abstract create(company: Company): Promise<void>;
 }

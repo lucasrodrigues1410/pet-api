@@ -1,7 +1,7 @@
 import { createZodDto } from "@anatine/zod-nestjs";
 import { z } from "zod";
 
-export const paginationParams = z.object({
+export const PaginationQuerySchema = z.object({
 	page: z
 		.number({ coerce: true })
 		.min(1, { message: "A página deve ser maior que 0" })
@@ -13,5 +13,5 @@ export const paginationParams = z.object({
 		.optional(),
 });
 
-export type PaginationParams = z.output<typeof paginationParams>;
-export class PaginationParamsQuery extends createZodDto(paginationParams) {}
+export class PaginationQueryDto extends createZodDto(PaginationQuerySchema) {}
+export type PaginationQuery = z.infer<typeof PaginationQuerySchema>;

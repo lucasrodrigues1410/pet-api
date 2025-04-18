@@ -3,7 +3,7 @@ import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 
 export type CategoryType = "PETSHOP";
 
-export class CategoryProps {
+export interface CategoryProps {
 	name: string;
 	type: CategoryType;
 	description?: string | null;

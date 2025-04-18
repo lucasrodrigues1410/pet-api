@@ -1,6 +1,6 @@
-import { PaginationParams } from "@/core/pagination/pagination-params";
-import { PaginationResult } from "@/core/pagination/pagination-result";
-import { paginate } from "@/core/pagination/paginator";
+import { PaginationQuery } from "@/core/infra/dtos/pagination-query.dto";
+import { PaginationResult } from "@/core/infra/dtos/pagination.dto";
+import { paginate } from "@/shared/utils/paginator";
 import { Animal } from "src/modules/animal/domain/entities/animal.entity";
 import { AnimalRepository } from "src/modules/animal/domain/repositories/animal.repository";
 
@@ -44,7 +44,7 @@ export class InMemoryAnimalRepository implements AnimalRepository {
 	}
 
 	async fetchAllAnimalsByUser(
-		params: { userId: string } & PaginationParams,
+		params: { userId: string } & PaginationQuery,
 	): Promise<PaginationResult<Animal>> {
 		return paginate(
 			async () =>

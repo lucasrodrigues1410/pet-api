@@ -1,6 +1,6 @@
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
+import { EnvService } from "@/core/infra/env/env.service";
 import { Injectable } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
 import ImageKit from "imagekit";
 import {
 	UploadParams,
@@ -12,10 +12,10 @@ import {
 export class ImageKitStorageProvider implements Uploader {
 	private client: ImageKit;
 
-	constructor(private readonly configService: ConfigService) {
-		const publicKey = this.configService.get("IMAGE_KIT_PUBLIC_KEY");
-		const privateKey = this.configService.get("IMAGE_KIT_PRIVATE_KEY");
-		const urlEndpoint = this.configService.get("IMAGE_KIT_URL_ENDPOINT");
+	constructor(private envService: EnvService) {
+		const publicKey = envService.get("IMAGE_KIT_PUBLIC_KEY");
+		const privateKey = envService.get("IMAGE_KIT_PRIVATE_KEY");
+		const urlEndpoint = envService.get("IMAGE_KIT_URL_ENDPOINT");
 		this.client = new ImageKit({
 			publicKey,
 			privateKey,

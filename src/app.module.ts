@@ -3,6 +3,8 @@ import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { APP_GUARD, APP_PIPE } from "@nestjs/core";
 import { BullEventDispatcherModule } from "./core/infra/bull/bull-event-dispatcher.module";
+import { envSchema } from "./core/infra/env/env";
+import { EnvModule } from "./core/infra/env/env.module";
 import { PrismaModule } from "./core/infra/prisma/prisma.module";
 import { AnimalModule } from "./modules/animal/animal.module";
 import { AppointmentModule } from "./modules/appointment/appointment.module";
@@ -21,7 +23,11 @@ import { UserModule } from "./modules/user/user.module";
 
 @Module({
 	imports: [
-		ConfigModule.forRoot({ isGlobal: true }),
+		ConfigModule.forRoot({
+			isGlobal: true,
+			validate: (env) => envSchema.parse(env),
+		}),
+		EnvModule,
 		BullEventDispatcherModule,
 		PrismaModule,
 		AuthModule,

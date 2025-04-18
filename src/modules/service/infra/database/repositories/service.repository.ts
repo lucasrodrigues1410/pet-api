@@ -1,6 +1,12 @@
+import { PrismaCategoryMapper } from "@/modules/category/infra/http/database/mappers/prisma-category.mapper";
+import { PrismaCompanyMapper } from "@/modules/company/infra/database/mappers/prisma-company.mapper";
 import { Injectable } from "@nestjs/common";
+import { getServicesWithMaxPrice } from "@prisma/client/sql";
 import { PrismaService } from "src/core/infra/prisma/prisma.service";
-import { Service } from "src/modules/service/domain/entities/service.entity";
+import {
+	Service,
+	ServiceWithRelations,
+} from "src/modules/service/domain/entities/service.entity";
 import { ServiceRepository } from "src/modules/service/domain/repositories/service.repository";
 import { PrismaServiceMapper } from "../mappers/prisma-service.mapper";
 
@@ -8,12 +14,11 @@ import { PrismaServiceMapper } from "../mappers/prisma-service.mapper";
 export class PrismaServiceRepository implements ServiceRepository {
 	constructor(private prismaService: PrismaService) {}
 
-	async findById(id: string): Promise<Service | undefined> {
+	async findById(id: string): Promise<ServiceWithRelations | undefined> {
 		const result = await this.prismaService.service.findUnique({
 			where: { id },
 			include: {
 				company: true,
-				priceVariation: true,
 				categories: {
 					include: {
 						category: true,
@@ -26,35 +31,26 @@ export class PrismaServiceRepository implements ServiceRepository {
 			return undefined;
 		}
 
-		return PrismaServiceMapper.toDomain({
-			...result,
-			company: result.company,
-			priceVariations: result.priceVariation,
-			categories: result.categories.map((category) => ({
-				...category.category,
-				description: null,
-				parentId: null,
-			})),
-		});
+		return {
+			...PrismaServiceMapper.toDomain(result),
+			company: PrismaCompanyMapper.toDomain(result.company),
+			categories: result.categories.map((category) =>
+				PrismaCategoryMapper.toDomain(category.category),
+			),
+		} as ServiceWithRelations;
 	}
 
 	async findByCompanyId(companyId: string): Promise<Service[]> {
-		const result = await this.prismaService.service.findMany({
-			where: {
-				isActive: true,
-				companyId,
-			},
-			include: {
-				priceVariation: true,
-			},
-		});
-
-		return result.map(({ ...service }) =>
-			PrismaServiceMapper.toDomain({
-				...service,
-				priceVariations: service.priceVariation,
-			}),
+		const result = await this.prismaService.$queryRawTyped(
+			getServicesWithMaxPrice(companyId),
 		);
+
+		return result.map((service) => {
+			return PrismaServiceMapper.toDomain({
+				...service,
+				maxPrice: service.totalPriceVariation,
+			});
+		});
 	}
 
 	async create(service: Service): Promise<void> {

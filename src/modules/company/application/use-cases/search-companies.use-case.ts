@@ -1,9 +1,9 @@
-import { PaginationParams } from "@/core/pagination/pagination-params";
-import { PaginationResult } from "@/core/pagination/pagination-result";
 import { Either, right } from "@/shared/either";
 import { Injectable } from "@nestjs/common";
 import { Company } from "../../domain/entities/company.entity";
 import { CompanyRepository } from "../../domain/repositories/company.repository";
+import { PaginationQuery } from "@/core/infra/dtos/pagination-query.dto";
+import { PaginationResult } from "@/core/infra/dtos/pagination.dto";
 
 type SearchCompaniesUseCaseRequest = {
 	location?: {
@@ -11,7 +11,7 @@ type SearchCompaniesUseCaseRequest = {
 		longitude: number;
 	};
 	query?: string;
-} & PaginationParams;
+} & PaginationQuery;
 
 type SearchCompaniesUseCaseResponse = Either<null, PaginationResult<Company>>;
 

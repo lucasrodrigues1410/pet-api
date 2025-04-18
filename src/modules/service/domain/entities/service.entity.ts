@@ -1,8 +1,8 @@
 import { Entity } from "@/core/domain/entities/entity";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
-import { PriceVariation } from "@/modules/price-variation/domain/entities/price-variation.entity";
 import { Category } from "src/modules/category/domain/entities/category.entity";
 import { Company } from "src/modules/company/domain/entities/company.entity";
+import { PriceRange } from "./value-objects/price-range.value-object";
 
 export interface ServiceProps {
 	name: string;
@@ -10,12 +10,9 @@ export interface ServiceProps {
 	price: number;
 	isActive: boolean;
 	duration?: number | null;
-	capacity?: number;
 	companyId: UniqueEntityID;
 	details?: Record<string, unknown> | null;
-	categories?: Category[];
-	company?: Company;
-	priceVariations?: PriceVariation[];
+	priceRange: PriceRange;
 }
 
 export class Service extends Entity<ServiceProps> {
@@ -43,24 +40,12 @@ export class Service extends Entity<ServiceProps> {
 		return this.props.companyId;
 	}
 
-	get capacity() {
-		return this.props.capacity;
-	}
-
 	get details() {
 		return this.props.details;
 	}
 
-	get categories() {
-		return this.props.categories;
-	}
-
-	get company() {
-		return this.props.company;
-	}
-
-	get priceVariations() {
-		return this.props.priceVariations;
+	get priceRange() {
+		return this.props.priceRange;
 	}
 
 	public static create(props: ServiceProps, id?: UniqueEntityID): Service {
@@ -68,3 +53,8 @@ export class Service extends Entity<ServiceProps> {
 		return service;
 	}
 }
+
+export type ServiceWithRelations = Service & {
+	categories: Category[];
+	company: Company;
+};

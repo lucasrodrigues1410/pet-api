@@ -1,16 +1,16 @@
 import { PrismaService } from "@/core/infra/prisma/prisma.service";
+import { PrismaAnimalMapper } from "@/modules/animal/infra/database/mappers/prisma-animal.mapper";
 import {
 	Appointment,
 	AppointmentWithDetails,
 } from "@/modules/appointment/domain/entities/appointment.entity";
 import { AppointmentRepository } from "@/modules/appointment/domain/repositories/appointment.repository";
+import { PrismaCompanyMapper } from "@/modules/company/infra/database/mappers/prisma-company.mapper";
+import { PrismaServiceMapper } from "@/modules/service/infra/database/mappers/prisma-service.mapper";
+import { PrismaUserMapper } from "@/modules/user/infra/database/mappers/prisma-user.mapper";
 import type { DateRange } from "@/shared/types/date-range";
 import { Injectable } from "@nestjs/common";
 import { PrismaAppointmentMapper } from "../mapper/prisma-appointment.mapper";
-import { PrismaAnimalMapper } from "@/modules/animal/infra/database/mappers/prisma-animal.mapper";
-import { PrismaUserMapper } from "@/modules/user/infra/database/mappers/prisma-user.mapper";
-import { PrismaServiceMapper } from "@/modules/service/infra/database/mappers/prisma-service.mapper";
-import { PrismaCompanyMapper } from "@/modules/company/infra/database/mappers/prisma-company.mapper";
 
 @Injectable()
 export class PrismaAppointmentRepository implements AppointmentRepository {
