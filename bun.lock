@@ -43,15 +43,6 @@
       },
     },
   },
-  "trustedDependencies": [
-    "esbuild",
-    "@biomejs/biome",
-    "@prisma/engines",
-    "@scarf/scarf",
-    "msgpackr-extract",
-    "prisma",
-    "@nestjs/core",
-  ],
   "packages": {
     "@anatine/zod-nestjs": ["@anatine/zod-nestjs@2.0.12", "", { "dependencies": { "ts-deepmerge": "^6.1.0" }, "peerDependencies": { "@anatine/zod-openapi": "^2.0.1", "@nestjs/common": "^7.0.0 || ^8.0.0 || ^9.0.0 || ^10.0.0 || ^11.0.0", "@nestjs/swagger": "^6.0.0 || ^7.0.0 || ^8.0.0 || ^9.0.0 || ^10.0.0 || ^11.0.0", "openapi3-ts": "^4.1.2", "zod": "^3.20.0" } }, "sha512-jCZ4eNlPfurMDJW3Y+RRO8j66kVeKXR5VHB5AK7APEkb5ekmXoRgKhHybO02IrPgTInzc58wZvUSUoLNvbyL9A=="],
 

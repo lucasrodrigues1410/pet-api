@@ -11,17 +11,17 @@ import {
 	Param,
 	Query,
 } from "@nestjs/common";
+import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import {
-	ApiOkResponse,
-	ApiOperation,
-	ApiResponse,
-	ApiTags,
-} from "@nestjs/swagger";
-import {
+	AppointmentDetailResponse,
 	AppointmentDetailsPaginatedResponse,
-	AppointmentResponse,
 } from "../dtos/appointment.response.dto";
 import { AppointmentPresenter } from "../presenters/appointment.presenter";
+import { AnimalPresenter } from "@/modules/animal/infra/http/presenters/animal.presenter";
+import { UserPresenter } from "@/modules/user/infra/http/presenters/user.presenter";
+import { ServicePresenter } from "@/modules/service/infra/http/presenters/service.presenter";
+import { CompanyPresenter } from "@/modules/company/infra/http/presenters/company.presenter";
+
 
 @ApiTags("Agendamentos")
 @Controller("appointment")
@@ -37,13 +37,13 @@ export class AppointmentController {
 	})
 	@ApiResponse({
 		status: 200,
-		type: AppointmentResponse,
+		type: AppointmentDetailResponse,
 	})
 	@UserTypeDecorator("CUSTOMER", "COMPANY")
 	async getAppointmentById(
 		@Param("id") userId: string,
 		@User("sub") id: string,
-	) {
+	): Promise<AppointmentDetailResponse> {
 		const response = await this.getAppointmentByIdUseCase.execute({
 			id,
 			userId,
@@ -53,7 +53,13 @@ export class AppointmentController {
 			throw new NotFoundException(response.value.message);
 		}
 
-		return AppointmentPresenter.toHTTP(response.value);
+		return {
+			...AppointmentPresenter.toHTTP(response.value),
+			animal: AnimalPresenter.toHTTP(response.value.animal),
+			client: UserPresenter.toHTTP(response.value.client),
+			service: ServicePresenter.toHTTP(response.value.service),
+			company: CompanyPresenter.toHTTP(response.value.company),
+		};
 	}
 
 	@Get("/user")

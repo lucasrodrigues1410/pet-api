@@ -1,8 +1,8 @@
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import {
 	Appointment,
-	CoatType,
 } from "@/modules/appointment/domain/entities/appointment.entity";
+import { AppointmentStatus, CoatType } from "@/modules/appointment/domain/enums/appointment.enum";
 import { Prisma, Appointment as PrismaAppointment } from "@prisma/client";
 
 export class PrismaAppointmentMapper {
@@ -17,7 +17,7 @@ export class PrismaAppointmentMapper {
 				startDate: prismaAppointment.startDate,
 				endDate: prismaAppointment.endDate,
 				price: prismaAppointment.price.toNumber(),
-				status: prismaAppointment.status,
+				status: prismaAppointment.status as AppointmentStatus,
 				coatType: prismaAppointment.coatType as CoatType,
 			},
 			new UniqueEntityID(prismaAppointment.id),

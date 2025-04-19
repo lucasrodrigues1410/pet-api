@@ -1,6 +1,5 @@
 import {
 	Appointment,
-	AppointmentWithDetails,
 } from "@/modules/appointment/domain/entities/appointment.entity";
 import { AppointmentRepository } from "@/modules/appointment/domain/repositories/appointment.repository";
 import { DateRange } from "@/shared/types/date-range";
@@ -14,7 +13,7 @@ export class InMemoryAppointmentRepository implements AppointmentRepository {
 			(appointment) => appointment.id.toString() === id,
 		);
 		if (!result) return null;
-		return result as AppointmentWithDetails;
+		return result as Awaited<ReturnType<AppointmentRepository["findById"]>>;
 	}
 
 	async findByUserId(

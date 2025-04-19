@@ -1,4 +1,5 @@
-import { CoatType } from "@/modules/appointment/domain/entities/appointment.entity";
+import { CoatType } from "@/modules/appointment/domain/enums/appointment.enum";
+import { AppointmentStatus } from "@prisma/client";
 import { z } from "zod";
 
 export const AppointmentDto = z.object({
@@ -10,13 +11,7 @@ export const AppointmentDto = z.object({
 	companyId: z.string(),
 	startDate: z.string(),
 	endDate: z.string(),
-	status: z.enum([
-		"SCHEDULED",
-		"CONFIRMED",
-		"IN_PROGRESS",
-		"COMPLETED",
-		"CANCELED",
-	]),
 	price: z.number(),
 	coatType: z.nativeEnum(CoatType),
+	status: z.nativeEnum(AppointmentStatus),
 });

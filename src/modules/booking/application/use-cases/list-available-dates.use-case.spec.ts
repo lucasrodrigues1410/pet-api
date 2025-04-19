@@ -1,10 +1,6 @@
 import { beforeEach, describe, expect, it, test } from "bun:test";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
-import { CompanyAvailabilityException } from "@/modules/company-availability/domain/entities/company-availability-exception.entity";
-import {
-	CompanyAvailability,
-	DaysOfWeek,
-} from "@/modules/company-availability/domain/entities/company-availability.entity";
+import { DaysOfWeek } from "@/modules/company-availability/domain/entities/company-availability.entity";
 import { Service } from "@/modules/service/domain/entities/service.entity";
 import { Staff } from "@/modules/staff/domain/entities/staff.entity";
 import { Either } from "@/shared/either";

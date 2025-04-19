@@ -1,0 +1,12 @@
+export enum CoatType {
+	SHORT = "SHORT",
+	MEDIUM = "MEDIUM",
+	LONG = "LONG",
+}
+export enum AppointmentStatus {
+	SCHEDULED = "SCHEDULED",
+	CONFIRMED = "SCHEDULED",
+	IN_PROGRESS = "SCHEDULED",
+	COMPLETED = "SCHEDULED",
+	CANCELED = "SCHEDULED",
+}

@@ -1,9 +1,6 @@
 import { PrismaService } from "@/core/infra/prisma/prisma.service";
 import { PrismaAnimalMapper } from "@/modules/animal/infra/database/mappers/prisma-animal.mapper";
-import {
-	Appointment,
-	AppointmentWithDetails,
-} from "@/modules/appointment/domain/entities/appointment.entity";
+import { Appointment } from "@/modules/appointment/domain/entities/appointment.entity";
 import { AppointmentRepository } from "@/modules/appointment/domain/repositories/appointment.repository";
 import { PrismaCompanyMapper } from "@/modules/company/infra/database/mappers/prisma-company.mapper";
 import { PrismaServiceMapper } from "@/modules/service/infra/database/mappers/prisma-service.mapper";
@@ -38,7 +35,7 @@ export class PrismaAppointmentRepository implements AppointmentRepository {
 			client: PrismaUserMapper.toDomain(appointment.client),
 			service: PrismaServiceMapper.toDomain(appointment.service),
 			company: PrismaCompanyMapper.toDomain(appointment.company),
-		} as AppointmentWithDetails;
+		} as Awaited<ReturnType<AppointmentRepository["findById"]>>;
 	}
 
 	async findByUserId(

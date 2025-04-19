@@ -1,15 +1,6 @@
 import { Entity } from "@/core/domain/entities/entity";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
-import { Animal } from "@/modules/animal/domain/entities/animal.entity";
-import { Company } from "@/modules/company/domain/entities/company.entity";
-import { Service } from "@/modules/service/domain/entities/service.entity";
-import { User } from "@/modules/user/domain/entities/user.entity";
-
-export enum CoatType {
-	SHORT = "SHORT",
-	MEDIUM = "MEDIUM",
-	LONG = "LONG",
-}
+import { AppointmentStatus, CoatType } from "../enums/appointment.enum";
 
 export interface AppointmentProps {
 	animalId: UniqueEntityID;
@@ -24,14 +15,12 @@ export interface AppointmentProps {
 	coatType: CoatType;
 }
 
-export type AppointmentStatus =
-	| "SCHEDULED"
-	| "CONFIRMED"
-	| "IN_PROGRESS"
-	| "COMPLETED"
-	| "CANCELED";
-
 export class Appointment extends Entity<AppointmentProps> {
+	private static readonly CANCELLABLE_STATUSES: AppointmentStatus[] = [
+		AppointmentStatus.SCHEDULED,
+		AppointmentStatus.CONFIRMED,
+	];
+
 	get animalId() {
 		return this.props.animalId;
 	}
@@ -45,7 +34,7 @@ export class Appointment extends Entity<AppointmentProps> {
 	}
 
 	get status() {
-		return this.props.status ?? "SCHEDULED";
+		return this.props.status;
 	}
 
 	get price() {
@@ -72,25 +61,41 @@ export class Appointment extends Entity<AppointmentProps> {
 		return this.props.companyId;
 	}
 
+	public cancel(): void {
+		if (!Appointment.CANCELLABLE_STATUSES.includes(this.props.status)) {
+			throw new Error(
+				`Appointment cannot be canceled when status is '${this.props.status}'.`,
+			);
+		}
+
+		this.props.status = AppointmentStatus.CANCELED;
+	}
+
 	public static create(
 		props: Omit<AppointmentProps, "status"> & {
 			status?: AppointmentStatus;
 		},
 		id?: UniqueEntityID,
 	): Appointment {
+		if (props.startDate < new Date()) {
+			console.log(props.startDate, new Date());
+			throw new Error("startDate must be in the future");
+		}
+
+		if (props.startDate >= props.endDate) {
+			throw new Error("startDate must be before endDate");
+		}
+
+		if (props.price <= 0) {
+			throw new Error("Price must be positive");
+		}
+
 		return new Appointment(
 			{
 				...props,
-				status: props.status ?? "SCHEDULED",
+				status: props.status ?? AppointmentStatus.SCHEDULED,
 			},
 			id,
 		);
 	}
 }
-
-export type AppointmentWithDetails = Appointment & {
-	animal: Animal;
-	client: User;
-	service: Service;
-	company: Company;
-};
