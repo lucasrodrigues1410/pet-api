@@ -1,10 +1,14 @@
 import { Company } from "@/modules/company/domain/entities/company.entity";
+import { z } from "zod";
+import { companyDto } from "../dtos/company.dto";
 
 export class CompanyPresenter {
-	static toHTTP(company: Company) {
+	static toHTTP(user: Company): z.infer<typeof companyDto> {
 		return {
-			id: company.id.toString(),
-			name: company.name,
+			id: user.id.toString(),
+			name: user.name,
+			address: user.address,
+			contact: user.contact,
 		};
 	}
 }

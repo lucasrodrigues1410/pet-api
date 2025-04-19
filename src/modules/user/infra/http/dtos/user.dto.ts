@@ -1,11 +1,8 @@
-import { createZodDto } from "@anatine/zod-nestjs";
 import { z } from "zod";
 
-const user = z.object({
+export const userDto = z.object({
 	id: z.string(),
-	name: z.string(),
 	email: z.string(),
-	type: z.enum(["CUSTOMER", "ADMIN", "COMPANY"]),
+	name: z.string(),
+	type: z.enum(["CUSTOMER", "COMPANY", "ADMIN"]),
 });
-
-export class UserResponseDto extends createZodDto(user) {}

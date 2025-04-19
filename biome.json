@@ -24,6 +24,7 @@
 				"noExplicitAny": "off"
 			},
 			"complexity": {
+				"noThisInStatic": "off",
 				"noStaticOnlyClass": "off"
 			},
 			"style": {

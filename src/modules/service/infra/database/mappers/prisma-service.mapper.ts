@@ -1,45 +1,15 @@
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
-import { PrismaPriceVariationMapper } from "@/modules/price-variation/infra/database/mappers/prisma-price-variation.mapper";
-import {
-	Prisma,
-	Category as PrismaCategory,
-	Company as PrismaCompany,
-	Service as PrismaService,
-	ServicePriceVariation as PrismaServicePriceVariation,
-} from "@prisma/client";
-import { Category } from "src/modules/category/domain/entities/category.entity";
-import { PrismaCompanyMapper } from "src/modules/company/infra/database/mappers/prisma-company.mapper";
+import { PriceRange } from "@/modules/service/domain/entities/value-objects/price-range.value-object";
+import { Prisma, Service as PrismaService } from "@prisma/client";
+import { Decimal } from "@prisma/client/runtime/library";
 import { Service } from "src/modules/service/domain/entities/service.entity";
 
 export class PrismaServiceMapper {
 	static toDomain(
 		prismaService: PrismaService & {
-			categories?: PrismaCategory[];
-			company?: PrismaCompany;
-			priceVariations?: PrismaServicePriceVariation[];
+			maxPrice?: number | Decimal | null;
 		},
 	): Service {
-		const categories = prismaService.categories
-			? prismaService.categories.map((category) =>
-					Category.create(
-						{
-							name: category.name,
-							description: category.description,
-							type: category.type,
-						},
-						new UniqueEntityID(category.id),
-					),
-				)
-			: [];
-
-		const priceVariations = prismaService.priceVariations?.map(
-			PrismaPriceVariationMapper.toDomain,
-		);
-
-		const company = prismaService.company
-			? PrismaCompanyMapper.toDomain(prismaService.company)
-			: undefined;
-
 		return Service.create(
 			{
 				description: prismaService.description,
@@ -47,11 +17,15 @@ export class PrismaServiceMapper {
 				duration: prismaService.duration,
 				isActive: prismaService.isActive,
 				name: prismaService.name,
-				capacity: prismaService.capacity ?? undefined,
 				companyId: new UniqueEntityID(prismaService.companyId),
-				categories,
-				company,
-				priceVariations,
+				priceRange: PriceRange.create(
+					prismaService.maxPrice
+						? {
+								min: Number(prismaService.price),
+								max: Number(prismaService.maxPrice),
+							}
+						: undefined,
+				),
 			},
 			new UniqueEntityID(prismaService.id),
 		);
@@ -65,7 +39,6 @@ export class PrismaServiceMapper {
 			isActive: service.isActive,
 			name: service.name,
 			companyId: service.companyId.toString(),
-			capacity: service.capacity,
 			details: service.details as Prisma.JsonObject,
 		};
 	}

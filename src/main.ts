@@ -4,6 +4,7 @@ import { NestFactory } from "@nestjs/core";
 import { NestExpressApplication } from "@nestjs/platform-express";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { AppModule } from "./app.module";
+import { EnvService } from "./core/infra/env/env.service";
 
 async function bootstrap() {
 	const app = await NestFactory.create<NestExpressApplication>(AppModule, {
@@ -30,6 +31,10 @@ async function bootstrap() {
 			transformOptions: { enableImplicitConversion: true },
 		}),
 	);
-	await app.listen(process.env.PORT ?? 3000);
+
+	const configService = app.get(EnvService);
+	const port = configService.get("PORT");
+
+	await app.listen(port);
 }
 bootstrap();

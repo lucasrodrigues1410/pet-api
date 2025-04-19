@@ -8,11 +8,4 @@ const createAnimalRequest = z.object({
 	weight: z.number().min(0),
 });
 
-const createAnimalResponse = createAnimalRequest;
-
-export class CreateAnimalResponseDto extends createZodDto(
-	createAnimalRequest,
-) {}
-export class CreateAnimalRequestDto extends createZodDto(
-	createAnimalResponse,
-) {}
+export class CreateAnimalRequestDto extends createZodDto(createAnimalRequest) {}

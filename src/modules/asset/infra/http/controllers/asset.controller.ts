@@ -21,8 +21,8 @@ export class AssetController {
 		private readonly uploadAndCreateAsset: UploadAndCreateAssetUseCase,
 	) {}
 
-	@ApiOperation({ summary: "Envia um arquivo e cria um asset" })
 	@Post()
+	@ApiOperation({ summary: "Envia um arquivo e cria um asset" })
 	@ApiConsumes("multipart/form-data")
 	@UseInterceptors(FileInterceptor("file"))
 	async handle(

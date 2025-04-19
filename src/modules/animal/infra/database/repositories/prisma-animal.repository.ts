@@ -1,30 +1,30 @@
+import { PaginationQuery } from "@/core/infra/dtos/pagination-query.dto";
 import { PrismaService } from "@/core/infra/prisma/prisma.service";
-import { PaginationParams } from "@/core/pagination/pagination-params";
-import { paginate } from "@/core/pagination/paginator";
+import { paginate } from "@/shared/utils/paginator";
 import { Injectable } from "@nestjs/common";
 import { Animal } from "../../../domain/entities/animal.entity";
 import { AnimalRepository } from "../../../domain/repositories/animal.repository";
-import { AnimalPrismaMapper } from "../mappers/prisma-animal.mapper";
+import { PrismaAnimalMapper } from "../mappers/prisma-animal.mapper";
 
 @Injectable()
 export class AnimalPrismaRepository implements AnimalRepository {
 	constructor(private prismaService: PrismaService) {}
 
 	async create(animal: Animal) {
-		const data = AnimalPrismaMapper.toPrisma(animal);
+		const data = PrismaAnimalMapper.toPrisma(animal);
 		const response = await this.prismaService.animal.create({
 			data,
 		});
-		return AnimalPrismaMapper.toDomain(response);
+		return PrismaAnimalMapper.toDomain(response);
 	}
 
 	async update(animal: Animal) {
-		const data = AnimalPrismaMapper.toPrisma(animal);
+		const data = PrismaAnimalMapper.toPrisma(animal);
 		const response = await this.prismaService.animal.update({
 			where: { id: animal.id.toString(), deletedAt: null },
 			data,
 		});
-		return AnimalPrismaMapper.toDomain(response);
+		return PrismaAnimalMapper.toDomain(response);
 	}
 
 	async findById(animalId: string): Promise<Animal | null> {
@@ -36,7 +36,7 @@ export class AnimalPrismaRepository implements AnimalRepository {
 			return null;
 		}
 
-		return AnimalPrismaMapper.toDomain(response);
+		return PrismaAnimalMapper.toDomain(response);
 	}
 
 	async delete(petId: string) {
@@ -46,7 +46,7 @@ export class AnimalPrismaRepository implements AnimalRepository {
 		});
 	}
 
-	async fetchAllAnimalsByUser(params: { userId: string } & PaginationParams) {
+	async fetchAllAnimalsByUser(params: { userId: string } & PaginationQuery) {
 		const { items, ...rest } = await paginate(
 			({ skip, take }) =>
 				this.prismaService.animal.findMany({
@@ -63,7 +63,7 @@ export class AnimalPrismaRepository implements AnimalRepository {
 		);
 
 		return {
-			items: items.map((animal) => AnimalPrismaMapper.toDomain(animal)),
+			items: items.map((animal) => PrismaAnimalMapper.toDomain(animal)),
 			...rest,
 		};
 	}

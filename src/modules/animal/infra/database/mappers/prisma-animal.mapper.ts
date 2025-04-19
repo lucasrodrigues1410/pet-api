@@ -9,7 +9,7 @@ import {
 } from "@prisma/client";
 import { Animal } from "src/modules/animal/domain/entities/animal.entity";
 
-export class AnimalPrismaMapper {
+export class PrismaAnimalMapper {
 	static toDomain(
 		prismaAnimal: PrismaAnimal & { breed?: PrismaBreed; asset?: PrismaAsset },
 	): Animal {

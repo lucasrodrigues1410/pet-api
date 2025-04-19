@@ -12,7 +12,7 @@ import {
 	Animal,
 	AnimalProps,
 } from "src/modules/animal/domain/entities/animal.entity";
-import { AnimalPrismaMapper } from "src/modules/animal/infra/database/mappers/prisma-animal.mapper";
+import { PrismaAnimalMapper } from "src/modules/animal/infra/database/mappers/prisma-animal.mapper";
 
 export function makeStaff(override: Partial<Staff> = {}, id?: UniqueEntityID) {
 	const staff = Staff.create(

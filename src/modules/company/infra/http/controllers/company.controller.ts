@@ -1,10 +1,6 @@
-import { PaginationParamsQuery } from "@/core/pagination/pagination-params";
-import { PaginationResultPresenter } from "@/core/pagination/pagination-presenter";
-import { CompanyByIdResponseDTO } from "@/modules/company/infra/http/dtos/company-by-id.dto";
-import {
-	SearchCompaniesRequestDto,
-	SearchCompaniesResponseDto,
-} from "@/modules/company/infra/http/dtos/search-companies.dto";
+import { PaginationQueryDto } from "@/core/infra/dtos/pagination-query.dto";
+import { PaginationPresenter } from "@/core/infra/presenters/pagination.presenter";
+import { SearchCompaniesRequestDto } from "@/modules/company/infra/http/dtos/search-companies.dto";
 import {
 	BadRequestException,
 	Body,
@@ -15,15 +11,14 @@ import {
 	Post,
 	Query,
 } from "@nestjs/common";
-import {
-	ApiOkResponse,
-	ApiOperation,
-	ApiResponse,
-	ApiTags,
-} from "@nestjs/swagger";
+import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Public } from "src/modules/auth/infra/http/decorators/public.decorator";
 import { GetCompanyByIdUseCase } from "src/modules/company/application/use-cases/get-company-by-id.use-case";
 import { SearchCompaniesUseCase } from "src/modules/company/application/use-cases/search-companies.use-case";
+import {
+	CompanyPaginatedResponse,
+	CompanyResponse,
+} from "../dtos/company.response.dto";
 import { CompanyPresenter } from "../presenters/company.presenter";
 
 @ApiTags("Empresas")
@@ -34,16 +29,16 @@ export class CompanyController {
 		private readonly getCompanyByIdUseCase: GetCompanyByIdUseCase,
 	) {}
 
-	@ApiOperation({ summary: "Pesquisar empresas por query" })
-	@ApiOkResponse({
-		description: "Empresas encontradas com sucesso",
-		type: SearchCompaniesResponseDto,
-	})
 	@Post("search")
+	@ApiOperation({ summary: "Pesquisar empresas por query" })
+	@ApiResponse({
+		status: 200,
+		type: CompanyPaginatedResponse,
+	})
 	@Public()
 	async searchCompanies(
 		@Body() data: SearchCompaniesRequestDto,
-		@Query() query: PaginationParamsQuery,
+		@Query() query: PaginationQueryDto,
 	) {
 		const result = await this.searchCompaniesUseCase.execute({
 			...data,
@@ -54,22 +49,18 @@ export class CompanyController {
 			throw new BadRequestException();
 		}
 
-		return PaginationResultPresenter.toHTTP({
-			...result.value,
+		return PaginationPresenter.toHTTP({
 			items: result.value.items.map(CompanyPresenter.toHTTP),
+			meta: result.value.meta,
 		});
 	}
 
-	@ApiOperation({ summary: "Buscar empresa por ID" })
-	@ApiOkResponse({
-		description: "Empresa encontrada com sucesso",
-		type: CompanyByIdResponseDTO,
-	})
-	@ApiResponse({
-		status: 404,
-		description: "Empresa não encontrada",
-	})
 	@Get(":id")
+	@ApiOperation({ summary: "Buscar empresa por ID" })
+	@ApiResponse({
+		status: 200,
+		type: CompanyResponse,
+	})
 	@Public()
 	async getCompanyById(@Param("id") id: string) {
 		const result = await this.getCompanyByIdUseCase.execute({ id });
@@ -78,9 +69,6 @@ export class CompanyController {
 		}
 
 		const company = result.value.company;
-		return {
-			id: company.id,
-			name: company.name,
-		};
+		return CompanyPresenter.toHTTP(company);
 	}
 }

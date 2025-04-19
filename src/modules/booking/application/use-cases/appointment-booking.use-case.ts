@@ -3,20 +3,18 @@ import { AnimalRepository } from "@/modules/animal/domain/repositories/animal.re
 import { CheckoutSessionCreationError } from "@/modules/payment/domain/errors/checkout-session-creation.error";
 import { PriceCalculator } from "@/modules/price-variation/application/services/price-calculator.service";
 import { VariationType } from "@/modules/price-variation/domain/entities/price-variation.entity";
-import { SizeBasedStrategy } from "@/modules/price-variation/domain/strategies/size-based.strategy";
 import { ServiceRepository } from "@/modules/service/domain/repositories/service.repository";
 import { Either, left, right } from "@/shared/either";
 import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
 import { Injectable } from "@nestjs/common";
-import { addMinutes, isBefore } from "date-fns";
+import { addMinutes } from "date-fns";
 import {
 	Appointment,
-	CoatType,
 } from "../../../appointment/domain/entities/appointment.entity";
 import { AppointmentRepository } from "../../../appointment/domain/repositories/appointment.repository";
-import { InvalidAppointmentDateError } from "../errors/invalid-appointment-date.error";
 import { TimeSlotUnavailableError } from "../errors/time-slot-unavailable.error";
 import { AppointmentAvailabilityService } from "../services/appointment-availability.service";
+import { CoatType } from "@/modules/appointment/domain/enums/appointment.enum";
 
 interface AppointmentBookingUseCaseRequest {
 	serviceId: string;
@@ -29,8 +27,7 @@ interface AppointmentBookingUseCaseRequest {
 type AppointmentBookingUseCaseResponse = Either<
 	| ResourceNotFoundError
 	| TimeSlotUnavailableError
-	| CheckoutSessionCreationError
-	| InvalidAppointmentDateError,
+	| CheckoutSessionCreationError,
 	{
 		appointmentId: string;
 	}
@@ -53,12 +50,6 @@ export class AppointmentBookingUseCase {
 		date,
 		coatType,
 	}: AppointmentBookingUseCaseRequest): Promise<AppointmentBookingUseCaseResponse> {
-		// Valida se a data é válida
-		const today = new Date();
-		if (isBefore(date, today)) {
-			return left(new InvalidAppointmentDateError());
-		}
-
 		// Valida existência do serviço
 		const service = await this.serviceRepository.findById(serviceId);
 		if (!service) {
@@ -86,15 +77,16 @@ export class AppointmentBookingUseCase {
 		}
 
 		// Calcula variação de preço
-		const price = await this.priceCalculator.calculate(
-			service.priceVariations ?? [],
-			[{ type: VariationType.SIZE, value: animal.weight ?? 0 }],
-		);
+		const price = await this.priceCalculator.calculate(service.id.toString(), [
+			{ type: VariationType.SIZE, value: animal.weight ?? 0 },
+		]);
 
 		const appointmentIntent = Appointment.create({
 			serviceId: new UniqueEntityID(serviceId),
 			staffId: available.staffChoiced.id,
 			animalId: new UniqueEntityID(animalId),
+			clientId: new UniqueEntityID(clientId),
+			companyId: service.companyId,
 			startDate,
 			endDate,
 			price: price + service.price,

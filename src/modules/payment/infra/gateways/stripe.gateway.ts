@@ -1,3 +1,4 @@
+import { EnvService } from "@/core/infra/env/env.service";
 import { Either, left, right } from "@/shared/either";
 import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
@@ -28,12 +29,10 @@ export class StripePaymentGateway implements PaymentGateway {
 	private readonly webhookSecret: string;
 	private readonly logger = new Logger(StripePaymentGateway.name);
 
-	constructor(private readonly configService: ConfigService) {
-		const apiKey = this.configService.get("STRIPE_API_KEY");
+	constructor(private envService: EnvService) {
+		const apiKey = envService.get("STRIPE_API_KEY");
 		this.stripe = new Stripe(apiKey);
-		this.webhookSecret = this.configService.get(
-			"STRIPE_WEBHOOK_SECRET",
-		) as string;
+		this.webhookSecret = envService.get("STRIPE_WEBHOOK_SECRET");
 	}
 
 	async verifyAndParseWebhook(

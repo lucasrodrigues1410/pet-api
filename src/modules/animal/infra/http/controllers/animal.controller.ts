@@ -1,5 +1,5 @@
-import { PaginationParamsQuery } from "@/core/pagination/pagination-params";
-import { PaginationResultPresenter } from "@/core/pagination/pagination-presenter";
+import { PaginationQueryDto } from "@/core/infra/dtos/pagination-query.dto";
+import { PaginationPresenter } from "@/core/infra/presenters/pagination.presenter";
 import { DeleteAnimalUseCase } from "@/modules/animal/application/use-cases/delete-animal.use-case";
 import { UpdateAnimalUseCase } from "@/modules/animal/application/use-cases/update-animal.use-case";
 import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
@@ -16,17 +16,13 @@ import {
 	Put,
 	Query,
 } from "@nestjs/common";
-import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
-import { ApiCreatedResponse } from "@nestjs/swagger";
+import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { UserTypeDecorator } from "src/modules/auth/infra/http/decorators/user-type.decorator";
 import { User } from "src/modules/auth/infra/http/decorators/user.decorator";
 import { CreateAnimalUseCase } from "../../../application/use-cases/create-animal.use-case";
 import { ListAnimalsFromUserUserUseCase } from "../../../application/use-cases/list-animals-from-user.use-case";
-import {
-	CreateAnimalRequestDto,
-	CreateAnimalResponseDto,
-} from "../dtos/create-animal.dto";
-import { ListAnimalsResponseDto } from "../dtos/list-animals.dto";
+import { AnimalPaginatedResponse } from "../dtos/animal.response.dto";
+import { CreateAnimalRequestDto } from "../dtos/create-animal.dto";
 import { UpdateAnimalRequestDto } from "../dtos/update-animal.dto";
 import { AnimalPresenter } from "../presenters/animal.presenter";
 
@@ -40,17 +36,13 @@ export class AnimalController {
 		private readonly listAnimalsFromUserUseCase: ListAnimalsFromUserUserUseCase,
 	) {}
 
-	@ApiOperation({ summary: "Cria um animal" })
-	@ApiOkResponse({
-		description: "Animal criado com sucesso",
-		type: CreateAnimalRequestDto,
-	})
 	@Post()
+	@ApiOperation({ summary: "Cria um animal" })
 	@UserTypeDecorator("CUSTOMER")
 	@HttpCode(201)
 	async create(
 		@User("sub") userId: string,
-		@Body() data: CreateAnimalResponseDto,
+		@Body() data: CreateAnimalRequestDto,
 	) {
 		const result = await this.createAnimalUseCase.execute({
 			...data,
@@ -65,13 +57,13 @@ export class AnimalController {
 		}
 	}
 
-	@ApiOperation({ summary: "Listar todos os animais de um usuário" })
-	@ApiCreatedResponse({ type: ListAnimalsResponseDto })
 	@Get("user/:id")
+	@ApiOperation({ summary: "Listar todos os animais de um usuário" })
+	@ApiResponse({ status: 200, type: AnimalPaginatedResponse })
 	@UserTypeDecorator("CUSTOMER")
 	async listAll(
 		@Param("id") userId: string,
-		@Query() query: PaginationParamsQuery,
+		@Query() query: PaginationQueryDto,
 	) {
 		const result = await this.listAnimalsFromUserUseCase.execute({
 			userId,
@@ -81,19 +73,15 @@ export class AnimalController {
 		if (result.isLeft()) {
 			throw new BadRequestException();
 		}
-		return {
-			...PaginationResultPresenter.toHTTP({
-				...result.value,
-				items: result.value.items.map(AnimalPresenter.toHTTP),
-			}),
-		};
+
+		return PaginationPresenter.toHTTP({
+			items: result.value.items.map(AnimalPresenter.toHTTP),
+			meta: result.value.meta,
+		});
 	}
 
-	@ApiOperation({ summary: "Atualizar um animal" })
-	@ApiOkResponse({
-		description: "Animal atualizado com sucesso",
-	})
 	@Put(":id")
+	@ApiOperation({ summary: "Atualizar um animal" })
 	@UserTypeDecorator("CUSTOMER")
 	@HttpCode(200)
 	async update(
@@ -115,8 +103,8 @@ export class AnimalController {
 		}
 	}
 
-	@ApiOperation({ summary: "Deletar um animal" })
 	@Delete(":id")
+	@ApiOperation({ summary: "Deletar um animal" })
 	@UserTypeDecorator("CUSTOMER")
 	@HttpCode(204)
 	async delete(@User("sub") userId: string, @Param("id") animalId: string) {

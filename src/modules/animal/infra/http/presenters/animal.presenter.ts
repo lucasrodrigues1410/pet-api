@@ -1,20 +1,20 @@
 import { Animal } from "@/modules/animal/domain/entities/animal.entity";
-import { AssetPresenter } from "@/modules/asset/infra/http/presenters/asset.presenter";
-import { BreedPresenter } from "@/modules/breed/infra/http/breed.presenter";
 import { differenceInYears } from "date-fns";
+import { z } from "zod";
+import { animalDto } from "../dtos/animal.dto";
 
 export class AnimalPresenter {
-	static toHTTP(animal: Animal) {
+	static toHTTP(animal: Animal): z.infer<typeof animalDto> {
 		return {
 			id: animal.id.toString(),
 			name: animal.name,
-			breed: animal.breed ? BreedPresenter.toHTTP(animal.breed) : undefined,
 			age: animal.birthdate
 				? differenceInYears(new Date(), animal.birthdate)
-				: null,
-			weight: animal.weight,
+				: undefined,
+			weight: animal.weight ?? undefined,
 			userId: animal.userId.toString(),
-			asset: animal.asset ? AssetPresenter.toHTTP(animal.asset) : undefined,
+			assetId: animal.asset?.id.toString(),
+			breedId: animal.breed?.id.toString(),
 		};
 	}
 }

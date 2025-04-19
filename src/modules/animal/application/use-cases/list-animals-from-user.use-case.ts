@@ -1,5 +1,5 @@
-import { PaginationParams } from "@/core/pagination/pagination-params";
-import { PaginationResult } from "@/core/pagination/pagination-result";
+import { PaginationQuery } from "@/core/infra/dtos/pagination-query.dto";
+import { PaginationResult } from "@/core/infra/dtos/pagination.dto";
 import { Either, right } from "@/shared/either";
 import { Injectable } from "@nestjs/common";
 import { Animal } from "../../domain/entities/animal.entity";
@@ -7,7 +7,7 @@ import { AnimalRepository } from "../../domain/repositories/animal.repository";
 
 type ListAnimalsFromUserUseCaseRequest = {
 	userId: string;
-} & PaginationParams;
+} & PaginationQuery;
 
 type ListAnimalsFromUserUseCaseResponse = Either<
 	null,
