@@ -5,7 +5,7 @@ import { Service } from "@/modules/service/domain/entities/service.entity";
 import { Staff } from "@/modules/staff/domain/entities/staff.entity";
 import { Either } from "@/shared/either";
 import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
-import { getDay, set } from "date-fns";
+import { addDays, getDay, set } from "date-fns";
 import { makeAppointment } from "test/factories/make-appointment";
 import { makeCompanyAvailability } from "test/factories/make-company-availability";
 import { makeService } from "test/factories/make-service";
@@ -61,7 +61,7 @@ describe("ListAvailableDatesUseCase", () => {
 		companyId = new UniqueEntityID();
 		staff = makeStaff({ companyId });
 		service = makeService({ companyId, duration: 30 });
-		defaultDate = set(new Date(), {
+		defaultDate = set(addDays(new Date(), 1), {
 			hours: 8,
 			minutes: 0,
 			seconds: 0,
@@ -178,7 +178,6 @@ describe("ListAvailableDatesUseCase", () => {
 		expectResultIsRight(result);
 		const availableSlots = result.value.slots;
 		expect(availableSlots.length).toBeGreaterThan(0);
-		console.log(inMemoryStaffRepository.items[0].appointments);
 		expect(availableSlots.some((slot) => slot.label === "09:00")).toBe(false);
 		expect(availableSlots.some((slot) => slot.label === "09:30")).toBe(true);
 	});

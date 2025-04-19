@@ -78,7 +78,6 @@ export class Appointment extends Entity<AppointmentProps> {
 		id?: UniqueEntityID,
 	): Appointment {
 		if (props.startDate < new Date()) {
-			console.log(props.startDate, new Date());
 			throw new Error("startDate must be in the future");
 		}
 

@@ -47,4 +47,13 @@ export class InMemoryAppointmentRepository implements AppointmentRepository {
 			);
 		});
 	}
+
+	async update(appointment: Appointment) {
+		const index = this.items.findIndex(
+			(item) => item.id.toString() === appointment.id.toString(),
+		);
+		if (index !== -1) {
+			this.items[index] = appointment;
+		}
+	}
 }

@@ -26,4 +26,5 @@ export abstract class AppointmentRepository {
 		serviceId: string;
 		range: DateRange;
 	}): Promise<Appointment[]>;
+	abstract update(appointment: Appointment): Promise<void>;
 }

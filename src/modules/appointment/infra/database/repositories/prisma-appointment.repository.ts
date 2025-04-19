@@ -95,4 +95,12 @@ export class PrismaAppointmentRepository implements AppointmentRepository {
 
 		return appointments.map(PrismaAppointmentMapper.toDomain);
 	}
+
+	async update(appointment: Appointment) {
+		const persistence = PrismaAppointmentMapper.toPersistence(appointment);
+		await this.prismaService.appointment.update({
+			where: { id: persistence.id },
+			data: persistence,
+		});
+	}
 }
