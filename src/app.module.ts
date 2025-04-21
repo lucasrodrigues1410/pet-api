@@ -2,6 +2,7 @@ import { ZodValidationPipe } from "@anatine/zod-nestjs";
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { APP_GUARD, APP_PIPE } from "@nestjs/core";
+import { CqrsModule } from "@nestjs/cqrs";
 import { BullEventDispatcherModule } from "./core/infra/bull/bull-event-dispatcher.module";
 import { envSchema } from "./core/infra/env/env";
 import { EnvModule } from "./core/infra/env/env.module";
@@ -15,6 +16,7 @@ import { JwtStrategy } from "./modules/auth/infra/strategies/jwt.strategy";
 import { BookingModule } from "./modules/booking/booking.module";
 import { BreedModule } from "./modules/breed/breed.module";
 import { CompanyModule } from "./modules/company/company.module";
+import { NotificationModule } from "./modules/notification/notification.module";
 import { PaymentModule } from "./modules/payment/payment.module";
 import { PriceVariationModule } from "./modules/price-variation/price-variation.module";
 import { ServiceModule } from "./modules/service/service.module";
@@ -27,6 +29,7 @@ import { UserModule } from "./modules/user/user.module";
 			isGlobal: true,
 			validate: (env) => envSchema.parse(env),
 		}),
+		CqrsModule.forRoot(),
 		EnvModule,
 		BullEventDispatcherModule,
 		PrismaModule,
@@ -42,6 +45,7 @@ import { UserModule } from "./modules/user/user.module";
 		AppointmentModule,
 		BookingModule,
 		StaffModule,
+		NotificationModule,
 	],
 	providers: [
 		{

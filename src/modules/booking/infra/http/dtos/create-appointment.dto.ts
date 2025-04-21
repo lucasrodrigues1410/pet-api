@@ -1,4 +1,4 @@
-import { CoatType } from "@/modules/appointment/domain/entities/appointment.entity";
+import { CoatType } from "@/modules/appointment/domain/enums/appointment.enum";
 import { createZodDto } from "@anatine/zod-nestjs";
 import { set } from "date-fns";
 import { z } from "zod";

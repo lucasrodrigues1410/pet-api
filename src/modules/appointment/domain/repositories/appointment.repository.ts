@@ -1,11 +1,11 @@
 import { PaginationQuery } from "@/core/infra/dtos/pagination-query.dto";
 import { PaginationResult } from "@/core/infra/dtos/pagination.dto";
+import { Animal } from "@/modules/animal/domain/entities/animal.entity";
+import { Company } from "@/modules/company/domain/entities/company.entity";
+import { Service } from "@/modules/service/domain/entities/service.entity";
+import { User } from "@/modules/user/domain/entities/user.entity";
 import type { DateRange } from "@/shared/types/date-range";
 import { Appointment } from "../entities/appointment.entity";
-import { Animal } from "@/modules/animal/domain/entities/animal.entity";
-import { User } from "@/modules/user/domain/entities/user.entity";
-import { Service } from "@/modules/service/domain/entities/service.entity";
-import { Company } from "@/modules/company/domain/entities/company.entity";
 
 export abstract class AppointmentRepository {
 	abstract findById(id: string): Promise<

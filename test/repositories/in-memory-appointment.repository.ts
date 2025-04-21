@@ -1,6 +1,4 @@
-import {
-	Appointment,
-} from "@/modules/appointment/domain/entities/appointment.entity";
+import { Appointment } from "@/modules/appointment/domain/entities/appointment.entity";
 import { AppointmentRepository } from "@/modules/appointment/domain/repositories/appointment.repository";
 import { DateRange } from "@/shared/types/date-range";
 import { paginate } from "@/shared/utils/paginator";

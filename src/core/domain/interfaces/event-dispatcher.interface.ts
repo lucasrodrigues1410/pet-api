@@ -1,5 +1,5 @@
-export interface DomainEvent {
-	name: string;
+export abstract class DomainEvent {
+	abstract readonly eventType: string;
 }
 
 export abstract class EventDispatcher {

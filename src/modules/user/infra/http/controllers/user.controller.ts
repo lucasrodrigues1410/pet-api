@@ -1,3 +1,5 @@
+import { Public } from "@/modules/auth/infra/http/decorators/public.decorator";
+import { SendUserCreatedNotificationCommand } from "@/modules/notification/application/commands/user-created/send-user-created-notification.command";
 import { FindUserByIdUseCase } from "@/modules/user/application/use-cases/find-user-by-id.use-case";
 import { UpdateUserProfileUseCase } from "@/modules/user/application/use-cases/update-user-profile.use-case";
 import {
@@ -9,6 +11,7 @@ import {
 	HttpStatus,
 	Put,
 } from "@nestjs/common";
+import { CommandBus } from "@nestjs/cqrs";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { User } from "src/modules/auth/infra/http/decorators/user.decorator";
 import { UpdateUserRequestDto } from "../dtos/update-user.dto";
@@ -21,6 +24,7 @@ export class UserController {
 	constructor(
 		private readonly findUserByIdUseCase: FindUserByIdUseCase,
 		private readonly updateUserProfileUseCase: UpdateUserProfileUseCase,
+		private readonly commandBus: CommandBus,
 	) {}
 
 	@Get("me")
@@ -58,5 +62,17 @@ export class UserController {
 		if (response.isLeft()) {
 			throw new BadRequestException(response.value.message);
 		}
+	}
+
+	@Get("teste")
+	@Public()
+	async teste() {
+		await this.commandBus.execute(
+			new SendUserCreatedNotificationCommand(
+				"user.id",
+				"macstudios.info@gmail.com",
+				"name",
+			),
+		);
 	}
 }

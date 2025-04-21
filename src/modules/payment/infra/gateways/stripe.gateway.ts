@@ -1,8 +1,7 @@
 import { EnvService } from "@/core/infra/env/env.service";
 import { Either, left, right } from "@/shared/either";
 import { Injectable, Logger } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
-import { addMinutes, getUnixTime } from "date-fns";
+import { getUnixTime } from "date-fns";
 import Stripe from "stripe";
 import { CheckoutSessionCreationError } from "../../domain/errors/checkout-session-creation.error";
 import { InvalidWebhookSignatureError } from "../../domain/errors/invalid-webhook-signature.error";
