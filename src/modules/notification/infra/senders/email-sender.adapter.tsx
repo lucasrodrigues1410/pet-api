@@ -2,10 +2,11 @@ import { MailerService } from "@nestjs-modules/mailer";
 import { Injectable } from "@nestjs/common";
 import { render } from "@react-email/components";
 import {
+	NotificationData,
 	NotificationSender,
-	SenderEmail,
 } from "../../domain/interfaces/notification-sender.interface";
 import { TemplateFactory } from "../templates/template.factory";
+import { NotificationChannel } from "../../domain/enums/notification-channel.enum";
 
 @Injectable()
 export class EmailAdapter implements NotificationSender {
@@ -14,12 +15,16 @@ export class EmailAdapter implements NotificationSender {
 		private readonly templateFactory: TemplateFactory,
 	) {}
 
-	async send(params: SenderEmail): Promise<void> {
+	async send(
+		params: NotificationData<NotificationChannel.EMAIL>,
+	): Promise<void> {
 		const { data } = params;
 		const TemplateComponent = this.templateFactory.getTemplate(
 			data.templateName,
 		);
+
 		const html = await render(<TemplateComponent {...data.variables} />);
+
 		await this.mailerService.sendMail({
 			from: "Acme <onboarding@resend.dev>",
 			to: data.to,

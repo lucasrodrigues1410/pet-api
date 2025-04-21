@@ -15,16 +15,10 @@ import {
 } from "@react-email/components";
 
 interface UserCreatedTemplateProps {
-	userName?: string;
-	userEmail?: string;
-	verificationUrl?: string;
+	userName: string;
 }
 
-export const UserCreatedTemplate = ({
-	userName = "Amigo Pet",
-	userEmail = "usuario@exemplo.com",
-	verificationUrl = "https://seusistemapet.com/verificar?token=123456789",
-}: UserCreatedTemplateProps) => {
+export const UserCreatedTemplate = ({ userName }: UserCreatedTemplateProps) => {
 	const baseUrl = "https://seusistemapet.com";
 
 	return (
@@ -55,24 +49,6 @@ export const UserCreatedTemplate = ({
 								felizes em ter você conosco! Para começar a usar todos os
 								recursos do nosso sistema para cuidar do seu pet, por favor
 								confirme seu email.
-							</Text>
-							<Section className="text-center my-6">
-								<Button
-									className="bg-blue-600 text-white font-bold py-3 px-6 rounded-lg no-underline text-center"
-									href={verificationUrl}
-								>
-									Confirmar meu cadastro
-								</Button>
-							</Section>
-							<Text className="text-gray-700 text-sm mb-4">
-								Se você não conseguir clicar no botão acima, copie e cole o link
-								abaixo no seu navegador:
-							</Text>
-							<Text className="text-xs text-blue-600 break-all mb-4">
-								{verificationUrl}
-							</Text>
-							<Text className="text-gray-700 text-sm mb-4">
-								Este link expira em 24 horas.
 							</Text>
 						</Section>
 						<Section className="mt-8 bg-gray-50 rounded-lg p-6">

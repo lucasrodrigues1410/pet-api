@@ -1,6 +1,6 @@
 import { CommandHandler, EventBus, ICommandHandler } from "@nestjs/cqrs";
-import { UserCreatedEvent } from "../../events/user-created/user-created.event";
-import { SendUserCreatedNotificationCommand } from "./send-user-created-notification.command";
+import { UserCreatedEvent } from "../../../domain/events/user-created.event";
+import { SendUserCreatedNotificationCommand } from "./send-user-created.command";
 
 @CommandHandler(SendUserCreatedNotificationCommand)
 export class SendUserCreatedNotification

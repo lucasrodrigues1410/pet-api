@@ -15,7 +15,7 @@
 		"dev": "bun --watch ./src/main.ts",
 		"start:prod": "bun run src/main.ts",
 		"test": "bun test",
-		"email": "email dev --dir src/modules/notification/infra/templates/react-email"
+		"email": "email dev --dir src/modules/notification/infra/templates/email"
 	},
 	"dependencies": {
 		"@anatine/zod-nestjs": "^2.0.12",

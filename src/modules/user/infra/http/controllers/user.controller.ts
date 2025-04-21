@@ -1,5 +1,5 @@
 import { Public } from "@/modules/auth/infra/http/decorators/public.decorator";
-import { SendUserCreatedNotificationCommand } from "@/modules/notification/application/commands/user-created/send-user-created-notification.command";
+import { SendUserCreatedNotificationCommand } from "@/modules/notification/application/commands/user-created/send-user-created.command";
 import { FindUserByIdUseCase } from "@/modules/user/application/use-cases/find-user-by-id.use-case";
 import { UpdateUserProfileUseCase } from "@/modules/user/application/use-cases/update-user-profile.use-case";
 import {

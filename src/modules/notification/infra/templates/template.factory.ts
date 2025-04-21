@@ -1,18 +1,31 @@
 import { Injectable } from "@nestjs/common";
-import { SenderEmail } from "../../domain/interfaces/notification-sender.interface";
-import UserCreatedTemplate from "./react-email/user-created.tempate";
+import UserCreatedTemplate from "./email/user-created.tempate";
+import { EmailTemplates } from "../../domain/models/notification-template.types";
+import { JSX } from "react";
 
-type TemplateComponent = React.FC<any>;
-type TemplateName = SenderEmail["data"]["templateName"];
+type TemplateComponent<T extends keyof EmailTemplates> = (
+	variables: EmailTemplates[T],
+) => string | JSX.Element;
+
+type TemplateRegistry = {
+	[K in keyof EmailTemplates]: TemplateComponent<K>;
+};
+
+const templateComponents: TemplateRegistry = {
+	WELCOME_USER: ({ userName }) => {
+		return UserCreatedTemplate({ userName });
+	},
+};
 
 @Injectable()
 export class TemplateFactory {
-	getTemplate(name: TemplateName): TemplateComponent {
-		switch (name) {
-			case "WELCOME_USER":
-				return UserCreatedTemplate;
-			default:
-				throw new Error(`Template não encontrado: ${name}`);
+	getTemplate<T extends keyof EmailTemplates>(name: T): TemplateComponent<T> {
+		const template = templateComponents[name];
+
+		if (!template) {
+			throw new Error(`Template não encontrado: ${String(name)}`);
 		}
+
+		return template;
 	}
 }
