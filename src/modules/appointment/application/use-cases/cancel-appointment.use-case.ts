@@ -3,6 +3,7 @@ import { Either, left, right } from "@/shared/either";
 import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
 import { AppointmentPolicy } from "../../domain/policies/appointment.policy";
 import { AppointmentRepository } from "../../domain/repositories/appointment.repository";
+import { NotAllowedError } from "@/shared/errors/errors/not-allowed.error";
 
 type InputProps = {
 	appointmentId: string;
@@ -33,8 +34,8 @@ export class CancelAppointmentUseCase {
 			user: params.user,
 		});
 
-		if (hasPermission.isLeft()) {
-			return left(hasPermission.value);
+		if (!hasPermission) {
+			return left(new NotAllowedError());
 		}
 
 		appointment.cancel();

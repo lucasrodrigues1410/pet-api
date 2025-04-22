@@ -4,6 +4,8 @@ import { User } from "src/modules/user/domain/entities/user.entity";
 import { UserRepository } from "src/modules/user/domain/repositories/user.repository";
 import { UserAlreadyExistError } from "../../domain/errors/user-already-exists.error";
 import { HashGenerator } from "../../domain/interfaces/hash-generator.interface";
+import { CommandBus } from "@nestjs/cqrs";
+import { SendUserCreatedNotificationCommand } from "@/modules/notification/application/commands/user-created/send-user-created.command";
 
 interface LoginUseCaseRequest {
 	name: string;
@@ -22,6 +24,7 @@ export class RegisterUseCase {
 	constructor(
 		private readonly userRepository: UserRepository,
 		private hashGenerator: HashGenerator,
+		private readonly commandBus: CommandBus,
 	) {}
 
 	async execute({
@@ -45,7 +48,13 @@ export class RegisterUseCase {
 		});
 
 		await this.userRepository.create(user);
-
+		await this.commandBus.execute(
+			new SendUserCreatedNotificationCommand(
+				user.id.toString(),
+				user.email,
+				user.name,
+			),
+		);
 		return right({
 			user,
 		});

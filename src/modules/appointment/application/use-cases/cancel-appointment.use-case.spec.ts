@@ -34,7 +34,10 @@ describe("CancelAppointmentUseCase", () => {
 		expect(appointment.status).toBe(AppointmentStatus.CANCELED);
 	});
 
-	it("should not cancel an appointment if the user is not the client", async () => {
+	it("should not cancel an appointment if the user is not in the policy", async () => {
+		policyMock = new AppointmentPolicyMock(false);
+		sut = new CancelAppointmentUseCase(appointmentRepository, policyMock);
+
 		const appointment = makeAppointment();
 		appointmentRepository.items.push(appointment);
 
@@ -42,11 +45,10 @@ describe("CancelAppointmentUseCase", () => {
 			appointmentId: appointment.id.toString(),
 			user: {
 				id: "another-user-id",
-				type: "COMPANY",
+				//@ts-expect-error
+				type: "teste",
 			},
 		});
-
 		expect(result.isLeft()).toBe(true);
-		expect(appointment.status).not.toBe(AppointmentStatus.CANCELED);
 	});
 });

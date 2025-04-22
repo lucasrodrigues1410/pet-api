@@ -1,7 +1,5 @@
-import { EnvModule } from "@/core/infra/env/env.module";
 import { EnvService } from "@/core/infra/env/env.service";
 import { Module } from "@nestjs/common";
-import { ConfigModule, ConfigService } from "@nestjs/config";
 import { JwtModule } from "@nestjs/jwt";
 import { UserModule } from "../user/user.module";
 import { LoginUseCase } from "./application/use-cases/login.use-case";
@@ -17,7 +15,6 @@ import { JwtStrategy } from "./infra/strategies/jwt.strategy";
 @Module({
 	imports: [
 		JwtModule.registerAsync({
-			imports: [EnvModule],
 			inject: [EnvService],
 			global: true,
 			useFactory: async (env: EnvService) => ({

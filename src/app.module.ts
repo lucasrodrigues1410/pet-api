@@ -22,6 +22,7 @@ import { PriceVariationModule } from "./modules/price-variation/price-variation.
 import { ServiceModule } from "./modules/service/service.module";
 import { StaffModule } from "./modules/staff/staff.module";
 import { UserModule } from "./modules/user/user.module";
+import { EmailModule } from "./modules/email/email.module";
 
 @Module({
 	imports: [
@@ -31,6 +32,7 @@ import { UserModule } from "./modules/user/user.module";
 		}),
 		CqrsModule.forRoot(),
 		EnvModule,
+		EmailModule,
 		BullEventDispatcherModule,
 		PrismaModule,
 		AuthModule,

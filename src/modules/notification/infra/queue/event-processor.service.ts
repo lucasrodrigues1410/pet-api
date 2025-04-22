@@ -1,7 +1,7 @@
 import { Process, Processor } from "@nestjs/bull";
 import { Job } from "bull";
+import { NotificationEvent } from "../../domain/events/notification.event";
 import { ProcessNotificationUseCase } from "../../application/use-cases/process-notification.use-case";
-import { NotificationSenderParams } from "../../domain/interfaces/notification-sender.interface";
 
 @Processor("notifications")
 export class BullNotificationProcessor {
@@ -10,9 +10,7 @@ export class BullNotificationProcessor {
 	) {}
 
 	@Process()
-	async handle(
-		job: Job<{ userId: string; payload: NotificationSenderParams }>,
-	) {
+	async handle(job: Job<NotificationEvent>) {
 		await this.processNotificationUseCase.execute(job.data);
 	}
 }

@@ -1,8 +1,5 @@
-import { NotificationSenderParams } from "./notification-sender.interface";
+import { NotificationEvent } from "../events/notification.event";
 
 export abstract class NotificationPublisher {
-	abstract dispatch(
-		userId: string,
-		payload: NotificationSenderParams,
-	): Promise<void>;
+	abstract dispatch(params: NotificationEvent): Promise<void>;
 }

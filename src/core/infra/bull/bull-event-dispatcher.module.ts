@@ -1,7 +1,6 @@
 import { EventDispatcher } from "@/core/domain/interfaces/event-dispatcher.interface";
 import { BullModule } from "@nestjs/bull";
 import { Global, Module } from "@nestjs/common";
-import { EnvModule } from "../env/env.module";
 import { EnvService } from "../env/env.service";
 import { BullEventDispatcherService } from "./bull-event-dispatcher.service";
 
@@ -9,7 +8,6 @@ import { BullEventDispatcherService } from "./bull-event-dispatcher.service";
 @Module({
 	imports: [
 		BullModule.forRootAsync({
-			imports: [EnvModule],
 			inject: [EnvService],
 			useFactory: async (envService: EnvService) => ({
 				redis: {

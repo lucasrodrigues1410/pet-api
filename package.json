@@ -30,7 +30,7 @@
 		"@nestjs/mapped-types": "^2.1.0",
 		"@nestjs/passport": "^11.0.5",
 		"@nestjs/platform-express": "^11.0.20",
-		"@nestjs/swagger": "^11.1.4",
+		"@nestjs/swagger": "^11.1.5",
 		"@prisma/client": "^6.6.0",
 		"@react-email/components": "^0.0.36",
 		"bull": "^4.16.5",
@@ -41,7 +41,6 @@
 		"react": "^19.1.0",
 		"react-dom": "^19.1.0",
 		"reflect-metadata": "^0.2.2",
-		"resend": "^4.3.0",
 		"stripe": "^18.0.0",
 		"zod": "^3.24.3"
 	},
