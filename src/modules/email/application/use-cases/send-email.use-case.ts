@@ -1,29 +1,35 @@
-import { Injectable, Inject } from "@nestjs/common";
-import { TemplateVariablesMap } from "../../domain/template-variables";
-import type { ITemplateRenderer } from "../../domain/interfaces/i-template-render.interface";
-import type { IEmailService, ISendMailOptions } from "../../domain/interfaces/i-email-service";
+import { Inject, Injectable } from "@nestjs/common";
+import type {
+	IEmailService,
+	ISendMailOptions,
+} from "../../domain/interfaces/email-service";
+import type { ITemplateFactory } from "../../domain/interfaces/template-factory";
+
+interface SendEmailUseCaseInput {
+	templateKey: string;
+	target: string;
+	variables: Record<string, unknown>;
+}
 
 @Injectable()
 export class SendEmailUseCase {
 	constructor(
-		@Inject("ITemplateRenderer")
-		private readonly renderer: ITemplateRenderer,
+		@Inject("TEMPLATE_FACTORY")
+		private readonly templateFactory: ITemplateFactory,
 
 		@Inject("IEmailService")
 		private readonly emailService: IEmailService,
 	) {}
 
-	async execute(
-		templateKey: string,
-		to: string,
-		variables: Record<string, any>,
-	): Promise<void> {
-		const { subject, html } = await this.renderer.render(
-			templateKey as keyof TemplateVariablesMap,
-			variables as TemplateVariablesMap[keyof TemplateVariablesMap],
-		);
+	async execute(params: SendEmailUseCaseInput): Promise<void> {
+		const template = this.templateFactory.get(params.templateKey);
+		const html = await template.render(params.variables);
 
-		const mailOptions: ISendMailOptions = { to, subject, html };
+		const mailOptions: ISendMailOptions = {
+			to: params.target,
+			subject: template.subject,
+			html,
+		};
 		await this.emailService.sendMail(mailOptions);
 	}
 }

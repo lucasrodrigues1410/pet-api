@@ -1,11 +1,11 @@
+import { SendUserCreatedNotificationCommand } from "@/modules/notification/application/commands/user-created/send-user-created.command";
 import { Either, left, right } from "@/shared/either";
 import { Injectable } from "@nestjs/common";
+import { CommandBus } from "@nestjs/cqrs";
 import { User } from "src/modules/user/domain/entities/user.entity";
 import { UserRepository } from "src/modules/user/domain/repositories/user.repository";
 import { UserAlreadyExistError } from "../../domain/errors/user-already-exists.error";
 import { HashGenerator } from "../../domain/interfaces/hash-generator.interface";
-import { CommandBus } from "@nestjs/cqrs";
-import { SendUserCreatedNotificationCommand } from "@/modules/notification/application/commands/user-created/send-user-created.command";
 
 interface LoginUseCaseRequest {
 	name: string;

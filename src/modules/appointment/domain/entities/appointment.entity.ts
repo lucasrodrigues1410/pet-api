@@ -1,7 +1,7 @@
 import { Entity } from "@/core/domain/entities/entity";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
-import { AppointmentStatus, CoatType } from "../enums/appointment.enum";
 import { DomainError } from "@/core/domain/errors/domain-error";
+import { AppointmentStatus, CoatType } from "../enums/appointment.enum";
 
 export interface AppointmentProps {
 	animalId: UniqueEntityID;

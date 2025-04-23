@@ -1,6 +1,5 @@
 import {
 	Body,
-	Button,
 	Container,
 	Head,
 	Heading,
@@ -18,7 +17,9 @@ interface UserCreatedTemplateProps {
 	userName: string;
 }
 
-export const UserCreatedTemplate = ({ userName }: UserCreatedTemplateProps) => {
+export const UserCreatedTemplateComponent = ({
+	userName,
+}: UserCreatedTemplateProps) => {
 	const baseUrl = "https://seusistemapet.com";
 
 	return (
@@ -110,4 +111,4 @@ export const UserCreatedTemplate = ({ userName }: UserCreatedTemplateProps) => {
 	);
 };
 
-export default UserCreatedTemplate;
+export default UserCreatedTemplateComponent;

@@ -1,7 +1,7 @@
 import { Process, Processor } from "@nestjs/bull";
 import { Job } from "bull";
-import { NotificationEvent } from "../../domain/events/notification.event";
 import { ProcessNotificationUseCase } from "../../application/use-cases/process-notification.use-case";
+import { NotificationEvent } from "../../domain/events/notification.event";
 
 @Processor("notifications")
 export class BullNotificationProcessor {

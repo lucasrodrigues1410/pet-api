@@ -1,6 +1,6 @@
-import { Notification as PrismaNotification } from "@prisma/client";
-import { Notification } from "@/modules/notification/domain/entities/notification.entity";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
+import { Notification } from "@/modules/notification/domain/entities/notification.entity";
+import { Notification as PrismaNotification } from "@prisma/client";
 
 export class PrismaNotificationMapper {
 	static toDomain(raw: PrismaNotification): Notification {

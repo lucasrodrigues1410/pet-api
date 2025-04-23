@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it } from "bun:test";
+import { CommandBus } from "@nestjs/cqrs";
 import { FakeHasher } from "test/cryptography/fake-hasher";
 import { InMemoryUserRepository } from "test/repositories/in-memory-user.repository";
 import { RegisterUseCase } from "./register.use-case";
-import { CommandBus } from "@nestjs/cqrs";
 
 let inMemoryUsersRepository: InMemoryUserRepository;
 let commandBus: CommandBus;
@@ -15,7 +15,7 @@ describe("Register", () => {
 		inMemoryUsersRepository = new InMemoryUserRepository();
 		fakeHasher = new FakeHasher();
 		commandBus = {
-			execute: async () => { },
+			execute: async () => {},
 		} as unknown as CommandBus;
 		sut = new RegisterUseCase(inMemoryUsersRepository, fakeHasher, commandBus);
 	});

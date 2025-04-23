@@ -1,8 +1,8 @@
 import { InjectQueue } from "@nestjs/bull";
 import { Injectable } from "@nestjs/common";
 import type { Queue } from "bull";
-import { NotificationPublisher } from "../../domain/interfaces/notification-publisher.interface";
 import { NotificationEvent } from "../../domain/events/notification.event";
+import { NotificationPublisher } from "../../domain/interfaces/notification-publisher.interface";
 
 @Injectable()
 export class BullNotificationDispatcher implements NotificationPublisher {

@@ -25,7 +25,8 @@
 			},
 			"complexity": {
 				"noThisInStatic": "off",
-				"noStaticOnlyClass": "off"
+				"noStaticOnlyClass": "off",
+				"noBannedTypes": "off"
 			},
 			"style": {
 				"noNonNullAssertion": "off",

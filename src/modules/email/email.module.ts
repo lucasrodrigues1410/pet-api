@@ -1,9 +1,9 @@
+import { EnvService } from "@/core/infra/env/env.service";
+import { MailerModule } from "@nestjs-modules/mailer";
 import { Module } from "@nestjs/common";
 import { SendEmailUseCase } from "./application/use-cases/send-email.use-case";
-import { ReactEmailTemplateRenderer } from "./infra/templates/react-email-template-renderer";
 import { NodemailerEmailService } from "./infra/mail/nodemailer-email.service";
-import { MailerModule } from "@nestjs-modules/mailer";
-import { EnvService } from "@/core/infra/env/env.service";
+import { TemplateProviders } from "./infra/providers/template.providers";
 
 @Module({
 	imports: [
@@ -23,10 +23,7 @@ import { EnvService } from "@/core/infra/env/env.service";
 		}),
 	],
 	providers: [
-		{
-			provide: "ITemplateRenderer",
-			useClass: ReactEmailTemplateRenderer,
-		},
+		...TemplateProviders,
 		{
 			provide: "IEmailService",
 			useClass: NodemailerEmailService,

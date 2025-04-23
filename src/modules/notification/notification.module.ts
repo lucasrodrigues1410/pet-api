@@ -6,16 +6,13 @@ import { BullNotificationDispatcher } from "./infra/queue/event-dispatcher.servi
 import { BullNotificationProcessor } from "./infra/queue/event-processor.service";
 
 import { EmailModule } from "../email/email.module";
-import { ProcessNotificationUseCase } from "./application/use-cases/process-notification.use-case";
 import { SendUserCreatedEmailHandler } from "./application/events/user-created.event";
+import { ProcessNotificationUseCase } from "./application/use-cases/process-notification.use-case";
 import { NotificationRepository } from "./domain/interfaces/notification.repository.interface";
 import { PrismaNotificationRepository } from "./infra/database/repositories/prisma-notification.repository";
 
 @Module({
-	imports: [
-		BullModule.registerQueue({ name: "notifications" }),
-		EmailModule
-	],
+	imports: [BullModule.registerQueue({ name: "notifications" }), EmailModule],
 	providers: [
 		{
 			provide: NotificationRepository,

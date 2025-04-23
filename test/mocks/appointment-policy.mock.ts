@@ -11,6 +11,6 @@ export class AppointmentPolicyMock extends AppointmentPolicy {
 		user: { id: string; type: UserType };
 		appointment: Appointment;
 	}) {
-		return this.allowed
+		return this.allowed;
 	}
 }

@@ -1,9 +1,9 @@
 import { UserType } from "@/modules/user/domain/entities/user.entity";
 import { Either, left, right } from "@/shared/either";
+import { NotAllowedError } from "@/shared/errors/errors/not-allowed.error";
 import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
 import { AppointmentPolicy } from "../../domain/policies/appointment.policy";
 import { AppointmentRepository } from "../../domain/repositories/appointment.repository";
-import { NotAllowedError } from "@/shared/errors/errors/not-allowed.error";
 
 type InputProps = {
 	appointmentId: string;
