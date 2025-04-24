@@ -1,5 +1,5 @@
 import type { ITemplateFactory } from "../../domain/interfaces/template-factory";
-import { EmailTemplate } from "../../domain/templates/email-template";
+import { EmailTemplate } from "../../domain/interfaces/email-template";
 import { TemplateVariablesMap } from "../../domain/templates/template-variables-map";
 
 export class TemplateFactory implements ITemplateFactory {

@@ -1,4 +1,4 @@
-import { EmailTemplate } from "../templates/email-template";
+import { EmailTemplate } from "./email-template";
 
 export interface ITemplateFactory {
 	get(key: string): EmailTemplate<Record<string, unknown>>;
