@@ -1,5 +1,5 @@
-import { UserCreatedTemplateVariables } from "./user-created/template";
+import { WelcomeTemplateVariables } from "./user-created/template";
 
 export type TemplateVariablesMap = {
-	welcome: UserCreatedTemplateVariables;
+	welcome: WelcomeTemplateVariables;
 };

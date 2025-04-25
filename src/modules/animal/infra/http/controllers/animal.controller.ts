@@ -1,4 +1,4 @@
-import { PaginationQueryDto } from "@/core/infra/dtos/pagination-query.dto";
+import { PaginationQueryDto } from "@/shared/utils/pagination-query";
 import { PaginationPresenter } from "@/core/infra/presenters/pagination.presenter";
 import { DeleteAnimalUseCase } from "@/modules/animal/application/use-cases/delete-animal.use-case";
 import { UpdateAnimalUseCase } from "@/modules/animal/application/use-cases/update-animal.use-case";

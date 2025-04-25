@@ -1,4 +1,4 @@
-import { ZodTypeAny, z } from "zod";
+import { ZodSchema, z } from "zod";
 
 export const PaginationMetaDto = z.object({
 	total: z.number(),
@@ -8,7 +8,7 @@ export const PaginationMetaDto = z.object({
 });
 export type PaginationMeta = z.infer<typeof PaginationMetaDto>;
 
-export function PaginatedDto<ItemSchema extends ZodTypeAny>(
+export function PaginatedDto<ItemSchema extends ZodSchema>(
 	itemSchema: ItemSchema,
 ) {
 	return z.object({
@@ -17,7 +17,7 @@ export function PaginatedDto<ItemSchema extends ZodTypeAny>(
 	});
 }
 
-export type PaginatedDtoType<T extends ZodTypeAny> = z.infer<
+export type PaginatedDtoType<T extends ZodSchema> = z.infer<
 	ReturnType<typeof PaginatedDto<T>>
 >;
 export type PaginationResult<T> = {

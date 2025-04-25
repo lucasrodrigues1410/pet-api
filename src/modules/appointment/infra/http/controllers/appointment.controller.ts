@@ -1,4 +1,4 @@
-import { PaginationQueryDto } from "@/core/infra/dtos/pagination-query.dto";
+import { PaginationQueryDto } from "@/shared/utils/pagination-query";
 import { PaginationPresenter } from "@/core/infra/presenters/pagination.presenter";
 import { AnimalPresenter } from "@/modules/animal/infra/http/presenters/animal.presenter";
 import { GetAppointmentByIdUseCase } from "@/modules/appointment/application/use-cases/get-appointment-by-id.use-case";

@@ -1,1 +1,1 @@
-export type UserCreatedTemplateVariables = { name: string };
+export type WelcomeTemplateVariables = { name: string };

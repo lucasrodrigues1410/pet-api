@@ -1,4 +1,4 @@
-import { PaginationMeta, PaginationMetaDto } from "../dtos/pagination.dto";
+import { PaginationMeta, PaginationMetaDto } from "@/shared/utils/pagination";
 
 type Params<T> = {
 	items: T[];

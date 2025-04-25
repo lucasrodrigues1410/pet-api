@@ -1,4 +1,4 @@
-import { PaginationQuery } from "@/core/infra/dtos/pagination-query.dto";
+import { PaginationQuery } from "@/shared/utils/pagination-query";
 import { PrismaService } from "@/core/infra/prisma/prisma.service";
 import { paginate } from "@/shared/utils/paginator";
 import { Injectable } from "@nestjs/common";

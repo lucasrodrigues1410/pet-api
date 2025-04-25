@@ -1,4 +1,4 @@
-import { PaginatedDto } from "@/core/infra/dtos/pagination.dto";
+import { PaginatedDto } from "@/shared/utils/pagination";
 import { createZodDto } from "@anatine/zod-nestjs";
 import { companyDto } from "./company.dto";
 

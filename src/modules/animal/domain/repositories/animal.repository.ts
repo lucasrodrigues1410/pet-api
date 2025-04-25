@@ -1,5 +1,5 @@
-import { PaginationQuery } from "@/core/infra/dtos/pagination-query.dto";
-import { PaginationResult } from "@/core/infra/dtos/pagination.dto";
+import { PaginationQuery } from "@/shared/utils/pagination-query";
+import { PaginationResult } from "@/shared/utils/pagination";
 import { Animal } from "../entities/animal.entity";
 
 export abstract class AnimalRepository {

@@ -1,5 +1,5 @@
-import { PaginationQuery } from "@/core/infra/dtos/pagination-query.dto";
-import { PaginationResult } from "@/core/infra/dtos/pagination.dto";
+import { PaginationQuery } from "@/shared/utils/pagination-query";
+import { PaginationResult } from "@/shared/utils/pagination";
 import { Animal } from "@/modules/animal/domain/entities/animal.entity";
 import { Company } from "@/modules/company/domain/entities/company.entity";
 import { Service } from "@/modules/service/domain/entities/service.entity";
