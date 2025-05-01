@@ -6,7 +6,7 @@ import {
 	Company as PrismaCompany,
 	CompanyAvailability as PrismaCompanyAvailability,
 	CompanyAvailabilityException as PrismaCompanyAvailabilityException,
-} from "@prisma/client";
+} from "@/prisma-generated/client";
 import { Company } from "src/modules/company/domain/entities/company.entity";
 
 export class PrismaCompanyMapper {

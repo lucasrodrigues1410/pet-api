@@ -6,7 +6,7 @@ import {
 	Animal as PrismaAnimal,
 	Asset as PrismaAsset,
 	Breed as PrismaBreed,
-} from "@prisma/client";
+} from "@/prisma-generated/client";
 import { Animal } from "src/modules/animal/domain/entities/animal.entity";
 
 export class PrismaAnimalMapper {

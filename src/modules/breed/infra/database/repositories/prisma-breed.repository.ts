@@ -3,8 +3,7 @@ import { PrismaService } from "src/core/infra/prisma/prisma.service";
 import { Breed } from "src/modules/breed/domain/entities/breed.entity";
 import { BreedRepository } from "src/modules/breed/domain/repositories/breed.repository";
 import { PrismaBreedMapper } from "../mappers/prisma-breed.mapper";
-import { paginate } from "@/shared/utils/paginator";
-import { Prisma } from "@prisma/client";
+import { Prisma } from "@/prisma-generated/client";
 
 @Injectable()
 export class PrismaBreedRepository implements BreedRepository {
@@ -18,23 +17,10 @@ export class PrismaBreedRepository implements BreedRepository {
 			},
 		} as Prisma.BreedWhereInput;
 
-		const response = await paginate(
-			({ skip, take }) =>
-				this.prismaService.breed.findMany({
-					skip,
-					take,
-					where: options,
-				}),
-			() =>
-				this.prismaService.breed.count({
-					where: options,
-				}),
-			params,
-		);
-		return {
-			...response,
-			items: response.items.map(PrismaBreedMapper.toDomain),
-		};
+		const response = await this.prismaService.breed.findMany({
+			where: options,
+		});
+		return response.map(PrismaBreedMapper.toDomain);
 	}
 
 	async create(breed: Breed): Promise<void> {

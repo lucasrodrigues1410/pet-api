@@ -3,7 +3,7 @@ import { CompanyAvailability } from "@/modules/company-availability/domain/entit
 import {
 	Prisma,
 	CompanyAvailability as PrismaCompanyAvailability,
-} from "@prisma/client";
+} from "@/prisma-generated/client";
 import { format } from "date-fns";
 
 export class PrismaCompanyAvailabilityMapper {

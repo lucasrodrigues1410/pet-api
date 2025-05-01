@@ -32,9 +32,9 @@ async function bootstrap() {
 		}),
 	);
 
-	const configService = app.get(EnvService);
-	const port = configService.get("PORT");
+	//const configService = app.get(EnvService);
+	//const port = configService.get("PORT");
 
-	await app.listen(port);
+	await app.listen(3333);
 }
 bootstrap();

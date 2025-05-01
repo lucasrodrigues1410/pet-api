@@ -1,6 +1,6 @@
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { Category } from "@/modules/category/domain/entities/category.entity";
-import { Prisma, Category as PrismaCategory } from "@prisma/client";
+import { Prisma, Category as PrismaCategory } from "@/prisma-generated/client";
 
 export class PrismaCategoryMapper {
 	static toDomain(prismaCategory: PrismaCategory): Category {

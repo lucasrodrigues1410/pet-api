@@ -1,5 +1,5 @@
 import { CoatType } from "@/modules/appointment/domain/enums/appointment.enum";
-import { AppointmentStatus } from "@prisma/client";
+import { AppointmentStatus } from "@/prisma-generated/client";
 import { z } from "zod";
 
 export const AppointmentDto = z.object({

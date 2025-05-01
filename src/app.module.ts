@@ -23,6 +23,7 @@ import { PriceVariationModule } from "./modules/price-variation/price-variation.
 import { ServiceModule } from "./modules/service/service.module";
 import { StaffModule } from "./modules/staff/staff.module";
 import { UserModule } from "./modules/user/user.module";
+import { CacheModule } from "./core/infra/cache/cache.module";
 
 @Module({
 	imports: [
@@ -54,11 +55,11 @@ import { UserModule } from "./modules/user/user.module";
 			provide: APP_PIPE,
 			useClass: ZodValidationPipe,
 		},
-		JwtStrategy,
-		{
-			provide: APP_GUARD,
-			useClass: JwtGuard,
-		},
+		// JwtStrategy,
+		// {
+		// 	provide: APP_GUARD,
+		// 	useClass: JwtGuard,
+		// },
 	],
 })
 export class AppModule {}

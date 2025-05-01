@@ -1,5 +1,5 @@
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
-import { Prisma, Breed as PrismaBreed } from "@prisma/client";
+import { Prisma, Breed as PrismaBreed } from "@/prisma-generated/client";
 import { Breed } from "src/modules/breed/domain/entities/breed.entity";
 
 export class PrismaBreedMapper {

@@ -8,7 +8,7 @@ import { PrismaUserMapper } from "@/modules/user/infra/database/mappers/prisma-u
 import type { DateRange } from "@/shared/types/date-range";
 import { paginate } from "@/shared/utils/paginator";
 import { Injectable } from "@nestjs/common";
-import { Prisma } from "@prisma/client";
+import { Prisma } from "@/prisma-generated/client";
 import { PrismaAppointmentMapper } from "../mapper/prisma-appointment.mapper";
 
 @Injectable()

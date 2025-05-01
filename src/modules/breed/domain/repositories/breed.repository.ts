@@ -1,12 +1,10 @@
-import { PaginationQuery } from "@/shared/utils/pagination-query";
 import { Breed } from "../entities/breed.entity";
-import { PaginationResult } from "@/shared/utils/pagination";
+
+export interface FindBreedsParams {
+	query?: string;
+}
 
 export abstract class BreedRepository {
-	abstract getAll(
-		params: {
-			query?: string;
-		} & PaginationQuery,
-	): Promise<PaginationResult<Breed>>;
+	abstract getAll(params: FindBreedsParams): Promise<Breed[]>;
 	abstract create(breed: Breed): Promise<void>;
 }

@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const envSchema = z.object({
-	DATABASE_URL: z.string().url(),
+	DATABASE_URL: z.string(),
 	JWT_SECRET: z.string(),
 	STRIPE_API_KEY: z.string(),
 	STRIPE_WEBHOOK_SECRET: z.string(),
