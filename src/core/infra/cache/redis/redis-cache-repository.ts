@@ -9,14 +9,9 @@ export class RedisCacheRepository implements CacheRepository {
 	async set(
 		key: string,
 		value: string,
-		options:
-			| {
-					ttl?: number;
-					[key: string]: any;
-			  }
-			| undefined = {},
+		ttl = 60 * 60 * 24,
 	): Promise<void> {
-		await this.redis.set(key, value, "EX", options?.ttl || 60 * 60 * 60);
+		await this.redis.set(key, value, "EX", ttl);
 	}
 
 	get(key: string): Promise<string | null> {

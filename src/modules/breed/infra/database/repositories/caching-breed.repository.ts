@@ -13,7 +13,7 @@ export class CachingBreedRepository implements BreedRepository {
 	private readonly TTL = 60 * 60 * 24;
 
 	constructor(
-        @Inject(BASE_BREED_REPOSITORY)
+		@Inject(BASE_BREED_REPOSITORY)
 		private readonly repo: BreedRepository,
 		private readonly cache: CacheRepository,
 	) {}
@@ -28,7 +28,7 @@ export class CachingBreedRepository implements BreedRepository {
 		await this.cache.set(
 			key,
 			JSON.stringify(result.map((b) => b.toPrimitives())),
-			{ ttl: this.TTL },
+			this.TTL,
 		);
 		return result;
 	}
