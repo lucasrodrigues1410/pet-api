@@ -5,10 +5,10 @@ import { AppointmentRepository } from "@/modules/appointment/domain/repositories
 import { PrismaCompanyMapper } from "@/modules/company/infra/database/mappers/prisma-company.mapper";
 import { PrismaServiceMapper } from "@/modules/service/infra/database/mappers/prisma-service.mapper";
 import { PrismaUserMapper } from "@/modules/user/infra/database/mappers/prisma-user.mapper";
+import { Prisma } from "@/prisma-generated/client";
 import type { DateRange } from "@/shared/types/date-range";
 import { paginate } from "@/shared/utils/paginator";
 import { Injectable } from "@nestjs/common";
-import { Prisma } from "@/prisma-generated/client";
 import { PrismaAppointmentMapper } from "../mapper/prisma-appointment.mapper";
 
 @Injectable()

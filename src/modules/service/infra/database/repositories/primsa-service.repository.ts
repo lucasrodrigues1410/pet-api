@@ -1,7 +1,7 @@
 import { PrismaCategoryMapper } from "@/modules/category/infra/http/database/mappers/prisma-category.mapper";
 import { PrismaCompanyMapper } from "@/modules/company/infra/database/mappers/prisma-company.mapper";
-import { Injectable } from "@nestjs/common";
 import { getServicesWithMaxPrice } from "@/prisma-generated/sql";
+import { Injectable } from "@nestjs/common";
 import { PrismaService } from "src/core/infra/prisma/prisma.service";
 import {
 	Service,

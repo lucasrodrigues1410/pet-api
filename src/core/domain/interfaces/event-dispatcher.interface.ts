@@ -1,5 +1,5 @@
 export abstract class DomainEvent {
-	abstract readonly eventType: string;
+	constructor(public readonly type: string) {}
 }
 
 export abstract class EventDispatcher {

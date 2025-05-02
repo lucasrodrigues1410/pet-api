@@ -1,5 +1,5 @@
-import { EventDispatcher } from "@/core/domain/interfaces/event-dispatcher.interface";
 import { AssetUnlinkedEvent } from "@/modules/asset/domain/events/asset-unlinked.event";
+import { AssetEventDispatcher } from "@/modules/asset/domain/interfaces/asset-event-dispatch.interface";
 import { Either, left, right } from "@/shared/either";
 import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
 import { Injectable } from "@nestjs/common";
@@ -16,7 +16,7 @@ type DeleteAnimalUseCaseResponse = Either<ResourceNotFoundError, void>;
 export class DeleteAnimalUseCase {
 	constructor(
 		private readonly animalRepository: AnimalRepository,
-		private readonly eventDispatcher: EventDispatcher,
+		private readonly eventDispatcher: AssetEventDispatcher,
 	) {}
 
 	async execute(

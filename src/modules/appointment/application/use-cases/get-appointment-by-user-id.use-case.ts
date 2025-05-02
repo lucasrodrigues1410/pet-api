@@ -1,6 +1,6 @@
-import { PaginationQuery } from "@/shared/utils/pagination-query";
-import { PaginationResult } from "@/shared/utils/pagination";
 import { Either, right } from "@/shared/either";
+import { PaginationResult } from "@/shared/utils/pagination";
+import { PaginationQuery } from "@/shared/utils/pagination-query";
 import { Appointment } from "../../domain/entities/appointment.entity";
 import { AppointmentRepository } from "../../domain/repositories/appointment.repository";
 

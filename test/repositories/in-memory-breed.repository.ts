@@ -5,9 +5,7 @@ import { BreedRepository } from "src/modules/breed/domain/repositories/breed.rep
 export class InMemoryBreedRepository implements BreedRepository {
 	public items: Breed[] = [];
 
-	async getAll(
-		params: Parameters<BreedRepository["getAll"]>[0],
-	) {
+	async getAll(params: Parameters<BreedRepository["getAll"]>[0]) {
 		const result = paginate(
 			async () => this.items,
 			async () => this.items.length,

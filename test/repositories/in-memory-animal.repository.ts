@@ -1,5 +1,5 @@
-import { PaginationQuery } from "@/shared/utils/pagination-query";
 import { PaginationResult } from "@/shared/utils/pagination";
+import { PaginationQuery } from "@/shared/utils/pagination-query";
 import { paginate } from "@/shared/utils/paginator";
 import { Animal } from "src/modules/animal/domain/entities/animal.entity";
 import { AnimalRepository } from "src/modules/animal/domain/repositories/animal.repository";

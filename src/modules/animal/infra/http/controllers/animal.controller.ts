@@ -1,8 +1,8 @@
-import { PaginationQueryDto } from "@/shared/utils/pagination-query";
 import { PaginationPresenter } from "@/core/infra/presenters/pagination.presenter";
 import { DeleteAnimalUseCase } from "@/modules/animal/application/use-cases/delete-animal.use-case";
 import { UpdateAnimalUseCase } from "@/modules/animal/application/use-cases/update-animal.use-case";
 import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
+import { PaginationQueryDto } from "@/shared/utils/pagination-query";
 import {
 	BadRequestException,
 	Body,

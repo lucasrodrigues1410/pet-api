@@ -1,5 +1,5 @@
-import { PaginationQuery } from "@/shared/utils/pagination-query";
 import { PaginationResult } from "@/shared/utils/pagination";
+import { PaginationQuery } from "@/shared/utils/pagination-query";
 import { Company } from "../entities/company.entity";
 
 export abstract class CompanyRepository {

@@ -4,7 +4,10 @@ import {
 	AppointmentStatus,
 	CoatType,
 } from "@/modules/appointment/domain/enums/appointment.enum";
-import { Prisma, Appointment as PrismaAppointment } from "@/prisma-generated/client";
+import {
+	Prisma,
+	Appointment as PrismaAppointment,
+} from "@/prisma-generated/client";
 
 export class PrismaAppointmentMapper {
 	static toDomain(prismaAppointment: PrismaAppointment): Appointment {

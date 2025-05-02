@@ -1,6 +1,6 @@
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
-import { EventDispatcher } from "@/core/domain/interfaces/event-dispatcher.interface";
 import { AssetUnlinkedEvent } from "@/modules/asset/domain/events/asset-unlinked.event";
+import { AssetEventDispatcher } from "@/modules/asset/domain/interfaces/asset-event-dispatch.interface";
 import { AssetRepository } from "@/modules/asset/domain/repositories/asset.repository";
 import { Either, left, right } from "@/shared/either";
 import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
@@ -29,7 +29,7 @@ export class UpdateAnimalUseCase {
 	constructor(
 		private readonly animalRepository: AnimalRepository,
 		private readonly assetRepository: AssetRepository,
-		private readonly eventDispatcher: EventDispatcher,
+		private readonly eventDispatcher: AssetEventDispatcher,
 	) {}
 
 	async execute(

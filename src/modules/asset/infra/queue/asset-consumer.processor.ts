@@ -1,15 +1,16 @@
 import { DeleteAssetByIdUseCase } from "@/modules/asset/application/use-cases/delete-asset-by-id.use-case";
 import { AssetUnlinkedEvent } from "@/modules/asset/domain/events/asset-unlinked.event";
 import { Process, Processor } from "@nestjs/bull";
-import { Job } from "bull";
 
-@Processor("domain-events")
-export class AssetProcessor {
+@Processor("assets")
+export class AssetConsumerProcessor {
 	constructor(private readonly deleteAssetById: DeleteAssetByIdUseCase) {}
 
-	@Process("asset.unlinked")
-	async handleDeleteAsset(job: Job<AssetUnlinkedEvent>) {
-		const { assetId, userId } = job.data;
-		await this.deleteAssetById.execute({ assetId, userId });
+	@Process(AssetUnlinkedEvent.type)
+	async handleDeleteAssetEvent(job: AssetUnlinkedEvent) {
+		await this.deleteAssetById.execute({
+			assetId: job.assetId,
+			userId: job.userId,
+		});
 	}
 }

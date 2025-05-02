@@ -1,9 +1,9 @@
+import { Prisma } from "@/prisma-generated/client";
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "src/core/infra/prisma/prisma.service";
 import { Breed } from "src/modules/breed/domain/entities/breed.entity";
 import { BreedRepository } from "src/modules/breed/domain/repositories/breed.repository";
 import { PrismaBreedMapper } from "../mappers/prisma-breed.mapper";
-import { Prisma } from "@/prisma-generated/client";
 
 @Injectable()
 export class PrismaBreedRepository implements BreedRepository {

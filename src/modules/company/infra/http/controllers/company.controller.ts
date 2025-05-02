@@ -1,6 +1,6 @@
-import { PaginationQueryDto } from "@/shared/utils/pagination-query";
 import { PaginationPresenter } from "@/core/infra/presenters/pagination.presenter";
 import { SearchCompaniesRequestDto } from "@/modules/company/infra/http/dtos/search-companies.dto";
+import { PaginationQueryDto } from "@/shared/utils/pagination-query";
 import {
 	BadRequestException,
 	Body,

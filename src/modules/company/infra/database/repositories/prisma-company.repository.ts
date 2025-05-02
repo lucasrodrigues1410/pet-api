@@ -1,7 +1,7 @@
+import { Prisma } from "@/prisma-generated/client";
 import { calculateLocationBounds } from "@/shared/utils/geo-location.util";
 import { paginate } from "@/shared/utils/paginator";
 import { Injectable } from "@nestjs/common";
-import { Prisma } from "@/prisma-generated/client";
 import { PrismaService } from "src/core/infra/prisma/prisma.service";
 import { Company } from "src/modules/company/domain/entities/company.entity";
 import { CompanyRepository } from "src/modules/company/domain/repositories/company.repository";

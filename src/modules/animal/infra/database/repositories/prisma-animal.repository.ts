@@ -1,5 +1,5 @@
-import { PaginationQuery } from "@/shared/utils/pagination-query";
 import { PrismaService } from "@/core/infra/prisma/prisma.service";
+import { PaginationQuery } from "@/shared/utils/pagination-query";
 import { paginate } from "@/shared/utils/paginator";
 import { Injectable } from "@nestjs/common";
 import { Animal } from "../../../domain/entities/animal.entity";

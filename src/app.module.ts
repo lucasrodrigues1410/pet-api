@@ -4,6 +4,7 @@ import { ConfigModule } from "@nestjs/config";
 import { APP_GUARD, APP_PIPE } from "@nestjs/core";
 import { CqrsModule } from "@nestjs/cqrs";
 import { BullEventDispatcherModule } from "./core/infra/bull/bull-event-dispatcher.module";
+import { CacheModule } from "./core/infra/cache/cache.module";
 import { envSchema } from "./core/infra/env/env";
 import { EnvModule } from "./core/infra/env/env.module";
 import { PrismaModule } from "./core/infra/prisma/prisma.module";
@@ -23,7 +24,6 @@ import { PriceVariationModule } from "./modules/price-variation/price-variation.
 import { ServiceModule } from "./modules/service/service.module";
 import { StaffModule } from "./modules/staff/staff.module";
 import { UserModule } from "./modules/user/user.module";
-import { CacheModule } from "./core/infra/cache/cache.module";
 
 @Module({
 	imports: [

@@ -1,6 +1,6 @@
-import { PaginationQuery } from "@/shared/utils/pagination-query";
-import { PaginationResult } from "@/shared/utils/pagination";
 import { Either, right } from "@/shared/either";
+import { PaginationResult } from "@/shared/utils/pagination";
+import { PaginationQuery } from "@/shared/utils/pagination-query";
 import { Injectable } from "@nestjs/common";
 import { Animal } from "../../domain/entities/animal.entity";
 import { AnimalRepository } from "../../domain/repositories/animal.repository";
