@@ -1,5 +1,5 @@
-import { AssetEvent } from "../events/asset.event";
+import { DomainEvent } from "@/core/domain/interfaces/event-dispatcher.interface";
 
 export abstract class AssetEventDispatcher {
-	abstract dispatch(event: AssetEvent): Promise<void>;
+	abstract dispatch(event: DomainEvent): Promise<void>;
 }
