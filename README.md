@@ -1,99 +1,138 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
-
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
-
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+# Pet API Nest
 
 ## Description
+This project is a backend API built with NestJS for managing a platform related to pet services. It likely handles features such as user and pet profiles, service listings, appointment scheduling, payments, and company management.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Technologies Used
+*   **Framework:** NestJS
+*   **Language:** TypeScript
+*   **Runtime:** Node.js
+*   **ORM:** Prisma
+*   **Database:** PostgreSQL (inferred from `docker-compose.yml` and common Prisma usage, confirm if possible, otherwise state as likely)
+*   **API Documentation:** Swagger (OpenAPI) via `@nestjs/swagger`
+*   **Payments:** Stripe
+*   **Background Jobs/Queues:** BullMQ
+*   **Image Management:** ImageKit
+*   **Containerization:** Docker
+*   **Package Manager & Runner:** Bun (inferred from `bun.lock` and scripts)
 
-## Project setup
+## Project Setup
+
+### Prerequisites
+*   Node.js (LTS version recommended)
+*   Bun (v1.x or later, as `bun.lock` is present and scripts use `bun`)
+*   Docker and Docker Compose (for running the database and other services)
+
+### Installation
+1.  Clone the repository:
+    ```bash
+    git clone <repository-url>
+    cd pet-api-nest
+    ```
+2.  Install dependencies using Bun:
+    ```bash
+    bun install
+    ```
+
+### Environment Variables
+Create a `.env` file in the root of the project. This file will store your environment-specific configurations. Example variables include:
+
+```env
+# Application
+NODE_ENV=development
+PORT=3000
+
+# Database (Prisma) - ensure this matches your docker-compose.yml or actual DB connection
+DATABASE_URL="postgresql://user:password@localhost:5432/pet_api_db?schema=public"
+
+# Authentication (JWT)
+JWT_SECRET="your-very-secret-jwt-key"
+JWT_EXPIRES_IN="3600s" # Example: 1 hour
+
+# Stripe (if payments are enabled)
+STRIPE_SECRET_KEY="sk_test_yourstripenkey"
+STRIPE_WEBHOOK_SECRET="whsec_yourwebhooksecret"
+
+# ImageKit (if image uploads are enabled)
+IMAGEKIT_PUBLIC_KEY="public_yourimagekitkey"
+IMAGEKIT_PRIVATE_KEY="private_yourimagekitkey"
+IMAGEKIT_URL_ENDPOINT="https://ik.imagekit.io/youraccount"
+
+# BullMQ Redis (if using BullMQ for queues)
+REDIS_HOST=localhost
+REDIS_PORT=6379
+REDIS_PASSWORD= # Optional, if your Redis server has a password
+```
+**Note:** Obtain actual keys and connection strings from your service providers and local setup.
+
+### Database Setup
+1.  **Start the database server:**
+    The project includes a `docker-compose.yml` file, likely configured to run a PostgreSQL database (and potentially other services like Redis).
+    ```bash
+    docker-compose up -d
+    ```
+    Ensure Docker is running before executing this command. This will start the database server in detached mode.
+
+2.  **Run database migrations:**
+    Prisma is used for database schema management. Apply migrations to set up the database schema:
+    ```bash
+    bunx prisma migrate dev
+    ```
+    This command will create the database if it doesn't exist and apply all pending migrations.
+
+3.  **Seed the database (optional but recommended for development):**
+    The project contains seed scripts to populate the database with initial data. Check the `package.json` for the exact seed command. It's defined as `prisma.seed` which typically translates to:
+    ```bash
+    bunx prisma db seed
+    ```
+    (The `package.json` has `prisma: { "seed": "bun prisma/seed/index.ts" }`. `bunx prisma db seed` should execute this based on Prisma conventions if `prisma.seed` is defined in `package.json`'s `prisma` section.)
+
+## Running the Application
+
+### Development
+To run the application in development mode with live reloading:
+```bash
+bun run dev
+```
+This command (from `package.json`: `bun --watch ./src/main.ts`) will start the NestJS server, and it will automatically restart when file changes are detected. The application will typically be available at `http://localhost:3000` (or the port specified in your `.env` file).
+
+### Production
+To run the application in production mode:
+
+1.  **Build the application:**
+    This command compiles the TypeScript code into JavaScript.
+    ```bash
+    bun run build
+    ```
+    (This uses the `nest build` script from `package.json`)
+
+2.  **Start the application:**
+    This command runs the compiled application.
+    ```bash
+    bun run start:prod
+    ```
+    (This uses the `bun run src/main.ts` script from `package.json`)
+
+Ensure your `.env` file has appropriate production settings before running in this mode.
+
+## Running Tests
+To run the test suite:
 
 ```bash
-$ pnpm install
+bun run test
 ```
+This command (from `package.json`: `bun test`) will execute the automated tests. Ensure the testing environment is properly configured (e.g., test database, environment variables if needed).
 
-## Compile and run the project
+## API Documentation
+This project uses Swagger (OpenAPI) for API documentation, enabled via the `@nestjs/swagger` package.
 
-```bash
-# development
-$ pnpm run start
+Once the application is running (e.g., in development mode using `bun run dev`), you can typically access the Swagger UI at:
 
-# watch mode
-$ pnpm run start:dev
+[http://localhost:3000/api](http://localhost:3000/api)
 
-# production mode
-$ pnpm run start:prod
-```
+(If you have configured a different port in your `.env` file or a custom path for Swagger, adjust the URL accordingly.)
 
-## Run tests
-
-```bash
-# unit tests
-$ pnpm run test
-
-# e2e tests
-$ pnpm run test:e2e
-
-# test coverage
-$ pnpm run test:cov
-```
-
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ pnpm install -g mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+The Swagger UI provides a user-friendly interface to explore and interact with the API endpoints, view request/response models, and test the API.
 
 ## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+This project is currently unlicensed as per the `package.json`.
