@@ -1,7 +1,10 @@
 import path from "node:path";
-import type { PrismaConfig } from "prisma";
-import "dotenv/config";
+import { defineConfig } from "prisma/config";
 
-export default {
+export default defineConfig({
 	schema: path.join("prisma"),
-} satisfies PrismaConfig;
+	migrations: {
+		path: path.join("prisma", "migrations"),
+		seed: path.join("prisma", "seed", "index.ts"),
+	},
+});
