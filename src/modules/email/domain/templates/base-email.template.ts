@@ -16,7 +16,7 @@ export abstract class BaseEmailTemplate<
 	render(variables: TVariables): string | Promise<string> {
 		const parsed = this.schema.safeParse(variables);
 		if (!parsed.success) {
-			const paths = parsed.error.errors.map((e) => e.path.join("."));
+			const paths = parsed.error.issues.map((issue) => issue.path.join("."));
 			throw new InvalidTemplateVariablesError(paths);
 		}
 

@@ -1,8 +1,3 @@
-import { PaginationPresenter } from "@/core/infra/presenters/pagination.presenter";
-import { DeleteAnimalUseCase } from "@/modules/animal/application/use-cases/delete-animal.use-case";
-import { UpdateAnimalUseCase } from "@/modules/animal/application/use-cases/update-animal.use-case";
-import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
-import { PaginationQueryDto } from "@/shared/utils/pagination-query";
 import {
 	BadRequestException,
 	Body,
@@ -17,8 +12,13 @@ import {
 	Query,
 } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
-import { UserTypeDecorator } from "src/modules/auth/infra/http/decorators/user-type.decorator";
 import { User } from "src/modules/auth/infra/http/decorators/user.decorator";
+import { UserTypeDecorator } from "src/modules/auth/infra/http/decorators/user-type.decorator";
+import { PaginationPresenter } from "@/core/infra/presenters/pagination.presenter";
+import { DeleteAnimalUseCase } from "@/modules/animal/application/use-cases/delete-animal.use-case";
+import { UpdateAnimalUseCase } from "@/modules/animal/application/use-cases/update-animal.use-case";
+import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
+import { PaginationQueryDto } from "@/shared/utils/pagination-query";
 import { CreateAnimalUseCase } from "../../../application/use-cases/create-animal.use-case";
 import { ListAnimalsFromUserUserUseCase } from "../../../application/use-cases/list-animals-from-user.use-case";
 import { AnimalPaginatedResponse } from "../dtos/animal.response.dto";

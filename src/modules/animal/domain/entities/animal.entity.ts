@@ -1,7 +1,7 @@
+import { Breed } from "src/modules/breed/domain/entities/breed.entity";
 import { Entity } from "@/core/domain/entities/entity";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { Asset } from "@/modules/asset/domain/entities/asset";
-import { Breed } from "src/modules/breed/domain/entities/breed.entity";
 
 export interface AnimalProps {
 	userId: UniqueEntityID;

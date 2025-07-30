@@ -1,6 +1,6 @@
+import { Process, Processor } from "@nestjs/bull";
 import { DeleteAssetByIdUseCase } from "@/modules/asset/application/use-cases/delete-asset-by-id.use-case";
 import { AssetUnlinkedEvent } from "@/modules/asset/domain/events/asset-unlinked.event";
-import { Process, Processor } from "@nestjs/bull";
 
 @Processor("assets")
 export class AssetConsumerProcessor {

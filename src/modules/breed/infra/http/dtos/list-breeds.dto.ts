@@ -1,4 +1,3 @@
-import { PaginationQuerySchema } from "@/shared/utils/pagination-query";
 import { createZodDto } from "@anatine/zod-nestjs";
 import { z } from "zod";
 

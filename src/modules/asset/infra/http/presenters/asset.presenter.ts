@@ -1,5 +1,5 @@
-import { Asset } from "@/modules/asset/domain/entities/asset";
 import { z } from "zod";
+import { Asset } from "@/modules/asset/domain/entities/asset";
 import { assetDto } from "../dtos/asset.dto";
 
 export class AssetPresenter {

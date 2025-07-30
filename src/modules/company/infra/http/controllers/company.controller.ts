@@ -1,6 +1,3 @@
-import { PaginationPresenter } from "@/core/infra/presenters/pagination.presenter";
-import { SearchCompaniesRequestDto } from "@/modules/company/infra/http/dtos/search-companies.dto";
-import { PaginationQueryDto } from "@/shared/utils/pagination-query";
 import {
 	BadRequestException,
 	Body,
@@ -15,6 +12,9 @@ import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Public } from "src/modules/auth/infra/http/decorators/public.decorator";
 import { GetCompanyByIdUseCase } from "src/modules/company/application/use-cases/get-company-by-id.use-case";
 import { SearchCompaniesUseCase } from "src/modules/company/application/use-cases/search-companies.use-case";
+import { PaginationPresenter } from "@/core/infra/presenters/pagination.presenter";
+import { SearchCompaniesRequestDto } from "@/modules/company/infra/http/dtos/search-companies.dto";
+import { PaginationQueryDto } from "@/shared/utils/pagination-query";
 import {
 	CompanyPaginatedResponse,
 	CompanyResponse,

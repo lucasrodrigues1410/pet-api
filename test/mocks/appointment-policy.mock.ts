@@ -7,7 +7,7 @@ export class AppointmentPolicyMock extends AppointmentPolicy {
 		super();
 	}
 
-	async ensureCanCancel(params: {
+	async ensureCanCancel(_: {
 		user: { id: string; type: UserType };
 		appointment: Appointment;
 	}) {

@@ -8,7 +8,7 @@ export const serviceDto = z.object({
 	isActive: z.boolean(),
 	duration: z.number().optional(),
 	companyId: z.string(),
-	details: z.record(z.unknown()).optional(),
+	details: z.record(z.string(), z.unknown()).optional(),
 	priceRange: z
 		.object({
 			min: z.number(),

@@ -1,13 +1,3 @@
-import { PaginationPresenter } from "@/core/infra/presenters/pagination.presenter";
-import { AnimalPresenter } from "@/modules/animal/infra/http/presenters/animal.presenter";
-import { GetAppointmentByIdUseCase } from "@/modules/appointment/application/use-cases/get-appointment-by-id.use-case";
-import { GetAppointmentByUserIdUseCase } from "@/modules/appointment/application/use-cases/get-appointment-by-user-id.use-case";
-import { UserTypeDecorator } from "@/modules/auth/infra/http/decorators/user-type.decorator";
-import { User } from "@/modules/auth/infra/http/decorators/user.decorator";
-import { CompanyPresenter } from "@/modules/company/infra/http/presenters/company.presenter";
-import { ServicePresenter } from "@/modules/service/infra/http/presenters/service.presenter";
-import { UserPresenter } from "@/modules/user/infra/http/presenters/user.presenter";
-import { PaginationQueryDto } from "@/shared/utils/pagination-query";
 import {
 	Controller,
 	Get,
@@ -16,6 +6,16 @@ import {
 	Query,
 } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { PaginationPresenter } from "@/core/infra/presenters/pagination.presenter";
+import { AnimalPresenter } from "@/modules/animal/infra/http/presenters/animal.presenter";
+import { GetAppointmentByIdUseCase } from "@/modules/appointment/application/use-cases/get-appointment-by-id.use-case";
+import { GetAppointmentByUserIdUseCase } from "@/modules/appointment/application/use-cases/get-appointment-by-user-id.use-case";
+import { User } from "@/modules/auth/infra/http/decorators/user.decorator";
+import { UserTypeDecorator } from "@/modules/auth/infra/http/decorators/user-type.decorator";
+import { CompanyPresenter } from "@/modules/company/infra/http/presenters/company.presenter";
+import { ServicePresenter } from "@/modules/service/infra/http/presenters/service.presenter";
+import { UserPresenter } from "@/modules/user/infra/http/presenters/user.presenter";
+import { PaginationQueryDto } from "@/shared/utils/pagination-query";
 import {
 	AppointmentDetailResponse,
 	AppointmentDetailsPaginatedResponse,

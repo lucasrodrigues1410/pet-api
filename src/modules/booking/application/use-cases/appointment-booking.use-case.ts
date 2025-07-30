@@ -1,3 +1,5 @@
+import { Injectable } from "@nestjs/common";
+import { addMinutes } from "date-fns";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { AnimalRepository } from "@/modules/animal/domain/repositories/animal.repository";
 import { CoatType } from "@/modules/appointment/domain/enums/appointment.enum";
@@ -7,8 +9,6 @@ import { VariationType } from "@/modules/price-variation/domain/entities/price-v
 import { ServiceRepository } from "@/modules/service/domain/repositories/service.repository";
 import { Either, left, right } from "@/shared/either";
 import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
-import { Injectable } from "@nestjs/common";
-import { addMinutes } from "date-fns";
 import { Appointment } from "../../../appointment/domain/entities/appointment.entity";
 import { AppointmentRepository } from "../../../appointment/domain/repositories/appointment.repository";
 import { TimeSlotUnavailableError } from "../errors/time-slot-unavailable.error";

@@ -1,7 +1,7 @@
-import { Entity } from "@/core/domain/entities/entity";
-import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { Category } from "src/modules/category/domain/entities/category.entity";
 import { Company } from "src/modules/company/domain/entities/company.entity";
+import { Entity } from "@/core/domain/entities/entity";
+import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { PriceRange } from "./value-objects/price-range.value-object";
 
 export interface ServiceProps {

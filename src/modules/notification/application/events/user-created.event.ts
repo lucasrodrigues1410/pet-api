@@ -1,6 +1,6 @@
+import { EventsHandler, IEventHandler } from "@nestjs/cqrs";
 import { EmailDispatchEvent } from "@/modules/email/domain/events/email-dispatcher.event";
 import { NotificationPublisher } from "@/modules/notification/domain/interfaces/notification-publisher.interface";
-import { EventsHandler, IEventHandler } from "@nestjs/cqrs";
 import { UserCreatedEvent } from "../../domain/events/user-created.event";
 
 @EventsHandler(UserCreatedEvent)

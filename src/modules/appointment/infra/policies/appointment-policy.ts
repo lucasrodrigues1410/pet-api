@@ -1,5 +1,5 @@
-import { StaffRepository } from "@/modules/staff/domain/repositories/staff.repository";
 import { Injectable } from "@nestjs/common";
+import { StaffRepository } from "@/modules/staff/domain/repositories/staff.repository";
 import { AppointmentPolicy } from "../../domain/policies/appointment.policy";
 
 @Injectable()

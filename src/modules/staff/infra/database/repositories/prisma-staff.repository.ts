@@ -1,8 +1,8 @@
+import { Injectable } from "@nestjs/common";
 import { PrismaService } from "@/core/infra/prisma/prisma.service";
 import { Staff } from "@/modules/staff/domain/entities/staff.entity";
 import { StaffRepository } from "@/modules/staff/domain/repositories/staff.repository";
 import { DateRange } from "@/shared/types/date-range";
-import { Injectable } from "@nestjs/common";
 import { PrismaStaffMapper } from "../mappers/prisma-staff.mapper";
 
 @Injectable()

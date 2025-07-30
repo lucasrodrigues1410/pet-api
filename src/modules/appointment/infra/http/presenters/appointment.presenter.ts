@@ -1,5 +1,5 @@
-import { Appointment } from "@/modules/appointment/domain/entities/appointment.entity";
 import { z } from "zod";
+import { Appointment } from "@/modules/appointment/domain/entities/appointment.entity";
 import { AppointmentDto } from "../dtos/appointment.dto";
 
 export class AppointmentPresenter {

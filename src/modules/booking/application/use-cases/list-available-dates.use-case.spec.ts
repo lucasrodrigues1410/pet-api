@@ -1,20 +1,20 @@
-import { beforeEach, describe, expect, it, test } from "bun:test";
-import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
-import { DaysOfWeek } from "@/modules/company-availability/domain/entities/company-availability.entity";
-import { Service } from "@/modules/service/domain/entities/service.entity";
-import { Staff } from "@/modules/staff/domain/entities/staff.entity";
-import { Either } from "@/shared/either";
-import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
+import { beforeEach, describe, expect, it } from "bun:test";
 import { addDays, getDay, set } from "date-fns";
 import { makeAppointment } from "test/factories/make-appointment";
 import { makeCompanyAvailability } from "test/factories/make-company-availability";
 import { makeService } from "test/factories/make-service";
 import { makeStaff } from "test/factories/make-staff";
 import { InMemoryAppointmentRepository } from "test/repositories/in-memory-appointment.repository";
-import { InMemoryCompanyAvailabilityExceptionRepository } from "test/repositories/in-memory-company-availability-exception.repository";
 import { InMemoryCompanyAvailabilityRepository } from "test/repositories/in-memory-company-availability.repository";
+import { InMemoryCompanyAvailabilityExceptionRepository } from "test/repositories/in-memory-company-availability-exception.repository";
 import { InMemoryServiceRepository } from "test/repositories/in-memory-service.repository";
 import { InMemoryStaffRepository } from "test/repositories/in-memory-staff.repository";
+import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
+import { DaysOfWeek } from "@/modules/company-availability/domain/entities/company-availability.entity";
+import { Service } from "@/modules/service/domain/entities/service.entity";
+import { Staff } from "@/modules/staff/domain/entities/staff.entity";
+import { Either } from "@/shared/either";
+import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
 import { ListAvailableDatesUseCase } from "./list-available-dates.use-case";
 
 function expectResultIsRight<L, R>(

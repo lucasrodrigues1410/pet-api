@@ -1,5 +1,5 @@
-import { CacheRepository } from "@/core/domain/interfaces/cache-repository.interface";
 import { Injectable } from "@nestjs/common";
+import { CacheRepository } from "@/core/domain/interfaces/cache-repository.interface";
 import { RedisService } from "./redis.service";
 
 @Injectable()

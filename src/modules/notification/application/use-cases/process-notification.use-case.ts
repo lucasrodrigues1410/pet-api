@@ -1,5 +1,5 @@
-import { SendEmailUseCase } from "@/modules/email/application/use-cases/send-email.use-case";
 import { Injectable } from "@nestjs/common";
+import { SendEmailUseCase } from "@/modules/email/application/use-cases/send-email.use-case";
 import { NotificationChannel } from "../../domain/enums/notification-channel.enum";
 import { NotificationEvent } from "../../domain/events/notification.event";
 

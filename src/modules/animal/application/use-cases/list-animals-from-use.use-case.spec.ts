@@ -1,8 +1,7 @@
 import { beforeEach, describe, expect, it } from "bun:test";
-
-import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { makeAnimal } from "test/factories/make-animal";
 import { InMemoryAnimalRepository } from "test/repositories/in-memory-animal.repository";
+import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { ListAnimalsFromUserUserUseCase } from "./list-animals-from-user.use-case";
 
 let inMemoryAnimalsRepository: InMemoryAnimalRepository;

@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it } from "bun:test";
-import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
 import { makeAsset } from "test/factories/make-asset";
 import { MockUploader } from "test/mocks/mock-uploader";
 import { InMemoryAssetRepository } from "test/repositories/in-memory-asset.repository";
+import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
 import { DeleteAssetByIdUseCase } from "./delete-asset-by-id.use-case";
 
 let assetRepository: InMemoryAssetRepository;

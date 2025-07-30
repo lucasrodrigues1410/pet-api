@@ -1,6 +1,3 @@
-import { PrismaCategoryMapper } from "@/modules/category/infra/http/database/mappers/prisma-category.mapper";
-import { PrismaCompanyMapper } from "@/modules/company/infra/database/mappers/prisma-company.mapper";
-import { getServicesWithMaxPrice } from "@/prisma-generated/sql";
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "src/core/infra/prisma/prisma.service";
 import {
@@ -8,6 +5,9 @@ import {
 	ServiceWithRelations,
 } from "src/modules/service/domain/entities/service.entity";
 import { ServiceRepository } from "src/modules/service/domain/repositories/service.repository";
+import { PrismaCategoryMapper } from "@/modules/category/infra/http/database/mappers/prisma-category.mapper";
+import { PrismaCompanyMapper } from "@/modules/company/infra/database/mappers/prisma-company.mapper";
+import { getServicesWithMaxPrice } from "@/prisma-generated/sql";
 import { PrismaServiceMapper } from "../mappers/prisma-service.mapper";
 
 @Injectable()

@@ -1,4 +1,3 @@
-import { User } from "@/modules/auth/infra/http/decorators/user.decorator";
 import {
 	BadRequestException,
 	Controller,
@@ -13,6 +12,7 @@ import { FileInterceptor } from "@nestjs/platform-express";
 import { ApiConsumes, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { InvalidAssetTypeError } from "src/modules/asset/application/errors/invalid-asset-type.error";
 import { UploadAndCreateAssetUseCase } from "src/modules/asset/application/use-cases/upload-and-create-asset.use-case";
+import { User } from "@/modules/auth/infra/http/decorators/user.decorator";
 
 ApiTags("Asset");
 @Controller("asset")

@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from "bun:test";
-import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { makeService } from "test/factories/make-service";
 import { InMemoryServiceRepository } from "test/repositories/in-memory-service.repository";
+import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { ListServicesByCompanyUseCase } from "./list-services-by-company.use-case";
 
 let inMemoryServicesRepository: InMemoryServiceRepository;

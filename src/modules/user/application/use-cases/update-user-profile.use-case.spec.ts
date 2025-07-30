@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from "bun:test";
-import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
 import { makeUser } from "test/factories/make-user";
 import { InMemoryUserRepository } from "test/repositories/in-memory-user.repository";
+import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
 import { UpdateUserProfileUseCase } from "./update-user-profile.use-case";
 
 let userRepository: InMemoryUserRepository;

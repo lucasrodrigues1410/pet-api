@@ -1,7 +1,7 @@
 import { Entity } from "@/core/domain/entities/entity";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
-import { CompanyAvailabilityException } from "@/modules/company-availability/domain/entities/company-availability-exception.entity";
 import { CompanyAvailability } from "@/modules/company-availability/domain/entities/company-availability.entity";
+import { CompanyAvailabilityException } from "@/modules/company-availability/domain/entities/company-availability-exception.entity";
 
 export interface CompanyProps {
 	name: string;

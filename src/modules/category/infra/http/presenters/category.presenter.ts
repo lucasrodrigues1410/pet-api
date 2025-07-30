@@ -1,5 +1,5 @@
-import { Category } from "@/modules/category/domain/entities/category.entity";
 import { z } from "zod";
+import { Category } from "@/modules/category/domain/entities/category.entity";
 import { categoryDto } from "../dtos/category.dto";
 
 export class CategoryPresenter {

@@ -12,7 +12,11 @@ export function calculateLocationBounds({
 	latitude,
 	longitude,
 	radiusInKm = 10,
-}: { latitude?: number; longitude?: number; radiusInKm?: number }) {
+}: {
+	latitude?: number;
+	longitude?: number;
+	radiusInKm?: number;
+}) {
 	if (!latitude || !longitude) return null;
 	const latDelta = calculateLatDelta(radiusInKm);
 	const lonDelta = calculateLonDelta(latitude, radiusInKm);

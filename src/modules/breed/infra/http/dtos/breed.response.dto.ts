@@ -1,6 +1,6 @@
-import { PaginatedDto } from "@/shared/utils/pagination";
 import { createZodDto } from "@anatine/zod-nestjs";
 import { z } from "zod";
+import { PaginatedDto } from "@/shared/utils/pagination";
 import { breedDto } from "./breed.dto";
 
 export class BreedResponse extends createZodDto(breedDto) {}

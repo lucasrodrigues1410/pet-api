@@ -1,11 +1,11 @@
-import { CoatType } from "@/modules/appointment/domain/enums/appointment.enum";
 import { createZodDto } from "@anatine/zod-nestjs";
 import { set } from "date-fns";
 import { z } from "zod";
+import { CoatType } from "@/modules/appointment/domain/enums/appointment.enum";
 
 const createAppointmentRequest = z.object({
 	date: z
-		.string()
+		.iso
 		.datetime()
 		.transform((val) =>
 			set(new Date(val), {
@@ -20,4 +20,4 @@ const createAppointmentRequest = z.object({
 
 export class CreateAppointmentRequestDto extends createZodDto(
 	createAppointmentRequest,
-) {}
+) { }

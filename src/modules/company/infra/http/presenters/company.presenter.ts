@@ -1,5 +1,5 @@
-import { Company } from "@/modules/company/domain/entities/company.entity";
 import { z } from "zod";
+import { Company } from "@/modules/company/domain/entities/company.entity";
 import { companyDto } from "../dtos/company.dto";
 
 export class CompanyPresenter {

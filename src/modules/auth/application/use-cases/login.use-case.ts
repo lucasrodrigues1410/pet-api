@@ -1,6 +1,6 @@
-import { Either, left, right } from "@/shared/either";
 import { Injectable } from "@nestjs/common";
 import { UserRepository } from "src/modules/user/domain/repositories/user.repository";
+import { Either, left, right } from "@/shared/either";
 import { InvalidCredentialsError } from "../../domain/errors/invalid-credentials.error";
 import { Encrypter } from "../../domain/interfaces/encrypter.interface";
 import { HashComparer } from "../../domain/interfaces/hash-comparer.interface";

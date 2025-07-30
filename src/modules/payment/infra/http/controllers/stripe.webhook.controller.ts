@@ -1,7 +1,3 @@
-import { EventDispatcher } from "@/core/domain/interfaces/event-dispatcher.interface";
-import { Public } from "@/modules/auth/infra/http/decorators/public.decorator";
-import { PaymentWebhookReceivedEvent } from "@/modules/payment/domain/events/payment-webhook-received.event";
-import { PaymentGateway } from "@/modules/payment/domain/repositories/payment-gateway.repository";
 import {
 	Controller,
 	Headers,
@@ -15,6 +11,10 @@ import {
 } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { Request } from "express";
+import { EventDispatcher } from "@/core/domain/interfaces/event-dispatcher.interface";
+import { Public } from "@/modules/auth/infra/http/decorators/public.decorator";
+import { PaymentWebhookReceivedEvent } from "@/modules/payment/domain/events/payment-webhook-received.event";
+import { PaymentGateway } from "@/modules/payment/domain/repositories/payment-gateway.repository";
 
 @ApiTags("Pagamentos - Webhook")
 @Controller("payments/webhook")

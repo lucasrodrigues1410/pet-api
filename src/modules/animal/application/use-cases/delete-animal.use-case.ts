@@ -1,8 +1,8 @@
+import { Injectable } from "@nestjs/common";
 import { AssetUnlinkedEvent } from "@/modules/asset/domain/events/asset-unlinked.event";
 import { AssetEventDispatcher } from "@/modules/asset/domain/interfaces/asset-event-dispatch.interface";
 import { Either, left, right } from "@/shared/either";
 import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
-import { Injectable } from "@nestjs/common";
 import { AnimalRepository } from "../../domain/repositories/animal.repository";
 
 interface DeleteAnimalUseCaseRequest {

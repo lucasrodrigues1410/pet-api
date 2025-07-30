@@ -1,7 +1,7 @@
-import { PaginatedDto } from "@/shared/utils/pagination";
 import { createZodDto } from "@anatine/zod-nestjs";
-import { AppointmentDetailsDto } from "./appointment-details.dto";
+import { PaginatedDto } from "@/shared/utils/pagination";
 import { AppointmentDto } from "./appointment.dto";
+import { AppointmentDetailsDto } from "./appointment-details.dto";
 
 export class AppointmentResponse extends createZodDto(AppointmentDto) {}
 export class AppointmentDetailResponse extends createZodDto(

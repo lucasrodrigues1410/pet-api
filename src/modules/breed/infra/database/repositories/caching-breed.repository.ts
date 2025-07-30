@@ -1,10 +1,10 @@
+import { Inject, Injectable } from "@nestjs/common";
 import { CacheRepository } from "@/core/domain/interfaces/cache-repository.interface";
 import { Breed } from "@/modules/breed/domain/entities/breed.entity";
 import {
 	BreedRepository,
 	FindBreedsParams,
 } from "@/modules/breed/domain/repositories/breed.repository";
-import { Inject, Injectable } from "@nestjs/common";
 import { BASE_BREED_REPOSITORY } from "../../constants/breeds.constants";
 
 @Injectable()

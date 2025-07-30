@@ -9,10 +9,10 @@ import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Public } from "src/modules/auth/infra/http/decorators/public.decorator";
 import { GetServiceByIdUseCase } from "src/modules/service/application/use-cases/get-service-by-id.use-case";
 import { ListServicesByCompanyUseCase } from "src/modules/service/application/use-cases/list-services-by-company.use-case";
-import { ServiceDetailsResponse } from "../dtos/service-details.response.dto";
 import { ServiceResponseList } from "../dtos/service.response.dto";
-import { ServiceDetailsPresenter } from "../presenters/service-details.presenter";
+import { ServiceDetailsResponse } from "../dtos/service-details.response.dto";
 import { ServicePresenter } from "../presenters/service.presenter";
+import { ServiceDetailsPresenter } from "../presenters/service-details.presenter";
 
 @ApiTags("Serviços")
 @Controller("service")

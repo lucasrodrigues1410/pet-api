@@ -1,5 +1,5 @@
-import { Breed } from "@/modules/breed/domain/entities/breed.entity";
 import { z } from "zod";
+import { Breed } from "@/modules/breed/domain/entities/breed.entity";
 import { breedDto } from "../dtos/breed.dto";
 
 export class BreedPresenter {

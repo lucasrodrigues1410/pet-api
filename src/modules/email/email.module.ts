@@ -1,6 +1,6 @@
-import { EnvService } from "@/core/infra/env/env.service";
-import { MailerModule } from "@nestjs-modules/mailer";
 import { Module } from "@nestjs/common";
+import { MailerModule } from "@nestjs-modules/mailer";
+import { EnvService } from "@/core/infra/env/env.service";
 import { SendEmailUseCase } from "./application/use-cases/send-email.use-case";
 import { NodemailerEmailService } from "./infra/mail/nodemailer-email.service";
 import { TemplateProviders } from "./infra/providers/template.providers";

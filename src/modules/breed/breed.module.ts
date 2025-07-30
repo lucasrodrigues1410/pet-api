@@ -1,5 +1,5 @@
-import { CacheModule } from "@/core/infra/cache/cache.module";
 import { Module } from "@nestjs/common";
+import { CacheModule } from "@/core/infra/cache/cache.module";
 import { ListBreedsUseCase } from "./application/use-cases/list-breeds.use-case";
 import { BreedRepository } from "./domain/repositories/breed.repository";
 import { BASE_BREED_REPOSITORY } from "./infra/constants/breeds.constants";

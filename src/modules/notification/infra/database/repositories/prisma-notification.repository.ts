@@ -1,7 +1,7 @@
+import { Injectable } from "@nestjs/common";
 import { PrismaService } from "@/core/infra/prisma/prisma.service";
 import { Notification } from "@/modules/notification/domain/entities/notification.entity";
 import { NotificationRepository } from "@/modules/notification/domain/interfaces/notification.repository.interface";
-import { Injectable } from "@nestjs/common";
 import { PrismaNotificationMapper } from "../mappers/prisma-notification.mapper";
 
 @Injectable()

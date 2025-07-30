@@ -1,6 +1,6 @@
-import { EventDispatcher } from "@/core/domain/interfaces/event-dispatcher.interface";
 import { BullModule } from "@nestjs/bull";
 import { Global, Module } from "@nestjs/common";
+import { EventDispatcher } from "@/core/domain/interfaces/event-dispatcher.interface";
 import { EnvService } from "../env/env.service";
 import { BullEventDispatcherService } from "./bull-event-dispatcher.service";
 

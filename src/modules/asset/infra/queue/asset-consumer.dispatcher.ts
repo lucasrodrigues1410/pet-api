@@ -1,7 +1,7 @@
-import { DomainEvent } from "@/core/domain/interfaces/event-dispatcher.interface";
 import { InjectQueue } from "@nestjs/bull";
 import { Injectable } from "@nestjs/common";
 import type { Queue } from "bull";
+import { DomainEvent } from "@/core/domain/interfaces/event-dispatcher.interface";
 import { AssetEventDispatcher } from "../../domain/interfaces/asset-event-dispatch.interface";
 
 @Injectable()

@@ -1,13 +1,13 @@
+import { Company } from "src/modules/company/domain/entities/company.entity";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
-import { PrismaCompanyAvailabilityExceptionMapper } from "@/modules/company-availability/infra/database/mappers/company-availability-exception.mapper";
 import { PrismaCompanyAvailabilityMapper } from "@/modules/company-availability/infra/database/mappers/company-availability.mapper";
+import { PrismaCompanyAvailabilityExceptionMapper } from "@/modules/company-availability/infra/database/mappers/company-availability-exception.mapper";
 import {
 	Prisma,
 	Company as PrismaCompany,
 	CompanyAvailability as PrismaCompanyAvailability,
 	CompanyAvailabilityException as PrismaCompanyAvailabilityException,
 } from "@/prisma-generated/client";
-import { Company } from "src/modules/company/domain/entities/company.entity";
 
 export class PrismaCompanyMapper {
 	static toDomain(
