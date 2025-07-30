@@ -1,4 +1,4 @@
-import { createZodDto } from "@anatine/zod-nestjs";
+import { createZodDto } from "nestjs-zod";
 import { PaginatedDto } from "@/shared/utils/pagination";
 import { AppointmentDto } from "./appointment.dto";
 import { AppointmentDetailsDto } from "./appointment-details.dto";

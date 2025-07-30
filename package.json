@@ -16,8 +16,6 @@
 		"email": "email dev --dir src/modules/email/infra/templates/components"
 	},
 	"dependencies": {
-		"@anatine/zod-nestjs": "^2.0.12",
-		"@anatine/zod-openapi": "^2.2.8",
 		"@nestjs-modules/mailer": "^2.0.2",
 		"@nestjs/bull": "^11.0.3",
 		"@nestjs/common": "^11.1.5",
@@ -34,7 +32,7 @@
 		"bull": "^4.16.5",
 		"date-fns": "^4.1.0",
 		"imagekit": "^6.0.0",
-		"openapi3-ts": "^4.5.0",
+		"nestjs-zod": "^5.0.0-beta.20250719T005107",
 		"passport-jwt": "^4.0.1",
 		"reflect-metadata": "^0.2.2",
 		"stripe": "^18.3.0",

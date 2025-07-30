@@ -12,7 +12,7 @@ interface UpdateAnimalUseCaseRequest {
 	animalId: string;
 	userId: string;
 	name?: string | null;
-	birthdate?: Date | null;
+	birthdate?: string | null;
 	weight?: number | null;
 	assetId?: string | null;
 }
@@ -44,7 +44,9 @@ export class UpdateAnimalUseCase {
 			{
 				breedId: animal.breedId,
 				name: data.name ?? animal.name,
-				birthdate: data.birthdate ?? animal.birthdate,
+				birthdate: data.birthdate
+					? new Date(data.birthdate)
+					: animal.birthdate,
 				weight: data.weight ?? animal.weight,
 				assetId: data.assetId
 					? new UniqueEntityID(data.assetId)

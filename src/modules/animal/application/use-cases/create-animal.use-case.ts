@@ -8,7 +8,7 @@ import { AnimalRepository } from "../../domain/repositories/animal.repository";
 
 interface CreateAnimalCaseRequest {
 	name: string;
-	birthdate?: Date | null;
+	birthdate?: Date | string | null;
 	breedId: string;
 	weight: number;
 	userId: string;

@@ -1,8 +1,7 @@
-import { patchNestjsSwagger } from "@anatine/zod-nestjs";
-import { ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import { NestExpressApplication } from "@nestjs/platform-express";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
+import { cleanupOpenApiDoc } from "nestjs-zod";
 import { AppModule } from "./app.module";
 
 async function bootstrap() {
@@ -10,26 +9,20 @@ async function bootstrap() {
 		rawBody: true,
 	});
 
-	const config = new DocumentBuilder()
-		.setTitle("API de Cuidados com Animais")
-		.setDescription(
-			"API para gerenciar serviços e informações de cuidados com animais, incluindo banho e tosa, serviços veterinários e mais",
-		)
-		.setVersion("1.0")
-		.build();
-	patchNestjsSwagger();
+	const openApiDoc = SwaggerModule.createDocument(
+		app,
+		new DocumentBuilder()
+			.setTitle("API de Cuidados com Animais")
+			.setDescription(
+				"API para gerenciar serviços e informações de cuidados com animais",
+			)
+			.setVersion("1.0")
+			.build(),
+	);
 
-	const documentFactory = () => SwaggerModule.createDocument(app, config);
-	SwaggerModule.setup("docs", app, documentFactory, {
+	SwaggerModule.setup("docs", app, cleanupOpenApiDoc(openApiDoc), {
 		jsonDocumentUrl: "swagger/json",
 	});
-
-	app.useGlobalPipes(
-		new ValidationPipe({
-			transform: true,
-			transformOptions: { enableImplicitConversion: true },
-		}),
-	);
 
 	//const configService = app.get(EnvService);
 	//const port = configService.get("PORT");

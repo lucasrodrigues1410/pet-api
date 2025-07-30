@@ -34,7 +34,7 @@ export class AnimalController {
 		private readonly deleteAnimalUseCase: DeleteAnimalUseCase,
 		private readonly updateAnimalUseCase: UpdateAnimalUseCase,
 		private readonly listAnimalsFromUserUseCase: ListAnimalsFromUserUserUseCase,
-	) {}
+	) { }
 
 	@Post()
 	@ApiOperation({ summary: "Cria um animal" })

@@ -47,7 +47,13 @@ export class Animal extends Entity<AnimalProps> {
 		return this.props.asset;
 	}
 
-	public static create(props: AnimalProps, id?: UniqueEntityID): Animal {
-		return new Animal(props, id);
+	public static create(
+		props: Omit<AnimalProps, "birthdate"> & { birthdate?: Date | string | null },
+		id?: UniqueEntityID,
+	): Animal {
+		return new Animal({
+			...props,
+			birthdate: props.birthdate ? new Date(props.birthdate) : null,
+		}, id);
 	}
 }
