@@ -6,14 +6,12 @@ import { AssetEventDispatcher } from "./domain/interfaces/asset-event-dispatch.i
 import { AssetRepository } from "./domain/repositories/asset.repository";
 import { Uploader } from "./domain/storage/uploader";
 import { PrismaAssetRepository } from "./infra/database/repositories/prisma-asset.repository";
-import { AssetController } from "./infra/http/controllers/asset.controller";
 import { BullAssetEventDispatcher } from "./infra/queue/asset-consumer.dispatcher";
 import { AssetConsumerProcessor } from "./infra/queue/asset-consumer.processor";
 import { ImageKitStorageProvider } from "./infra/storage/image-kit.storage";
 
 @Module({
 	imports: [BullModule.registerQueue({ name: "assets" })],
-	controllers: [AssetController],
 	providers: [
 		UploadAndCreateAssetUseCase,
 		DeleteAssetByIdUseCase,

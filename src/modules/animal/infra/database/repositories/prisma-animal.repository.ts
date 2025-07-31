@@ -18,11 +18,10 @@ export class AnimalPrismaRepository implements AnimalRepository {
 		return PrismaAnimalMapper.toDomain(response);
 	}
 
-	async update(animal: Animal) {
-		const data = PrismaAnimalMapper.toPrisma(animal);
+	async update(animalId: string, data: Partial<Omit<Animal, "id">>) {
 		const response = await this.prismaService.animal.update({
-			where: { id: animal.id.toString(), deletedAt: null },
-			data,
+			where: { id: animalId, deletedAt: null },
+			data: PrismaAnimalMapper.toPrismaUpdate(data),
 		});
 		return PrismaAnimalMapper.toDomain(response);
 	}

@@ -1,46 +1,41 @@
+import { Animal } from "src/modules/animal/domain/entities/animal.entity";
+import { AnimalRepository } from "src/modules/animal/domain/repositories/animal.repository";
 import { PaginationResult } from "@/shared/utils/pagination";
 import { PaginationQuery } from "@/shared/utils/pagination-query";
 import { paginate } from "@/shared/utils/paginator";
-import { Animal } from "src/modules/animal/domain/entities/animal.entity";
-import { AnimalRepository } from "src/modules/animal/domain/repositories/animal.repository";
 
 export class InMemoryAnimalRepository implements AnimalRepository {
 	public items: Animal[] = [];
 
-	create(animal: Animal): Promise<Animal> {
-		return new Promise((resolve) => {
-			this.items.push(animal);
-			resolve(animal);
-		});
+	async create(animal: Animal): Promise<Animal> {
+		this.items.push(animal);
+		return animal;
 	}
 
-	async update(animal: Animal) {
+	async update(animalId: string, data: Partial<Omit<Animal, "id">>) {
 		const index = this.items.findIndex(
-			(existingAnimal) => existingAnimal.id === animal.id,
+			(existingAnimal) => existingAnimal.id.toString() === animalId,
 		);
 
 		if (index === -1) {
 			throw new Error("Animal not found");
 		}
+		const animal = this.items[index].update(data);
 		this.items[index] = animal;
 		return animal;
 	}
 
-	findById(animalId: string): Promise<Animal | null> {
-		return new Promise((resolve) => {
-			const animal = this.items.find(
-				(animal) => animal.id.toString() === animalId,
-			);
-			resolve(animal || null);
-		});
+	async findById(animalId: string): Promise<Animal | null> {
+		const animal = this.items.find(
+			(animal) => animal.id.toString() === animalId,
+		);
+		return animal || null;
 	}
-	delete(animalId: string): Promise<void> {
-		return new Promise((resolve) => {
-			this.items = this.items.filter(
-				(animal) => animal.id.toString() !== animalId,
-			);
-			resolve();
-		});
+
+	async delete(animalId: string): Promise<void> {
+		this.items = this.items.filter(
+			(animal) => animal.id.toString() !== animalId,
+		);
 	}
 
 	async fetchAllAnimalsByUser(

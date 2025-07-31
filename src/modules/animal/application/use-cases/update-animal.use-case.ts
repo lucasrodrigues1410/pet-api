@@ -70,7 +70,10 @@ export class UpdateAnimalUseCase {
 			);
 		}
 
-		const result = await this.animalRepository.update(newAnimal);
+		const result = await this.animalRepository.update(
+			newAnimal.id.toString(),
+			newAnimal,
+		);
 		return right({
 			animal: result,
 		});

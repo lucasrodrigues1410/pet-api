@@ -49,4 +49,16 @@ export class PrismaAnimalMapper {
 			weight: animal.weight,
 		};
 	}
+
+	static toPrismaUpdate(animal: Partial<Animal>): Prisma.AnimalUncheckedUpdateInput {
+		return {
+			id: animal.id?.toString(),
+			userId: animal.userId?.toString(),
+			breedId: animal.breedId?.toString(),
+			assetId: animal.assetId?.toString(),
+			name: animal.name,
+			birthdate: animal.birthdate,
+			weight: animal.weight,
+		}
+	}
 }

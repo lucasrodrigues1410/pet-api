@@ -23,8 +23,11 @@ describe("Upload and create attachment", () => {
 	it("should be able to upload and create an attachment", async () => {
 		const result = await sut.execute({
 			fileName: "profile.png",
-			fileType: "image/png",
-			body: Buffer.from(""),
+			file: {
+				buffer: Buffer.from(""),
+				mimetype: "image/png",
+				originalname: "profile.png",
+			} as Express.Multer.File,
 			userId: "user-id",
 		});
 
@@ -43,8 +46,11 @@ describe("Upload and create attachment", () => {
 	it("should not be able to upload an attachment with invalid file type", async () => {
 		const result = await sut.execute({
 			fileName: "profile.mp3",
-			fileType: "audio/mpeg",
-			body: Buffer.from(""),
+			file: {
+				buffer: Buffer.from(""),
+				mimetype: "audio/mpeg",
+				originalname: "profile.mp3",
+			} as Express.Multer.File,
 			userId: "user-id",
 		});
 

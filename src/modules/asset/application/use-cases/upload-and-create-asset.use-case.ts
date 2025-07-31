@@ -7,10 +7,9 @@ import { Uploader } from "../../domain/storage/uploader";
 import { InvalidAssetTypeError } from "../errors/invalid-asset-type.error";
 
 interface UploadAndCreateAssetRequest {
-	fileName: string;
-	fileType: string;
-	body: Buffer;
+	file: Express.Multer.File;
 	userId: string;
+	fileName?: string;
 }
 
 type UploadAndCreateAssetResponse = Either<
@@ -25,25 +24,28 @@ export class UploadAndCreateAssetUseCase {
 	constructor(
 		private assetRepository: AssetRepository,
 		private uploader: Uploader,
-	) {}
+	) { }
 
 	async execute({
-		fileName,
-		fileType,
-		body,
+		file: data,
 		userId,
+		fileName,
 	}: UploadAndCreateAssetRequest): Promise<UploadAndCreateAssetResponse> {
 		const allowedFileTypes = ["image/jpeg", "image/png", "application/pdf"];
-		if (!allowedFileTypes.includes(fileType)) {
-			return left(new InvalidAssetTypeError(fileType));
+		if (!allowedFileTypes.includes(data.mimetype)) {
+			return left(new InvalidAssetTypeError(data.mimetype));
 		}
 
 		const { url, name, id, height, width, thumbnailUrl } =
-			await this.uploader.upload({ fileName, fileType, body });
+			await this.uploader.upload({
+				fileName: fileName || data.originalname,
+				fileType: data.mimetype,
+				body: data.buffer,
+			});
 
 		const asset = Asset.create({
 			name,
-			fileType,
+			fileType: data.mimetype,
 			url,
 			height,
 			fileId: id,

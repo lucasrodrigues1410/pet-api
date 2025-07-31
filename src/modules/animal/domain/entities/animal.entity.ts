@@ -14,6 +14,8 @@ export interface AnimalProps {
 	asset?: Asset;
 }
 
+type RawBirthdate = Date | string | null;
+
 export class Animal extends Entity<AnimalProps> {
 	get userId() {
 		return this.props.userId;
@@ -48,12 +50,26 @@ export class Animal extends Entity<AnimalProps> {
 	}
 
 	public static create(
-		props: Omit<AnimalProps, "birthdate"> & { birthdate?: Date | string | null },
+		props: Omit<AnimalProps, "birthdate"> & { birthdate?: RawBirthdate },
 		id?: UniqueEntityID,
 	): Animal {
 		return new Animal({
 			...props,
 			birthdate: props.birthdate ? new Date(props.birthdate) : null,
 		}, id);
+	}
+
+	public update(props: Partial<Omit<AnimalProps, "birthdate"> & { birthdate?: RawBirthdate }>) {
+		this.props = {
+			userId: this.userId,
+			breedId: this.breedId,
+			name: props.name ?? this.name,
+			birthdate: props.birthdate ? new Date(props.birthdate) : this.birthdate,
+			weight: props.weight ?? this.weight,
+			breed: props.breed ?? this.breed,
+			assetId: props.assetId ?? this.assetId,
+			asset: props.asset ?? this.asset,
+		};
+		return this;
 	}
 }

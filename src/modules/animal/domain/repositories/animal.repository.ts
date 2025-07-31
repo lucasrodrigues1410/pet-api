@@ -4,7 +4,7 @@ import { Animal } from "../entities/animal.entity";
 
 export abstract class AnimalRepository {
 	abstract create(animal: Animal): Promise<Animal>;
-	abstract update(animal: Animal): Promise<Animal>;
+	abstract update(animalId: string, data: Partial<Omit<Animal, "id">>): Promise<Animal>;
 	abstract findById(animalId: string): Promise<Animal | null>;
 	abstract delete(animalId: string): Promise<void>;
 	abstract fetchAllAnimalsByUser(

@@ -3,18 +3,23 @@ import {
 	Body,
 	Controller,
 	Delete,
+	FileTypeValidator,
 	Get,
 	HttpCode,
+	MaxFileSizeValidator,
 	NotFoundException,
 	Param,
+	ParseFilePipe,
 	Post,
 	Put,
 	Query,
+	UploadedFile,
 } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { User } from "src/modules/auth/infra/http/decorators/user.decorator";
 import { UserTypeDecorator } from "src/modules/auth/infra/http/decorators/user-type.decorator";
 import { PaginationPresenter } from "@/core/infra/presenters/pagination.presenter";
+import { AddAssetToAnimalUseCase } from "@/modules/animal/application/use-cases/add-asset-to-animal.use-case";
 import { DeleteAnimalUseCase } from "@/modules/animal/application/use-cases/delete-animal.use-case";
 import { UpdateAnimalUseCase } from "@/modules/animal/application/use-cases/update-animal.use-case";
 import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
@@ -34,7 +39,8 @@ export class AnimalController {
 		private readonly deleteAnimalUseCase: DeleteAnimalUseCase,
 		private readonly updateAnimalUseCase: UpdateAnimalUseCase,
 		private readonly listAnimalsFromUserUseCase: ListAnimalsFromUserUserUseCase,
-	) { }
+		private readonly addAssetToAnimalUseCase: AddAssetToAnimalUseCase,
+	) {}
 
 	@Post()
 	@ApiOperation({ summary: "Cria um animal" })
@@ -117,6 +123,38 @@ export class AnimalController {
 			if (result.value instanceof ResourceNotFoundError) {
 				throw new NotFoundException(result.value.message);
 			}
+			throw new BadRequestException();
+		}
+	}
+
+	@Post(":id/asset")
+	@ApiOperation({ summary: "Adicionar um asset a um animal" })
+	@UserTypeDecorator("CUSTOMER")
+	@HttpCode(201)
+	async addAsset(
+		@User("sub") userId: string,
+		@Param("id") animalId: string,
+		@UploadedFile(
+			new ParseFilePipe({
+				validators: [
+					new MaxFileSizeValidator({
+						maxSize: 1024 * 1024 * 2,
+					}),
+					new FileTypeValidator({
+						fileType: ".(png|jpg|jpeg)",
+					}),
+				],
+			}),
+		)
+		file: Express.Multer.File,
+	) {
+		const result = await this.addAssetToAnimalUseCase.execute({
+			userId,
+			animalId,
+			file: file as Express.Multer.File,
+		});
+
+		if (result.isLeft()) {
 			throw new BadRequestException();
 		}
 	}

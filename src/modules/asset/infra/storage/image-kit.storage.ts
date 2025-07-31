@@ -1,6 +1,5 @@
 import { Injectable } from "@nestjs/common";
 import ImageKit from "imagekit";
-import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { EnvService } from "@/core/infra/env/env.service";
 import {
 	Uploader,
@@ -24,13 +23,13 @@ export class ImageKitStorageProvider implements Uploader {
 	}
 
 	async upload({ fileName, body }: UploadParams): Promise<UploadResponse> {
-		const uploadId = new UniqueEntityID();
-		const uniqueFileName = `${uploadId}-${fileName}`;
+		const uniqueFileName = `${fileName}`;
 
 		const response = await this.client.upload({
 			fileName: uniqueFileName,
 			file: body,
-			useUniqueFileName: true,
+			useUniqueFileName: false,
+			overwriteFile: true,
 		});
 
 		return {

@@ -9,8 +9,12 @@ export class PrismaAssetRepository implements AssetRepository {
 	constructor(private readonly prismaService: PrismaService) {}
 
 	async create(asset: Asset): Promise<void> {
-		await this.prismaService.asset.create({
-			data: PrismaAssetMapper.toPrisma(asset),
+		await this.prismaService.asset.upsert({
+			where: {
+				id: asset.id.toString(),
+			},
+			update: PrismaAssetMapper.toPrisma(asset),
+			create: PrismaAssetMapper.toPrisma(asset),
 		});
 	}
 
