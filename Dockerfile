@@ -11,7 +11,7 @@ RUN bun install --production prisma
 COPY src src
 COPY tsconfig.json .
 COPY prisma prisma
-RUN bun run prisma generate
+RUN bunx prisma generate
 
 ENV NODE_ENV production
 CMD ["bun", "run", "start"]
