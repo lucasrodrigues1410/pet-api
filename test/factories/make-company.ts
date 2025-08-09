@@ -6,8 +6,12 @@ import {
 	CompanyProps,
 } from "src/modules/company/domain/entities/company.entity";
 import { PrismaCompanyMapper } from "src/modules/company/infra/database/mappers/prisma-company.mapper";
+import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 
-export function makeCompany(override: Partial<Company> = {}, id?: number) {
+export function makeCompany(
+	override: Partial<Company> = {},
+	id?: UniqueEntityID,
+) {
 	const student = Company.create(
 		{
 			name: faker.company.name(),

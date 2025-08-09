@@ -1,6 +1,6 @@
 import { PaginationResult } from "@/shared/utils/pagination";
 import { PaginationQuery } from "@/shared/utils/pagination-query";
-import { Company } from "../entities/company.entity";
+import { Company, CompanyProps } from "../entities/company.entity";
 
 export abstract class CompanyRepository {
 	abstract findById(id: string): Promise<Company | null>;
@@ -13,5 +13,11 @@ export abstract class CompanyRepository {
 			query?: string;
 		} & PaginationQuery,
 	): Promise<PaginationResult<Company>>;
-	abstract create(company: Company): Promise<void>;
+    abstract create(company: Company, ownerUserId: string): Promise<void>;
+    abstract update(
+        companyId: string,
+        data: Partial<Pick<CompanyProps, "name" | "address" | "contact">>,
+    ): Promise<Company>;
+	abstract softDelete(companyId: string): Promise<void>;
+	abstract isOwner(params: { companyId: string; userId: string }): Promise<boolean>;
 }

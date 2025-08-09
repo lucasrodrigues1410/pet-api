@@ -1,6 +1,6 @@
 import { SetMetadata } from "@nestjs/common";
-import { UserType } from "src/modules/user/domain/entities/user.entity";
+import { UserType as UserTypeEnum } from "src/modules/user/domain/entities/user.entity";
 
-export const USER_TYPE_KEY = "userType";
-export const UserTypeDecorator = (...userTypes: UserType[]) =>
+export const USER_TYPE_KEY = "user_type";
+export const UserType = (...userTypes: UserTypeEnum[]) =>
 	SetMetadata(USER_TYPE_KEY, userTypes);

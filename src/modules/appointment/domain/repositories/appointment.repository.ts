@@ -21,6 +21,10 @@ export abstract class AppointmentRepository {
 		userId: string;
 		query: PaginationQuery;
 	}): Promise<PaginationResult<Appointment>>;
+  abstract findByCompanyId(params: {
+    companyId: string;
+    query: PaginationQuery;
+  }): Promise<PaginationResult<Appointment>>;
 	abstract create(appointment: Appointment): Promise<void>;
 	abstract getByPeriod(params: {
 		serviceId: string;

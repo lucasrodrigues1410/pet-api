@@ -19,7 +19,7 @@ import {
 import { FileInterceptor } from "@nestjs/platform-express";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { User } from "src/modules/auth/infra/http/decorators/user.decorator";
-import { UserTypeDecorator } from "src/modules/auth/infra/http/decorators/user-type.decorator";
+import { UserType } from "src/modules/auth/infra/http/decorators/user-type.decorator";
 import { PaginationPresenter } from "@/core/infra/presenters/pagination.presenter";
 import { AddAssetToAnimalUseCase } from "@/modules/animal/application/use-cases/add-asset-to-animal.use-case";
 import { DeleteAnimalUseCase } from "@/modules/animal/application/use-cases/delete-animal.use-case";
@@ -46,7 +46,7 @@ export class AnimalController {
 
 	@Post()
 	@ApiOperation({ summary: "Cria um animal" })
-	@UserTypeDecorator("CUSTOMER")
+	@UserType("CUSTOMER")
 	@HttpCode(201)
 	async create(
 		@User("sub") userId: string,
@@ -68,7 +68,7 @@ export class AnimalController {
 	@Get("user/:id")
 	@ApiOperation({ summary: "Listar todos os animais de um usuário" })
 	@ApiResponse({ status: 200, type: AnimalPaginatedResponse })
-	@UserTypeDecorator("CUSTOMER")
+	@UserType("CUSTOMER")
 	async listAll(
 		@Param("id") userId: string,
 		@Query() query: PaginationQueryDto,
@@ -90,7 +90,7 @@ export class AnimalController {
 
 	@Put(":id")
 	@ApiOperation({ summary: "Atualizar um animal" })
-	@UserTypeDecorator("CUSTOMER")
+	@UserType("CUSTOMER")
 	@HttpCode(200)
 	async update(
 		@User("sub") userId: string,
@@ -113,7 +113,7 @@ export class AnimalController {
 
 	@Delete(":id")
 	@ApiOperation({ summary: "Deletar um animal" })
-	@UserTypeDecorator("CUSTOMER")
+	@UserType("CUSTOMER")
 	@HttpCode(204)
 	async delete(@User("sub") userId: string, @Param("id") animalId: string) {
 		const result = await this.deleteAnimalUseCase.execute({
@@ -131,7 +131,7 @@ export class AnimalController {
 
 	@Post(":id/asset")
 	@ApiOperation({ summary: "Adicionar um asset a um animal" })
-	@UserTypeDecorator("CUSTOMER")
+	@UserType("CUSTOMER")
 	@HttpCode(201)
 	@UseInterceptors(FileInterceptor("file"))
 	async addAsset(

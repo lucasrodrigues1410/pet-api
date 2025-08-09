@@ -65,6 +65,33 @@ export class PrismaAppointmentRepository implements AppointmentRepository {
 		};
 	}
 
+  async findByCompanyId(
+    params: Parameters<AppointmentRepository["findByCompanyId"]>[0],
+  ) {
+    const filter = {
+      companyId: params.companyId,
+    } as Prisma.AppointmentWhereInput;
+
+    const appointments = await paginate(
+      ({ skip, take }) =>
+        this.prismaService.appointment.findMany({
+          skip,
+          take,
+          orderBy: { createdAt: "desc" },
+          where: filter,
+        }),
+      () =>
+        this.prismaService.appointment.count({
+          where: filter,
+        }),
+      params.query,
+    );
+    return {
+      ...appointments,
+      items: appointments.items.map(PrismaAppointmentMapper.toDomain),
+    };
+  }
+
 	async create(appointment: Appointment) {
 		const persistence = PrismaAppointmentMapper.toPersistence(appointment);
 		await this.prismaService.appointment.create({

@@ -1,6 +1,7 @@
 import { Module } from "@nestjs/common";
 import { JwtModule } from "@nestjs/jwt";
 import { EnvService } from "@/core/infra/env/env.service";
+import { StaffModule } from "../staff/staff.module";
 import { UserModule } from "../user/user.module";
 import { LoginUseCase } from "./application/use-cases/login.use-case";
 import { RegisterUseCase } from "./application/use-cases/register.use-case";
@@ -22,6 +23,7 @@ import { JwtStrategy } from "./infra/strategies/jwt.strategy";
 			}),
 		}),
 		UserModule,
+		StaffModule,
 	],
 	controllers: [AuthController],
 	providers: [

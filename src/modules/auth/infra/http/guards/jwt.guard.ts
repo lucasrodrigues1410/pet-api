@@ -5,6 +5,7 @@ import {
 } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 import { AuthGuard } from "@nestjs/passport";
+import { USER_TYPE_KEY } from "../decorators/user-type.decorator";
 
 @Injectable()
 export class JwtGuard extends AuthGuard("jwt") {
@@ -25,7 +26,7 @@ export class JwtGuard extends AuthGuard("jwt") {
 
 		// Recupera o userType definido via decorator
 		const requiredUserType = this.reflector.getAllAndOverride<string>(
-			"userType",
+			USER_TYPE_KEY,
 			[context.getHandler(), context.getClass()],
 		) as unknown as string[];
 

@@ -6,12 +6,13 @@
 	"private": true,
 	"license": "UNLICENSED",
 	"scripts": {
-		"build": "nest build",
 		"dev": "bun --watch ./src/main.ts",
 		"start": "bun run src/main.ts",
 		"test": "bun test",
 		"email": "email dev --dir src/modules/email/infra/templates/components",
-		"db:seed": "bun prisma/seed/index.ts"
+		"db:seed": "bun prisma/seed/index.ts",
+		"prisma:generate": "bun prisma generate",
+		"prisma:migrate": "bun prisma migrate deploy"
 	},
 	"dependencies": {
 		"@nestjs-modules/mailer": "^2.0.2",

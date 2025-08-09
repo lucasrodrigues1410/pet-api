@@ -10,7 +10,7 @@ import {
 import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { Public } from "@/modules/auth/infra/http/decorators/public.decorator";
 import { User } from "@/modules/auth/infra/http/decorators/user.decorator";
-import { UserTypeDecorator } from "@/modules/auth/infra/http/decorators/user-type.decorator";
+import { UserType } from "@/modules/auth/infra/http/decorators/user-type.decorator";
 import { AppointmentBookingUseCase } from "@/modules/booking/application/use-cases/appointment-booking.use-case";
 import { ListAvailableDatesUseCase } from "@/modules/booking/application/use-cases/list-available-dates.use-case";
 import { CreateAppointmentRequestDto } from "../dtos/create-appointment.dto";
@@ -66,7 +66,7 @@ export class BookingController {
 	@ApiOkResponse({
 		description: "Retorna o agendamento criado",
 	})
-	@UserTypeDecorator("CUSTOMER")
+	@UserType("CUSTOMER")
 	async createAppointment(
 		@User("sub") userId: string,
 		@Body() params: CreateAppointmentRequestDto,

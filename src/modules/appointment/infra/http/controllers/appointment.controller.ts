@@ -4,14 +4,17 @@ import {
 	NotFoundException,
 	Param,
 	Query,
+	UseGuards,
 } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { PaginationPresenter } from "@/core/infra/presenters/pagination.presenter";
 import { AnimalPresenter } from "@/modules/animal/infra/http/presenters/animal.presenter";
+import { GetAppointmentByCompanyIdUseCase } from "@/modules/appointment/application/use-cases/get-appointment-by-company-id.use-case";
 import { GetAppointmentByIdUseCase } from "@/modules/appointment/application/use-cases/get-appointment-by-id.use-case";
 import { GetAppointmentByUserIdUseCase } from "@/modules/appointment/application/use-cases/get-appointment-by-user-id.use-case";
 import { User } from "@/modules/auth/infra/http/decorators/user.decorator";
-import { UserTypeDecorator } from "@/modules/auth/infra/http/decorators/user-type.decorator";
+import { UserType } from "@/modules/auth/infra/http/decorators/user-type.decorator";
+import { CompanyGuard } from "@/modules/company/infra/http/guards/company.guard";
 import { CompanyPresenter } from "@/modules/company/infra/http/presenters/company.presenter";
 import { ServicePresenter } from "@/modules/service/infra/http/presenters/service.presenter";
 import { UserPresenter } from "@/modules/user/infra/http/presenters/user.presenter";
@@ -28,7 +31,8 @@ export class AppointmentController {
 	constructor(
 		private readonly getAppointmentByIdUseCase: GetAppointmentByIdUseCase,
 		private readonly getAppointmentByUserIdUseCase: GetAppointmentByUserIdUseCase,
-	) {}
+		private readonly getAppointmentByCompanyIdUseCase: GetAppointmentByCompanyIdUseCase,
+	) { }
 
 	@Get(":id")
 	@ApiOperation({
@@ -38,7 +42,7 @@ export class AppointmentController {
 		status: 200,
 		type: AppointmentDetailResponse,
 	})
-	@UserTypeDecorator("CUSTOMER", "COMPANY")
+	@UserType("CUSTOMER", "COMPANY")
 	async getAppointmentById(
 		@Param("id") userId: string,
 		@User("sub") id: string,
@@ -61,6 +65,30 @@ export class AppointmentController {
 		};
 	}
 
+	@Get("/company/:companyId")
+	@ApiOperation({ summary: "Retorna todos os agendamentos da empresa" })
+	@ApiResponse({ status: 200, type: AppointmentDetailsPaginatedResponse })
+	@UserType("COMPANY")
+	@UseGuards(CompanyGuard)
+	async getAllCompanyAppointments(
+		@Param("companyId") companyId: string,
+		@Query() query: PaginationQueryDto,
+	) {
+		const response = await this.getAppointmentByCompanyIdUseCase.execute({
+			companyId,
+			query,
+		});
+
+		if (response.isLeft()) {
+			throw new NotFoundException(response.value.message);
+		}
+
+		return PaginationPresenter.toHTTP({
+			meta: response.value.meta,
+			items: response.value.items.map(AppointmentPresenter.toHTTP),
+		});
+	}
+
 	@Get("/user")
 	@ApiOperation({
 		summary: "Retorna todos os agendamentos do cliente",
@@ -69,7 +97,7 @@ export class AppointmentController {
 		status: 200,
 		type: AppointmentDetailsPaginatedResponse,
 	})
-	@UserTypeDecorator("CUSTOMER")
+	@UserType("CUSTOMER")
 	async getAllAppointments(
 		@User("sub") userId: string,
 		@Query() query: PaginationQueryDto,

@@ -20,7 +20,7 @@ export class PrismaCompanyRepository implements CompanyRepository {
 			longitude: params.location?.longitude,
 		});
 
-		const filterOptions = {
+        const filterOptions = {
 			OR: [
 				{
 					name: { contains: query, mode: "insensitive" },
@@ -36,7 +36,8 @@ export class PrismaCompanyRepository implements CompanyRepository {
 					},
 				},
 			],
-			companyLocations: {
+          deletedAt: null,
+          companyLocations: {
 				some: {
 					location: {
 						latitude: {
@@ -72,21 +73,67 @@ export class PrismaCompanyRepository implements CompanyRepository {
 		};
 	}
 
-	async findById(id: string): Promise<Company | null> {
-		const result = await this.prismaService.company.findUnique({
-			where: {
-				id,
-			},
-		});
+  async findById(id: string): Promise<Company | null> {
+    const result = await this.prismaService.company.findFirst({
+      where: {
+        id,
+        deletedAt: null,
+      },
+    });
 		if (!result) {
 			return null;
 		}
 		return PrismaCompanyMapper.toDomain(result);
 	}
 
-	async create(company: Company): Promise<void> {
-		await this.prismaService.company.create({
-			data: PrismaCompanyMapper.toPrisma(company),
-		});
-	}
+  async create(company: Company, ownerUserId: string): Promise<void> {
+    await this.prismaService.$transaction(async (tx) => {
+      await tx.company.create({
+        data: PrismaCompanyMapper.toPrisma(company),
+      });
+      await tx.userCompany.create({
+        data: {
+          companyId: company.id.toString(),
+          userId: ownerUserId,
+          role: "ADMIN",
+        },
+      });
+    });
+  }
+
+  async update(
+    companyId: string,
+    data: Parameters<CompanyRepository["update"]>[1],
+  ): Promise<Company> {
+    await this.prismaService.company.updateMany({
+      where: { id: companyId, deletedAt: null },
+      data: {
+        name: data.name,
+        address: data.address,
+        contact: data.contact,
+      },
+    });
+    const refreshed = await this.prismaService.company.findFirst({
+      where: { id: companyId, deletedAt: null },
+    });
+    if (!refreshed) {
+      throw new Error("Company not found");
+    }
+    return PrismaCompanyMapper.toDomain(refreshed);
+  }
+
+  async softDelete(companyId: string): Promise<void> {
+    await this.prismaService.company.update({
+      where: { id: companyId },
+      data: { deletedAt: new Date() },
+    });
+  }
+
+  async isOwner(params: { companyId: string; userId: string }): Promise<boolean> {
+    const uc = await this.prismaService.userCompany.findFirst({
+      where: { companyId: params.companyId, userId: params.userId, role: "ADMIN" },
+      select: { id: true },
+    });
+    return !!uc;
+  }
 }

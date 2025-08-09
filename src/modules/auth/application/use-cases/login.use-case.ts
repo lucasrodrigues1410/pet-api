@@ -1,5 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { UserRepository } from "src/modules/user/domain/repositories/user.repository";
+import { StaffRole } from "@/modules/staff/domain/entities/staff.entity";
+import { StaffRepository } from "@/modules/staff/domain/repositories/staff.repository";
 import { Either, left, right } from "@/shared/either";
 import { InvalidCredentialsError } from "../../domain/errors/invalid-credentials.error";
 import { Encrypter } from "../../domain/interfaces/encrypter.interface";
@@ -21,6 +23,7 @@ type LoginUseCaseResponse = Either<
 export class LoginUseCase {
 	constructor(
 		private readonly userRepository: UserRepository,
+		private readonly staffRepository: StaffRepository,
 		private hashComparer: HashComparer,
 		private encrypter: Encrypter,
 	) {}
@@ -30,18 +33,21 @@ export class LoginUseCase {
 		password,
 	}: LoginUseCaseRequest): Promise<LoginUseCaseResponse> {
 		const user = await this.userRepository.findByEmail(email);
+		let staffRole: StaffRole | undefined;
+		let companyId: string | undefined;
+		const isPasswordValid = await this.hashComparer.compare(
+			password,
+			user?.password ?? "",
+		);
 
-		if (!user) {
+		if (!user || !isPasswordValid) {
 			return left(new InvalidCredentialsError());
 		}
 
-		const isPasswordValid = await this.hashComparer.compare(
-			password,
-			user?.password,
-		);
-
-		if (!isPasswordValid) {
-			return left(new InvalidCredentialsError());
+		if (user.type === "COMPANY") {
+			const staff = await this.staffRepository.findByUserId(user.id.toString());
+			staffRole = staff?.role;
+			companyId = staff?.companyId.toString();
 		}
 
 		const accessToken = await this.encrypter.encrypt({
@@ -49,6 +55,8 @@ export class LoginUseCase {
 			name: user.name,
 			email: user.email,
 			type: user.type,
+			role: staffRole,
+			companyId: companyId,
 		});
 		return right({ accessToken });
 	}
