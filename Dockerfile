@@ -1,13 +1,13 @@
-FROM oven/bun
+FROM node:20-slim
 
 WORKDIR /app
 
-# Instalar OpenSSL
-RUN apt-get update -y && apt-get install -y openssl
+# Instalar OpenSSL e Bun
+RUN apt-get update -y && apt-get install -y openssl curl \
+  && curl -fsSL https://bun.sh/install | bash \
+  && mv /root/.bun/bin/bun /usr/local/bin/
 
-COPY package.json .
-COPY bun.lock .
-
+COPY package.json bun.lock ./
 RUN bun install
 
 COPY src src
@@ -16,7 +16,8 @@ COPY prisma prisma
 
 RUN bunx prisma generate
 
-ENV NODE_ENV production
-CMD ["bun", "run", "start"]
+ENV NODE_ENV=production
+
+CMD ["bun", "run", "db:deploy"]
 
 EXPOSE 3000
