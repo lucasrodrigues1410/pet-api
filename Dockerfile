@@ -2,11 +2,13 @@ FROM oven/bun
 
 WORKDIR /app
 
+# Instalar OpenSSL
+RUN apt-get update -y && apt-get install -y openssl
+
 COPY package.json .
 COPY bun.lock .
 
-RUN bun install --production
-RUN bun install prisma
+RUN bun install
 
 COPY src src
 COPY tsconfig.json .
