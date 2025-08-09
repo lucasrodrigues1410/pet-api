@@ -14,7 +14,7 @@ COPY prisma ./prisma
 # Copia restante do código e configurações e compila a aplicação
 COPY tsconfig.json nest-cli.json ./
 COPY src ./src
-RUN bun run prisma:generate
+RUN bun run prisma:migrate && bun run prisma:generate
 
 ENV NODE_ENV=production
 EXPOSE 3000
