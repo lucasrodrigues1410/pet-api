@@ -1,21 +1,22 @@
-# Set Bun and Node version
-FROM imbios/bun-node:23-slim
-
-# Set production environment
-ENV NODE_ENV="production"
-
-# Bun app lives here
+# Imagem com Bun + Node
+FROM imbios/bun-node:23-slim AS base
 WORKDIR /app
+ENV NODE_ENV=production
 
-# Copy app files to app directory
+# Instala dependências do sistema (OpenSSL para Prisma)
+RUN apt-get update -y && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
+
+# Copia apenas arquivos de dependência primeiro para aproveitar cache
+COPY package.json bun.lockb ./
+
+# Instala apenas dependências de produção
+RUN bun install --frozen-lockfile --production
+
+# Copia o resto do código
 COPY . .
 
-# Install node modules
-RUN bun install
-
-# Generate Prisma Client
+# Gera Prisma Client
 RUN bun prisma generate
 
-# Start the server by default, this can be overwritten at runtime
 EXPOSE 3000
-CMD [ "bun", "run", "start" ]
+CMD ["bun", "run", "start"]
