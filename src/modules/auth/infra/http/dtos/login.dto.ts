@@ -7,7 +7,7 @@ const loginRequest = z.object({
 });
 
 const loginResponse = z.object({
-	access_token: z.string(),
+	access_token: z.jwt(),
 });
 
 export class LoginRequestDto extends createZodDto(loginRequest) {}

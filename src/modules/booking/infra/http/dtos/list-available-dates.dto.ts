@@ -1,13 +1,13 @@
 import { createZodDto } from "nestjs-zod";
 import { z } from "zod";
 
-const listAvailableDatesRequest = z.object({
+const request = z.object({
 	companyId: z.string(),
 	serviceId: z.string(),
 	date: z.iso.datetime(),
 });
 
-const listAvailableDatesResponse = z.object({
+const response = z.object({
 	slots: z.array(
 		z.object({
 			label: z.string(),
@@ -15,10 +15,5 @@ const listAvailableDatesResponse = z.object({
 	),
 });
 
-export class ListAvailableDatesRequestDto extends createZodDto(
-	listAvailableDatesRequest,
-) {}
-
-export class ListAvailableDatesResponseDto extends createZodDto(
-	listAvailableDatesResponse,
-) {}
+export class ListAvailableDatesRequestDto extends createZodDto(request) { }
+export class ListAvailableDatesResponseDto extends createZodDto(response) { }

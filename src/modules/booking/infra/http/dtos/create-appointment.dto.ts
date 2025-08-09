@@ -3,7 +3,7 @@ import { createZodDto } from "nestjs-zod";
 import { z } from "zod";
 import { CoatType } from "@/modules/appointment/domain/enums/appointment.enum";
 
-const createAppointmentRequest = z.object({
+const request = z.object({
 	date: z.iso.datetime().transform((val) =>
 		set(new Date(val), {
 			seconds: 0,
@@ -15,6 +15,4 @@ const createAppointmentRequest = z.object({
 	coatType: z.enum(CoatType),
 });
 
-export class CreateAppointmentRequestDto extends createZodDto(
-	createAppointmentRequest,
-) {}
+export class CreateAppointmentRequestDto extends createZodDto(request) { }

@@ -8,17 +8,8 @@ export const companyDto = z.object({
 	contact: z.string().optional(),
 });
 
-export const createCompanyDto = z.object({
-  name: z.string().min(1),
-  address: z.string().optional(),
-  contact: z.string().optional(),
-});
+export const createDto = companyDto.omit({ id: true });
+export const updateDto = companyDto.omit({ id: true }).partial();
 
-export const updateCompanyDto = z.object({
-  name: z.string().min(1).optional(),
-  address: z.string().optional(),
-  contact: z.string().optional(),
-});
-
-export class CreateCompanyRequestDto extends createZodDto(createCompanyDto) {}
-export class UpdateCompanyRequestDto extends createZodDto(updateCompanyDto) {}
+export class CreateCompanyRequestDto extends createZodDto(createDto) {}
+export class UpdateCompanyRequestDto extends createZodDto(updateDto) {}

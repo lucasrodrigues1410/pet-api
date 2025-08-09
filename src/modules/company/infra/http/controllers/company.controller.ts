@@ -50,10 +50,7 @@ export class CompanyController {
 
 	@Post("search")
 	@ApiOperation({ summary: "Pesquisar empresas por query" })
-	@ApiResponse({
-		status: 200,
-		type: CompanyPaginatedResponse,
-	})
+	@ApiResponse({ status: 200, type: CompanyPaginatedResponse })
 	@Public()
 	async searchCompanies(
 		@Body() data: SearchCompaniesRequestDto,
@@ -76,10 +73,7 @@ export class CompanyController {
 
 	@Get(":id")
 	@ApiOperation({ summary: "Buscar empresa por ID" })
-	@ApiResponse({
-		status: 200,
-		type: CompanyResponse,
-	})
+	@ApiResponse({ status: 200, type: CompanyResponse })
 	@Public()
 	async getCompanyById(@Param("id") id: string) {
 		const result = await this.getCompanyByIdUseCase.execute({ id });

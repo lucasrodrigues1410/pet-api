@@ -1,11 +1,17 @@
 import { createZodDto } from "nestjs-zod";
-import { z } from "zod";
+import z from "zod";
+import { animalDto } from "./animal.dto";
 
-const createAnimalRequest = z.object({
-	name: z.string(),
-	breedId: z.string(),
-	birthdate: z.iso.date(),
-	weight: z.number().min(0),
+const request = z.object({
+	...animalDto
+		.pick({
+			name: true,
+			breedId: true,
+
+			weight: true,
+		})
+		.required().shape,
+	birthdate: z.iso.date().optional(),
 });
 
-export class CreateAnimalRequestDto extends createZodDto(createAnimalRequest) {}
+export class CreateAnimalRequestDto extends createZodDto(request) {}

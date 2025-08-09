@@ -1,7 +1,7 @@
 import { createZodDto } from "nestjs-zod";
 import { z } from "zod";
 
-const searchCompaniesRequest = z.object({
+const request = z.object({
 	location: z
 		.object({
 			latitude: z.number(),
@@ -11,6 +11,4 @@ const searchCompaniesRequest = z.object({
 	query: z.string().optional(),
 });
 
-export class SearchCompaniesRequestDto extends createZodDto(
-	searchCompaniesRequest,
-) {}
+export class SearchCompaniesRequestDto extends createZodDto(request) {}
