@@ -15,14 +15,13 @@ import { CompanyGuard } from "@/modules/company/infra/http/guards/company.guard"
 import { DeleteCompanyAvailabilityUseCase } from "@/modules/company-availability/application/use-cases/delete-company-availability.use-case";
 import { GetCompanyAvailabilityUseCase } from "@/modules/company-availability/application/use-cases/get-company-availability.use-case";
 import { UpsertCompanyAvailabilityUseCase } from "@/modules/company-availability/application/use-cases/upsert-company-availability.use-case";
-import { DaysOfWeek } from "@/modules/company-availability/domain/entities/company-availability.entity";
 import { StaffRole } from "@/modules/staff/domain/entities/staff.entity";
 import { StaffRoles } from "@/modules/staff/infra/decorators/staff-roles.decorator";
 import {
-	CompanyAvailabilityListResponseDto,
-	CompanyAvailabilityResponseDto,
+	CompanyAvailabilityParamsDto,
 	UpsertCompanyAvailabilityBodyDto,
 } from "../dtos/company-availability.dto";
+import { CompanyAvailabilityListResponseDto, CompanyAvailabilityResponseDto } from "../dtos/company-availability.response.dto";
 
 @ApiTags("Disponibilidade da Empresa")
 @Controller("company/:companyId/availability")
@@ -31,7 +30,7 @@ export class CompanyAvailabilityController {
 		private readonly upsertUseCase: UpsertCompanyAvailabilityUseCase,
 		private readonly deleteUseCase: DeleteCompanyAvailabilityUseCase,
 		private readonly getUseCase: GetCompanyAvailabilityUseCase,
-	) {}
+	) { }
 
 	@Get()
 	@ApiOperation({ summary: "Listar disponibilidade da empresa" })
@@ -40,18 +39,20 @@ export class CompanyAvailabilityController {
 	async list(@Param("companyId") companyId: string) {
 		const result = await this.getUseCase.execute({ companyId });
 		const items = result.isRight() ? result.value.items : [];
-		return items.map((a) => ({
-			companyId: a.companyId.toString(),
-			day: a.day,
-			timeRange: {
-				startTime: a.timeRange.startTime,
-				endTime: a.timeRange.endTime,
-			},
-			launchTime: {
-				startTime: a.launchTime.startTime,
-				endTime: a.launchTime.endTime,
-			},
-		}));
+		return {
+			items: items.map((a) => ({
+				companyId: a.companyId.toString(),
+				day: a.day,
+				timeRange: {
+					startTime: a.timeRange.startTime,
+					endTime: a.timeRange.endTime,
+				},
+				launchTime: {
+					startTime: a.launchTime.startTime,
+					endTime: a.launchTime.endTime,
+				},
+			})),
+		}
 	}
 
 	@Put(":day")
@@ -62,13 +63,12 @@ export class CompanyAvailabilityController {
 	@UseGuards(CompanyGuard)
 	@StaffRoles(StaffRole.ADMIN, StaffRole.MANAGER)
 	async upsert(
-		@Param("companyId") companyId: string,
-		@Param("day") day: DaysOfWeek,
+		@Param() params: CompanyAvailabilityParamsDto,
 		@Body() body: UpsertCompanyAvailabilityBodyDto,
 	) {
 		const result = await this.upsertUseCase.execute({
-			companyId,
-			day,
+			companyId: params.companyId,
+			day: params.day,
 			...body,
 		});
 
@@ -98,10 +98,9 @@ export class CompanyAvailabilityController {
 	@UseGuards(CompanyGuard)
 	@StaffRoles(StaffRole.ADMIN, StaffRole.MANAGER)
 	async remove(
-		@Param("companyId") companyId: string,
-		@Param("day") day: DaysOfWeek,
+		@Param() params: CompanyAvailabilityParamsDto,
 	) {
-		const result = await this.deleteUseCase.execute({ companyId, day });
+		const result = await this.deleteUseCase.execute({ companyId: params.companyId, day: params.day });
 		if (result.isLeft()) {
 			throw new Error(result.value.message);
 		}

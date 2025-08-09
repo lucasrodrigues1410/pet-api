@@ -17,7 +17,6 @@ import { BreedModule } from "./modules/breed/breed.module";
 import { CompanyModule } from "./modules/company/company.module";
 import { EmailModule } from "./modules/email/email.module";
 import { NotificationModule } from "./modules/notification/notification.module";
-import { PaymentModule } from "./modules/payment/payment.module";
 import { PriceVariationModule } from "./modules/price-variation/price-variation.module";
 import { ServiceModule } from "./modules/service/service.module";
 import { StaffModule } from "./modules/staff/staff.module";
@@ -42,7 +41,6 @@ import { UserModule } from "./modules/user/user.module";
 		AssetModule,
 		CompanyModule,
 		PriceVariationModule,
-		PaymentModule,
 		AppointmentModule,
 		BookingModule,
 		StaffModule,
