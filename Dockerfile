@@ -2,10 +2,12 @@ FROM node:20-slim
 
 WORKDIR /app
 
-# Instalar OpenSSL e Bun
-RUN apt-get update -y && apt-get install -y openssl curl \
+
+# Instalar unzip, OpenSSL e Bun
+RUN apt-get update -y && apt-get install -y unzip openssl curl \
   && curl -fsSL https://bun.sh/install | bash \
   && mv /root/.bun/bin/bun /usr/local/bin/
+
 
 COPY package.json bun.lock ./
 RUN bun install
