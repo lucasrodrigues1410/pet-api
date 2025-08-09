@@ -7,7 +7,7 @@ ENV NODE_ENV=production
 RUN apt-get update -y && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
 
 # Copia apenas arquivos de dependência primeiro para aproveitar cache
-COPY package.json bun.lockb ./
+COPY package.json bun.lock ./
 
 # Instala apenas dependências de produção
 RUN bun install --frozen-lockfile --production
