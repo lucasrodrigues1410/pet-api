@@ -21,7 +21,7 @@ WORKDIR /usr/src/app
 COPY --from=deps-dev /temp/dev/node_modules ./node_modules
 # Copia esquema e configurações do Prisma
 COPY prisma ./prisma
-COPY tsconfig.json bunfig.toml nest-cli.json ./
+COPY tsconfig.json nest-cli.json ./
 COPY src ./src
 # Gera o Prisma Client
 RUN bunx prisma generate
