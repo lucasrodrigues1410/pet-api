@@ -11,7 +11,7 @@ export class PrismaAssetRepository implements AssetRepository {
 	async create(asset: Asset): Promise<void> {
 		await this.prismaService.asset.upsert({
 			where: {
-				id: asset.id.toString(),
+				name: asset.name,
 			},
 			update: PrismaAssetMapper.toPrisma(asset),
 			create: PrismaAssetMapper.toPrisma(asset),

@@ -10,6 +10,7 @@ interface UploadAndCreateAssetRequest {
 	file: Express.Multer.File;
 	userId: string;
 	fileName?: string;
+	folder?: string;
 }
 
 type UploadAndCreateAssetResponse = Either<
@@ -30,17 +31,23 @@ export class UploadAndCreateAssetUseCase {
 		file: data,
 		userId,
 		fileName,
+		folder,
 	}: UploadAndCreateAssetRequest): Promise<UploadAndCreateAssetResponse> {
 		const allowedFileTypes = ["image/jpeg", "image/png", "application/pdf"];
 		if (!allowedFileTypes.includes(data.mimetype)) {
 			return left(new InvalidAssetTypeError(data.mimetype));
 		}
 
+		var fileNameParts = fileName?.split("/") || [];
+		folder = fileNameParts.slice(0, -1).join("/") || "";
+		fileName = fileNameParts[fileNameParts.length - 1] || data.originalname;
+
 		const { url, name, id, height, width, thumbnailUrl } =
 			await this.uploader.upload({
-				fileName: fileName || data.originalname,
+				fileName: fileName,
 				fileType: data.mimetype,
 				body: data.buffer,
+				folder: folder,
 			});
 
 		const asset = Asset.create({

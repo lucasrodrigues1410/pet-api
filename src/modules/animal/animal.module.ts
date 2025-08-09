@@ -1,5 +1,6 @@
 import { Module } from "@nestjs/common";
 import { AssetModule } from "../asset/asset.module";
+import { AddAssetToAnimalUseCase } from "./application/use-cases/add-asset-to-animal.use-case";
 import { CreateAnimalUseCase } from "./application/use-cases/create-animal.use-case";
 import { DeleteAnimalUseCase } from "./application/use-cases/delete-animal.use-case";
 import { ListAnimalsFromUserUserUseCase } from "./application/use-cases/list-animals-from-user.use-case";
@@ -16,6 +17,7 @@ import { AnimalController } from "./infra/http/controllers/animal.controller";
 		ListAnimalsFromUserUserUseCase,
 		UpdateAnimalUseCase,
 		DeleteAnimalUseCase,
+		AddAssetToAnimalUseCase,
 		{
 			provide: AnimalRepository,
 			useClass: AnimalPrismaRepository,

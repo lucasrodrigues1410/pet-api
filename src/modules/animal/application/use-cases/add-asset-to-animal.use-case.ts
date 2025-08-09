@@ -32,7 +32,7 @@ export class AddAssetToAnimalUseCase {
 		const result = await this.uploadAndCreateAsset.execute({
 			file,
 			userId,
-			fileName: `animals/${animalId}-${file.originalname}`,
+			fileName: `animals/animal-${animalId}-user-${userId}`,
 		});
 
 		if (result.isLeft()) {

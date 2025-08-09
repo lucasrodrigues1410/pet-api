@@ -14,7 +14,9 @@ import {
 	Put,
 	Query,
 	UploadedFile,
+	UseInterceptors,
 } from "@nestjs/common";
+import { FileInterceptor } from "@nestjs/platform-express";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { User } from "src/modules/auth/infra/http/decorators/user.decorator";
 import { UserTypeDecorator } from "src/modules/auth/infra/http/decorators/user-type.decorator";
@@ -131,6 +133,7 @@ export class AnimalController {
 	@ApiOperation({ summary: "Adicionar um asset a um animal" })
 	@UserTypeDecorator("CUSTOMER")
 	@HttpCode(201)
+	@UseInterceptors(FileInterceptor("file"))
 	async addAsset(
 		@User("sub") userId: string,
 		@Param("id") animalId: string,
