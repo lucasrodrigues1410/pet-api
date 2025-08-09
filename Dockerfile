@@ -5,13 +5,13 @@ WORKDIR /usr/src/app
 # Stage 2: Instalação de dependências de desenvolvimento (cache em /temp/dev)
 FROM base AS deps-dev
 RUN mkdir -p /temp/dev
-COPY package.json bun.lockb /temp/dev/
+COPY package.json bun.lock /temp/dev/
 RUN cd /temp/dev && bun install --frozen-lockfile
 
 # Stage 3: Instalação de dependências de produção (cache em /temp/prod)
 FROM base AS deps-prod
 RUN mkdir -p /temp/prod
-COPY package.json bun.lockb /temp/prod/
+COPY package.json bun.lock /temp/prod/
 RUN cd /temp/prod && bun install --frozen-lockfile --production
 
 # Stage 4: Build da aplicação
