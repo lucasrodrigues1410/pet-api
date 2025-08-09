@@ -3,7 +3,10 @@ import {
 	Appointment,
 	AppointmentProps,
 } from "@/modules/appointment/domain/entities/appointment.entity";
-import { AppointmentStatus, CoatType } from "@/modules/appointment/domain/enums/appointment.enum";
+import {
+	AppointmentStatus,
+	CoatType,
+} from "@/modules/appointment/domain/enums/appointment.enum";
 import { PrismaAppointmentMapper } from "@/modules/appointment/infra/database/mapper/prisma-appointment.mapper";
 import { faker } from "@faker-js/faker";
 import { Injectable } from "@nestjs/common";

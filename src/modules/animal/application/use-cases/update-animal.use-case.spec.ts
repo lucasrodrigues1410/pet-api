@@ -33,13 +33,14 @@ describe("Update", () => {
 			animalId: oldAnimal.id.toString(),
 			userId: oldAnimal.userId.toString(),
 			name: newAnimal.name,
-			birthdate: newAnimal.birthdate,
+			birthdate: newAnimal.birthdate?.toISOString(),
 			weight: newAnimal.weight,
 		});
 
 		expect(response.isRight()).toBeTruthy();
 		expect(inMemoryAnimalRepository.items).toHaveLength(1);
-		expect(inMemoryAnimalRepository.items[0].name).toEqual(newAnimal.name);
+		const animal = inMemoryAnimalRepository.items[0];
+		expect(animal.name).toEqual(newAnimal.name);
 	});
 
 	it("should not be able to update an animal that does not exist", async () => {
@@ -51,7 +52,7 @@ describe("Update", () => {
 			animalId: "non-existing-id",
 			userId: oldAnimal.userId.toString(),
 			name: newAnimal.name,
-			birthdate: newAnimal.birthdate,
+			birthdate: newAnimal.birthdate?.toISOString(),
 			weight: newAnimal.weight,
 		});
 
@@ -68,7 +69,7 @@ describe("Update", () => {
 			animalId: oldAnimal.id.toString(),
 			userId: newAnimal.userId.toString(),
 			name: newAnimal.name,
-			birthdate: newAnimal.birthdate,
+			birthdate: newAnimal.birthdate?.toISOString(),
 			weight: newAnimal.weight,
 		});
 

@@ -1,7 +1,7 @@
+import { Injectable } from "@nestjs/common";
 import { PrismaService } from "@/core/infra/prisma/prisma.service";
 import { CompanyAvailabilityExcpetionRepository } from "@/modules/company-availability/domain/repositories/company-availability-exception.repository";
 import type { DateRange } from "@/shared/types/date-range";
-import { Injectable } from "@nestjs/common";
 import { PrismaCompanyAvailabilityExceptionMapper } from "../mappers/company-availability-exception.mapper";
 
 @Injectable()

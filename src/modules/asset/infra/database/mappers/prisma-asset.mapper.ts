@@ -1,6 +1,6 @@
-import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
-import { Prisma, Asset as PrismaAsset } from "@prisma/client";
 import { Asset } from "src/modules/asset/domain/entities/asset";
+import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
+import { Prisma, Asset as PrismaAsset } from "@/prisma-generated/client";
 
 export class PrismaAssetMapper {
 	static toDomain(asset: PrismaAsset): Asset {

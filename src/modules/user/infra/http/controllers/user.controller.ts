@@ -1,5 +1,3 @@
-import { FindUserByIdUseCase } from "@/modules/user/application/use-cases/find-user-by-id.use-case";
-import { UpdateUserProfileUseCase } from "@/modules/user/application/use-cases/update-user-profile.use-case";
 import {
 	BadRequestException,
 	Body,
@@ -11,6 +9,8 @@ import {
 } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { User } from "src/modules/auth/infra/http/decorators/user.decorator";
+import { FindUserByIdUseCase } from "@/modules/user/application/use-cases/find-user-by-id.use-case";
+import { UpdateUserProfileUseCase } from "@/modules/user/application/use-cases/update-user-profile.use-case";
 import { UpdateUserRequestDto } from "../dtos/update-user.dto";
 import { UserResponse } from "../dtos/user.response.dto";
 import { UserPresenter } from "../presenters/user.presenter";

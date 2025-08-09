@@ -1,5 +1,5 @@
-import { Service } from "@/modules/service/domain/entities/service.entity";
 import { z } from "zod";
+import { Service } from "@/modules/service/domain/entities/service.entity";
 import { serviceDto } from "../dtos/service.dto";
 
 export class ServicePresenter {

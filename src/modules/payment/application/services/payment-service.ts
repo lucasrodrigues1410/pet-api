@@ -1,9 +1,9 @@
-import { Either, left, right } from "@/shared/either";
 import { Injectable } from "@nestjs/common";
+import { Either, left, right } from "@/shared/either";
 import { Payment } from "../../domain/entities/payment.entity";
 import { CheckoutSessionCreationError } from "../../domain/errors/checkout-session-creation.error";
-import { PaymentGateway } from "../../domain/repositories/payment-gateway.repository";
 import { PaymentRepository } from "../../domain/repositories/payment.repository";
+import { PaymentGateway } from "../../domain/repositories/payment-gateway.repository";
 
 type CreateCheckoutSessionResponse = Either<
 	CheckoutSessionCreationError,
@@ -19,9 +19,7 @@ export class PaymentService {
 		private readonly paymentRepository: PaymentRepository,
 	) {}
 
-	async createPaymentRecord(input: {
-		amount: number;
-	}) {
+	async createPaymentRecord(input: { amount: number }) {
 		const payment = Payment.create({
 			amount: input.amount,
 		});

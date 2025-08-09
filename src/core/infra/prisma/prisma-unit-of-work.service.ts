@@ -1,5 +1,5 @@
-import { UnitOfWork } from "@/core/domain/interfaces/unit-of-work.interface";
 import { Injectable } from "@nestjs/common";
+import { UnitOfWork } from "@/core/domain/interfaces/unit-of-work.interface";
 import { PrismaService } from "./prisma.service";
 
 @Injectable()

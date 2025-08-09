@@ -1,11 +1,11 @@
+import { Animal } from "@/modules/animal/domain/entities/animal.entity";
+import { Company } from "@/modules/company/domain/entities/company.entity";
+import { Service } from "@/modules/service/domain/entities/service.entity";
+import { User } from "@/modules/user/domain/entities/user.entity";
 import { Either, left, right } from "@/shared/either";
 import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
 import { Appointment } from "../../domain/entities/appointment.entity";
 import { AppointmentRepository } from "../../domain/repositories/appointment.repository";
-import { Animal } from "@/modules/animal/domain/entities/animal.entity";
-import { User } from "@/modules/user/domain/entities/user.entity";
-import { Service } from "@/modules/service/domain/entities/service.entity";
-import { Company } from "@/modules/company/domain/entities/company.entity";
 
 type GetAppointmentByIdUseCaseInput = {
 	id: string;

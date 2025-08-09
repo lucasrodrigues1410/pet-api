@@ -1,6 +1,6 @@
-import { Animal } from "@/modules/animal/domain/entities/animal.entity";
 import { differenceInYears } from "date-fns";
 import { z } from "zod";
+import { Animal } from "@/modules/animal/domain/entities/animal.entity";
 import { animalDto } from "../dtos/animal.dto";
 
 export class AnimalPresenter {

@@ -1,6 +1,6 @@
+import { addMinutes, format, isAfter, isBefore } from "date-fns";
 import { TimeRange } from "@/modules/company-availability/domain/entities/value-objects/time-range";
 import type { DateRange } from "@/shared/types/date-range";
-import { addMinutes, format, isAfter, isBefore } from "date-fns";
 import { TimeSlot } from "../../domain/entities/time-slot.entity";
 
 interface FilterParams {

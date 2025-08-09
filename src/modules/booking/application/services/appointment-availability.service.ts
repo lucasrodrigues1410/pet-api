@@ -1,6 +1,3 @@
-import { daysOfWeek } from "@/modules/company-availability/domain/entities/company-availability.entity";
-import { CompanyAvailabilityRepository } from "@/modules/company-availability/domain/repositories/company-availability.repository";
-import { StaffRepository } from "@/modules/staff/domain/repositories/staff.repository";
 import { Injectable } from "@nestjs/common";
 import {
 	addMinutes,
@@ -11,6 +8,9 @@ import {
 	setMinutes,
 	startOfDay,
 } from "date-fns";
+import { daysOfWeek } from "@/modules/company-availability/domain/entities/company-availability.entity";
+import { CompanyAvailabilityRepository } from "@/modules/company-availability/domain/repositories/company-availability.repository";
+import { StaffRepository } from "@/modules/staff/domain/repositories/staff.repository";
 
 @Injectable()
 export class AppointmentAvailabilityService {

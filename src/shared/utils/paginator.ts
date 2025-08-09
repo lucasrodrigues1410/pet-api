@@ -1,5 +1,5 @@
-import { PaginationQuery } from "@/core/infra/dtos/pagination-query.dto";
-import { PaginationMeta } from "@/core/infra/dtos/pagination.dto";
+import { PaginationMeta } from "@/shared/utils/pagination";
+import { PaginationQuery } from "@/shared/utils/pagination-query";
 
 type Result<T> = {
 	items: T[];

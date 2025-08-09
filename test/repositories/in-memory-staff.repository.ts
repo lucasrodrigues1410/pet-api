@@ -1,6 +1,5 @@
 import { Staff } from "@/modules/staff/domain/entities/staff.entity";
 import { StaffRepository } from "@/modules/staff/domain/repositories/staff.repository";
-import { DateRange } from "@/shared/types/date-range";
 
 export class InMemoryStaffRepository implements StaffRepository {
 	public items: Staff[] = [];
@@ -26,7 +25,7 @@ export class InMemoryStaffRepository implements StaffRepository {
 
 	async fetchCompanyStaffWithAppointmentsInDateRange(
 		companyId: string,
-		range: DateRange,
+		_,
 	) {
 		const staff = this.items.filter(
 			(staff) => staff.companyId.toString() === companyId,
@@ -36,7 +35,7 @@ export class InMemoryStaffRepository implements StaffRepository {
 
 	async findAvailableForSlot(
 		companyId: string,
-		range: DateRange,
+		_,
 	): Promise<Staff[]> {
 		const staff = this.items.filter(
 			(staff) => staff.companyId.toString() === companyId,

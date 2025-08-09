@@ -1,7 +1,7 @@
+import { Breed } from "src/modules/breed/domain/entities/breed.entity";
 import { Entity } from "@/core/domain/entities/entity";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { Asset } from "@/modules/asset/domain/entities/asset";
-import { Breed } from "src/modules/breed/domain/entities/breed.entity";
 
 export interface AnimalProps {
 	userId: UniqueEntityID;
@@ -13,6 +13,8 @@ export interface AnimalProps {
 	assetId?: UniqueEntityID;
 	asset?: Asset;
 }
+
+type RawBirthdate = Date | string | null;
 
 export class Animal extends Entity<AnimalProps> {
 	get userId() {
@@ -47,7 +49,27 @@ export class Animal extends Entity<AnimalProps> {
 		return this.props.asset;
 	}
 
-	public static create(props: AnimalProps, id?: UniqueEntityID): Animal {
-		return new Animal(props, id);
+	public static create(
+		props: Omit<AnimalProps, "birthdate"> & { birthdate?: RawBirthdate },
+		id?: UniqueEntityID,
+	): Animal {
+		return new Animal({
+			...props,
+			birthdate: props.birthdate ? new Date(props.birthdate) : null,
+		}, id);
+	}
+
+	public update(props: Partial<Omit<AnimalProps, "birthdate"> & { birthdate?: RawBirthdate }>) {
+		this.props = {
+			userId: this.userId,
+			breedId: this.breedId,
+			name: props.name ?? this.name,
+			birthdate: props.birthdate ? new Date(props.birthdate) : this.birthdate,
+			weight: props.weight ?? this.weight,
+			breed: props.breed ?? this.breed,
+			assetId: props.assetId ?? this.assetId,
+			asset: props.asset ?? this.asset,
+		};
+		return this;
 	}
 }

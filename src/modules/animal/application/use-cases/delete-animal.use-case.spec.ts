@@ -1,20 +1,16 @@
 import { beforeEach, describe, expect, it } from "bun:test";
 import { makeAnimal } from "test/factories/make-animal";
-import { MockEventDispatcher } from "test/mocks/mock-event-dispatcher";
 import { InMemoryAnimalRepository } from "test/repositories/in-memory-animal.repository";
 import { DeleteAnimalUseCase } from "./delete-animal.use-case";
 
 let inMemoryAnimalRepository: InMemoryAnimalRepository;
-let eventDispatcher: MockEventDispatcher;
-
 let sut: DeleteAnimalUseCase;
 
 describe("DeleteAnimalUseCase", () => {
 	beforeEach(() => {
 		inMemoryAnimalRepository = new InMemoryAnimalRepository();
-		eventDispatcher = new MockEventDispatcher();
 
-		sut = new DeleteAnimalUseCase(inMemoryAnimalRepository, eventDispatcher);
+		sut = new DeleteAnimalUseCase(inMemoryAnimalRepository);
 	});
 
 	it("should be able to delete an animal", async () => {

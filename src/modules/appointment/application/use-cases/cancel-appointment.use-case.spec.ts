@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it } from "bun:test";
-import { InMemoryAppointmentRepository } from "test/repositories/in-memory-appointment.repository";
-import { CancelAppointmentUseCase } from "./cancel-appointment.use-case";
 import { makeAppointment } from "test/factories/make-appointment";
-import { AppointmentStatus } from "../../domain/enums/appointment.enum";
 import { AppointmentPolicyMock } from "test/mocks/appointment-policy.mock";
+import { InMemoryAppointmentRepository } from "test/repositories/in-memory-appointment.repository";
+import { AppointmentStatus } from "../../domain/enums/appointment.enum";
+import { CancelAppointmentUseCase } from "./cancel-appointment.use-case";
 
 describe("CancelAppointmentUseCase", () => {
 	let appointmentRepository: InMemoryAppointmentRepository;
@@ -34,19 +34,21 @@ describe("CancelAppointmentUseCase", () => {
 		expect(appointment.status).toBe(AppointmentStatus.CANCELED);
 	});
 
-    it("should not cancel an appointment if the user is not the client", async () => {
-        const appointment = makeAppointment();
-        appointmentRepository.items.push(appointment);
+	it("should not cancel an appointment if the user is not in the policy", async () => {
+		policyMock = new AppointmentPolicyMock(false);
+		sut = new CancelAppointmentUseCase(appointmentRepository, policyMock);
 
-        const result = await sut.execute({
-            appointmentId: appointment.id.toString(),
-            user: {
-                id: "another-user-id",
-                type: "COMPANY",
-            },
-        });
+		const appointment = makeAppointment();
+		appointmentRepository.items.push(appointment);
 
-        expect(result.isLeft()).toBe(true);
-        expect(appointment.status).not.toBe(AppointmentStatus.CANCELED);
-    });
+		const result = await sut.execute({
+			appointmentId: appointment.id.toString(),
+			user: {
+				id: "another-user-id",
+				//@ts-expect-error
+				type: "teste",
+			},
+		});
+		expect(result.isLeft()).toBe(true);
+	});
 });

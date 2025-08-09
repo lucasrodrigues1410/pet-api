@@ -1,6 +1,6 @@
+import { Injectable } from "@nestjs/common";
 import { Either, left, right } from "@/shared/either";
 import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
-import { Injectable } from "@nestjs/common";
 import { Company } from "../../domain/entities/company.entity";
 import { CompanyRepository } from "../../domain/repositories/company.repository";
 

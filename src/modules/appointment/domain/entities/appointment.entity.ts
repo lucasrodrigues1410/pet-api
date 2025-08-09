@@ -1,5 +1,6 @@
 import { Entity } from "@/core/domain/entities/entity";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
+import { DomainError } from "@/core/domain/errors/domain-error";
 import { AppointmentStatus, CoatType } from "../enums/appointment.enum";
 
 export interface AppointmentProps {
@@ -63,7 +64,7 @@ export class Appointment extends Entity<AppointmentProps> {
 
 	public cancel(): void {
 		if (!Appointment.CANCELLABLE_STATUSES.includes(this.props.status)) {
-			throw new Error(
+			throw new DomainError(
 				`Appointment cannot be canceled when status is '${this.props.status}'.`,
 			);
 		}
@@ -78,15 +79,15 @@ export class Appointment extends Entity<AppointmentProps> {
 		id?: UniqueEntityID,
 	): Appointment {
 		if (props.startDate < new Date()) {
-			throw new Error("startDate must be in the future");
+			throw new DomainError("startDate must be in the future");
 		}
 
 		if (props.startDate >= props.endDate) {
-			throw new Error("startDate must be before endDate");
+			throw new DomainError("startDate must be before endDate");
 		}
 
 		if (props.price <= 0) {
-			throw new Error("Price must be positive");
+			throw new DomainError("Price must be positive");
 		}
 
 		return new Appointment(

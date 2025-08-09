@@ -1,10 +1,7 @@
-import {
-	DomainEvent,
-	EventDispatcher,
-} from "@/core/domain/interfaces/event-dispatcher.interface";
+import { EventDispatcher } from "@/core/domain/interfaces/event-dispatcher.interface";
 
 export class MockEventDispatcher implements EventDispatcher {
-	dispatch(event: DomainEvent): Promise<void> {
+	dispatch(): Promise<void> {
 		return Promise.resolve();
 	}
 }

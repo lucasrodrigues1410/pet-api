@@ -1,10 +1,10 @@
-import { PaginationQuery } from "@/core/infra/dtos/pagination-query.dto";
-import { PaginationResult } from "@/core/infra/dtos/pagination.dto";
+import { PaginationResult } from "@/shared/utils/pagination";
+import { PaginationQuery } from "@/shared/utils/pagination-query";
 import { Animal } from "../entities/animal.entity";
 
 export abstract class AnimalRepository {
 	abstract create(animal: Animal): Promise<Animal>;
-	abstract update(animal: Animal): Promise<Animal>;
+	abstract update(animalId: string, data: Partial<Omit<Animal, "id">>): Promise<Animal>;
 	abstract findById(animalId: string): Promise<Animal | null>;
 	abstract delete(animalId: string): Promise<void>;
 	abstract fetchAllAnimalsByUser(

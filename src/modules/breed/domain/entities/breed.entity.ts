@@ -15,6 +15,24 @@ export class Breed extends Entity<BreedProps> {
 		return this.props.name;
 	}
 
+	toPrimitives() {
+		return {
+			animalTypeId: this.props.animalTypeId.toValue(),
+			name: this.props.name,
+			id: this.id.toValue(),
+		};
+	}
+
+	public static fromPrimitives(plainData: any) {
+		return new Breed(
+			{
+				animalTypeId: new UniqueEntityID(plainData.animalTypeId),
+				name: plainData.name,
+			},
+			new UniqueEntityID(plainData.id),
+		);
+	}
+
 	public static create(props: BreedProps, id?: UniqueEntityID) {
 		return new Breed(props, id);
 	}

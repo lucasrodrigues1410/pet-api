@@ -1,8 +1,8 @@
+import { Decimal } from "prisma/generated/internal/prismaNamespace";
+import { Service } from "src/modules/service/domain/entities/service.entity";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { PriceRange } from "@/modules/service/domain/entities/value-objects/price-range.value-object";
-import { Prisma, Service as PrismaService } from "@prisma/client";
-import { Decimal } from "@prisma/client/runtime/library";
-import { Service } from "src/modules/service/domain/entities/service.entity";
+import { Prisma, Service as PrismaService } from "@/prisma-generated/client";
 
 export class PrismaServiceMapper {
 	static toDomain(

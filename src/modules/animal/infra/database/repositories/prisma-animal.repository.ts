@@ -1,7 +1,7 @@
-import { PaginationQuery } from "@/core/infra/dtos/pagination-query.dto";
-import { PrismaService } from "@/core/infra/prisma/prisma.service";
-import { paginate } from "@/shared/utils/paginator";
 import { Injectable } from "@nestjs/common";
+import { PrismaService } from "@/core/infra/prisma/prisma.service";
+import { PaginationQuery } from "@/shared/utils/pagination-query";
+import { paginate } from "@/shared/utils/paginator";
 import { Animal } from "../../../domain/entities/animal.entity";
 import { AnimalRepository } from "../../../domain/repositories/animal.repository";
 import { PrismaAnimalMapper } from "../mappers/prisma-animal.mapper";
@@ -18,11 +18,10 @@ export class AnimalPrismaRepository implements AnimalRepository {
 		return PrismaAnimalMapper.toDomain(response);
 	}
 
-	async update(animal: Animal) {
-		const data = PrismaAnimalMapper.toPrisma(animal);
+	async update(animalId: string, data: Partial<Omit<Animal, "id">>) {
 		const response = await this.prismaService.animal.update({
-			where: { id: animal.id.toString(), deletedAt: null },
-			data,
+			where: { id: animalId, deletedAt: null },
+			data: PrismaAnimalMapper.toPrismaUpdate(data),
 		});
 		return PrismaAnimalMapper.toDomain(response);
 	}

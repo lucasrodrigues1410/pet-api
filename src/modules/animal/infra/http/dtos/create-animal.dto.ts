@@ -1,10 +1,10 @@
-import { createZodDto } from "@anatine/zod-nestjs";
+import { createZodDto } from "nestjs-zod";
 import { z } from "zod";
 
 const createAnimalRequest = z.object({
 	name: z.string(),
 	breedId: z.string(),
-	birthdate: z.coerce.date().nullish(),
+	birthdate: z.iso.date(),
 	weight: z.number().min(0),
 });
 

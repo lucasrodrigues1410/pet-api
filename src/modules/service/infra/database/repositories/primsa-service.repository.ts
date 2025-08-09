@@ -1,13 +1,12 @@
-import { PrismaCategoryMapper } from "@/modules/category/infra/http/database/mappers/prisma-category.mapper";
-import { PrismaCompanyMapper } from "@/modules/company/infra/database/mappers/prisma-company.mapper";
 import { Injectable } from "@nestjs/common";
-import { getServicesWithMaxPrice } from "@prisma/client/sql";
 import { PrismaService } from "src/core/infra/prisma/prisma.service";
 import {
 	Service,
 	ServiceWithRelations,
 } from "src/modules/service/domain/entities/service.entity";
 import { ServiceRepository } from "src/modules/service/domain/repositories/service.repository";
+import { PrismaCategoryMapper } from "@/modules/category/infra/http/database/mappers/prisma-category.mapper";
+import { PrismaCompanyMapper } from "@/modules/company/infra/database/mappers/prisma-company.mapper";
 import { PrismaServiceMapper } from "../mappers/prisma-service.mapper";
 
 @Injectable()
@@ -41,14 +40,21 @@ export class PrismaServiceRepository implements ServiceRepository {
 	}
 
 	async findByCompanyId(companyId: string): Promise<Service[]> {
-		const result = await this.prismaService.$queryRawTyped(
-			getServicesWithMaxPrice(companyId),
-		);
+		const result = await this.prismaService.service.findMany({
+			where: { companyId },
+			include: {
+				priceVariation: {
+					select: {
+						price: true,
+					},
+				},
+			},
+		});
 
 		return result.map((service) => {
 			return PrismaServiceMapper.toDomain({
 				...service,
-				maxPrice: service.totalPriceVariation,
+				maxPrice: service.priceVariation.reduce((sum, v) => sum + v.price.toNumber(), 0),
 			});
 		});
 	}

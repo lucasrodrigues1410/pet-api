@@ -1,6 +1,4 @@
-import {
-	Appointment,
-} from "@/modules/appointment/domain/entities/appointment.entity";
+import { Appointment } from "@/modules/appointment/domain/entities/appointment.entity";
 import { AppointmentRepository } from "@/modules/appointment/domain/repositories/appointment.repository";
 import { DateRange } from "@/shared/types/date-range";
 import { paginate } from "@/shared/utils/paginator";
@@ -35,10 +33,7 @@ export class InMemoryAppointmentRepository implements AppointmentRepository {
 		this.items.push(appointment);
 	}
 
-	async getByPeriod(params: {
-		serviceId: string;
-		range: DateRange;
-	}) {
+	async getByPeriod(params: { serviceId: string; range: DateRange }) {
 		const { serviceId, range } = params;
 		return this.items.filter((appointment) => {
 			return (

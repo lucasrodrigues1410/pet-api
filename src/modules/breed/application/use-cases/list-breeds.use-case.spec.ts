@@ -18,9 +18,9 @@ describe("List Breeds", () => {
 		for (const breed of breeds) {
 			inMemoryCompaniesRepository.create(breed);
 		}
-		const result = await sut.execute();
+		const result = await sut.execute({});
 
 		expect(result.isRight()).toBe(true);
-		expect(result.value?.breeds).toHaveLength(5);
+		expect(result.value?.items).toHaveLength(5);
 	});
 });

@@ -1,5 +1,5 @@
-import { TimeRange } from "@/modules/company-availability/domain/entities/value-objects/time-range";
 import { addMinutes, isBefore } from "date-fns";
+import { TimeRange } from "@/modules/company-availability/domain/entities/value-objects/time-range";
 
 export class TimeSlotGeneratorService {
 	generateTimeSlots(

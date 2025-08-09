@@ -1,8 +1,8 @@
 import { Module } from "@nestjs/common";
-import { CompanyAvailabilityExcpetionRepository } from "./domain/repositories/company-availability-exception.repository";
 import { CompanyAvailabilityRepository } from "./domain/repositories/company-availability.repository";
-import { PrismaCompanyAvailabilityExceptionRepository } from "./infra/database/repositories/company-availability-exception.repository";
+import { CompanyAvailabilityExcpetionRepository } from "./domain/repositories/company-availability-exception.repository";
 import { PrismaCompanyAvailabilityRepository } from "./infra/database/repositories/company-availability.repository";
+import { PrismaCompanyAvailabilityExceptionRepository } from "./infra/database/repositories/company-availability-exception.repository";
 
 @Module({
 	providers: [

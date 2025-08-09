@@ -1,8 +1,3 @@
-import { Public } from "@/modules/auth/infra/http/decorators/public.decorator";
-import { UserTypeDecorator } from "@/modules/auth/infra/http/decorators/user-type.decorator";
-import { User } from "@/modules/auth/infra/http/decorators/user.decorator";
-import { AppointmentBookingUseCase } from "@/modules/booking/application/use-cases/appointment-booking.use-case";
-import { ListAvailableDatesUseCase } from "@/modules/booking/application/use-cases/list-available-dates.use-case";
 import {
 	BadRequestException,
 	Body,
@@ -13,6 +8,11 @@ import {
 	Post,
 } from "@nestjs/common";
 import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { Public } from "@/modules/auth/infra/http/decorators/public.decorator";
+import { User } from "@/modules/auth/infra/http/decorators/user.decorator";
+import { UserTypeDecorator } from "@/modules/auth/infra/http/decorators/user-type.decorator";
+import { AppointmentBookingUseCase } from "@/modules/booking/application/use-cases/appointment-booking.use-case";
+import { ListAvailableDatesUseCase } from "@/modules/booking/application/use-cases/list-available-dates.use-case";
 import { CreateAppointmentRequestDto } from "../dtos/create-appointment.dto";
 import {
 	ListAvailableDatesRequestDto,

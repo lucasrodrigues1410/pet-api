@@ -1,7 +1,7 @@
-import { PaginationQuery } from "@/core/infra/dtos/pagination-query.dto";
-import { PaginationResult } from "@/core/infra/dtos/pagination.dto";
-import { Either, right } from "@/shared/either";
 import { Injectable } from "@nestjs/common";
+import { Either, right } from "@/shared/either";
+import { PaginationResult } from "@/shared/utils/pagination";
+import { PaginationQuery } from "@/shared/utils/pagination-query";
 import { Company } from "../../domain/entities/company.entity";
 import { CompanyRepository } from "../../domain/repositories/company.repository";
 

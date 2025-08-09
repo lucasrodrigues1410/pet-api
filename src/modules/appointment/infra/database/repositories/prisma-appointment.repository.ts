@@ -1,3 +1,4 @@
+import { Injectable } from "@nestjs/common";
 import { PrismaService } from "@/core/infra/prisma/prisma.service";
 import { PrismaAnimalMapper } from "@/modules/animal/infra/database/mappers/prisma-animal.mapper";
 import { Appointment } from "@/modules/appointment/domain/entities/appointment.entity";
@@ -5,10 +6,9 @@ import { AppointmentRepository } from "@/modules/appointment/domain/repositories
 import { PrismaCompanyMapper } from "@/modules/company/infra/database/mappers/prisma-company.mapper";
 import { PrismaServiceMapper } from "@/modules/service/infra/database/mappers/prisma-service.mapper";
 import { PrismaUserMapper } from "@/modules/user/infra/database/mappers/prisma-user.mapper";
+import { Prisma } from "@/prisma-generated/client";
 import type { DateRange } from "@/shared/types/date-range";
 import { paginate } from "@/shared/utils/paginator";
-import { Injectable } from "@nestjs/common";
-import { Prisma } from "@prisma/client";
 import { PrismaAppointmentMapper } from "../mapper/prisma-appointment.mapper";
 
 @Injectable()
@@ -72,10 +72,7 @@ export class PrismaAppointmentRepository implements AppointmentRepository {
 		});
 	}
 
-	async getByPeriod(params: {
-		serviceId: string;
-		range: DateRange;
-	}) {
+	async getByPeriod(params: { serviceId: string; range: DateRange }) {
 		const {
 			serviceId,
 			range: { startDate: start, endDate: end },

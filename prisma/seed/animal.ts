@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@/prisma-generated/client";
 
 export async function createAnimal(prisma: PrismaClient) {
 	await prisma.animal.upsert({

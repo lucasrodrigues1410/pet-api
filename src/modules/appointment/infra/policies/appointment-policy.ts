@@ -1,34 +1,27 @@
 import { Injectable } from "@nestjs/common";
-import { AppointmentPolicy } from "../../domain/policies/appointment.policy";
-import { Either, left, right } from "@/shared/either";
-import { NotAllowedError } from "@/shared/errors/errors/not-allowed.error";
 import { StaffRepository } from "@/modules/staff/domain/repositories/staff.repository";
+import { AppointmentPolicy } from "../../domain/policies/appointment.policy";
 
 @Injectable()
 export class AppointmentPolicyImpl implements AppointmentPolicy {
-
-    constructor(
-        private readonly staffRepo: StaffRepository,
-    ) {}
+	constructor(private readonly staffRepo: StaffRepository) {}
 
 	async ensureCanCancel({
 		user,
 		appointment,
-	}: Parameters<AppointmentPolicy["ensureCanCancel"]>[0]): Promise<Either<
-            NotAllowedError, void
-        >> {
+	}: Parameters<AppointmentPolicy["ensureCanCancel"]>[0]) {
 		if (
 			user.type === "CUSTOMER" &&
 			appointment.clientId.toString() !== user.id
 		) {
-			return left(new NotAllowedError());
+			return false;
 		}
 
-        const staff = await this.staffRepo.findById(user.id);
-        if (!staff || staff.userId.toString() !== user.id) {
-            return left(new NotAllowedError());
-        }
+		const staff = await this.staffRepo.findById(user.id);
+		if (!staff || staff.userId.toString() !== user.id) {
+			return false;
+		}
 
-		return right(undefined);
+		return true;
 	}
 }

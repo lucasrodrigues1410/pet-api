@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from "bun:test";
-import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { makeAppointment } from "test/factories/make-appointment";
 import { InMemoryAppointmentRepository } from "test/repositories/in-memory-appointment.repository";
+import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { GetAppointmentByUserIdUseCase } from "./get-appointment-by-user-id.use-case";
 
 describe("GetAppointmentByUserIdUseCase", () => {

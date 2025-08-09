@@ -1,3 +1,6 @@
+import { faker } from "@faker-js/faker";
+import { Injectable } from "@nestjs/common";
+import { PrismaService } from "src/core/infra/prisma/prisma.service";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import {
 	Staff,
@@ -5,14 +8,6 @@ import {
 	StaffRole,
 } from "@/modules/staff/domain/entities/staff.entity";
 import { PrismaStaffMapper } from "@/modules/staff/infra/database/mappers/prisma-staff.mapper";
-import { faker } from "@faker-js/faker";
-import { Injectable } from "@nestjs/common";
-import { PrismaService } from "src/core/infra/prisma/prisma.service";
-import {
-	Animal,
-	AnimalProps,
-} from "src/modules/animal/domain/entities/animal.entity";
-import { PrismaAnimalMapper } from "src/modules/animal/infra/database/mappers/prisma-animal.mapper";
 
 export function makeStaff(override: Partial<Staff> = {}, id?: UniqueEntityID) {
 	const staff = Staff.create(

@@ -3,7 +3,7 @@ import { CompanyAvailabilityException } from "@/modules/company-availability/dom
 import {
 	Prisma,
 	CompanyAvailabilityException as PrismaCompanyAvailabilityException,
-} from "@prisma/client";
+} from "@/prisma-generated/client";
 
 export class PrismaCompanyAvailabilityExceptionMapper {
 	static toDomain(prismaPriceVariation: PrismaCompanyAvailabilityException) {

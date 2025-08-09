@@ -1,9 +1,8 @@
+import { Injectable, Logger } from "@nestjs/common";
+import { getUnixTime } from "date-fns";
+import Stripe from "stripe";
 import { EnvService } from "@/core/infra/env/env.service";
 import { Either, left, right } from "@/shared/either";
-import { Injectable, Logger } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
-import { addMinutes, getUnixTime } from "date-fns";
-import Stripe from "stripe";
 import { CheckoutSessionCreationError } from "../../domain/errors/checkout-session-creation.error";
 import { InvalidWebhookSignatureError } from "../../domain/errors/invalid-webhook-signature.error";
 import {
@@ -30,9 +29,9 @@ export class StripePaymentGateway implements PaymentGateway {
 	private readonly logger = new Logger(StripePaymentGateway.name);
 
 	constructor(private envService: EnvService) {
-		const apiKey = envService.get("STRIPE_API_KEY");
+		const apiKey = this.envService.get("STRIPE_API_KEY");
 		this.stripe = new Stripe(apiKey);
-		this.webhookSecret = envService.get("STRIPE_WEBHOOK_SECRET");
+		this.webhookSecret = this.envService.get("STRIPE_WEBHOOK_SECRET");
 	}
 
 	async verifyAndParseWebhook(

@@ -3,7 +3,7 @@ import { PriceVariation } from "@/modules/price-variation/domain/entities/price-
 import {
 	Prisma,
 	ServicePriceVariation as PrismaServiceVariation,
-} from "@prisma/client";
+} from "@/prisma-generated/client";
 
 export class PrismaPriceVariationMapper {
 	static toDomain(

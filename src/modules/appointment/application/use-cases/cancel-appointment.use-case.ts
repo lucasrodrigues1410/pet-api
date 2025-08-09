@@ -1,8 +1,9 @@
-import { Either, left, right } from "@/shared/either";
-import { AppointmentRepository } from "../../domain/repositories/appointment.repository";
-import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
 import { UserType } from "@/modules/user/domain/entities/user.entity";
+import { Either, left, right } from "@/shared/either";
+import { NotAllowedError } from "@/shared/errors/errors/not-allowed.error";
+import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
 import { AppointmentPolicy } from "../../domain/policies/appointment.policy";
+import { AppointmentRepository } from "../../domain/repositories/appointment.repository";
 
 type InputProps = {
 	appointmentId: string;
@@ -33,12 +34,12 @@ export class CancelAppointmentUseCase {
 			user: params.user,
 		});
 
-		if (hasPermission.isLeft()) {
-			return left(hasPermission.value);
+		if (!hasPermission) {
+			return left(new NotAllowedError());
 		}
 
 		appointment.cancel();
-        
+
 		await this.appointmentRepository.update(appointment);
 		return right(undefined);
 	}

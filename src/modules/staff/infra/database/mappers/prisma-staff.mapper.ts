@@ -5,7 +5,7 @@ import {
 	Prisma,
 	Appointment as PrismaAppointment,
 	UserCompany as PrismaUserCompany,
-} from "@prisma/client";
+} from "@/prisma-generated/client";
 
 export class PrismaStaffMapper {
 	static toDomain(

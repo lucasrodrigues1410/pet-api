@@ -1,6 +1,7 @@
 generator client {
-  provider = "prisma-client-js"
-  previewFeatures = ["prismaSchemaFolder","typedSql"]
+  provider = "prisma-client"
+  previewFeatures = ["typedSql"]
+  output   = "./generated"
 }
 
 datasource db {

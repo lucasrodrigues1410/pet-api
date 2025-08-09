@@ -1,11 +1,10 @@
-import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
-import { EnvService } from "@/core/infra/env/env.service";
 import { Injectable } from "@nestjs/common";
 import ImageKit from "imagekit";
+import { EnvService } from "@/core/infra/env/env.service";
 import {
+	Uploader,
 	UploadParams,
 	UploadResponse,
-	Uploader,
 } from "../../domain/storage/uploader";
 
 @Injectable()
@@ -13,9 +12,9 @@ export class ImageKitStorageProvider implements Uploader {
 	private client: ImageKit;
 
 	constructor(private envService: EnvService) {
-		const publicKey = envService.get("IMAGE_KIT_PUBLIC_KEY");
-		const privateKey = envService.get("IMAGE_KIT_PRIVATE_KEY");
-		const urlEndpoint = envService.get("IMAGE_KIT_URL_ENDPOINT");
+		const publicKey = this.envService.get("IMAGE_KIT_PUBLIC_KEY");
+		const privateKey = this.envService.get("IMAGE_KIT_PRIVATE_KEY");
+		const urlEndpoint = this.envService.get("IMAGE_KIT_URL_ENDPOINT");
 		this.client = new ImageKit({
 			publicKey,
 			privateKey,
@@ -23,14 +22,15 @@ export class ImageKitStorageProvider implements Uploader {
 		});
 	}
 
-	async upload({ fileName, body }: UploadParams): Promise<UploadResponse> {
-		const uploadId = new UniqueEntityID();
-		const uniqueFileName = `${uploadId}-${fileName}`;
+	async upload({ fileName, body, folder }: UploadParams): Promise<UploadResponse> {
+		const uniqueFileName = `${fileName}`;
 
 		const response = await this.client.upload({
 			fileName: uniqueFileName,
 			file: body,
-			useUniqueFileName: true,
+			useUniqueFileName: false,
+			overwriteFile: true,
+			folder,
 		});
 
 		return {
