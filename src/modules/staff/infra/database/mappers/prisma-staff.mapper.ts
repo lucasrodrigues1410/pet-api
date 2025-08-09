@@ -1,11 +1,11 @@
-import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
-import { PrismaAppointmentMapper } from "@/modules/appointment/infra/database/mapper/prisma-appointment.mapper";
-import { Staff, StaffRole } from "@/modules/staff/domain/entities/staff.entity";
 import {
 	Prisma,
 	Appointment as PrismaAppointment,
 	UserCompany as PrismaUserCompany,
-} from "@/prisma-generated/client";
+} from "prisma/generated/client";
+import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
+import { PrismaAppointmentMapper } from "@/modules/appointment/infra/database/mapper/prisma-appointment.mapper";
+import { Staff, StaffRole } from "@/modules/staff/domain/entities/staff.entity";
 
 export class PrismaStaffMapper {
 	static toDomain(

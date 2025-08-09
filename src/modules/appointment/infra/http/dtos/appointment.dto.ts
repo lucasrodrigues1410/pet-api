@@ -1,6 +1,6 @@
+import { AppointmentStatus } from "prisma/generated/client";
 import { z } from "zod";
 import { CoatType } from "@/modules/appointment/domain/enums/appointment.enum";
-import { AppointmentStatus } from "@/prisma-generated/client";
 
 export const AppointmentDto = z.object({
 	id: z.string(),

@@ -1,4 +1,4 @@
-import { PrismaClient } from "@/prisma-generated/client";
+import { PrismaClient } from "prisma/generated/client";
 
 export async function createBreed(prisma: PrismaClient) {
 	return prisma.breed.upsert({

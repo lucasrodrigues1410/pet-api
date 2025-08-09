@@ -1,6 +1,6 @@
+import { Prisma, Breed as PrismaBreed } from "prisma/generated/client";
 import { Breed } from "src/modules/breed/domain/entities/breed.entity";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
-import { Prisma, Breed as PrismaBreed } from "@/prisma-generated/client";
 
 export class PrismaBreedMapper {
 	static toDomain(prismaBreed: PrismaBreed): Breed {

@@ -1,6 +1,6 @@
-import { daysOfWeek } from "@/modules/company-availability/domain/entities/company-availability.entity";
-import { PrismaClient } from "@/prisma-generated/client";
 import { set } from "date-fns";
+import { PrismaClient } from "prisma/generated/client";
+import { daysOfWeek } from "@/modules/company-availability/domain/entities/company-availability.entity";
 
 export async function createCompany(prisma: PrismaClient) {
 	await prisma.company.upsert({

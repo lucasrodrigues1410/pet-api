@@ -1,9 +1,9 @@
-import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
-import { CompanyAvailabilityException } from "@/modules/company-availability/domain/entities/company-availability-exception.entity";
 import {
 	Prisma,
 	CompanyAvailabilityException as PrismaCompanyAvailabilityException,
-} from "@/prisma-generated/client";
+} from "prisma/generated/client";
+import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
+import { CompanyAvailabilityException } from "@/modules/company-availability/domain/entities/company-availability-exception.entity";
 
 export class PrismaCompanyAvailabilityExceptionMapper {
 	static toDomain(prismaPriceVariation: PrismaCompanyAvailabilityException) {

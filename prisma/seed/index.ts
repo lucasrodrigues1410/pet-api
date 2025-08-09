@@ -1,4 +1,4 @@
-import { PrismaClient } from "@/prisma-generated/client";
+import { PrismaClient } from "prisma/generated/client";
 import { createAnimal } from "./animal";
 import { createAnimalType } from "./animal-type";
 import { createBreed } from "./breed";

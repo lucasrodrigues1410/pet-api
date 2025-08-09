@@ -21,7 +21,6 @@
 		"noFallthroughCasesInSwitch": false,
 		"paths": {
 			"@/*": ["src/*"],
-			"@/prisma-generated/*": ["prisma/generated/*"]
 		},
 		"types": ["multer", "bun-types"]
 	}

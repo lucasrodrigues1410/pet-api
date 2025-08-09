@@ -1,13 +1,13 @@
-import { Animal } from "src/modules/animal/domain/entities/animal.entity";
-import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
-import { PrismaAssetMapper } from "@/modules/asset/infra/database/mappers/prisma-asset.mapper";
-import { PrismaBreedMapper } from "@/modules/breed/infra/database/mappers/prisma-breed.mapper";
 import {
 	Prisma,
 	Animal as PrismaAnimal,
 	Asset as PrismaAsset,
 	Breed as PrismaBreed,
-} from "@/prisma-generated/client";
+} from "prisma/generated/client";
+import { Animal } from "src/modules/animal/domain/entities/animal.entity";
+import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
+import { PrismaAssetMapper } from "@/modules/asset/infra/database/mappers/prisma-asset.mapper";
+import { PrismaBreedMapper } from "@/modules/breed/infra/database/mappers/prisma-breed.mapper";
 
 export class PrismaAnimalMapper {
 	static toDomain(
@@ -50,7 +50,9 @@ export class PrismaAnimalMapper {
 		};
 	}
 
-	static toPrismaUpdate(animal: Partial<Animal>): Prisma.AnimalUncheckedUpdateInput {
+	static toPrismaUpdate(
+		animal: Partial<Animal>,
+	): Prisma.AnimalUncheckedUpdateInput {
 		return {
 			id: animal.id?.toString(),
 			userId: animal.userId?.toString(),
@@ -59,6 +61,6 @@ export class PrismaAnimalMapper {
 			name: animal.name,
 			birthdate: animal.birthdate,
 			weight: animal.weight,
-		}
+		};
 	}
 }
