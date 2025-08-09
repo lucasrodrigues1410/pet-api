@@ -1,22 +1,34 @@
-FROM oven/bun:1
+# Etapa base com Bun
+FROM oven/bun:latest AS base
+WORKDIR /app
 
-WORKDIR /usr/src/app
+# Etapa de build
+FROM base AS build
+# Instala utilitários necessários (compilação e OpenSSL)
+RUN apt-get update -qq && \
+    apt-get install -y build-essential openssl pkg-config python-is-python3
 
-# Copia manifests e instala dependências (com dev deps para gerar Prisma Client)
+# Copia dependências e instala
 COPY package.json bun.lock ./
-# Evita gerar Prisma Client no postinstall (schema ainda não copiado)
-ENV PRISMA_SKIP_POSTINSTALL_GENERATE=true
-RUN bun install --frozen-lockfile
+RUN bun install
 
-# Copia apenas Prisma e gera o client (melhor cache)
-COPY prisma ./prisma
+# Gera o Prisma Client
+COPY prisma .
+RUN bunx prisma generate
 
-# Copia restante do código e configurações e compila a aplicação
-COPY tsconfig.json nest-cli.json ./
-COPY src ./src
-RUN bun run prisma:migrate && bun run prisma:generate
+# Copia código e builda aplicação
+COPY . .
 
-ENV NODE_ENV=production
+# Remove dev-deps e instala apenas produção
+RUN rm -rf node_modules && bun install --ci
+
+# Etapa final com Bun puro
+FROM base
+# Garantir existência do OpenSSL se necessário
+RUN apt-get update -qq && apt-get install --no-install-recommends -y openssl && \
+    rm -rf /var/lib/apt/lists /var/cache/apt/archives
+
+COPY --from=build /app /app
+
 EXPOSE 3000
-# Executa migrate em runtime (depende de DATABASE_URL) e sobe a app
 CMD ["bun", "run", "start"]
