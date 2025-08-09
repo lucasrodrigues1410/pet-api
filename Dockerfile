@@ -1,7 +1,5 @@
 # Set Bun and Node version
-ARG BUN_VERSION=1.2.19
-ARG NODE_VERSION=22.11.0
-FROM imbios/bun-node:${BUN_VERSION}-${NODE_VERSION}-slim
+FROM imbios/bun-node:23-slim
 
 # Set production environment
 ENV NODE_ENV="production"
