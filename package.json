@@ -11,8 +11,7 @@
 		"test": "bun test",
 		"email": "email dev --dir src/modules/email/infra/templates/components",
 		"db:seed": "bun prisma/seed/index.ts",
-		"prisma:generate": "bun prisma generate",
-		"prisma:migrate": "bun prisma migrate deploy"
+		"db:deploy": "bunx prisma migrate deploy && bunx prisma generate && bun start"
 	},
 	"dependencies": {
 		"@nestjs-modules/mailer": "^2.0.2",
