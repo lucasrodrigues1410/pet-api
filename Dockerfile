@@ -12,6 +12,6 @@ COPY tsconfig.json .
 COPY prisma prisma
 
 ENV NODE_ENV production
-CMD ["bun", "run", "start"]
+CMD ["bun", "run", "prisma:generate", "&&", "bun", "run", "start"]
 
 EXPOSE 3000
