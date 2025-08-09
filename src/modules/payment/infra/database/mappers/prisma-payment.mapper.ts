@@ -1,10 +1,10 @@
+import { Prisma, Payment as PrismaPayment } from "prisma/generated/client";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import {
 	Payment,
 	PaymentStatus,
 	PaymentType,
 } from "@/modules/payment/domain/entities/payment.entity";
-import { Prisma, Payment as PrismaPayment } from "@/prisma-generated/client";
 
 export class PrismaPaymentMapper {
 	static toDomain(prismaPayment: PrismaPayment): Payment {
