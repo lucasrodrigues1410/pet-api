@@ -3,6 +3,7 @@ import { NestExpressApplication } from "@nestjs/platform-express";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { cleanupOpenApiDoc } from "nestjs-zod";
 import { AppModule } from "./app.module";
+import { EnvService } from "./core/infra/env/env.service";
 
 async function bootstrap() {
 	const app = await NestFactory.create<NestExpressApplication>(AppModule, {
@@ -24,9 +25,9 @@ async function bootstrap() {
 		jsonDocumentUrl: "swagger/json",
 	});
 
-	//const configService = app.get(EnvService);
-	//const port = configService.get("PORT");
+	const configService = app.get(EnvService);
+	const port = configService.get("PORT");
 
-	await app.listen(3333);
+	await app.listen(port);
 }
 bootstrap();
