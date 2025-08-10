@@ -21,5 +21,9 @@ import { BreedController } from "./infra/http/controllers/breed.controller";
 			useClass: CachingBreedRepository,
 		},
 	],
+	exports: [{
+		provide: BreedRepository,
+		useClass: CachingBreedRepository,
+	},],
 })
-export class BreedModule {}
+export class BreedModule { }

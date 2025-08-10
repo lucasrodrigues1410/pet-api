@@ -7,7 +7,7 @@ type GetAllBreedUseCaseRequest = {
 	query?: string;
 };
 
-type GetAllBreedUseCaseResponse = Either<null, Breed[]>;
+type GetAllBreedUseCaseResponse = Either<null, { items: Breed[] }>;
 
 @Injectable()
 export class ListBreedsUseCase {
@@ -18,6 +18,6 @@ export class ListBreedsUseCase {
 	): Promise<GetAllBreedUseCaseResponse> {
 		const query = (params.query || "").trim().toLowerCase();
 		const all = await this.breedRepository.getAll({ query });
-		return right(all);
+		return right({ items: all });
 	}
 }

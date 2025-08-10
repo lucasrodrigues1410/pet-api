@@ -23,6 +23,18 @@ export class PrismaBreedRepository implements BreedRepository {
 		return response.map(PrismaBreedMapper.toDomain);
 	}
 
+	async findById(id: string) {
+		const breed = await this.prismaService.breed.findUnique({
+			where: { id },
+		});
+
+		if (!breed) {
+			return null;
+		}
+
+		return PrismaBreedMapper.toDomain(breed);
+	}
+
 	async create(breed: Breed): Promise<void> {
 		await this.prismaService.breed.create({
 			data: PrismaBreedMapper.toPrisma(breed),

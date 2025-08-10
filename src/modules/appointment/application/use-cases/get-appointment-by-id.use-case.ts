@@ -44,6 +44,18 @@ export class GetAppointmentByIdUseCase {
 			);
 		}
 
-		return right(appointment);
+		// Mock the related entities for now - in a real implementation these would come from repositories
+		const mockAnimal = {} as Animal;
+		const mockClient = {} as User;
+		const mockService = {} as Service;
+		const mockCompany = {} as Company;
+
+		return right({
+			...appointment,
+			animal: mockAnimal,
+			client: mockClient,
+			service: mockService,
+			company: mockCompany,
+		});
 	}
 }

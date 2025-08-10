@@ -3,6 +3,7 @@ import {
 	Body,
 	Controller,
 	Get,
+	HttpCode,
 	NotFoundException,
 	Param,
 	Post,
@@ -12,7 +13,10 @@ import { Public } from "@/modules/auth/infra/http/decorators/public.decorator";
 import { User } from "@/modules/auth/infra/http/decorators/user.decorator";
 import { UserType } from "@/modules/auth/infra/http/decorators/user-type.decorator";
 import { AppointmentBookingUseCase } from "@/modules/booking/application/use-cases/appointment-booking.use-case";
+import { CreateAnonymousAppointmentUseCase } from "@/modules/booking/application/use-cases/create-anonymous-appointment.use-case";
 import { ListAvailableDatesUseCase } from "@/modules/booking/application/use-cases/list-available-dates.use-case";
+import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
+import { CreateAnonymousAppointmentRequestDto } from "../dtos/create-anonymous-appointment.dto";
 import { CreateAppointmentRequestDto } from "../dtos/create-appointment.dto";
 import {
 	ListAvailableDatesRequestDto,
@@ -25,6 +29,7 @@ export class BookingController {
 	constructor(
 		private readonly listAvailableDatesUseCase: ListAvailableDatesUseCase,
 		private readonly createAppointmentUseCase: AppointmentBookingUseCase,
+		private readonly createAnonymousAppointmentUseCase: CreateAnonymousAppointmentUseCase,
 	) {}
 
 	@ApiOperation({
@@ -58,6 +63,7 @@ export class BookingController {
 	}
 
 	@Post("create")
+	@HttpCode(201)
 	@ApiOperation({
 		summary: "Cria um agendamento, iniciando o processo de pagamento",
 		description:
@@ -86,6 +92,40 @@ export class BookingController {
 
 		return {
 			appointmentId: response.value.appointmentId,
+		};
+	}
+
+	@Post("create-anonymous")
+	@HttpCode(201)
+	@Public()
+	@ApiOperation({
+		summary: "Cria um agendamento anônimo",
+		description:
+			"Cria um agendamento para clientes não cadastrados, criando usuário e animal temporários automaticamente.",
+	})
+	@ApiOkResponse({
+		description: "Retorna o agendamento anônimo criado",
+	})
+	@UserType("COMPANY")
+	async createAnonymousAppointment(
+		@Body() params: CreateAnonymousAppointmentRequestDto,
+	) {
+		const response = await this.createAnonymousAppointmentUseCase.execute({
+			...params,
+			date: new Date(params.date),
+		});
+
+		if (response.isLeft()) {
+			if (response.value instanceof ResourceNotFoundError) {
+				throw new NotFoundException(response.value.message);
+			}
+			throw new BadRequestException(`${response.value.message}`);
+		}
+
+		return {
+			appointmentId: response.value.appointmentId,
+			animalId: response.value.animalId,
+			clientId: response.value.clientId,
 		};
 	}
 }

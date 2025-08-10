@@ -31,11 +31,12 @@ describe("Update Service", () => {
 
 		expect(result.isRight()).toBe(true);
 		if (result.isRight()) {
-			expect(result.value.service.name).toBe(updateData.name);
-			expect(result.value.service.description).toBe(updateData.description);
-			expect(result.value.service.price).toBe(updateData.price);
-			expect(result.value.service.duration).toBe(updateData.duration);
-			expect(result.value.service.companyId.toString()).toBe(companyId.toString());
+			const updatedService = inMemoryServicesRepository.items[0];
+			expect(updatedService?.name).toBe(updateData.name);
+			expect(updatedService?.description).toBe(updateData.description);
+			expect(updatedService?.price).toBe(updateData.price);
+			expect(updatedService?.duration).toBe(updateData.duration);
+			expect(updatedService?.companyId.toString()).toBe(companyId.toString());
 		}
 	});
 
@@ -57,9 +58,10 @@ describe("Update Service", () => {
 
 		expect(result.isRight()).toBe(true);
 		if (result.isRight()) {
-			expect(result.value.service.name).toBe(originalName); // unchanged
-			expect(result.value.service.price).toBe(originalPrice); // unchanged
-			expect(result.value.service.description).toBe(updateData.description); // updated
+			const updatedService = inMemoryServicesRepository.items[0];
+			expect(updatedService?.name).toBe(originalName); // unchanged
+			expect(updatedService?.price).toBe(originalPrice); // unchanged
+			expect(updatedService?.description).toBe(updateData.description); // updated
 		}
 	});
 
@@ -78,8 +80,9 @@ describe("Update Service", () => {
 
 		expect(result.isRight()).toBe(true);
 		if (result.isRight()) {
-			expect(result.value.service.priceRange.min).toBe(40);
-			expect(result.value.service.priceRange.max).toBe(120);
+			const updatedService = inMemoryServicesRepository.items[0];
+			expect(updatedService?.priceRange.min).toBe(40);
+			expect(updatedService?.priceRange.max).toBe(120);
 		}
 	});
 
@@ -98,7 +101,8 @@ describe("Update Service", () => {
 
 		expect(result.isRight()).toBe(true);
 		if (result.isRight()) {
-			expect(result.value.service.isActive).toBe(false);
+			const updatedService = inMemoryServicesRepository.items[0];
+			expect(updatedService?.isActive).toBe(false);
 		}
 	});
 
@@ -137,9 +141,10 @@ describe("Update Service", () => {
 
 		expect(result.isRight()).toBe(true);
 		if (result.isRight()) {
-			expect(result.value.service.name).toBe("New Name Only");
-			expect(result.value.service.details).toEqual(originalDetails); // preserved
-			expect(result.value.service.duration).toBe(45); // preserved
+			const updatedService = inMemoryServicesRepository.items[0];
+			expect(updatedService?.name).toBe("New Name Only");
+			expect(updatedService?.details).toEqual(originalDetails); // preserved
+			expect(updatedService?.duration).toBe(45); // preserved
 		}
 	});
 });

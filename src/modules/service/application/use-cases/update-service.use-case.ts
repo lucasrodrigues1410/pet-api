@@ -18,10 +18,7 @@ interface UpdateServiceUseCaseRequest {
 	};
 }
 
-type UpdateServiceUseCaseResponse = Either<
-	ResourceNotFoundError,
-	void
->;
+type UpdateServiceUseCaseResponse = Either<ResourceNotFoundError, void>;
 
 @Injectable()
 export class UpdateServiceUseCase {
@@ -30,30 +27,24 @@ export class UpdateServiceUseCase {
 	async execute({
 		id,
 		companyId,
-		name,
-		description,
-		price,
-		duration,
-		details,
-		priceRange,
+		...data
 	}: UpdateServiceUseCaseRequest): Promise<UpdateServiceUseCaseResponse> {
 		const existingService = await this.serviceRepository.findById(id);
 
-		if (!existingService || existingService.companyId.toString() !== companyId) {
+		if (existingService?.companyId.toString() !== companyId) {
 			return left(new ResourceNotFoundError());
 		}
 
-		await this.serviceRepository.update(id, {
-			name: name,
-			description: description,
-			price: price,
-			duration: duration,
-			details: details,
-			priceRange: priceRange
-				? PriceRange.create(priceRange)
-				: existingService.priceRange,
+		const priceRange = data.priceRange
+			? PriceRange.create(data.priceRange)
+			: undefined;
+
+		existingService.update({
+			...data,
+			priceRange,
 		});
 
+		await this.serviceRepository.update(id, existingService);
 		return right(undefined);
 	}
 }
