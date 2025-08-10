@@ -26,17 +26,10 @@ export class InMemoryServiceRepository implements ServiceRepository {
 		this.items.push(service);
 	}
 
-	async update(service: Service) {
-		const itemIndex = this.items.findIndex((item) => item.id.equals(service.id));
-		if (itemIndex >= 0) {
-			this.items[itemIndex] = service;
-		}
-	}
-
-	async delete(id: string) {
+	async update(id: string, service: Partial<Service>) {
 		const itemIndex = this.items.findIndex((item) => item.id.toString() === id);
 		if (itemIndex >= 0) {
-			this.items[itemIndex].props.isActive = false;
+			this.items[itemIndex].update(service);
 		}
 	}
 }

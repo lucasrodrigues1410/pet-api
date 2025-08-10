@@ -17,7 +17,7 @@ import { CompanyGuard } from "@/modules/company/infra/http/guards/company.guard"
 import { StaffRole } from "@/modules/staff/domain/entities/staff.entity";
 import { StaffRoles } from "@/modules/staff/infra/decorators/staff-roles.decorator";
 import { CreateServiceUseCase } from "../../../application/use-cases/create-service.use-case";
-import { DeleteServiceUseCase } from "../../../application/use-cases/delete-service.use-case";
+import { DeactivateServiceUseCase } from "../../../application/use-cases/deactivate-service.use-case";
 import { GetServiceByIdUseCase } from "../../../application/use-cases/get-service-by-id.use-case";
 import { ListServicesByCompanyUseCase } from "../../../application/use-cases/list-services-by-company.use-case";
 import { UpdateServiceUseCase } from "../../../application/use-cases/update-service.use-case";
@@ -36,7 +36,7 @@ export class ServiceController {
 		private readonly listServicesByCompanyUseCase: ListServicesByCompanyUseCase,
 		private readonly createServiceUseCase: CreateServiceUseCase,
 		private readonly updateServiceUseCase: UpdateServiceUseCase,
-		private readonly deleteServiceUseCase: DeleteServiceUseCase,
+		private readonly deactivateServiceUseCase: DeactivateServiceUseCase,
 	) {}
 
 	@Get("/:id")
@@ -100,12 +100,8 @@ export class ServiceController {
 	}
 
 	@Put("/:id/company/:companyId")
-	@HttpCode(200)
+	@HttpCode(204)
 	@ApiOperation({ summary: "Atualizar serviço da empresa" })
-	@ApiResponse({
-		status: 200,
-		type: ServiceResponse,
-	})
 	@UserType("COMPANY")
 	@StaffRoles(StaffRole.ADMIN, StaffRole.MANAGER)
 	@UseGuards(CompanyGuard)
@@ -123,17 +119,11 @@ export class ServiceController {
 		if (result.isLeft()) {
 			throw new NotFoundException(result.value.message);
 		}
-
-		return ServicePresenter.toHTTP(result.value.service);
 	}
 
 	@Patch("/:id/company/:companyId/deactivate")
-	@HttpCode(200)
+	@HttpCode(204)
 	@ApiOperation({ summary: "Inativar serviço da empresa" })
-	@ApiResponse({
-		status: 200,
-		type: ServiceResponse,
-	})
 	@UserType("COMPANY")
 	@StaffRoles(StaffRole.ADMIN, StaffRole.MANAGER)
 	@UseGuards(CompanyGuard)
@@ -141,7 +131,7 @@ export class ServiceController {
 		@Param("id") id: string,
 		@Param("companyId") companyId: string,
 	) {
-		const result = await this.deleteServiceUseCase.execute({
+		const result = await this.deactivateServiceUseCase.execute({
 			id,
 			companyId,
 		});
@@ -149,13 +139,5 @@ export class ServiceController {
 		if (result.isLeft()) {
 			throw new NotFoundException(result.value.message);
 		}
-
-		// Buscar o serviço atualizado para retornar
-		const updatedService = await this.getServiceByIdUseCase.execute({ id });
-		if (updatedService.isLeft()) {
-			throw new NotFoundException(updatedService.value.message);
-		}
-
-		return ServicePresenter.toHTTP(updatedService.value.service);
 	}
 }

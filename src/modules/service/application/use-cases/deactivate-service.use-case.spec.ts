@@ -2,18 +2,18 @@ import { beforeEach, describe, expect, it } from "bun:test";
 import { makeService } from "test/factories/make-service";
 import { InMemoryServiceRepository } from "test/repositories/in-memory-service.repository";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
-import { DeleteServiceUseCase } from "./delete-service.use-case";
+import { DeactivateServiceUseCase } from "./deactivate-service.use-case";
 
 let inMemoryServicesRepository: InMemoryServiceRepository;
-let sut: DeleteServiceUseCase;
+let sut: DeactivateServiceUseCase;
 
-describe("Delete Service", () => {
+describe("Deactivate Service", () => {
 	beforeEach(() => {
 		inMemoryServicesRepository = new InMemoryServiceRepository();
-		sut = new DeleteServiceUseCase(inMemoryServicesRepository);
+		sut = new DeactivateServiceUseCase(inMemoryServicesRepository);
 	});
 
-	it("should be able to delete a service (soft delete)", async () => {
+	it("should be able to deactivate a service", async () => {
 		const companyId = new UniqueEntityID();
 		const service = makeService({ companyId, isActive: true });
 		await inMemoryServicesRepository.create(service);
@@ -26,8 +26,8 @@ describe("Delete Service", () => {
 		expect(result.isRight()).toBe(true);
 		
 		// Verify service is marked as inactive
-		const deletedService = await inMemoryServicesRepository.findById(service.id.toString());
-		expect(deletedService?.isActive).toBe(false);
+		const deactivatedService = await inMemoryServicesRepository.findById(service.id.toString());
+		expect(deactivatedService?.isActive).toBe(false);
 	});
 
 	it("should return error when service not found", async () => {
@@ -42,7 +42,7 @@ describe("Delete Service", () => {
 		}
 	});
 
-	it("should be able to delete multiple services", async () => {
+	it("should be able to deactivate multiple services", async () => {
 		const companyId = new UniqueEntityID();
 		const service1 = makeService({ companyId, isActive: true });
 		const service2 = makeService({ companyId, isActive: true });
@@ -52,14 +52,14 @@ describe("Delete Service", () => {
 		await inMemoryServicesRepository.create(service2);
 		await inMemoryServicesRepository.create(service3);
 
-		// Delete first service
+		// Deactivate first service
 		const result1 = await sut.execute({ 
 			id: service1.id.toString(),
 			companyId: companyId.toString(),
 		});
 		expect(result1.isRight()).toBe(true);
 
-		// Delete second service
+		// Deactivate second service
 		const result2 = await sut.execute({ 
 			id: service2.id.toString(),
 			companyId: companyId.toString(),
@@ -67,16 +67,16 @@ describe("Delete Service", () => {
 		expect(result2.isRight()).toBe(true);
 
 		// Verify both are marked as inactive
-		const deletedService1 = await inMemoryServicesRepository.findById(service1.id.toString());
-		const deletedService2 = await inMemoryServicesRepository.findById(service2.id.toString());
+		const deactivatedService1 = await inMemoryServicesRepository.findById(service1.id.toString());
+		const deactivatedService2 = await inMemoryServicesRepository.findById(service2.id.toString());
 		const activeService3 = await inMemoryServicesRepository.findById(service3.id.toString());
 
-		expect(deletedService1?.isActive).toBe(false);
-		expect(deletedService2?.isActive).toBe(false);
+		expect(deactivatedService1?.isActive).toBe(false);
+		expect(deactivatedService2?.isActive).toBe(false);
 		expect(activeService3?.isActive).toBe(true);
 	});
 
-	it("should handle deleting already deleted service", async () => {
+	it("should handle deactivating already deactivated service", async () => {
 		const companyId = new UniqueEntityID();
 		const service = makeService({ companyId, isActive: false }); // Already inactive
 		await inMemoryServicesRepository.create(service);
@@ -89,7 +89,7 @@ describe("Delete Service", () => {
 		expect(result.isRight()).toBe(true);
 		
 		// Service should remain inactive
-		const deletedService = await inMemoryServicesRepository.findById(service.id.toString());
-		expect(deletedService?.isActive).toBe(false);
+		const deactivatedService = await inMemoryServicesRepository.findById(service.id.toString());
+		expect(deactivatedService?.isActive).toBe(false);
 	});
 });

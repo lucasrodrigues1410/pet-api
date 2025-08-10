@@ -42,4 +42,16 @@ export class PrismaServiceMapper {
 			details: service.details as Prisma.JsonObject,
 		};
 	}
+
+	static toPrismaUpdate(service: Partial<Service>): Prisma.ServiceUncheckedUpdateInput {
+		return {
+			description: service.description,
+			price: service.price,
+			duration: service.duration,
+			isActive: service.isActive,
+			name: service.name,
+			companyId: service.companyId?.toString(),
+			details: service.details as Prisma.JsonObject,
+		};
+	}
 }
