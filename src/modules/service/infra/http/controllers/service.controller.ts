@@ -1,28 +1,45 @@
 import {
 	BadRequestException,
+	Body,
 	Controller,
 	Get,
+	HttpCode,
 	NotFoundException,
 	Param,
+	Patch,
+	Post,
+	Put,
+	UseGuards,
 } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
-import { Public } from "src/modules/auth/infra/http/decorators/public.decorator";
-import { GetServiceByIdUseCase } from "src/modules/service/application/use-cases/get-service-by-id.use-case";
-import { ListServicesByCompanyUseCase } from "src/modules/service/application/use-cases/list-services-by-company.use-case";
-import { ServiceResponseList } from "../dtos/service.response.dto";
+import { UserType } from "@/modules/auth/infra/http/decorators/user-type.decorator";
+import { CompanyGuard } from "@/modules/company/infra/http/guards/company.guard";
+import { StaffRole } from "@/modules/staff/domain/entities/staff.entity";
+import { StaffRoles } from "@/modules/staff/infra/decorators/staff-roles.decorator";
+import { CreateServiceUseCase } from "../../../application/use-cases/create-service.use-case";
+import { DeleteServiceUseCase } from "../../../application/use-cases/delete-service.use-case";
+import { GetServiceByIdUseCase } from "../../../application/use-cases/get-service-by-id.use-case";
+import { ListServicesByCompanyUseCase } from "../../../application/use-cases/list-services-by-company.use-case";
+import { UpdateServiceUseCase } from "../../../application/use-cases/update-service.use-case";
+import { CreateServiceRequestDto } from "../dtos/create-service.dto";
+import { ServiceResponse } from "../dtos/service.response.dto";
 import { ServiceDetailsResponse } from "../dtos/service-details.response.dto";
+import { UpdateServiceRequestDto } from "../dtos/update-service.dto";
 import { ServicePresenter } from "../presenters/service.presenter";
 import { ServiceDetailsPresenter } from "../presenters/service-details.presenter";
 
-@ApiTags("Serviços")
-@Controller("service")
+@ApiTags("services")
+@Controller("services")
 export class ServiceController {
 	constructor(
-		private readonly listServicesByCompanyUseCase: ListServicesByCompanyUseCase,
 		private readonly getServiceByIdUseCase: GetServiceByIdUseCase,
+		private readonly listServicesByCompanyUseCase: ListServicesByCompanyUseCase,
+		private readonly createServiceUseCase: CreateServiceUseCase,
+		private readonly updateServiceUseCase: UpdateServiceUseCase,
+		private readonly deleteServiceUseCase: DeleteServiceUseCase,
 	) {}
 
-	@Get(":id")
+	@Get("/:id")
 	@ApiOperation({ summary: "Buscar serviço por ID" })
 	@ApiResponse({
 		status: 200,
@@ -30,30 +47,115 @@ export class ServiceController {
 	})
 	async getServiceById(@Param("id") id: string) {
 		const result = await this.getServiceByIdUseCase.execute({ id });
+
 		if (result.isLeft()) {
-			throw new NotFoundException();
+			throw new NotFoundException(result.value.message);
 		}
 
 		return ServiceDetailsPresenter.toHTTP(result.value.service);
 	}
 
-	@Get("/company/:id")
+	@Get("/company/:companyId")
 	@ApiOperation({ summary: "Listar serviços por empresa" })
 	@ApiResponse({
 		status: 200,
-		type: ServiceResponseList,
+		type: [ServiceResponse],
 	})
-	@Public()
-	async listServicesByCompany(@Param("id") companyId: string) {
+	async listServicesByCompany(@Param("companyId") companyId: string) {
 		const result = await this.listServicesByCompanyUseCase.execute({
 			companyId,
 		});
+
 		if (result.isLeft()) {
 			throw new BadRequestException();
 		}
 
-		return {
-			items: result.value.services.map(ServicePresenter.toHTTP),
-		};
+		return result.value.services.map(ServicePresenter.toHTTP);
+	}
+
+	@Post("/company/:companyId")
+	@HttpCode(201)
+	@ApiOperation({ summary: "Criar serviço para empresa" })
+	@ApiResponse({
+		status: 201,
+		type: ServiceResponse,
+	})
+	@UserType("COMPANY")
+	@StaffRoles(StaffRole.ADMIN, StaffRole.MANAGER)
+	@UseGuards(CompanyGuard)
+	async createService(
+		@Param("companyId") companyId: string,
+		@Body() data: CreateServiceRequestDto,
+	) {
+		const result = await this.createServiceUseCase.execute({
+			...data,
+			companyId,
+		});
+
+		if (result.isLeft()) {
+			throw new BadRequestException();
+		}
+
+		return ServicePresenter.toHTTP(result.value.service);
+	}
+
+	@Put("/:id/company/:companyId")
+	@HttpCode(200)
+	@ApiOperation({ summary: "Atualizar serviço da empresa" })
+	@ApiResponse({
+		status: 200,
+		type: ServiceResponse,
+	})
+	@UserType("COMPANY")
+	@StaffRoles(StaffRole.ADMIN, StaffRole.MANAGER)
+	@UseGuards(CompanyGuard)
+	async updateService(
+		@Param("id") id: string,
+		@Param("companyId") companyId: string,
+		@Body() data: UpdateServiceRequestDto,
+	) {
+		const result = await this.updateServiceUseCase.execute({
+			id,
+			companyId,
+			...data,
+		});
+
+		if (result.isLeft()) {
+			throw new NotFoundException(result.value.message);
+		}
+
+		return ServicePresenter.toHTTP(result.value.service);
+	}
+
+	@Patch("/:id/company/:companyId/deactivate")
+	@HttpCode(200)
+	@ApiOperation({ summary: "Inativar serviço da empresa" })
+	@ApiResponse({
+		status: 200,
+		type: ServiceResponse,
+	})
+	@UserType("COMPANY")
+	@StaffRoles(StaffRole.ADMIN, StaffRole.MANAGER)
+	@UseGuards(CompanyGuard)
+	async deactivateService(
+		@Param("id") id: string,
+		@Param("companyId") companyId: string,
+	) {
+		const result = await this.deleteServiceUseCase.execute({
+			id,
+			companyId,
+		});
+
+		if (result.isLeft()) {
+			throw new NotFoundException(result.value.message);
+		}
+
+		// Buscar o serviço atualizado para retornar
+		const updatedService = await this.getServiceByIdUseCase.execute({ id });
+		if (updatedService.isLeft()) {
+			throw new NotFoundException(updatedService.value.message);
+		}
+
+		return ServicePresenter.toHTTP(updatedService.value.service);
 	}
 }

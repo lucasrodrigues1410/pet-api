@@ -64,4 +64,20 @@ export class PrismaServiceRepository implements ServiceRepository {
 			data: PrismaServiceMapper.toPrisma(service),
 		});
 	}
+
+	async update(service: Service): Promise<void> {
+		await this.prismaService.service.update({
+			where: { id: service.id.toString() },
+			data: PrismaServiceMapper.toPrisma(service),
+		});
+	}
+
+	async delete(id: string): Promise<void> {
+		await this.prismaService.service.update({
+			where: { id },
+			data: { 
+				isActive: false
+			},
+		});
+	}
 }
