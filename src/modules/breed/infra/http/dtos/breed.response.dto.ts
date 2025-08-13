@@ -9,4 +9,6 @@ const listResponse = z.object({
 
 export class BreedResponse extends createZodDto(breedDto) {}
 export class BreedListResponse extends createZodDto(listResponse) {}
-export class BreedListResponseWithPagination extends createZodDto(PaginatedDto(breedDto)) {}
+export class BreedListResponseWithPagination extends createZodDto(
+	PaginatedDto(breedDto),
+) {}

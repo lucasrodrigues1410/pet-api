@@ -1,5 +1,4 @@
 import { beforeEach, describe, expect, it } from "bun:test";
-import { makeService } from "test/factories/make-service";
 import { InMemoryServiceRepository } from "test/repositories/in-memory-service.repository";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { CreateServiceUseCase } from "./create-service.use-case";
@@ -34,10 +33,16 @@ describe("Create Service", () => {
 		expect(result.value?.service.price).toBe(serviceData.price);
 		expect(result.value?.service.isActive).toBe(serviceData.isActive);
 		expect(result.value?.service.duration).toBe(serviceData.duration);
-		expect(result.value?.service.companyId.toString()).toBe(companyId.toString());
+		expect(result.value?.service.companyId.toString()).toBe(
+			companyId.toString(),
+		);
 		expect(result.value?.service.details).toEqual(serviceData.details);
-		expect(result.value?.service.priceRange.min).toBe(serviceData.priceRange.min);
-		expect(result.value?.service.priceRange.max).toBe(serviceData.priceRange.max);
+		expect(result.value?.service.priceRange.min).toBe(
+			serviceData.priceRange.min,
+		);
+		expect(result.value?.service.priceRange.max).toBe(
+			serviceData.priceRange.max,
+		);
 	});
 
 	it("should be able to create a service with minimal data", async () => {

@@ -22,7 +22,11 @@ export class ImageKitStorageProvider implements Uploader {
 		});
 	}
 
-	async upload({ fileName, body, folder }: UploadParams): Promise<UploadResponse> {
+	async upload({
+		fileName,
+		body,
+		folder,
+	}: UploadParams): Promise<UploadResponse> {
 		const uniqueFileName = `${fileName}`;
 
 		const response = await this.client.upload({

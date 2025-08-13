@@ -24,9 +24,11 @@ describe("Deactivate Service", () => {
 		});
 
 		expect(result.isRight()).toBe(true);
-		
+
 		// Verify service is marked as inactive
-		const deactivatedService = await inMemoryServicesRepository.findById(service.id.toString());
+		const deactivatedService = await inMemoryServicesRepository.findById(
+			service.id.toString(),
+		);
 		expect(deactivatedService?.isActive).toBe(false);
 	});
 
@@ -53,23 +55,29 @@ describe("Deactivate Service", () => {
 		await inMemoryServicesRepository.create(service3);
 
 		// Deactivate first service
-		const result1 = await sut.execute({ 
+		const result1 = await sut.execute({
 			id: service1.id.toString(),
 			companyId: companyId.toString(),
 		});
 		expect(result1.isRight()).toBe(true);
 
 		// Deactivate second service
-		const result2 = await sut.execute({ 
+		const result2 = await sut.execute({
 			id: service2.id.toString(),
 			companyId: companyId.toString(),
 		});
 		expect(result2.isRight()).toBe(true);
 
 		// Verify both are marked as inactive
-		const deactivatedService1 = await inMemoryServicesRepository.findById(service1.id.toString());
-		const deactivatedService2 = await inMemoryServicesRepository.findById(service2.id.toString());
-		const activeService3 = await inMemoryServicesRepository.findById(service3.id.toString());
+		const deactivatedService1 = await inMemoryServicesRepository.findById(
+			service1.id.toString(),
+		);
+		const deactivatedService2 = await inMemoryServicesRepository.findById(
+			service2.id.toString(),
+		);
+		const activeService3 = await inMemoryServicesRepository.findById(
+			service3.id.toString(),
+		);
 
 		expect(deactivatedService1?.isActive).toBe(false);
 		expect(deactivatedService2?.isActive).toBe(false);
@@ -87,9 +95,11 @@ describe("Deactivate Service", () => {
 		});
 
 		expect(result.isRight()).toBe(true);
-		
+
 		// Service should remain inactive
-		const deactivatedService = await inMemoryServicesRepository.findById(service.id.toString());
+		const deactivatedService = await inMemoryServicesRepository.findById(
+			service.id.toString(),
+		);
 		expect(deactivatedService?.isActive).toBe(false);
 	});
 });

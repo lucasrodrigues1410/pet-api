@@ -25,4 +25,6 @@ const request = z.object({
 	}),
 });
 
-export class CreateAnonymousAppointmentRequestDto extends createZodDto(request) { }
+export class CreateAnonymousAppointmentRequestDto extends createZodDto(
+	request,
+) {}

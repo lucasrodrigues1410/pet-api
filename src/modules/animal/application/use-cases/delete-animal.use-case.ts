@@ -12,9 +12,7 @@ type DeleteAnimalUseCaseResponse = Either<ResourceNotFoundError, void>;
 
 @Injectable()
 export class DeleteAnimalUseCase {
-	constructor(
-		private readonly animalRepository: AnimalRepository,
-	) { }
+	constructor(private readonly animalRepository: AnimalRepository) {}
 
 	async execute(
 		data: DeleteAnimalUseCaseRequest,

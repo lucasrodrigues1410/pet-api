@@ -1,16 +1,17 @@
-import { Process, Processor } from "@nestjs/bull";
-import { Job } from "bull";
+import { Processor, WorkerHost } from "@nestjs/bullmq";
+import { Job } from "bullmq";
 import { ProcessNotificationUseCase } from "../../application/use-cases/process-notification.use-case";
 import { NotificationEvent } from "../../domain/events/notification.event";
 
 @Processor("notifications")
-export class BullNotificationProcessor {
+export class BullNotificationProcessor extends WorkerHost {
 	constructor(
 		private readonly processNotificationUseCase: ProcessNotificationUseCase,
-	) {}
+	) {
+		super();
+	}
 
-	@Process()
-	async handle(job: Job<NotificationEvent>) {
+	async process(job: Job<NotificationEvent>) {
 		await this.processNotificationUseCase.execute(job.data);
 	}
 }

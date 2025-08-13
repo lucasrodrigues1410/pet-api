@@ -54,7 +54,10 @@ export class PrismaServiceRepository implements ServiceRepository {
 		return result.map((service) => {
 			return PrismaServiceMapper.toDomain({
 				...service,
-				maxPrice: service.priceVariation.reduce((sum, v) => sum + v.price.toNumber(), 0),
+				maxPrice: service.priceVariation.reduce(
+					(sum, v) => sum + v.price.toNumber(),
+					0,
+				),
 			});
 		});
 	}

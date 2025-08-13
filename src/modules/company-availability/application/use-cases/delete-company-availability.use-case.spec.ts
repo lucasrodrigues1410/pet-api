@@ -18,9 +18,7 @@ describe("DeleteCompanyAvailabilityUseCase", () => {
 	beforeEach(() => {
 		availabilityRepo = new InMemoryCompanyAvailabilityRepository();
 		companyRepo = new InMemoryCompanyRepository();
-		sut = new DeleteCompanyAvailabilityUseCase(
-			availabilityRepo,
-		);
+		sut = new DeleteCompanyAvailabilityUseCase(availabilityRepo);
 	});
 
 	it("should delete availability for a day when user is owner", async () => {

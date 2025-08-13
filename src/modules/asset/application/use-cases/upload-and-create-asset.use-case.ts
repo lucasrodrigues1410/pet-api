@@ -25,7 +25,7 @@ export class UploadAndCreateAssetUseCase {
 	constructor(
 		private assetRepository: AssetRepository,
 		private uploader: Uploader,
-	) { }
+	) {}
 
 	async execute({
 		file: data,

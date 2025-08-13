@@ -32,7 +32,7 @@ export class AppointmentController {
 		private readonly getAppointmentByIdUseCase: GetAppointmentByIdUseCase,
 		private readonly getAppointmentByUserIdUseCase: GetAppointmentByUserIdUseCase,
 		private readonly getAppointmentByCompanyIdUseCase: GetAppointmentByCompanyIdUseCase,
-	) { }
+	) {}
 
 	@Get(":id")
 	@ApiOperation({

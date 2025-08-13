@@ -13,4 +13,6 @@ const listResponse = z.object({
 });
 
 export class CompanyAvailabilityResponseDto extends createZodDto(response) {}
-export class CompanyAvailabilityListResponseDto extends createZodDto(listResponse) {}
+export class CompanyAvailabilityListResponseDto extends createZodDto(
+	listResponse,
+) {}

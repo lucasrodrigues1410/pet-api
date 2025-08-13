@@ -22,7 +22,7 @@ type UpdateServiceUseCaseResponse = Either<ResourceNotFoundError, void>;
 
 @Injectable()
 export class UpdateServiceUseCase {
-	constructor(private readonly serviceRepository: ServiceRepository) { }
+	constructor(private readonly serviceRepository: ServiceRepository) {}
 
 	async execute({
 		id,

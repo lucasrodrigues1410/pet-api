@@ -124,10 +124,10 @@ describe("Update Service", () => {
 	it("should preserve existing data when updating partial fields", async () => {
 		const companyId = new UniqueEntityID();
 		const originalDetails = { category: "grooming", type: "basic" };
-		const service = makeService({ 
-			companyId, 
+		const service = makeService({
+			companyId,
 			details: originalDetails,
-			duration: 45 
+			duration: 45,
 		});
 		await inMemoryServicesRepository.create(service);
 

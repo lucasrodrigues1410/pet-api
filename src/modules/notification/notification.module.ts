@@ -1,4 +1,4 @@
-import { BullModule } from "@nestjs/bull";
+import { BullModule } from "@nestjs/bullmq";
 import { Module } from "@nestjs/common";
 import { EmailModule } from "../email/email.module";
 import { SendUserCreatedNotification } from "./application/commands/user-created/send-user-created.handler";

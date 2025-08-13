@@ -15,5 +15,5 @@ const response = z.object({
 	),
 });
 
-export class ListAvailableDatesRequestDto extends createZodDto(request) { }
-export class ListAvailableDatesResponseDto extends createZodDto(response) { }
+export class ListAvailableDatesRequestDto extends createZodDto(request) {}
+export class ListAvailableDatesResponseDto extends createZodDto(response) {}

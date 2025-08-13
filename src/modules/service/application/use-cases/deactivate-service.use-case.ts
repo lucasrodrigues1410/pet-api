@@ -8,14 +8,11 @@ interface DeactivateServiceUseCaseRequest {
 	companyId: string;
 }
 
-type DeactivateServiceUseCaseResponse = Either<
-	ResourceNotFoundError,
-	null
->;
+type DeactivateServiceUseCaseResponse = Either<ResourceNotFoundError, null>;
 
 @Injectable()
 export class DeactivateServiceUseCase {
-	constructor(private readonly serviceRepository: ServiceRepository) { }
+	constructor(private readonly serviceRepository: ServiceRepository) {}
 
 	async execute({
 		id,
@@ -23,7 +20,10 @@ export class DeactivateServiceUseCase {
 	}: DeactivateServiceUseCaseRequest): Promise<DeactivateServiceUseCaseResponse> {
 		const existingService = await this.serviceRepository.findById(id);
 
-		if (!existingService || existingService.companyId.toString() !== companyId) {
+		if (
+			!existingService ||
+			existingService.companyId.toString() !== companyId
+		) {
 			return left(new ResourceNotFoundError());
 		}
 
