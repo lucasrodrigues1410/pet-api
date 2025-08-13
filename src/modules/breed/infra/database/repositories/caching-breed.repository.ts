@@ -33,6 +33,23 @@ export class CachingBreedRepository implements BreedRepository {
 		return result;
 	}
 
+	async findById(id: string): Promise<Breed | null> {
+		const key = `breed:${id}`;
+		const cached = await this.cache.get(key);
+		if (cached) {
+			return Breed.fromPrimitives(JSON.parse(cached));
+		}
+		const result = await this.repo.findById(id);
+		if (result) {
+			await this.cache.set(
+				key,
+				JSON.stringify(result.toPrimitives()),
+				this.TTL,
+			);
+		}
+		return result;
+	}
+
 	async create(breed: Breed): Promise<void> {
 		return this.repo.create(breed);
 	}

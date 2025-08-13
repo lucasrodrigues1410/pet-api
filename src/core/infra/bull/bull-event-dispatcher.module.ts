@@ -1,4 +1,4 @@
-import { BullModule } from "@nestjs/bull";
+import { BullModule } from "@nestjs/bullmq";
 import { Global, Module } from "@nestjs/common";
 import { EventDispatcher } from "@/core/domain/interfaces/event-dispatcher.interface";
 import { EnvService } from "../env/env.service";
@@ -9,11 +9,11 @@ import { BullEventDispatcherService } from "./bull-event-dispatcher.service";
 	imports: [
 		BullModule.forRootAsync({
 			inject: [EnvService],
-			useFactory: async (envService: EnvService) => ({
-				redis: {
+			useFactory: (envService: EnvService) => ({
+				connection: {
 					host: envService.get("REDIS_HOST"),
 					port: envService.get("REDIS_PORT"),
-					db: envService.get("REDIS_DB"),
+					password: envService.get("REDIS_PASSWORD"),
 				},
 				defaultJobOptions: {
 					removeOnComplete: 100,

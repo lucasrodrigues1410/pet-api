@@ -52,6 +52,13 @@ export class Service extends Entity<ServiceProps> {
 		const service = new Service(props, id);
 		return service;
 	}
+
+	public update(data: Partial<ServiceProps>): void {
+		this.props = {
+			...this.props,
+			...data,
+		};
+	}
 }
 
 export type ServiceWithRelations = Service & {
