@@ -13,12 +13,12 @@ export abstract class CompanyAvailabilityRepository {
 		dayOfWeek: DaysOfWeek,
 	): Promise<CompanyAvailability | null>;
 
-    abstract upsertByCompanyAndDay(
-        availability: CompanyAvailability,
-    ): Promise<CompanyAvailability>;
+	abstract upsertByCompanyAndDay(
+		availability: CompanyAvailability,
+	): Promise<CompanyAvailability>;
 
-    abstract deleteByCompanyAndDay(
-        companyId: string,
-        dayOfWeek: DaysOfWeek,
-    ): Promise<void>;
+	abstract deleteByCompanyAndDay(
+		companyId: string,
+		dayOfWeek: DaysOfWeek,
+	): Promise<void>;
 }

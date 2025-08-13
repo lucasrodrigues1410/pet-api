@@ -15,4 +15,4 @@ const request = z.object({
 	coatType: z.enum(CoatType),
 });
 
-export class CreateAppointmentRequestDto extends createZodDto(request) { }
+export class CreateAppointmentRequestDto extends createZodDto(request) {}

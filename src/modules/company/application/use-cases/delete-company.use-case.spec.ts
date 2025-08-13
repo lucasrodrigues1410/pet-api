@@ -8,23 +8,23 @@ let inMemoryCompanyRepository: InMemoryCompanyRepository;
 let sut: DeleteCompanyUseCase;
 
 describe("DeleteCompanyUseCase", () => {
-  beforeEach(() => {
-    inMemoryCompanyRepository = new InMemoryCompanyRepository();
-    sut = new DeleteCompanyUseCase(inMemoryCompanyRepository);
-  });
+	beforeEach(() => {
+		inMemoryCompanyRepository = new InMemoryCompanyRepository();
+		sut = new DeleteCompanyUseCase(inMemoryCompanyRepository);
+	});
 
-  it("should soft delete company when user is owner", async () => {
-    const company = makeCompany();
-    await inMemoryCompanyRepository.create(company, faker.string.uuid());
+	it("should soft delete company when user is owner", async () => {
+		const company = makeCompany();
+		await inMemoryCompanyRepository.create(company, faker.string.uuid());
 
-    const result = await sut.execute({
-      companyId: company.id.toString(),
-    });
+		const result = await sut.execute({
+			companyId: company.id.toString(),
+		});
 
-    expect(result.isRight()).toBeTruthy();
-    const found = await inMemoryCompanyRepository.findById(company.id.toString());
-    expect(found).toBeNull();
-  });
+		expect(result.isRight()).toBeTruthy();
+		const found = await inMemoryCompanyRepository.findById(
+			company.id.toString(),
+		);
+		expect(found).toBeNull();
+	});
 });
-
-

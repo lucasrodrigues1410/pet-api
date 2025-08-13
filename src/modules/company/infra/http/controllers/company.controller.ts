@@ -46,7 +46,7 @@ export class CompanyController {
 		private readonly createCompanyUseCase: CreateCompanyUseCase,
 		private readonly updateCompanyUseCase: UpdateCompanyUseCase,
 		private readonly deleteCompanyUseCase: DeleteCompanyUseCase,
-	) { }
+	) {}
 
 	@Post("search")
 	@ApiOperation({ summary: "Pesquisar empresas por query" })

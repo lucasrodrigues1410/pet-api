@@ -7,29 +7,27 @@ let inMemoryCompanyRepository: InMemoryCompanyRepository;
 let sut: CreateCompanyUseCase;
 
 describe("CreateCompanyUseCase", () => {
-  beforeEach(() => {
-    inMemoryCompanyRepository = new InMemoryCompanyRepository();
-    sut = new CreateCompanyUseCase(inMemoryCompanyRepository);
-  });
+	beforeEach(() => {
+		inMemoryCompanyRepository = new InMemoryCompanyRepository();
+		sut = new CreateCompanyUseCase(inMemoryCompanyRepository);
+	});
 
-  it("should create a company and set owner as ADMIN", async () => {
-    const ownerUserId = faker.string.uuid();
-    const result = await sut.execute({
-      ownerUserId,
-      name: faker.company.name(),
-      address: faker.location.streetAddress(),
-      contact: faker.phone.number(),
-    });
+	it("should create a company and set owner as ADMIN", async () => {
+		const ownerUserId = faker.string.uuid();
+		const result = await sut.execute({
+			ownerUserId,
+			name: faker.company.name(),
+			address: faker.location.streetAddress(),
+			contact: faker.phone.number(),
+		});
 
-    expect(result.isRight()).toBeTruthy();
-    const created = result.isRight() && result.value.company;
-    expect(created).toBeTruthy();
-    const isOwner = await inMemoryCompanyRepository.isOwner({
-      companyId: created!.id.toString(),
-      userId: ownerUserId,
-    });
-    expect(isOwner).toBeTruthy();
-  });
+		expect(result.isRight()).toBeTruthy();
+		const created = result.isRight() && result.value.company;
+		expect(created).toBeTruthy();
+		const isOwner = await inMemoryCompanyRepository.isOwner({
+			companyId: created!.id.toString(),
+			userId: ownerUserId,
+		});
+		expect(isOwner).toBeTruthy();
+	});
 });
-
-

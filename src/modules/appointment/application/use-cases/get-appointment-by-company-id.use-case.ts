@@ -15,9 +15,7 @@ type Response = Either<ResourceNotFoundError, PaginationResult<Appointment>>;
 
 @Injectable()
 export class GetAppointmentByCompanyIdUseCase {
-	constructor(
-		private readonly appointmentRepo: AppointmentRepository,
-	) { }
+	constructor(private readonly appointmentRepo: AppointmentRepository) {}
 
 	async execute({ companyId, query }: Request): Promise<Response> {
 		const result = await this.appointmentRepo.findByCompanyId({

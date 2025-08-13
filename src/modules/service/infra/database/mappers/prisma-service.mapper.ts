@@ -43,7 +43,9 @@ export class PrismaServiceMapper {
 		};
 	}
 
-	static toPrismaUpdate(service: Partial<Service>): Prisma.ServiceUncheckedUpdateInput {
+	static toPrismaUpdate(
+		service: Partial<Service>,
+	): Prisma.ServiceUncheckedUpdateInput {
 		return {
 			description: service.description,
 			price: service.price,

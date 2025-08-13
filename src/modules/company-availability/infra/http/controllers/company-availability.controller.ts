@@ -21,7 +21,10 @@ import {
 	CompanyAvailabilityParamsDto,
 	UpsertCompanyAvailabilityBodyDto,
 } from "../dtos/company-availability.dto";
-import { CompanyAvailabilityListResponseDto, CompanyAvailabilityResponseDto } from "../dtos/company-availability.response.dto";
+import {
+	CompanyAvailabilityListResponseDto,
+	CompanyAvailabilityResponseDto,
+} from "../dtos/company-availability.response.dto";
 
 @ApiTags("Disponibilidade da Empresa")
 @Controller("company/:companyId/availability")
@@ -30,7 +33,7 @@ export class CompanyAvailabilityController {
 		private readonly upsertUseCase: UpsertCompanyAvailabilityUseCase,
 		private readonly deleteUseCase: DeleteCompanyAvailabilityUseCase,
 		private readonly getUseCase: GetCompanyAvailabilityUseCase,
-	) { }
+	) {}
 
 	@Get()
 	@ApiOperation({ summary: "Listar disponibilidade da empresa" })
@@ -52,7 +55,7 @@ export class CompanyAvailabilityController {
 					endTime: a.launchTime.endTime,
 				},
 			})),
-		}
+		};
 	}
 
 	@Put(":day")
@@ -97,10 +100,11 @@ export class CompanyAvailabilityController {
 	@UserType("COMPANY")
 	@UseGuards(CompanyGuard)
 	@StaffRoles(StaffRole.ADMIN, StaffRole.MANAGER)
-	async remove(
-		@Param() params: CompanyAvailabilityParamsDto,
-	) {
-		const result = await this.deleteUseCase.execute({ companyId: params.companyId, day: params.day });
+	async remove(@Param() params: CompanyAvailabilityParamsDto) {
+		const result = await this.deleteUseCase.execute({
+			companyId: params.companyId,
+			day: params.day,
+		});
 		if (result.isLeft()) {
 			throw new Error(result.value.message);
 		}

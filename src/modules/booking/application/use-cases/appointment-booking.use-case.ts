@@ -22,8 +22,7 @@ interface AppointmentBookingUseCaseRequest {
 }
 
 type AppointmentBookingUseCaseResponse = Either<
-	| ResourceNotFoundError
-	| TimeSlotUnavailableError,
+	ResourceNotFoundError | TimeSlotUnavailableError,
 	{
 		appointmentId: string;
 	}

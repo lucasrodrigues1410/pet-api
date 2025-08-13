@@ -53,13 +53,20 @@ export class Animal extends Entity<AnimalProps> {
 		props: Omit<AnimalProps, "birthdate"> & { birthdate?: RawBirthdate },
 		id?: UniqueEntityID,
 	): Animal {
-		return new Animal({
-			...props,
-			birthdate: props.birthdate ? new Date(props.birthdate) : null,
-		}, id);
+		return new Animal(
+			{
+				...props,
+				birthdate: props.birthdate ? new Date(props.birthdate) : null,
+			},
+			id,
+		);
 	}
 
-	public update(props: Partial<Omit<AnimalProps, "birthdate"> & { birthdate?: RawBirthdate }>) {
+	public update(
+		props: Partial<
+			Omit<AnimalProps, "birthdate"> & { birthdate?: RawBirthdate }
+		>,
+	) {
 		this.props = {
 			userId: this.userId,
 			breedId: this.breedId,

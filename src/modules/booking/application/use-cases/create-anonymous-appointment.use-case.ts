@@ -118,7 +118,7 @@ export class CreateAnonymousAppointmentUseCase {
 
 		// Calcula variação de preço
 		const price = await this.priceCalculator.calculate(service.id.toString(), [
-				{ type: VariationType.SIZE, value: animal.weight },
+			{ type: VariationType.SIZE, value: animal.weight },
 		]);
 
 		// Cria o agendamento

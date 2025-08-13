@@ -13,11 +13,14 @@ export abstract class CompanyRepository {
 			query?: string;
 		} & PaginationQuery,
 	): Promise<PaginationResult<Company>>;
-    abstract create(company: Company, ownerUserId: string): Promise<void>;
-    abstract update(
-        companyId: string,
-        data: Partial<Pick<CompanyProps, "name" | "address" | "contact">>,
-    ): Promise<Company>;
+	abstract create(company: Company, ownerUserId: string): Promise<void>;
+	abstract update(
+		companyId: string,
+		data: Partial<Pick<CompanyProps, "name" | "address" | "contact">>,
+	): Promise<Company>;
 	abstract softDelete(companyId: string): Promise<void>;
-	abstract isOwner(params: { companyId: string; userId: string }): Promise<boolean>;
+	abstract isOwner(params: {
+		companyId: string;
+		userId: string;
+	}): Promise<boolean>;
 }
