@@ -1,8 +1,6 @@
 import { BullModule } from "@nestjs/bullmq";
 import { Global, Module } from "@nestjs/common";
-import { EventDispatcher } from "@/core/domain/interfaces/event-dispatcher.interface";
 import { EnvService } from "../env/env.service";
-import { BullEventDispatcherService } from "./bull-event-dispatcher.service";
 
 @Global()
 @Module({
@@ -14,6 +12,9 @@ import { BullEventDispatcherService } from "./bull-event-dispatcher.service";
 					host: envService.get("REDIS_HOST"),
 					port: envService.get("REDIS_PORT"),
 					password: envService.get("REDIS_PASSWORD"),
+					retryDelayOnFailover: 100,
+					enableReadyCheck: false,
+					maxLoadingTimeout: 0
 				},
 				defaultJobOptions: {
 					removeOnComplete: 100,
@@ -26,19 +27,6 @@ import { BullEventDispatcherService } from "./bull-event-dispatcher.service";
 				},
 			}),
 		}),
-		BullModule.registerQueue({ name: "domain-events" }),
-	],
-	providers: [
-		{
-			provide: EventDispatcher,
-			useClass: BullEventDispatcherService,
-		},
-	],
-	exports: [
-		{
-			provide: EventDispatcher,
-			useClass: BullEventDispatcherService,
-		},
 	],
 })
 export class BullEventDispatcherModule {}
