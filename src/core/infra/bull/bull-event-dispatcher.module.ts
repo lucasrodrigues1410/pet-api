@@ -12,9 +12,9 @@ import { EnvService } from "../env/env.service";
 					host: envService.get("REDIS_HOST"),
 					port: envService.get("REDIS_PORT"),
 					password: envService.get("REDIS_PASSWORD"),
-					maxRetriesPerRequest: 3,
-					retryDelayOnFailover: 1000,
-					lazyConnect: true,
+					retryDelayOnFailover: 100,
+					enableReadyCheck: false,
+					maxLoadingTimeout: 0
 				},
 				defaultJobOptions: {
 					removeOnComplete: 100,
