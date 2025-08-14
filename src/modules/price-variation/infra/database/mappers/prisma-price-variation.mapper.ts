@@ -3,7 +3,7 @@ import {
 	ServicePriceVariation as PrismaServiceVariation,
 } from "prisma/generated/client";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
-import { PriceVariation } from "@/modules/price-variation/domain/entities/price-variation.entity";
+import { PriceVariation, VariationType } from "@/modules/price-variation/domain/entities/price-variation.entity";
 
 export class PrismaPriceVariationMapper {
 	static toDomain(
@@ -13,7 +13,7 @@ export class PrismaPriceVariationMapper {
 			{
 				price: prismaPriceVariation.price.toNumber(),
 				value: prismaPriceVariation.value,
-				variation: prismaPriceVariation.variation,
+				variation: prismaPriceVariation.variation as VariationType,
 				serviceId: new UniqueEntityID(prismaPriceVariation.serviceId),
 			},
 			new UniqueEntityID(prismaPriceVariation.id),
