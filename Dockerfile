@@ -1,57 +1,27 @@
-# ----- Stage: cache das deps de produção (rápido, reutilizável) -----
-FROM imbios/bun-node:23-slim AS deps-prod
-WORKDIR /app
-
-# pacotes OS necessários em runtime (ex: OpenSSL p/ Prisma)
-RUN apt-get update -y \
-  && apt-get install -y --no-install-recommends openssl ca-certificates \
-  && rm -rf /var/lib/apt/lists/*
-
-# copiar apenas os arquivos de lock para aproveitar cache
-COPY package.json bun.lock ./
-
-# instalar **somente** dependências de produção (menor camada)
-RUN bun install --frozen-lockfile --production
-
-# ----- Stage: builder (instala tudo, gera Prisma e faz build) -----
-FROM imbios/bun-node:23-slim AS builder
-WORKDIR /app
-
-# dependências de build (full) - usa cache se package.json/bun.lock não mudarem
-COPY package.json bun.lock ./
-RUN apt-get update -y \
-  && apt-get install -y --no-install-recommends openssl ca-certificates \
-  && rm -rf /var/lib/apt/lists/*
-
-# instala todas as dependências (dev + prod) necessárias para build
-RUN bun install --frozen-lockfile
-
-# copia o resto do código
-COPY . .
-
-# gerar Prisma Client (se você usa Prisma)
-RUN bun prisma generate
-
-
-RUN bun run build
-
-# ----- Stage: imagem final leve (apenas runtime + artefatos buildados) -----
-FROM imbios/bun-node:23-slim AS runtime
+FROM imbios/bun-node:23-slim
 WORKDIR /app
 ENV NODE_ENV=production
 
-# instalar runtime OS packages mínimos
+# Instala dependências do sistema necessárias (ex.: OpenSSL para Prisma)
 RUN apt-get update -y \
   && apt-get install -y --no-install-recommends openssl ca-certificates \
   && rm -rf /var/lib/apt/lists/*
 
-# criar usuário não-root (opcional, mas recomendado)
-RUN useradd -m -u 1000 appuser || true
-USER appuser
+# Copia somente package.json + bun.lock primeiro para aproveitar cache
+COPY package.json bun.lock ./
 
-# copiar package.json (útil para alguns runtimes/pm) e scripts
-COPY --from=builder --chown=appuser:appuser /app/package.json ./package.json
+# Instala todas as dependências (dev + prod) necessárias para o build
+RUN bun install --frozen-lockfile
 
+# Copia o restante do código
+COPY . .
+
+# Gera Prisma Client (se você usa Prisma)
+RUN bun prisma generate
+
+# Roda o build do projeto (ajuste se o script for outro)
+RUN bun run build
+
+# Expõe porta e start
 EXPOSE 3000
-# comando de start (ajuste se seu script for diferente)
 CMD ["bun", "start:prod"]
