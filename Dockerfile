@@ -45,7 +45,13 @@ RUN apt-get update -y \
   && apt-get install -y --no-install-recommends openssl ca-certificates \
   && rm -rf /var/lib/apt/lists/*
 
+# criar usuário não-root (opcional, mas recomendado)
+RUN useradd -m -u 1000 appuser || true
+USER appuser
+
+# copiar package.json (útil para alguns runtimes/pm) e scripts
+COPY --from=builder --chown=appuser:appuser /app/package.json ./package.json
 
 EXPOSE 3000
 # comando de start (ajuste se seu script for diferente)
-CMD ["bun", "run", "start:prod"]
+CMD ["bun", "start:prod"]
