@@ -56,10 +56,6 @@ COPY --from=deps-prod --chown=appuser:appuser /app/node_modules ./node_modules
 # copiar package.json (útil para alguns runtimes/pm) e scripts
 COPY --from=builder --chown=appuser:appuser /app/package.json ./package.json
 
-# copiar apenas os artefatos gerados pelo build
-# <--- ATENÇÃO: ajuste "build-output" para a pasta real gerada pelo seu build (dist, .next, .output, etc)
-COPY --from=builder --chown=appuser:appuser /app/build-output ./build-output
-
 EXPOSE 3000
 # comando de start (ajuste se seu script for diferente)
 CMD ["bun", "run", "start:prod"]
