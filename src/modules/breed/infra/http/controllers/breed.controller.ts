@@ -22,7 +22,7 @@ export class BreedController {
 			throw new BadRequestException();
 		}
 		return {
-			items: result.value.map(BreedPresenter.toHTTP),
+			items: result.value.items.map(BreedPresenter.toHTTP),
 		};
 	}
 }

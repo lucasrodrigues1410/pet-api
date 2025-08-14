@@ -1,6 +1,9 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "@/core/infra/prisma/prisma.service";
-import { DaysOfWeek } from "@/modules/company-availability/domain/entities/company-availability.entity";
+import {
+	CompanyAvailability,
+	DaysOfWeek,
+} from "@/modules/company-availability/domain/entities/company-availability.entity";
 import { CompanyAvailabilityRepository } from "@/modules/company-availability/domain/repositories/company-availability.repository";
 import { PrismaCompanyAvailabilityMapper } from "../mappers/company-availability.mapper";
 
@@ -39,9 +42,7 @@ export class PrismaCompanyAvailabilityRepository
 		return PrismaCompanyAvailabilityMapper.toDomain(companyAvailability);
 	}
 
-	async upsertByCompanyAndDay(
-		availability: Parameters<PrismaCompanyAvailabilityMapper["toPrisma"]>[0],
-	) {
+	async upsertByCompanyAndDay(availability: CompanyAvailability) {
 		const data = PrismaCompanyAvailabilityMapper.toPrisma(availability);
 		const existing = await this.prismaService.companyAvailability.findFirst({
 			where: { companyId: data.companyId, day: data.day },
