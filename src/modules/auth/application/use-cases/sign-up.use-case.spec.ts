@@ -2,25 +2,25 @@ import { beforeEach, describe, expect, it } from "bun:test";
 import { CommandBus } from "@nestjs/cqrs";
 import { FakeHasher } from "test/cryptography/fake-hasher";
 import { InMemoryUserRepository } from "test/repositories/in-memory-user.repository";
-import { RegisterUseCase } from "./register.use-case";
+import { SignUpUseCase } from "./sign-up.use-case";
 
 let inMemoryUsersRepository: InMemoryUserRepository;
 let commandBus: CommandBus;
 let fakeHasher: FakeHasher;
 
-let sut: RegisterUseCase;
+let sut: SignUpUseCase;
 
-describe("Register", () => {
+describe("SignUp", () => {
 	beforeEach(() => {
 		inMemoryUsersRepository = new InMemoryUserRepository();
 		fakeHasher = new FakeHasher();
 		commandBus = {
 			execute: async () => {},
 		} as unknown as CommandBus;
-		sut = new RegisterUseCase(inMemoryUsersRepository, fakeHasher, commandBus);
+		sut = new SignUpUseCase(inMemoryUsersRepository, fakeHasher, commandBus);
 	});
 
-	it("should register a user", async () => {
+	it("should sign up a user", async () => {
 		const result = await sut.execute({
 			name: "John Doe",
 			email: "johndoe@example.com",

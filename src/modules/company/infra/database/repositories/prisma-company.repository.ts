@@ -86,21 +86,6 @@ export class PrismaCompanyRepository implements CompanyRepository {
 		return PrismaCompanyMapper.toDomain(result);
 	}
 
-	async create(company: Company, ownerUserId: string): Promise<void> {
-		await this.prismaService.$transaction(async (tx) => {
-			await tx.company.create({
-				data: PrismaCompanyMapper.toPrisma(company),
-			});
-			await tx.userCompany.create({
-				data: {
-					companyId: company.id.toString(),
-					userId: ownerUserId,
-					role: "ADMIN",
-				},
-			});
-		});
-	}
-
 	async update(
 		companyId: string,
 		data: Parameters<CompanyRepository["update"]>[1],

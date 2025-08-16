@@ -7,12 +7,12 @@ import { Either, left, right } from "@/shared/either";
 import { UserAlreadyExistError } from "../../domain/errors/user-already-exists.error";
 import { HashGenerator } from "../../domain/interfaces/hash-generator.interface";
 
-interface LoginUseCaseRequest {
+interface SignUpUseCaseRequest {
 	name: string;
 	email: string;
 	password: string;
 }
-type LoginUseCaseResponse = Either<
+type SignUpUseCaseResponse = Either<
 	UserAlreadyExistError,
 	{
 		user: User;
@@ -20,7 +20,7 @@ type LoginUseCaseResponse = Either<
 >;
 
 @Injectable()
-export class RegisterUseCase {
+export class SignUpUseCase {
 	constructor(
 		private readonly userRepository: UserRepository,
 		private hashGenerator: HashGenerator,
@@ -31,7 +31,7 @@ export class RegisterUseCase {
 		name,
 		email,
 		password,
-	}: LoginUseCaseRequest): Promise<LoginUseCaseResponse> {
+	}: SignUpUseCaseRequest): Promise<SignUpUseCaseResponse> {
 		const userWithSameEmail = await this.userRepository.findByEmail(email);
 
 		if (userWithSameEmail) {

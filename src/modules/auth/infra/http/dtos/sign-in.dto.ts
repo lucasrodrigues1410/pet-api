@@ -1,12 +1,12 @@
 import { createZodDto } from "nestjs-zod";
 import { z } from "zod";
 
-const loginRequest = z.object({
+const signInRequest = z.object({
 	email: z.email(),
 	password: z.string().min(5),
 });
 
-const loginResponse = z.object({
+const signInResponse = z.object({
 	id: z.string(),
 	name: z.string(),
 	email: z.string(),
@@ -14,5 +14,5 @@ const loginResponse = z.object({
 	accessToken: z.jwt(),
 });
 
-export class LoginRequestDto extends createZodDto(loginRequest) {}
-export class LoginResponseDto extends createZodDto(loginResponse) {}
+export class SignInRequestDto extends createZodDto(signInRequest) {}
+export class SignInResponseDto extends createZodDto(signInResponse) {}

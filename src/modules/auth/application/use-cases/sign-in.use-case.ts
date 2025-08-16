@@ -6,12 +6,12 @@ import { InvalidCredentialsError } from "../../domain/errors/invalid-credentials
 import { Encrypter } from "../../domain/interfaces/encrypter.interface";
 import { HashComparer } from "../../domain/interfaces/hash-comparer.interface";
 
-interface LoginUseCaseRequest {
+interface SignInUseCaseRequest {
 	email: string;
 	password: string;
 }
 
-type LoginUseCaseResponse = Either<
+type SignInUseCaseResponse = Either<
 	InvalidCredentialsError,
 	User & {
 		accessToken: string;
@@ -19,7 +19,7 @@ type LoginUseCaseResponse = Either<
 >;
 
 @Injectable()
-export class LoginUseCase {
+export class SignInUseCase {
 	constructor(
 		private readonly userRepository: UserRepository,
 		private hashComparer: HashComparer,
@@ -29,7 +29,7 @@ export class LoginUseCase {
 	async execute({
 		email,
 		password,
-	}: LoginUseCaseRequest): Promise<LoginUseCaseResponse> {
+	}: SignInUseCaseRequest): Promise<SignInUseCaseResponse> {
 		const user = await this.userRepository.findByEmail(email);
 		const isPasswordValid = await this.hashComparer.compare(
 			password,

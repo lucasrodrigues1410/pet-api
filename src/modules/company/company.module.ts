@@ -1,5 +1,4 @@
 import { Module } from "@nestjs/common";
-import { CreateCompanyUseCase } from "./application/use-cases/create-company.use-case";
 import { DeleteCompanyUseCase } from "./application/use-cases/delete-company.use-case";
 import { GetCompanyByIdUseCase } from "./application/use-cases/get-company-by-id.use-case";
 import { SearchCompaniesUseCase } from "./application/use-cases/search-companies.use-case";
@@ -13,7 +12,6 @@ import { CompanyController } from "./infra/http/controllers/company.controller";
 	providers: [
 		SearchCompaniesUseCase,
 		GetCompanyByIdUseCase,
-		CreateCompanyUseCase,
 		UpdateCompanyUseCase,
 		DeleteCompanyUseCase,
 		{

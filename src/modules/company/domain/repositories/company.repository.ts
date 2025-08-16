@@ -13,7 +13,6 @@ export abstract class CompanyRepository {
 			query?: string;
 		} & PaginationQuery,
 	): Promise<PaginationResult<Company>>;
-	abstract create(company: Company, ownerUserId: string): Promise<void>;
 	abstract update(
 		companyId: string,
 		data: Partial<Pick<CompanyProps, "name" | "address" | "contact">>,

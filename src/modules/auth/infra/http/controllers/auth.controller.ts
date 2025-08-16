@@ -10,14 +10,14 @@ import {
 } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { SignInCompanyUseCase } from "@/modules/auth/application/use-cases/sign-in-company.use-case";
-import { LoginUseCase } from "../../../application/use-cases/login.use-case";
-import { RegisterUseCase } from "../../../application/use-cases/register.use-case";
+import { SignInUseCase } from "../../../application/use-cases/sign-in.use-case";
+import { SignUpUseCase } from "../../../application/use-cases/sign-up.use-case";
 import { InvalidCredentialsError } from "../../../domain/errors/invalid-credentials.error";
 import { UserAlreadyExistError } from "../../../domain/errors/user-already-exists.error";
 import { Public } from "../decorators/public.decorator";
-import { LoginRequestDto, LoginResponseDto } from "../dtos/login.dto";
-import { RegisterRequestDto } from "../dtos/register.dto";
+import { SignInRequestDto, SignInResponseDto } from "../dtos/sign-in.dto";
 import { SignInCompanyResponseDto } from "../dtos/sign-in-company.dto";
+import { SignUpRequestDto } from "../dtos/sign-up.dto";
 import { SignInCompanyPresenter } from "../presenters/sign-in-company.presenter";
 import { SignInCustomerPresenter } from "../presenters/sign-in-customer.presenter";
 
@@ -25,23 +25,23 @@ import { SignInCustomerPresenter } from "../presenters/sign-in-customer.presente
 @Controller("auth")
 export class AuthController {
 	constructor(
-		private loginUseCase: LoginUseCase,
-		private registerUseCase: RegisterUseCase,
+		private signInUseCase: SignInUseCase,
+		private signUpUseCase: SignUpUseCase,
 		private signInCompanyUseCase: SignInCompanyUseCase,
-	) {}
+	) { }
 
-	@Post("login")
+	@Post("sign-in")
 	@ApiOperation({ summary: "Login de usuário" })
 	@ApiResponse({
 		status: 200,
-		type: LoginResponseDto,
+		type: SignInResponseDto,
 	})
 	@Public()
 	@HttpCode(HttpStatus.OK)
-	async login(@Body() body: LoginRequestDto) {
+	async signIn(@Body() body: SignInRequestDto) {
 		const { email, password } = body;
 
-		const result = await this.loginUseCase.execute({
+		const result = await this.signInUseCase.execute({
 			email,
 			password,
 		});
@@ -60,15 +60,15 @@ export class AuthController {
 		return SignInCustomerPresenter.toHttp(result.value);
 	}
 
-	@Post("register")
+	@Post("sign-up")
 	@ApiOperation({ summary: "Registro de usuário" })
 	@ApiResponse({ status: 201 })
 	@Public()
 	@HttpCode(HttpStatus.CREATED)
-	async register(@Body() body: RegisterRequestDto) {
+	async signUp(@Body() body: SignUpRequestDto) {
 		const { name, email, password } = body;
 
-		const result = await this.registerUseCase.execute({
+		const result = await this.signUpUseCase.execute({
 			name,
 			email,
 			password,
@@ -91,7 +91,7 @@ export class AuthController {
 	@ApiResponse({ status: 200, type: SignInCompanyResponseDto })
 	@Public()
 	@HttpCode(HttpStatus.OK)
-	async signInCompany(@Body() body: LoginRequestDto) {
+	async signInCompany(@Body() body: SignInRequestDto) {
 		const { email, password } = body;
 
 		const result = await this.signInCompanyUseCase.execute({

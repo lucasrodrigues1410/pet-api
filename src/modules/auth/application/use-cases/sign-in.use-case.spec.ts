@@ -4,24 +4,24 @@ import { FakeHasher } from "test/cryptography/fake-hasher";
 import { makeUser } from "test/factories/make-user";
 import { InMemoryUserRepository } from "test/repositories/in-memory-user.repository";
 import { InvalidCredentialsError } from "../../domain/errors/invalid-credentials.error";
-import { LoginUseCase } from "./login.use-case";
+import { SignInUseCase } from "./sign-in.use-case";
 
 let inMemoryUserRepository: InMemoryUserRepository;
 let fakeHasher: FakeHasher;
 let encrypter: FakeEncrypter;
 
-let sut: LoginUseCase;
+let sut: SignInUseCase;
 
-describe("Login", () => {
+describe("SignIn", () => {
 	beforeEach(() => {
 		inMemoryUserRepository = new InMemoryUserRepository();
 		fakeHasher = new FakeHasher();
 		encrypter = new FakeEncrypter();
 
-		sut = new LoginUseCase(inMemoryUserRepository, fakeHasher, encrypter);
+		sut = new SignInUseCase(inMemoryUserRepository, fakeHasher, encrypter);
 	});
 
-	it("should login", async () => {
+	it("should sign in", async () => {
 		const user = makeUser({
 			email: "johndoe@example.com",
 			password: await fakeHasher.hash("123456"),
@@ -41,7 +41,7 @@ describe("Login", () => {
 		);
 	});
 
-	it("should not login if user is not a customer", async () => {
+	it("should not sign in if user is not a customer", async () => {
 		const user = makeUser({
 			email: "johndoe@example.com",
 			password: await fakeHasher.hash("123456"),
