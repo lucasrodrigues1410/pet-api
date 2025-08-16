@@ -9,26 +9,35 @@ import {
 	Patch,
 	Post,
 	Put,
+	Query,
 	UseGuards,
 } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { PaginationPresenter } from "@/core/infra/presenters/pagination.presenter";
+import { Public } from "@/modules/auth/infra/http/decorators/public.decorator";
 import { UserType } from "@/modules/auth/infra/http/decorators/user-type.decorator";
 import { CompanyGuard } from "@/modules/company/infra/http/guards/company.guard";
 import { StaffRole } from "@/modules/staff/domain/entities/staff.entity";
 import { StaffRoles } from "@/modules/staff/infra/decorators/staff-roles.decorator";
+import { PaginationQueryDto } from "@/shared/utils/pagination-query";
 import { CreateServiceUseCase } from "../../../application/use-cases/create-service.use-case";
 import { DeactivateServiceUseCase } from "../../../application/use-cases/deactivate-service.use-case";
 import { GetServiceByIdUseCase } from "../../../application/use-cases/get-service-by-id.use-case";
 import { ListServicesByCompanyUseCase } from "../../../application/use-cases/list-services-by-company.use-case";
+import { SearchServicesUseCase } from "../../../application/use-cases/search-services.use-case";
 import { UpdateServiceUseCase } from "../../../application/use-cases/update-service.use-case";
 import { CreateServiceRequestDto } from "../dtos/create-service.dto";
-import { ServiceResponse } from "../dtos/service.response.dto";
+import { SearchServicesRequestDto } from "../dtos/search-services.dto";
+import {
+	ServiceResponse,
+	ServiceResponseList,
+} from "../dtos/service.response.dto";
 import { ServiceDetailsResponse } from "../dtos/service-details.response.dto";
 import { UpdateServiceRequestDto } from "../dtos/update-service.dto";
 import { ServicePresenter } from "../presenters/service.presenter";
 import { ServiceDetailsPresenter } from "../presenters/service-details.presenter";
 
-@ApiTags("services")
+@ApiTags("Serviços")
 @Controller("services")
 export class ServiceController {
 	constructor(
@@ -37,6 +46,7 @@ export class ServiceController {
 		private readonly createServiceUseCase: CreateServiceUseCase,
 		private readonly updateServiceUseCase: UpdateServiceUseCase,
 		private readonly deactivateServiceUseCase: DeactivateServiceUseCase,
+		private readonly searchServicesUseCase: SearchServicesUseCase,
 	) {}
 
 	@Get("/:id")
@@ -71,6 +81,32 @@ export class ServiceController {
 		}
 
 		return result.value.services.map(ServicePresenter.toHTTP);
+	}
+
+	@Post("/search")
+	@Public()
+	@ApiOperation({ summary: "Buscar serviços com filtros avançados" })
+	@ApiResponse({
+		status: 200,
+		type: ServiceResponseList,
+	})
+	async searchServices(
+		@Body() data: SearchServicesRequestDto,
+		@Query() query: PaginationQueryDto,
+	) {
+		const result = await this.searchServicesUseCase.execute({
+			...data,
+			...query,
+		});
+
+		if (result.isLeft()) {
+			throw new BadRequestException();
+		}
+
+		return PaginationPresenter.toHTTP({
+			items: result.value.items.map(ServiceDetailsPresenter.toHTTP),
+			meta: result.value.meta,
+		});
 	}
 
 	@Post("/company/:companyId")

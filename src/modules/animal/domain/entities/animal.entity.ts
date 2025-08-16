@@ -79,4 +79,5 @@ export class Animal extends Entity<AnimalProps> {
 		};
 		return this;
 	}
+
 }

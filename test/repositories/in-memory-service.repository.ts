@@ -3,6 +3,7 @@ import {
 	ServiceWithRelations,
 } from "src/modules/service/domain/entities/service.entity";
 import { ServiceRepository } from "src/modules/service/domain/repositories/service.repository";
+import { paginate } from "@/shared/utils/paginator";
 
 export class InMemoryServiceRepository implements ServiceRepository {
 	public items: Service[] = [];
@@ -31,5 +32,22 @@ export class InMemoryServiceRepository implements ServiceRepository {
 		if (itemIndex >= 0) {
 			this.items[itemIndex].update(service);
 		}
+	}
+
+	async searchServices(
+		params: Parameters<ServiceRepository["searchServices"]>[0],
+	) {
+		const { query } =
+			params;
+
+		var items = this.items.filter((service) =>
+			service.name.includes(query || ""),
+		) as ServiceWithRelations[];
+
+		return paginate(
+			async () => items.slice(0, 10),
+			async () => items.length,
+			params,
+		);
 	}
 }

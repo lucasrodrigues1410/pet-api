@@ -8,6 +8,7 @@ import { EnvService } from "./core/infra/env/env.service";
 async function bootstrap() {
 	const app = await NestFactory.create<NestExpressApplication>(AppModule, {
 		rawBody: true,
+		cors: true,
 	});
 
 	const openApiDoc = SwaggerModule.createDocument(

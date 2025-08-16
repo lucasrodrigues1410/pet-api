@@ -13,5 +13,5 @@ export const PaginationQuerySchema = z.object({
 		.optional(),
 });
 
-export class PaginationQueryDto extends createZodDto(PaginationQuerySchema) {}
+export class PaginationQueryDto extends createZodDto(PaginationQuerySchema) { }
 export type PaginationQuery = z.infer<typeof PaginationQuerySchema>;
