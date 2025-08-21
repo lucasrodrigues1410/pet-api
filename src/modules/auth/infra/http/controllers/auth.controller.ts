@@ -3,6 +3,7 @@ import {
 	Body,
 	ConflictException,
 	Controller,
+	Get,
 	HttpCode,
 	HttpStatus,
 	Post,
@@ -10,14 +11,19 @@ import {
 } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { SignInCompanyUseCase } from "@/modules/auth/application/use-cases/sign-in-company.use-case";
+import { GetSessionUseCase } from "../../../application/use-cases/get-session.use-case";
 import { SignInUseCase } from "../../../application/use-cases/sign-in.use-case";
 import { SignUpUseCase } from "../../../application/use-cases/sign-up.use-case";
 import { InvalidCredentialsError } from "../../../domain/errors/invalid-credentials.error";
 import { UserAlreadyExistError } from "../../../domain/errors/user-already-exists.error";
+import type { UserPayload } from "../../strategies/jwt.strategy";
 import { Public } from "../decorators/public.decorator";
+import { User } from "../decorators/user.decorator";
+import { SessionResponseDto } from "../dtos/session.dto";
 import { SignInRequestDto, SignInResponseDto } from "../dtos/sign-in.dto";
 import { SignInCompanyResponseDto } from "../dtos/sign-in-company.dto";
 import { SignUpRequestDto } from "../dtos/sign-up.dto";
+import { SessionPresenter } from "../presenters/session.presenter";
 import { SignInCompanyPresenter } from "../presenters/sign-in-company.presenter";
 import { SignInCustomerPresenter } from "../presenters/sign-in-customer.presenter";
 
@@ -28,7 +34,8 @@ export class AuthController {
 		private signInUseCase: SignInUseCase,
 		private signUpUseCase: SignUpUseCase,
 		private signInCompanyUseCase: SignInCompanyUseCase,
-	) { }
+		private getSessionUseCase: GetSessionUseCase,
+	) {}
 
 	@Post("sign-in")
 	@ApiOperation({ summary: "Login de usuário" })
@@ -111,5 +118,18 @@ export class AuthController {
 		}
 
 		return SignInCompanyPresenter.toHttp(result.value);
+	}
+
+	@Get("session")
+	@ApiOperation({ summary: "Obter informações da sessão do usuário" })
+	@ApiResponse({
+		status: 200,
+		type: SessionResponseDto,
+	})
+	@HttpCode(HttpStatus.OK)
+	async getSession(@User() payload: UserPayload) {
+		const result = await this.getSessionUseCase.execute(payload);
+
+		return SessionPresenter.toHTTP(result.value);
 	}
 }

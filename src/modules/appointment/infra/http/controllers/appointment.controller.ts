@@ -26,7 +26,7 @@ import {
 import { AppointmentPresenter } from "../presenters/appointment.presenter";
 
 @ApiTags("Agendamentos")
-@Controller("appointment")
+@Controller("appointments")
 export class AppointmentController {
 	constructor(
 		private readonly getAppointmentByIdUseCase: GetAppointmentByIdUseCase,

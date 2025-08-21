@@ -9,6 +9,8 @@ const tokenPayloadSchema = z.object({
 	name: z.string(),
 	email: z.email(),
 	type: z.string(),
+	companyId: z.string().optional(),
+	role: z.string().optional(),
 });
 
 export type UserPayload = z.infer<typeof tokenPayloadSchema>;

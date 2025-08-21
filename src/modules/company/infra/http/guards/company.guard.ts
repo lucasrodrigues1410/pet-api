@@ -21,6 +21,8 @@ export class CompanyGuard implements CanActivate {
 		const companyId = request.params.companyId;
 		const user = request.user;
 
+	
+
 		if (!companyId) {
 			throw new ForbiddenException(
 				"Company ID is required in route parameters",

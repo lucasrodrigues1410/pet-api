@@ -8,12 +8,12 @@ import { InvalidCredentialsError } from "../../domain/errors/invalid-credentials
 import { Encrypter } from "../../domain/interfaces/encrypter.interface";
 import { HashComparer } from "../../domain/interfaces/hash-comparer.interface";
 
-interface LoginUseCaseRequest {
+interface SignInCompanyUseCaseRequest {
 	email: string;
 	password: string;
 }
 
-type LoginUseCaseResponse = Either<
+type SignInCompanyUseCaseResponse = Either<
 	InvalidCredentialsError,
 	User & {
 		accessToken: string;
@@ -34,11 +34,11 @@ export class SignInCompanyUseCase {
 	async execute({
 		email,
 		password,
-	}: LoginUseCaseRequest): Promise<LoginUseCaseResponse> {
+	}: SignInCompanyUseCaseRequest): Promise<SignInCompanyUseCaseResponse> {
 		const user = await this.userRepository.findByEmail(email);
 
 		var staffRole: StaffRole | undefined;
-		var companyId: string | undefined;
+		var companyId: string | undefined;	
 		const isPasswordValid = await this.hashComparer.compare(
 			password,
 			user?.password ?? "",

@@ -3,8 +3,10 @@ import { JwtModule } from "@nestjs/jwt";
 import { EnvService } from "@/core/infra/env/env.service";
 import { StaffModule } from "../staff/staff.module";
 import { UserModule } from "../user/user.module";
-import { LoginUseCase } from "./application/use-cases/sign-in.use-case";
-import { RegisterUseCase } from "./application/use-cases/sign-up.use-case";
+import { GetSessionUseCase } from "./application/use-cases/get-session.use-case";
+import { SignInUseCase } from "./application/use-cases/sign-in.use-case";
+import { SignInCompanyUseCase } from "./application/use-cases/sign-in-company.use-case";
+import { SignUpUseCase } from "./application/use-cases/sign-up.use-case";
 import { Encrypter } from "./domain/interfaces/encrypter.interface";
 import { HashComparer } from "./domain/interfaces/hash-comparer.interface";
 import { HashGenerator } from "./domain/interfaces/hash-generator.interface";
@@ -29,8 +31,10 @@ import { JwtStrategy } from "./infra/strategies/jwt.strategy";
 	providers: [
 		EnvService,
 		JwtStrategy,
-		LoginUseCase,
-		RegisterUseCase,
+		SignInUseCase,
+		SignUpUseCase,
+		GetSessionUseCase,
+		SignInCompanyUseCase,
 		{ provide: Encrypter, useClass: JwtEncrypter },
 		{ provide: HashComparer, useClass: BcryptHasher },
 		{ provide: HashGenerator, useClass: BcryptHasher },
