@@ -1,36 +1,25 @@
-import {
-	Prisma,
-	Company as PrismaCompany,
-	CompanyAvailability as PrismaCompanyAvailability,
-	CompanyAvailabilityException as PrismaCompanyAvailabilityException,
-} from "prisma/generated/client";
+import { Prisma } from "prisma/generated/client";
 import { Company } from "src/modules/company/domain/entities/company.entity";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
-import { PrismaCompanyAvailabilityMapper } from "@/modules/company-availability/infra/database/mappers/company-availability.mapper";
-import { PrismaCompanyAvailabilityExceptionMapper } from "@/modules/company-availability/infra/database/mappers/company-availability-exception.mapper";
+import { PrismaAssetMapper } from "@/modules/asset/infra/database/mappers/prisma-asset.mapper";
+
+type PrismaCompany = Prisma.CompanyGetPayload<{
+	include: {
+		logo: true;
+	};
+}>;
 
 export class PrismaCompanyMapper {
-	static toDomain(
-		prismaCompany: PrismaCompany & {
-			companyAvailability?: PrismaCompanyAvailability[];
-			companyAvailabilityExceptions?: PrismaCompanyAvailabilityException[];
-		},
-	): Company {
-		const companyAvailabilityDomain = prismaCompany.companyAvailability?.map(
-			PrismaCompanyAvailabilityMapper.toDomain,
-		);
-		const companyAvailabilityExceptionsDomain =
-			prismaCompany.companyAvailabilityExceptions?.map(
-				PrismaCompanyAvailabilityExceptionMapper.toDomain,
-			);
-
+	static toDomain(prismaCompany: PrismaCompany): Company {
 		return Company.create(
 			{
 				name: prismaCompany.name,
 				address: prismaCompany.address || undefined,
 				contact: prismaCompany.contact || undefined,
-				availability: companyAvailabilityDomain,
-				availabilityExceptions: companyAvailabilityExceptionsDomain,
+				description: prismaCompany.description || undefined,
+				logo: prismaCompany.logo
+					? PrismaAssetMapper.toDomain(prismaCompany.logo)
+					: undefined,
 			},
 			new UniqueEntityID(prismaCompany.id),
 		);
@@ -42,6 +31,7 @@ export class PrismaCompanyMapper {
 			name: animal.name,
 			address: animal.address,
 			contact: animal.contact,
+			description: animal.description,
 		};
 	}
 }

@@ -36,4 +36,12 @@ export class Breed extends Entity<BreedProps> {
 	public static create(props: BreedProps, id?: UniqueEntityID) {
 		return new Breed(props, id);
 	}
+
+	public toObject() {
+		return {
+			id: this.id.toString(),
+			animalTypeId: this.animalTypeId.toString(),
+			name: this.name,
+		};
+	}
 }

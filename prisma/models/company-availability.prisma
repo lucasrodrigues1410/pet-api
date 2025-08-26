@@ -1,37 +1,37 @@
 enum DayOfWeek {
-    SUNDAY
-    MONDAY
-    TUESDAY
-    WEDNESDAY
-    THURSDAY
-    FRIDAY
-    SATURDAY
+  SUNDAY
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
 }
 
 model CompanyAvailability {
-    id             String    @id @default(cuid())
-    companyId      String    @map("company_id")
-    day            DayOfWeek
-    startTime      DateTime  @map("start_time") @db.Time(1)
-    endTime        DateTime  @map("end_time") @db.Time(1)
-    lunchStartTime DateTime  @map("lunch_start_time") @db.Time(1)
-    lunchEndTime   DateTime  @map("lunch_end_time") @db.Time(1)
-    createdAt      DateTime  @default(now()) @map("created_at")
-    updatedAt      DateTime  @updatedAt @map("updated_at")
-    company        Company   @relation(fields: [companyId], references: [id])
+  id             String    @id @default(cuid())
+  companyId      String    @map("company_id")
+  day            DayOfWeek
+  startTime      DateTime  @map("start_time") @db.Time(1)
+  endTime        DateTime  @map("end_time") @db.Time(1)
+  lunchStartTime DateTime  @map("lunch_start_time") @db.Time(1)
+  lunchEndTime   DateTime  @map("lunch_end_time") @db.Time(1)
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+  company        Company   @relation(fields: [companyId], references: [id])
 
-    @@map("company_availabilities")
+  @@map("company_availabilities")
 }
 
 model CompanyAvailabilityException {
-    id        String   @id @default(cuid())
-    companyId String   @map("company_id")
-    startDate DateTime @map("start_date")
-    endDate   DateTime @map("end_date")
-    reason    String?  @map("reason")
-    createdAt DateTime @default(now()) @map("created_at")
-    updatedAt DateTime @updatedAt @map("updated_at")
-    company   Company  @relation(fields: [companyId], references: [id])
+  id        String   @id @default(cuid())
+  companyId String   @map("company_id")
+  startDate DateTime @map("start_date")
+  endDate   DateTime @map("end_date")
+  reason    String?  @map("reason")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  company   Company  @relation(fields: [companyId], references: [id])
 
-    @@map("company_availability_exceptions")
+  @@map("company_availability_exceptions")
 }

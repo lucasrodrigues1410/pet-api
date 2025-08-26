@@ -18,11 +18,14 @@ type SearchServicesUseCaseRequest = {
 	};
 } & PaginationQuery;
 
-type SearchServicesUseCaseResponse = Either<null, PaginationResult<ServiceWithRelations>>;
+type SearchServicesUseCaseResponse = Either<
+	null,
+	PaginationResult<ServiceWithRelations>
+>;
 
 @Injectable()
 export class SearchServicesUseCase {
-	constructor(private readonly serviceRepository: ServiceRepository) {}
+	constructor(private readonly serviceRepository: ServiceRepository) { }
 
 	async execute(
 		params: SearchServicesUseCaseRequest,

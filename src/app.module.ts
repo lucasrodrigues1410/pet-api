@@ -15,6 +15,7 @@ import { JwtGuard } from "./modules/auth/infra/http/guards/jwt.guard";
 import { BookingModule } from "./modules/booking/booking.module";
 import { BreedModule } from "./modules/breed/breed.module";
 import { CompanyModule } from "./modules/company/company.module";
+import { DashboardModule } from "./modules/dashboard/dashboard.module";
 import { EmailModule } from "./modules/email/email.module";
 import { NotificationModule } from "./modules/notification/notification.module";
 import { PriceVariationModule } from "./modules/price-variation/price-variation.module";
@@ -45,6 +46,7 @@ import { UserModule } from "./modules/user/user.module";
 		BookingModule,
 		StaffModule,
 		NotificationModule,
+		DashboardModule,
 	],
 	providers: [
 		{

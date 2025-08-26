@@ -1,13 +1,20 @@
 import { Entity } from "@/core/domain/entities/entity";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
+import { Asset } from "@/modules/asset/domain/entities/asset";
 
-export type UserType = "CUSTOMER" | "COMPANY" | "ADMIN";
+export enum UserType {
+	CUSTOMER = "CUSTOMER",
+	COMPANY = "COMPANY",
+	ADMIN = "ADMIN",
+}
 
 export interface UserProps {
 	email: string;
 	name: string;
 	password: string;
 	type: UserType;
+	avatarAssetId?: string;
+	avatar?: Asset;
 }
 
 export class User extends Entity<UserProps> {
@@ -27,6 +34,14 @@ export class User extends Entity<UserProps> {
 		return this.props.type;
 	}
 
+	get avatar() {
+		return this.props.avatar;
+	}
+
+	get avatarAssetId() {
+		return this.props.avatarAssetId;
+	}
+
 	public static create(props: UserProps, id?: UniqueEntityID): User {
 		const user = new User(props, id);
 		return user;
@@ -36,6 +51,17 @@ export class User extends Entity<UserProps> {
 		this.props = {
 			...this.props,
 			...data,
+		};
+	}
+
+	public toObject() {
+		return {
+			id: this.id.toString(),
+			email: this.email,
+			name: this.name,
+			type: this.type,
+			avatar: this.avatar?.toObject(),
+			avatarAssetId: this.avatarAssetId,
 		};
 	}
 }

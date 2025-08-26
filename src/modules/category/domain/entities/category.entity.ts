@@ -1,7 +1,9 @@
 import { Entity } from "@/core/domain/entities/entity";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 
-export type CategoryType = "PETSHOP";
+export enum CategoryType {
+	PETSHOP = "PETSHOP",
+}
 
 export interface CategoryProps {
 	name: string;
@@ -24,5 +26,14 @@ export class Category extends Entity<CategoryProps> {
 
 	public static create(props: CategoryProps, id?: UniqueEntityID): Category {
 		return new Category(props, id);
+	}
+
+	public toObject() {
+		return {
+			id: this.id.toString(),
+			name: this.name,
+			type: this.type,
+			description: this.description,
+		};
 	}
 }

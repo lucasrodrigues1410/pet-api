@@ -78,10 +78,6 @@ export class Appointment extends Entity<AppointmentProps> {
 		},
 		id?: UniqueEntityID,
 	): Appointment {
-		if (props.startDate < new Date()) {
-			throw new DomainError("startDate must be in the future");
-		}
-
 		if (props.startDate >= props.endDate) {
 			throw new DomainError("startDate must be before endDate");
 		}
@@ -97,5 +93,21 @@ export class Appointment extends Entity<AppointmentProps> {
 			},
 			id,
 		);
+	}
+
+	public toObject() {
+		return {
+			id: this.id.toString(),
+			animalId: this.animalId.toString(),
+			staffId: this.staffId.toString(),
+			serviceId: this.serviceId.toString(),
+			companyId: this.companyId.toString(),
+			startDate: this.startDate.toISOString(),
+			endDate: this.endDate.toISOString(),
+			status: this.status,
+			price: this.price,
+			coatType: this.coatType,
+			clientId: this.clientId.toString(),
+		};
 	}
 }

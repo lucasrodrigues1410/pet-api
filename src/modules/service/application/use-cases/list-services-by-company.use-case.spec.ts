@@ -20,7 +20,7 @@ describe("List services by company", () => {
 		);
 		const companyId = services[0].companyId;
 		for (const service of services) {
-			await inMemoryServicesRepository.create(service);
+			inMemoryServicesRepository.items.push(service);
 		}
 		const result = await sut.execute({
 			companyId: companyId.toString(),

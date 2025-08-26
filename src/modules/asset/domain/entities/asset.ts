@@ -48,4 +48,18 @@ export class Asset extends Entity<AssetProps> {
 	public static create(props: AssetProps, id?: UniqueEntityID): Asset {
 		return new Asset(props, id);
 	}
+
+	public toObject() {
+		return {
+			id: this.id.toString(),
+			name: this.name,
+			url: this.url,
+			fileType: this.fileType,
+			width: this.width,
+			height: this.height,
+			thumbnailUrl: this.thumbnailUrl,
+			fileId: this.fileId,
+			userId: this.userId.toString(),
+		};
+	}
 }

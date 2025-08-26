@@ -1,18 +1,12 @@
 import { createZodDto } from "nestjs-zod";
 import { z } from "zod";
-import { DaysOfWeek } from "../../../domain/entities/company-availability.entity";
+import { companyAvailabilityDto } from "./company-availability.dto";
 
-const response = z.object({
-	companyId: z.string(),
-	day: z.enum(DaysOfWeek),
-	timeRange: z.object({ startTime: z.iso.time(), endTime: z.iso.time() }),
-	launchTime: z.object({ startTime: z.iso.time(), endTime: z.iso.time() }),
-});
 const listResponse = z.object({
-	items: z.array(response),
+	items: z.array(companyAvailabilityDto),
 });
 
-export class CompanyAvailabilityResponseDto extends createZodDto(response) {}
+export class CompanyAvailabilityResponseDto extends createZodDto(companyAvailabilityDto) {}
 export class CompanyAvailabilityListResponseDto extends createZodDto(
 	listResponse,
 ) {}

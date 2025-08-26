@@ -16,7 +16,7 @@ describe("Deactivate Service", () => {
 	it("should be able to deactivate a service", async () => {
 		const companyId = new UniqueEntityID();
 		const service = makeService({ companyId, isActive: true });
-		await inMemoryServicesRepository.create(service);
+		inMemoryServicesRepository.items.push(service);
 
 		const result = await sut.execute({
 			id: service.id.toString(),
@@ -50,9 +50,9 @@ describe("Deactivate Service", () => {
 		const service2 = makeService({ companyId, isActive: true });
 		const service3 = makeService({ companyId, isActive: true });
 
-		await inMemoryServicesRepository.create(service1);
-		await inMemoryServicesRepository.create(service2);
-		await inMemoryServicesRepository.create(service3);
+		inMemoryServicesRepository.items.push(service1);
+		inMemoryServicesRepository.items.push(service2);
+		inMemoryServicesRepository.items.push(service3);
 
 		// Deactivate first service
 		const result1 = await sut.execute({
@@ -87,7 +87,7 @@ describe("Deactivate Service", () => {
 	it("should handle deactivating already deactivated service", async () => {
 		const companyId = new UniqueEntityID();
 		const service = makeService({ companyId, isActive: false }); // Already inactive
-		await inMemoryServicesRepository.create(service);
+		inMemoryServicesRepository.items.push(service);
 
 		const result = await sut.execute({
 			id: service.id.toString(),

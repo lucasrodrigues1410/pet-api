@@ -1,13 +1,14 @@
 import { Injectable } from "@nestjs/common";
+import { UserType } from "@/modules/user/domain/entities/user.entity";
 import { Either, right } from "@/shared/either";
 
 interface GetSessionUseCaseRequest {
 	sub: string;
-    name: string;
-    email: string;
-    type: string;
-    companyId?: string | undefined;
-    role?: string | undefined;
+	name: string;
+	email: string;
+	type: UserType;
+	companyId?: string | undefined;
+	role?: string | undefined;
 }
 
 type GetSessionUseCaseResponse = Either<
@@ -16,7 +17,7 @@ type GetSessionUseCaseResponse = Either<
 		sub: string;
 		name: string;
 		email: string;
-		type: string;
+		type: UserType;
 		companyId?: string | undefined;
 		role?: string | undefined;
 	}
@@ -24,7 +25,9 @@ type GetSessionUseCaseResponse = Either<
 
 @Injectable()
 export class GetSessionUseCase {
-	async execute(request: GetSessionUseCaseRequest): Promise<GetSessionUseCaseResponse> {
+	async execute(
+		request: GetSessionUseCaseRequest,
+	): Promise<GetSessionUseCaseResponse> {
 		return right(request);
 	}
 }

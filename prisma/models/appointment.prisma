@@ -1,41 +1,41 @@
 model Appointment {
-    id        String            @id @default(cuid())
-    startDate DateTime
-    endDate   DateTime
-    status    AppointmentStatus @default(SCHEDULED)
-    price     Decimal           @db.Decimal(10, 2)
-    coatType  CoatType
+  id        String            @id @default(cuid())
+  startDate DateTime
+  endDate   DateTime
+  status    AppointmentStatus @default(SCHEDULED)
+  price     Decimal           @db.Decimal(10, 2)
+  coatType  CoatType
 
-    animalId  String
-    serviceId String
-    staffId   String
-    clientId  String
-    companyId String
+  animalId  String
+  serviceId String
+  staffId   String
+  clientId  String
+  companyId String
 
-    animal  Animal      @relation("AnimalAppointments", fields: [animalId], references: [id], onDelete: Cascade)
-    service Service     @relation(fields: [serviceId], references: [id], onDelete: Restrict)
-    staff   UserCompany @relation(fields: [staffId], references: [id], onDelete: Restrict)
-    client  User        @relation(fields: [clientId], references: [id], onDelete: Restrict)
-    company Company     @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  animal  Animal      @relation("AnimalAppointments", fields: [animalId], references: [id], onDelete: Cascade)
+  service Service     @relation(fields: [serviceId], references: [id], onDelete: Restrict)
+  staff   UserCompany @relation(fields: [staffId], references: [id], onDelete: Restrict)
+  client  User        @relation(fields: [clientId], references: [id], onDelete: Restrict)
+  company Company     @relation(fields: [companyId], references: [id], onDelete: Restrict)
 
-    createdAt DateTime  @default(now())
-    updatedAt DateTime  @updatedAt
-    deletedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
 
-    @@index([animalId])
-    @@index([status])
+  @@index([animalId])
+  @@index([status])
 }
 
 enum AppointmentStatus {
-    SCHEDULED
-    CONFIRMED
-    IN_PROGRESS
-    COMPLETED
-    CANCELED
+  SCHEDULED
+  CONFIRMED
+  IN_PROGRESS
+  COMPLETED
+  CANCELED
 }
 
 enum CoatType {
-    SHORT
-    MEDIUM
-    LONG
+  SHORT
+  MEDIUM
+  LONG
 }

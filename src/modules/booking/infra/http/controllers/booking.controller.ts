@@ -8,15 +8,14 @@ import {
 	Param,
 	Post,
 } from "@nestjs/common";
-import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { ApiOperation, ApiTags } from "@nestjs/swagger";
+import { ZodResponse } from "nestjs-zod";
 import { Public } from "@/modules/auth/infra/http/decorators/public.decorator";
 import { User } from "@/modules/auth/infra/http/decorators/user.decorator";
-import { UserType } from "@/modules/auth/infra/http/decorators/user-type.decorator";
+import { UserTypeDecorator } from "@/modules/auth/infra/http/decorators/user-type.decorator";
 import { AppointmentBookingUseCase } from "@/modules/booking/application/use-cases/appointment-booking.use-case";
-import { CreateAnonymousAppointmentUseCase } from "@/modules/booking/application/use-cases/create-anonymous-appointment.use-case";
 import { ListAvailableDatesUseCase } from "@/modules/booking/application/use-cases/list-available-dates.use-case";
-import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
-import { CreateAnonymousAppointmentRequestDto } from "../dtos/create-anonymous-appointment.dto";
+import { UserType } from "@/modules/user/domain/entities/user.entity";
 import { CreateAppointmentRequestDto } from "../dtos/create-appointment.dto";
 import {
 	ListAvailableDatesRequestDto,
@@ -29,16 +28,12 @@ export class BookingController {
 	constructor(
 		private readonly listAvailableDatesUseCase: ListAvailableDatesUseCase,
 		private readonly createAppointmentUseCase: AppointmentBookingUseCase,
-		private readonly createAnonymousAppointmentUseCase: CreateAnonymousAppointmentUseCase,
 	) {}
 
 	@ApiOperation({
 		summary: "Lista as datas disponíveis para um serviço e empresa específicos",
 	})
-	@ApiOkResponse({
-		description: "Retorna as datas disponíveis para agendamento",
-		type: ListAvailableDatesResponseDto,
-	})
+	@ZodResponse({ status: 200, type: ListAvailableDatesResponseDto })
 	@Get("available-dates/:companyId/:serviceId/:date")
 	@Public()
 	async listAvailableDates(
@@ -69,10 +64,7 @@ export class BookingController {
 		description:
 			"Inicia o processo de criação de um agendamento, verificando a disponibilidade do horário e criando uma intenção de agendamento.",
 	})
-	@ApiOkResponse({
-		description: "Retorna o agendamento criado",
-	})
-	@UserType("CUSTOMER")
+	@UserTypeDecorator(UserType.CUSTOMER)
 	async createAppointment(
 		@User("sub") userId: string,
 		@Body() params: CreateAppointmentRequestDto,
@@ -92,40 +84,6 @@ export class BookingController {
 
 		return {
 			appointmentId: response.value.appointmentId,
-		};
-	}
-
-	@Post("create-anonymous")
-	@HttpCode(201)
-	@Public()
-	@ApiOperation({
-		summary: "Cria um agendamento anônimo",
-		description:
-			"Cria um agendamento para clientes não cadastrados, criando usuário e animal temporários automaticamente.",
-	})
-	@ApiOkResponse({
-		description: "Retorna o agendamento anônimo criado",
-	})
-	@UserType("COMPANY")
-	async createAnonymousAppointment(
-		@Body() params: CreateAnonymousAppointmentRequestDto,
-	) {
-		const response = await this.createAnonymousAppointmentUseCase.execute({
-			...params,
-			date: new Date(params.date),
-		});
-
-		if (response.isLeft()) {
-			if (response.value instanceof ResourceNotFoundError) {
-				throw new NotFoundException(response.value.message);
-			}
-			throw new BadRequestException(`${response.value.message}`);
-		}
-
-		return {
-			appointmentId: response.value.appointmentId,
-			animalId: response.value.animalId,
-			clientId: response.value.clientId,
 		};
 	}
 }

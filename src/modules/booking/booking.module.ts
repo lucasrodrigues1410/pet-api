@@ -9,7 +9,6 @@ import { StaffModule } from "../staff/staff.module";
 import { UserModule } from "../user/user.module";
 import { AppointmentAvailabilityService } from "./application/services/appointment-availability.service";
 import { AppointmentBookingUseCase } from "./application/use-cases/appointment-booking.use-case";
-import { CreateAnonymousAppointmentUseCase } from "./application/use-cases/create-anonymous-appointment.use-case";
 import { ListAvailableDatesUseCase } from "./application/use-cases/list-available-dates.use-case";
 import { BookingController } from "./infra/http/controllers/booking.controller";
 
@@ -29,7 +28,6 @@ import { BookingController } from "./infra/http/controllers/booking.controller";
 		AppointmentAvailabilityService,
 		AppointmentBookingUseCase,
 		ListAvailableDatesUseCase,
-		CreateAnonymousAppointmentUseCase,
 	],
 })
 export class BookingModule {}

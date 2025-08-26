@@ -10,6 +10,7 @@ import {
 	UnauthorizedException,
 } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { ZodResponse } from "nestjs-zod";
 import { SignInCompanyUseCase } from "@/modules/auth/application/use-cases/sign-in-company.use-case";
 import { GetSessionUseCase } from "../../../application/use-cases/get-session.use-case";
 import { SignInUseCase } from "../../../application/use-cases/sign-in.use-case";
@@ -23,9 +24,6 @@ import { SessionResponseDto } from "../dtos/session.dto";
 import { SignInRequestDto, SignInResponseDto } from "../dtos/sign-in.dto";
 import { SignInCompanyResponseDto } from "../dtos/sign-in-company.dto";
 import { SignUpRequestDto } from "../dtos/sign-up.dto";
-import { SessionPresenter } from "../presenters/session.presenter";
-import { SignInCompanyPresenter } from "../presenters/sign-in-company.presenter";
-import { SignInCustomerPresenter } from "../presenters/sign-in-customer.presenter";
 
 @ApiTags("Autenticação")
 @Controller("auth")
@@ -39,10 +37,7 @@ export class AuthController {
 
 	@Post("sign-in")
 	@ApiOperation({ summary: "Login de usuário" })
-	@ApiResponse({
-		status: 200,
-		type: SignInResponseDto,
-	})
+	@ZodResponse({ type: SignInResponseDto })
 	@Public()
 	@HttpCode(HttpStatus.OK)
 	async signIn(@Body() body: SignInRequestDto) {
@@ -64,7 +59,12 @@ export class AuthController {
 			}
 		}
 
-		return SignInCustomerPresenter.toHttp(result.value);
+		return {
+			id: result.value.id.toString(),
+			name: result.value.name,
+			email: result.value.email,
+			accessToken: result.value.accessToken,
+		};
 	}
 
 	@Post("sign-up")
@@ -95,7 +95,7 @@ export class AuthController {
 
 	@Post("sign-in/company")
 	@ApiOperation({ summary: "Login empresarial" })
-	@ApiResponse({ status: 200, type: SignInCompanyResponseDto })
+	@ZodResponse({ status: 200, type: SignInCompanyResponseDto })
 	@Public()
 	@HttpCode(HttpStatus.OK)
 	async signInCompany(@Body() body: SignInRequestDto) {
@@ -117,19 +117,29 @@ export class AuthController {
 			}
 		}
 
-		return SignInCompanyPresenter.toHttp(result.value);
+		return {
+			id: result.value.id.toString(),
+			name: result.value.name,
+			email: result.value.email,
+			accessToken: result.value.accessToken,
+			staffRole: result.value.staffRole,
+			companyId: result.value.companyId,
+		};
 	}
 
 	@Get("session")
 	@ApiOperation({ summary: "Obter informações da sessão do usuário" })
-	@ApiResponse({
-		status: 200,
-		type: SessionResponseDto,
-	})
+	@ZodResponse({ status: 200, type: SessionResponseDto })
 	@HttpCode(HttpStatus.OK)
 	async getSession(@User() payload: UserPayload) {
 		const result = await this.getSessionUseCase.execute(payload);
 
-		return SessionPresenter.toHTTP(result.value);
+		return {
+			id: result.value.sub.toString(),
+			name: result.value.name,
+			email: result.value.email,
+			type: result.value.type,
+			companyId: result.value.companyId,
+		};
 	}
 }

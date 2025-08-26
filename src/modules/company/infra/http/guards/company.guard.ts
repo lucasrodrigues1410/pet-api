@@ -18,10 +18,8 @@ export class CompanyGuard implements CanActivate {
 			this.reflector.get<StaffRole[]>(STAFF_ROLES_KEY, context.getHandler()) ||
 			[];
 
-		const companyId = request.params.companyId;
+		const companyId = request.params.companyId || request.user.companyId;
 		const user = request.user;
-
-	
 
 		if (!companyId) {
 			throw new ForbiddenException(

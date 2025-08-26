@@ -1,9 +1,9 @@
 import { BadRequestException, Controller, Get, Query } from "@nestjs/common";
-import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { ApiOperation, ApiTags } from "@nestjs/swagger";
+import { ZodResponse } from "nestjs-zod";
 import { ListBreedsUseCase } from "src/modules/breed/application/use-cases/list-breeds.use-case";
 import { BreedListResponse } from "../dtos/breed.response.dto";
 import { ListBreedsQueryDto } from "../dtos/list-breeds.dto";
-import { BreedPresenter } from "../presenters/breed.presenter";
 
 @ApiTags("Raças")
 @Controller("breeds")
@@ -12,17 +12,14 @@ export class BreedController {
 
 	@Get()
 	@ApiOperation({ summary: "Listar todas as raças" })
-	@ApiResponse({
-		status: 200,
-		type: BreedListResponse,
-	})
+	@ZodResponse({ status: 200, type: BreedListResponse })
 	async getAll(@Query() query: ListBreedsQueryDto): Promise<BreedListResponse> {
 		const result = await this.listBreedsUseCase.execute(query);
 		if (result.isLeft()) {
 			throw new BadRequestException();
 		}
 		return {
-			items: result.value.items.map(BreedPresenter.toHTTP),
+			items: result.value.items.map((i) => i.toObject()),
 		};
 	}
 }

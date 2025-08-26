@@ -16,7 +16,7 @@ export const daysOfWeek = Object.values(DaysOfWeek);
 
 export interface CompanyAvailabilityProps {
 	companyId: UniqueEntityID;
-	day: keyof typeof DaysOfWeek;
+	day: DaysOfWeek;
 	timeRange: TimeRange;
 	launchTime: TimeRange;
 }
@@ -68,5 +68,15 @@ export class CompanyAvailability extends Entity<CompanyAvailabilityProps> {
 			id,
 		);
 		return companyAvailability;
+	}
+
+	public toObject() {
+		return {
+			id: this.id.toString(),
+			companyId: this.companyId.toString(),
+			day: this.day,
+			timeRange: this.timeRange.toObject(),
+			launchTime: this.launchTime.toObject(),
+		};
 	}
 }

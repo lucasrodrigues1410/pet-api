@@ -1,23 +1,19 @@
 import { Injectable } from "@nestjs/common";
 import { Prisma } from "prisma/generated/client";
 import { PrismaService } from "src/core/infra/prisma/prisma.service";
-import {
-	Service,
-	ServiceWithRelations,
-} from "src/modules/service/domain/entities/service.entity";
 import { ServiceRepository } from "src/modules/service/domain/repositories/service.repository";
-import { PrismaCategoryMapper } from "@/modules/category/infra/http/database/mappers/prisma-category.mapper";
+import { PrismaCategoryMapper } from "@/modules/category/infra/database/mappers/prisma-category.mapper";
 import { PrismaCompanyMapper } from "@/modules/company/infra/database/mappers/prisma-company.mapper";
+import { Service } from "@/modules/service/domain/entities/service.entity";
 import { calculateLocationBounds } from "@/shared/utils/geo-location.util";
-import { PaginationResult } from "@/shared/utils/pagination";
 import { paginate } from "@/shared/utils/paginator";
 import { PrismaServiceMapper } from "../mappers/prisma-service.mapper";
 
 @Injectable()
 export class PrismaServiceRepository implements ServiceRepository {
-	constructor(private prismaService: PrismaService) { }
+	constructor(private prismaService: PrismaService) {}
 
-	async findById(id: string): Promise<ServiceWithRelations | undefined> {
+	async findById(id: string) {
 		const result = await this.prismaService.service.findUnique({
 			where: { id },
 			include: {
@@ -27,6 +23,11 @@ export class PrismaServiceRepository implements ServiceRepository {
 						category: true,
 					},
 				},
+				priceVariation: {
+					select: {
+						price: true,
+					},
+				},
 			},
 		});
 
@@ -34,16 +35,33 @@ export class PrismaServiceRepository implements ServiceRepository {
 			return undefined;
 		}
 
-		return {
-			...PrismaServiceMapper.toDomain(result),
-			company: PrismaCompanyMapper.toDomain(result.company),
-			categories: result.categories.map((category) =>
-				PrismaCategoryMapper.toDomain(category.category),
-			),
-		} as ServiceWithRelations;
+		var service = Object.assign(
+			PrismaServiceMapper.toDomain({
+				...result,
+				maxPrice: result.priceVariation.reduce(
+					(sum, v) => sum + v.price.toNumber(),
+					0,
+				),
+			}),
+			{
+				company: PrismaCompanyMapper.toDomain(result.company),
+				categories: result.categories.map((category) =>
+					PrismaCategoryMapper.toDomain(category.category),
+				),
+			},
+		);
+
+		return service;
 	}
 
-	async findByCompanyId(companyId: string): Promise<Service[]> {
+	async update(id: string, service: Partial<Service>) {
+		await this.prismaService.service.update({
+			where: { id },
+			data: PrismaServiceMapper.toPrismaUpdate(service),
+		});
+	}
+
+	async findByCompanyId(companyId: string) {
 		const result = await this.prismaService.service.findMany({
 			where: { companyId },
 			include: {
@@ -55,61 +73,44 @@ export class PrismaServiceRepository implements ServiceRepository {
 			},
 		});
 
-		return result.map((service) => {
-			return PrismaServiceMapper.toDomain({
+		return result.map((service) =>
+			PrismaServiceMapper.toDomain({
 				...service,
 				maxPrice: service.priceVariation.reduce(
 					(sum, v) => sum + v.price.toNumber(),
 					0,
 				),
-			});
-		});
-	}
-
-	async create(service: Service): Promise<void> {
-		await this.prismaService.service.create({
-			data: PrismaServiceMapper.toPrisma(service),
-		});
-	}
-
-	async update(id: string, service: Partial<Service>): Promise<void> {
-		await this.prismaService.service.update({
-			where: { id },
-			data: PrismaServiceMapper.toPrismaUpdate(service),
-		});
+			}),
+		);
 	}
 
 	async searchServices(
 		params: Parameters<ServiceRepository["searchServices"]>[0],
-	): Promise<PaginationResult<ServiceWithRelations>> {
-		const {
-			query,
-			location,
-			priceRange,
-			...paginationParams
-		} = params;
+	) {
+		const { query, location, priceRange, ...paginationParams } = params;
 
 		const bounds = location
 			? calculateLocationBounds({
-				latitude: location.latitude,
-				longitude: location.longitude,
-				radiusInKm: location.radiusInKm,
-			})
+					latitude: location.latitude,
+					longitude: location.longitude,
+					radiusInKm: location.radiusInKm,
+				})
 			: null;
 
 		// Acumuladores de filtros
-		const andConditions: Prisma.ServiceWhereInput[] = [{
-			isActive: true,
-			price: {
-				gte: priceRange?.min,
-				lte: priceRange?.max
+		const andConditions: Prisma.ServiceWhereInput[] = [
+			{
+				isActive: true,
+				price: {
+					gte: priceRange?.min,
+					lte: priceRange?.max,
+				},
 			},
-		}];
+		];
 		const orConditions: Prisma.ServiceWhereInput[] = [
 			{ name: { contains: query || "", mode: "insensitive" } },
 			{ description: { contains: query || "", mode: "insensitive" } },
 		];
-
 
 		// Geolocalização (caixa) aplicada via company -> companyLocations
 		if (bounds) {
@@ -152,6 +153,11 @@ export class PrismaServiceRepository implements ServiceRepository {
 								category: true,
 							},
 						},
+						priceVariation: {
+							select: {
+								price: true,
+							},
+						},
 					},
 					orderBy: { createdAt: "desc" },
 					skip,
@@ -165,15 +171,23 @@ export class PrismaServiceRepository implements ServiceRepository {
 		);
 
 		const servicesWithRelations = items.map((service) => {
-			const serviceEntity = PrismaServiceMapper.toDomain(service);
-			const companyEntity = PrismaCompanyMapper.toDomain(service.company);
-			const categoriesEntities = service.categories.map(({ category }) => PrismaCategoryMapper.toDomain(category));
-			return Object.assign(serviceEntity, {
-				company: companyEntity,
-				categories: categoriesEntities,
+			const serviceEntity = PrismaServiceMapper.toDomain({
+				...service,
+				maxPrice: service.priceVariation.reduce(
+					(sum, v) => sum + v.price.toNumber(),
+					0,
+				),
 			});
-		}) as ServiceWithRelations[];
+			const company = PrismaCompanyMapper.toDomain(service.company);
+			const categories = service.categories.map(({ category }) =>
+				PrismaCategoryMapper.toDomain(category),
+			);
 
+			return Object.assign(serviceEntity, {
+				company,
+				categories,
+			});
+		});
 
 		return {
 			items: servicesWithRelations,

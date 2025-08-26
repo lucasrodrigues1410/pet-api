@@ -1,4 +1,4 @@
-import { PaginationMeta, PaginationMetaDto } from "@/shared/utils/pagination";
+import { PaginationMeta, paginationMetaDto } from "@/shared/utils/pagination";
 
 type Params<T> = {
 	items: T[];
@@ -16,7 +16,7 @@ export class PaginationPresenter {
 				totalPages: result.meta.totalPages,
 			},
 		};
-		PaginationMetaDto.parse(base.meta);
+		paginationMetaDto.parse(base.meta);
 		return base;
 	}
 }

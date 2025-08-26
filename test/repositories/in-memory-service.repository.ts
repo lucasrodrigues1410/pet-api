@@ -16,22 +16,18 @@ export class InMemoryServiceRepository implements ServiceRepository {
 		return result as ServiceWithRelations;
 	}
 
-	async findByCompanyId(companyId: string) {
-		const result = this.items.filter(
-			(service) => service.companyId.toString() === companyId,
-		);
-		return result;
-	}
-
-	async create(service: Service) {
-		this.items.push(service);
-	}
-
 	async update(id: string, service: Partial<Service>) {
 		const itemIndex = this.items.findIndex((item) => item.id.toString() === id);
 		if (itemIndex >= 0) {
 			this.items[itemIndex].update(service);
 		}
+	}
+
+	async findByCompanyId(companyId: string) {
+		const result = this.items.filter(
+			(service) => service.companyId.toString() === companyId,
+		);
+		return result;
 	}
 
 	async searchServices(

@@ -17,7 +17,7 @@ describe("Search Services Use Case", () => {
 		const otherServices = Array.from({ length: 2 }, () => makeService({ name: "Vaccination" }));
 
 		for (const service of [...services, ...otherServices]) {
-			inMemoryServiceRepository.create(service);
+			inMemoryServiceRepository.items.push(service);
 		}
 
 		const result = await sut.execute({
@@ -35,11 +35,10 @@ describe("Search Services Use Case", () => {
 		const services = Array.from({ length: 2 }, () => makeService());
 		
 		for (const service of services) {
-			inMemoryServiceRepository.create(service);
+			inMemoryServiceRepository.items.push(service);
 		}
 
 		const result = await sut.execute({
-			animalType: "Dog",
 			page: 1,
 			limit: 10,
 		});
@@ -51,11 +50,10 @@ describe("Search Services Use Case", () => {
 		const services = Array.from({ length: 2 }, () => makeService());
 		
 		for (const service of services) {
-			inMemoryServiceRepository.create(service);
+			inMemoryServiceRepository.items.push(service);
 		}
 
 		const result = await sut.execute({
-			breed: "Golden Retriever",
 			page: 1,
 			limit: 10,
 		});
@@ -67,11 +65,10 @@ describe("Search Services Use Case", () => {
 		const services = Array.from({ length: 2 }, () => makeService());
 		
 		for (const service of services) {
-			inMemoryServiceRepository.create(service);
+			inMemoryServiceRepository.items.push(service);
 		}
 
 		const result = await sut.execute({
-			categoryId: "category-1",
 			page: 1,
 			limit: 10,
 		});
@@ -83,7 +80,7 @@ describe("Search Services Use Case", () => {
 		const services = Array.from({ length: 2 }, () => makeService());
 		
 		for (const service of services) {
-			inMemoryServiceRepository.create(service);
+			inMemoryServiceRepository.items.push(service);
 		}
 
 		const result = await sut.execute({
@@ -103,7 +100,7 @@ describe("Search Services Use Case", () => {
 		const services = Array.from({ length: 2 }, () => makeService());
 		
 		for (const service of services) {
-			inMemoryServiceRepository.create(service);
+			inMemoryServiceRepository.items.push(service);
 		}
 
 		const result = await sut.execute({
@@ -122,7 +119,7 @@ describe("Search Services Use Case", () => {
 		const services = Array.from({ length: 15 }, () => makeService());
 		
 		for (const service of services) {
-			inMemoryServiceRepository.create(service);
+			inMemoryServiceRepository.items.push(service);
 		}
 
 		const result = await sut.execute({

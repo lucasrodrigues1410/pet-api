@@ -84,7 +84,7 @@ export class AppointmentBookingUseCase {
 			companyId: service.companyId,
 			startDate,
 			endDate,
-			price: price + service.price,
+			price: price + (service.priceRange?.min ?? 0),
 			coatType,
 		});
 

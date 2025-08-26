@@ -6,7 +6,6 @@ const response = z.object({
 	id: z.string(),
 	name: z.string(),
 	email: z.string(),
-	type: z.literal("COMPANY"),
 	accessToken: z.jwt(),
 	staffRole: z.enum(StaffRole),
 	companyId: z.string(),

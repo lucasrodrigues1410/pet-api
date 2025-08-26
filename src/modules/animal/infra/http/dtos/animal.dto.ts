@@ -3,9 +3,9 @@ import { z } from "zod";
 export const animalDto = z.object({
 	id: z.string(),
 	name: z.string(),
-	age: z.number().optional(),
-	weight: z.number().optional(),
+	age: z.number().nullish(),
+	weight: z.number().nullish(),
 	userId: z.string(),
-	assetId: z.string().optional(),
-	breedId: z.string().optional(),
+	assetId: z.string().nullish(),
+	breedId: z.string().nullish(),
 });

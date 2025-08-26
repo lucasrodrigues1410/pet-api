@@ -1,16 +1,16 @@
 model Service {
-  id             String            @id @default(cuid())
+  id             String                  @id @default(cuid())
   name           String
   description    String?
-  price          Decimal           @db.Decimal(10, 2)
+  price          Decimal                 @db.Decimal(10, 2)
   duration       Int?
-  companyId      String            @map("company_id")
-  isActive       Boolean           @default(true) @map("is_active")
+  companyId      String                  @map("company_id")
+  isActive       Boolean                 @default(true) @map("is_active")
   details        Json
   capacity       Int?
-  createdAt      DateTime          @default(now()) @map("created_at")
-  updatedAt      DateTime          @updatedAt @map("updated_at")
-  company        Company           @relation(fields: [companyId], references: [id])
+  createdAt      DateTime                @default(now()) @map("created_at")
+  updatedAt      DateTime                @updatedAt @map("updated_at")
+  company        Company                 @relation(fields: [companyId], references: [id])
   appointments   Appointment[]
   categories     ServiceCategory[]
   priceVariation ServicePriceVariation[]

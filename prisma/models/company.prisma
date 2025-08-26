@@ -1,60 +1,52 @@
 model Company {
-    id                           String                         @id @default(cuid())
-    name                         String
-    address                      String?
-    contact                      String?
-    createdAt                    DateTime                       @default(now())
-    updatedAt                    DateTime                       @updatedAt
-    deletedAt                    DateTime?
-    logoAssetId                  String?
-    companyUsers                 UserCompany[]
-    companyAvailability          CompanyAvailability[]
-    companyAvailabilityException CompanyAvailabilityException[]
-    services                     Service[]
-    companyLocations             CompanyLocation[]
-    companyImage                 CompanyImage[]
-    appointment                  Appointment[]
+  id          String    @id @default(cuid())
+  name        String
+  address     String?
+  contact     String?
+  description String?
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  deletedAt   DateTime? @map("deleted_at")
+  logoAssetId String?   @map("logo_asset_id")
 
-    @@map("companies")
+  companyUsers                 UserCompany[]
+  companyAvailability          CompanyAvailability[]
+  companyAvailabilityException CompanyAvailabilityException[]
+  services                     Service[]
+  companyLocations             CompanyLocation[]
+  companyImage                 CompanyImage[]
+  appointment                  Appointment[]
+  logo                         Asset?                         @relation(fields: [logoAssetId], references: [id])
+
+  @@map("companies")
 }
 
 model UserCompany {
-    id        String @id @default(cuid())
-    userId    String
-    companyId String
-    role      Role
+  id        String @id @default(cuid())
+  userId    String
+  companyId String
+  role      Role
 
-    user        User          @relation(fields: [userId], references: [id])
-    company     Company       @relation(fields: [companyId], references: [id])
-    appointment Appointment[]
+  user        User          @relation(fields: [userId], references: [id])
+  company     Company       @relation(fields: [companyId], references: [id])
+  appointment Appointment[]
 
-    @@unique([userId, companyId])
-    @@map("user_companies")
+  @@unique([userId, companyId])
+  @@map("user_companies")
 }
 
 enum Role {
-    ADMIN
-    MANAGER
-    EMPLOYEE
+  ADMIN
+  MANAGER
+  EMPLOYEE
 }
 
 model CompanyImage {
-    company   Company             @relation(fields: [companyId], references: [id])
-    companyId String
-    asset     Asset               @relation(fields: [assetId], references: [id])
-    assetId   String
-    purpose   CompanyImagePurpose @default(COVER)
-    sortOrder Float               @default(0.0)
-    version   Int                 @default(1)
-    validFrom DateTime?
-    validTo   DateTime?
+  id        String  @id @default(cuid())
+  company   Company @relation(fields: [companyId], references: [id])
+  companyId String
+  asset     Asset   @relation(fields: [assetId], references: [id])
+  assetId   String
 
-    @@id([companyId, assetId, purpose])
-    @@index([companyId, purpose, sortOrder])
-    @@map("company_images")
-}
-
-enum CompanyImagePurpose {
-    LOGO
-    COVER
+  @@map("company_images")
 }

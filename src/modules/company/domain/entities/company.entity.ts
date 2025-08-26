@@ -1,16 +1,13 @@
 import { Entity } from "@/core/domain/entities/entity";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
-import { CompanyAvailability } from "@/modules/company-availability/domain/entities/company-availability.entity";
-import { CompanyAvailabilityException } from "@/modules/company-availability/domain/entities/company-availability-exception.entity";
-import { Staff } from "@/modules/staff/domain/entities/staff.entity";
+import { Asset } from "@/modules/asset/domain/entities/asset";
 
 export interface CompanyProps {
 	name: string;
 	address?: string;
 	contact?: string;
-	availability?: CompanyAvailability[];
-	availabilityExceptions?: CompanyAvailabilityException[];
-	staff?: Staff[];
+	description?: string;
+	logo?: Asset;
 }
 
 export class Company extends Entity<CompanyProps> {
@@ -26,19 +23,26 @@ export class Company extends Entity<CompanyProps> {
 		return this.props.contact;
 	}
 
-	get availability() {
-		return this.props.availability;
+	get description() {
+		return this.props.description;
 	}
 
-	get availabilityExceptions() {
-		return this.props.availabilityExceptions;
-	}
-
-	get staff() {
-		return this.props.staff;
+	get logo() {
+		return this.props.logo;
 	}
 
 	public static create(props: CompanyProps, id?: UniqueEntityID): Company {
 		return new Company(props, id);
+	}
+
+	public toObject() {
+		return {
+			id: this.id.toString(),
+			name: this.name,
+			address: this.address,
+			contact: this.contact,
+			description: this.description,
+			logo: this.logo?.toObject(),
+		};
 	}
 }

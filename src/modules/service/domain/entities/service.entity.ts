@@ -7,12 +7,11 @@ import { PriceRange } from "./value-objects/price-range.value-object";
 export interface ServiceProps {
 	name: string;
 	description?: string | null;
-	price: number;
+	priceRange: PriceRange;
 	isActive: boolean;
 	duration?: number | null;
 	companyId: UniqueEntityID;
 	details?: Record<string, unknown> | null;
-	priceRange: PriceRange;
 }
 
 export class Service extends Entity<ServiceProps> {
@@ -24,8 +23,8 @@ export class Service extends Entity<ServiceProps> {
 		return this.props.description;
 	}
 
-	get price() {
-		return this.props.price;
+	get priceRange() {
+		return this.props.priceRange;
 	}
 
 	get isActive() {
@@ -44,10 +43,6 @@ export class Service extends Entity<ServiceProps> {
 		return this.props.details;
 	}
 
-	get priceRange() {
-		return this.props.priceRange;
-	}
-
 	public static create(props: ServiceProps, id?: UniqueEntityID): Service {
 		const service = new Service(props, id);
 		return service;
@@ -57,6 +52,19 @@ export class Service extends Entity<ServiceProps> {
 		this.props = {
 			...this.props,
 			...data,
+		};
+	}
+
+	public toObject() {
+		return {
+			id: this.id.toString(),
+			name: this.name,
+			description: this.description,
+			priceRange: this.priceRange?.toObject(),
+			isActive: this.isActive,
+			duration: this.duration,
+			companyId: this.companyId.toString(),
+			details: this.details,
 		};
 	}
 }

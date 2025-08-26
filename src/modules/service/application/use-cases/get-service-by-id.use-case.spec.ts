@@ -14,7 +14,7 @@ describe("Get a service", () => {
 
 	it("should get a service by id", async () => {
 		const service = makeService();
-		inMemoryServicesRepository.create(service);
+		inMemoryServicesRepository.items.push(service);
 		const result = await sut.execute({
 			id: service.id.toString(),
 		});
@@ -23,7 +23,7 @@ describe("Get a service", () => {
 			service: expect.objectContaining({
 				name: service.name,
 				description: service.description,
-				price: service.price,
+				priceRange: service.priceRange,
 				companyId: service.companyId,
 			}),
 		});

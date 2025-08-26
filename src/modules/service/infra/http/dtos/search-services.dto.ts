@@ -1,5 +1,6 @@
 import { createZodDto } from "nestjs-zod";
 import { z } from "zod";
+import { serviceDto } from "./service.dto";
 
 const request = z.object({
 	query: z.string().optional(),
@@ -18,4 +19,15 @@ const request = z.object({
 		.optional(),
 });
 
-export class SearchServicesRequestDto extends createZodDto(request) {}
+const response = z.object({
+	...serviceDto.shape,
+	priceRange: z
+		.object({
+			min: z.number(),
+			max: z.number(),
+		})
+		.default({ min: 0, max: 0 }),
+});
+
+export class SearchServicesRequestDto extends createZodDto(request) { }
+export class SearchServicesResponseDto extends createZodDto(response) { }

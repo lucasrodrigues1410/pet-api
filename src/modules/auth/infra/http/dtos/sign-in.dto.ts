@@ -10,7 +10,6 @@ const signInResponse = z.object({
 	id: z.string(),
 	name: z.string(),
 	email: z.string(),
-	type: z.literal("CUSTOMER"),
 	accessToken: z.jwt(),
 });
 

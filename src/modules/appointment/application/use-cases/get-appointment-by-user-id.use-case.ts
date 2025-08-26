@@ -1,3 +1,5 @@
+import { Animal } from "@/modules/animal/domain/entities/animal.entity";
+import { Service } from "@/modules/service/domain/entities/service.entity";
 import { Either, right } from "@/shared/either";
 import { PaginationResult } from "@/shared/utils/pagination";
 import { PaginationQuery } from "@/shared/utils/pagination-query";
@@ -11,7 +13,12 @@ type GetAppointmentByUserIdUseCaseInput = {
 
 type GetAppointmentByUserIdUseCaseOutput = Either<
 	null,
-	PaginationResult<Appointment>
+	PaginationResult<
+		Appointment & {
+			animal: Animal;
+			service: Service;
+		}
+	>
 >;
 
 export class GetAppointmentByUserIdUseCase {
