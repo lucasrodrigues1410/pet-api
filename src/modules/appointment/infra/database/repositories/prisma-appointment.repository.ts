@@ -3,6 +3,7 @@ import { Prisma } from "prisma/generated/client";
 import { PrismaService } from "@/core/infra/prisma/prisma.service";
 import { PrismaAnimalMapper } from "@/modules/animal/infra/database/mappers/prisma-animal.mapper";
 import { Appointment } from "@/modules/appointment/domain/entities/appointment.entity";
+import { AppointmentStatus } from "@/modules/appointment/domain/enums/appointment.enum";
 import { AppointmentRepository } from "@/modules/appointment/domain/repositories/appointment.repository";
 import { PrismaBreedMapper } from "@/modules/breed/infra/database/mappers/prisma-breed.mapper";
 import { PrismaCompanyMapper } from "@/modules/company/infra/database/mappers/prisma-company.mapper";
@@ -161,11 +162,10 @@ export class PrismaAppointmentRepository implements AppointmentRepository {
 		return appointments.map(PrismaAppointmentMapper.toDomain);
 	}
 
-	async update(appointment: Appointment) {
-		const persistence = PrismaAppointmentMapper.toPersistence(appointment);
+	async updateStatus(id: string, status: AppointmentStatus) {
 		await this.prismaService.appointment.update({
-			where: { id: persistence.id },
-			data: persistence,
+			where: { id },
+			data: { status },
 		});
 	}
 }

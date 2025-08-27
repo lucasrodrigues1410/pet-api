@@ -1,8 +1,11 @@
 import {
+	Body,
 	Controller,
+	ForbiddenException,
 	Get,
 	NotFoundException,
 	Param,
+	Patch,
 	Query,
 	UseGuards,
 } from "@nestjs/common";
@@ -11,6 +14,7 @@ import { ZodResponse } from "nestjs-zod";
 import { GetAppointmentByCompanyIdUseCase } from "@/modules/appointment/application/use-cases/get-appointment-by-company-id.use-case";
 import { GetAppointmentByIdUseCase } from "@/modules/appointment/application/use-cases/get-appointment-by-id.use-case";
 import { GetAppointmentByUserIdUseCase } from "@/modules/appointment/application/use-cases/get-appointment-by-user-id.use-case";
+import { UpdateAppointmentStatusUseCase } from "@/modules/appointment/application/use-cases/update-appointment-status.use-case";
 import { User } from "@/modules/auth/infra/http/decorators/user.decorator";
 import { UserTypeDecorator } from "@/modules/auth/infra/http/decorators/user-type.decorator";
 import { CompanyGuard } from "@/modules/company/infra/http/guards/company.guard";
@@ -22,6 +26,10 @@ import {
 	AppointmentsByCompanyResponseDto,
 } from "../dtos/appointment-by-company.dto";
 import { AppointmentByIdResponseDto } from "../dtos/appointment-by-id.dto";
+import {
+	UpdateAppointmentStatusDto,
+	UpdateAppointmentStatusResponseDto,
+} from "../dtos/update-appointment-status.dto";
 
 @ApiTags("Agendamentos")
 @Controller("appointments")
@@ -30,6 +38,7 @@ export class AppointmentController {
 		private readonly getAppointmentByIdUseCase: GetAppointmentByIdUseCase,
 		private readonly getAppointmentByUserIdUseCase: GetAppointmentByUserIdUseCase,
 		private readonly getAppointmentByCompanyIdUseCase: GetAppointmentByCompanyIdUseCase,
+		private readonly updateAppointmentStatusUseCase: UpdateAppointmentStatusUseCase,
 	) {}
 
 	@Get(":id")
@@ -37,12 +46,16 @@ export class AppointmentController {
 	@ZodResponse({ type: AppointmentByIdResponseDto })
 	@UserTypeDecorator(UserType.CUSTOMER, UserType.COMPANY)
 	async getAppointmentById(
-		@Param("id") userId: string,
-		@User("sub") id: string,
+		@Param("id") id: string,
+		@User("sub") userId: string,
+		@User("type") userType: UserType,
+		@User("companyId") companyId?: string,
 	) {
 		const response = await this.getAppointmentByIdUseCase.execute({
 			id,
 			userId,
+			userType,
+			companyId,
 		});
 
 		if (response.isLeft()) {
@@ -124,6 +137,41 @@ export class AppointmentController {
 					service: item.service.toObject(),
 				};
 			}),
+		};
+	}
+
+	@Patch(":id/status")
+	@ApiOperation({ summary: "Atualiza o status de um agendamento" })
+	@ZodResponse({ status: 200, type: UpdateAppointmentStatusResponseDto })
+	@UserTypeDecorator(UserType.CUSTOMER, UserType.COMPANY)
+	async updateAppointmentStatus(
+		@Param("id") appointmentId: string,
+		@Body() updateStatusDto: UpdateAppointmentStatusDto,
+		@User("sub") userId: string,
+		@User("type") userType: UserType,
+		@User("companyId") companyId?: string,
+	) {
+		const response = await this.updateAppointmentStatusUseCase.execute({
+			appointmentId,
+			newStatus: updateStatusDto.status,
+			userId,
+			userType,
+			companyId,
+		});
+
+		if (response.isLeft()) {
+			const error = response.value;
+			if (error.constructor.name === "ResourceNotFoundError") {
+				throw new NotFoundException(error.message);
+			}
+			throw new ForbiddenException(error.message);
+		}
+
+		const appointment = response.value;
+		return {
+			id: appointment.id.toString(),
+			status: appointment.status,
+			updatedAt: new Date().toISOString(),
 		};
 	}
 }

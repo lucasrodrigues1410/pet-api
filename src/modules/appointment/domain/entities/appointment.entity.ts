@@ -38,6 +38,10 @@ export class Appointment extends Entity<AppointmentProps> {
 		return this.props.status;
 	}
 
+	set status(status: AppointmentStatus) {
+		this.props.status = status;
+	}
+
 	get price() {
 		return this.props.price;
 	}
@@ -70,6 +74,64 @@ export class Appointment extends Entity<AppointmentProps> {
 		}
 
 		this.props.status = AppointmentStatus.CANCELED;
+	}
+
+	public updateStatus(newStatus: AppointmentStatus, isCompany: boolean): void {
+		this.validateStatusTransition(this.props.status, newStatus);
+		this.validateStatusPermissions(newStatus, isCompany);
+		this.props.status = newStatus;
+	}
+
+	private validateStatusTransition(
+		currentStatus: AppointmentStatus,
+		newStatus: AppointmentStatus,
+	): void {
+		const validTransitions: Record<AppointmentStatus, AppointmentStatus[]> = {
+			[AppointmentStatus.SCHEDULED]: [
+				AppointmentStatus.CONFIRMED,
+				AppointmentStatus.CANCELED,
+				AppointmentStatus.NO_SHOW,
+			],
+			[AppointmentStatus.CONFIRMED]: [
+				AppointmentStatus.IN_PROGRESS,
+				AppointmentStatus.CANCELED,
+				AppointmentStatus.NO_SHOW,
+			],
+			[AppointmentStatus.IN_PROGRESS]: [
+				AppointmentStatus.COMPLETED,
+				AppointmentStatus.CANCELED,
+			],
+			[AppointmentStatus.COMPLETED]: [],
+			[AppointmentStatus.NO_SHOW]: [],
+			[AppointmentStatus.CANCELED]: [],
+		};
+
+		if (!validTransitions[currentStatus]?.includes(newStatus)) {
+			throw new DomainError(
+				`Invalid status transition from '${currentStatus}' to '${newStatus}'.`,
+			);
+		}
+	}
+
+	private validateStatusPermissions(
+		newStatus: AppointmentStatus,
+		isCompany: boolean,
+	): void {
+		if (newStatus === AppointmentStatus.NO_SHOW && !isCompany) {
+			throw new DomainError(
+				"Only company staff can set appointment status to NO_SHOW.",
+			);
+		}
+
+		if (
+			(newStatus === AppointmentStatus.IN_PROGRESS ||
+				newStatus === AppointmentStatus.COMPLETED) &&
+			!isCompany
+		) {
+			throw new DomainError(
+				"Only company staff can set appointment status to IN_PROGRESS or COMPLETED.",
+			);
+		}
 	}
 
 	public static create(

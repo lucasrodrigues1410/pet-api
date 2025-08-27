@@ -78,8 +78,6 @@ export class DashboardController {
 			endDate: query.endDate ? new Date(query.endDate) : undefined,
 		});
 
-		console.log(performance);
-
 		return {
 			appointments: {
 				completed: performance.appointments.completed,

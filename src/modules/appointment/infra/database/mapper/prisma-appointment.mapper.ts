@@ -45,4 +45,12 @@ export class PrismaAppointmentMapper {
 			coatType: appointment.coatType,
 		};
 	}
+
+	static toPersistenceUpdate(
+		appointment: Partial<Appointment>,
+	): Prisma.AppointmentUncheckedUpdateInput {
+		return {
+			status: appointment.status,
+		};
+	}
 }

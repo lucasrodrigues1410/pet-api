@@ -7,6 +7,7 @@ import type { DateRange } from "@/shared/types/date-range";
 import { PaginationResult } from "@/shared/utils/pagination";
 import { PaginationQuery } from "@/shared/utils/pagination-query";
 import { Appointment } from "../entities/appointment.entity";
+import { AppointmentStatus } from "../enums/appointment.enum";
 
 export abstract class AppointmentRepository {
 	abstract findById(id: string): Promise<
@@ -46,5 +47,5 @@ export abstract class AppointmentRepository {
 		serviceId: string;
 		range: DateRange;
 	}): Promise<Appointment[]>;
-	abstract update(appointment: Appointment): Promise<void>;
+	abstract updateStatus(id: string, status: AppointmentStatus): Promise<void>;
 }
