@@ -319,14 +319,14 @@ export class PrismaDashboardRepository implements DashboardRepository {
 		const currentRating =
 			ratingsLast30Days.length > 0
 				? ratingsLast30Days.reduce((sum, r) => sum + r.rating, 0) /
-				  ratingsLast30Days.length
+					ratingsLast30Days.length
 				: company.averageRating;
 
 		// Calcula média dos 30 dias anteriores
 		const previousRating =
 			ratingsPrevious30Days.length > 0
 				? ratingsPrevious30Days.reduce((sum, r) => sum + r.rating, 0) /
-				  ratingsPrevious30Days.length
+					ratingsPrevious30Days.length
 				: company.averageRating;
 
 		return {

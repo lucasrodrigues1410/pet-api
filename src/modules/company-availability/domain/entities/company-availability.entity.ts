@@ -2,8 +2,16 @@ import { Entity } from "@/core/domain/entities/entity";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { TimeRange } from "./value-objects/time-range";
 
-export const daysOfWeek = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
-export type DaysOfWeek = typeof daysOfWeek[number];
+export const daysOfWeek = [
+	"sunday",
+	"monday",
+	"tuesday",
+	"wednesday",
+	"thursday",
+	"friday",
+	"saturday",
+];
+export type DaysOfWeek = (typeof daysOfWeek)[number];
 
 export interface CompanyAvailabilityProps {
 	companyId: UniqueEntityID;

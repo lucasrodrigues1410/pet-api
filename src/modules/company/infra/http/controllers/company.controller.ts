@@ -1,9 +1,4 @@
-import {
-	Controller,
-	Get,
-	NotFoundException,
-	Param,
-} from "@nestjs/common";
+import { Controller, Get, NotFoundException, Param } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { ZodResponse } from "nestjs-zod";
 import { Public } from "src/modules/auth/infra/http/decorators/public.decorator";
@@ -13,9 +8,7 @@ import { CompanyWithAvailabilitiesAndImagesResponse } from "../dtos/company.resp
 @ApiTags("Empresas")
 @Controller("companies")
 export class CompanyController {
-	constructor(
-		private readonly getCompanyByIdUseCase: GetCompanyByIdUseCase,
-	) { }
+	constructor(private readonly getCompanyByIdUseCase: GetCompanyByIdUseCase) {}
 
 	@Get(":id")
 	@ApiOperation({ summary: "Buscar empresa por ID" })
@@ -29,7 +22,8 @@ export class CompanyController {
 
 		return {
 			...result.value.company.toObject(),
-			availabilities: result.value.company.availabilities?.map((a) => a.toObject()) ?? [],
+			availabilities:
+				result.value.company.availabilities?.map((a) => a.toObject()) ?? [],
 			images: result.value.company.images?.map((i) => i.toObject()) ?? [],
 		};
 	}

@@ -12,7 +12,6 @@ export class SendUserCreatedNotificationCommand {
 	) {}
 }
 
-
 @CommandHandler(SendUserCreatedNotificationCommand)
 export class SendUserCreatedNotification
 	implements ICommandHandler<SendUserCreatedNotificationCommand>

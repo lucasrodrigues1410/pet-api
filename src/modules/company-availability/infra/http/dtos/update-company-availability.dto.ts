@@ -13,5 +13,9 @@ const upsertParamsDto = z.object({
 	day: z.enum(daysOfWeek),
 });
 
-export class UpsertCompanyAvailabilityBodyDto extends createZodDto(upsertBodyDto) {}
-export class CompanyAvailabilityParamsDto extends createZodDto(upsertParamsDto) {}
+export class UpsertCompanyAvailabilityBodyDto extends createZodDto(
+	upsertBodyDto,
+) {}
+export class CompanyAvailabilityParamsDto extends createZodDto(
+	upsertParamsDto,
+) {}

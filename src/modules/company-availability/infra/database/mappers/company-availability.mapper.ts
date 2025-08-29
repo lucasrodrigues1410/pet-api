@@ -4,7 +4,10 @@ import {
 	CompanyAvailability as PrismaCompanyAvailability,
 } from "prisma/generated/client";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
-import { CompanyAvailability, DaysOfWeek } from "@/modules/company-availability/domain/entities/company-availability.entity";
+import {
+	CompanyAvailability,
+	DaysOfWeek,
+} from "@/modules/company-availability/domain/entities/company-availability.entity";
 
 export class PrismaCompanyAvailabilityMapper {
 	static toDomain(prismaPriceVariation: PrismaCompanyAvailability) {

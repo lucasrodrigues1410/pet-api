@@ -45,15 +45,19 @@ describe("Add Asset to User", () => {
 		});
 
 		expect(result.isRight()).toBe(true);
-		
+
 		// Check if user was updated with avatarAssetId
-		const updatedUser = await inMemoryUserRepository.findById(user.id.toString());
+		const updatedUser = await inMemoryUserRepository.findById(
+			user.id.toString(),
+		);
 		expect(updatedUser?.avatarAssetId).toBeDefined();
 		expect(updatedUser?.avatarAssetId).not.toBeNull();
-		
+
 		// Check if asset was created
 		expect(inMemoryAssetRepository.items).toHaveLength(1);
-		expect(inMemoryAssetRepository.items[0].name).toBe(`user-${user.id.toString()}`);
+		expect(inMemoryAssetRepository.items[0].name).toBe(
+			`user-${user.id.toString()}`,
+		);
 	});
 
 	it("should not be able to add an avatar to a user that does not exist", async () => {
@@ -108,9 +112,11 @@ describe("Add Asset to User", () => {
 		expect(result.isRight()).toBe(true);
 
 		// Check that the user was updated with the asset ID
-		const updatedUser = await inMemoryUserRepository.findById(user.id.toString());
+		const updatedUser = await inMemoryUserRepository.findById(
+			user.id.toString(),
+		);
 		expect(updatedUser?.avatarAssetId).toBeDefined();
-		
+
 		// Verify the asset was created with the correct user ID
 		const createdAsset = inMemoryAssetRepository.items[0];
 		expect(createdAsset.userId.toString()).toBe(user.id.toString());
@@ -162,7 +168,9 @@ describe("Add Asset to User", () => {
 
 		expect(firstResult.isRight()).toBe(true);
 
-		const userAfterFirst = await inMemoryUserRepository.findById(user.id.toString());
+		const userAfterFirst = await inMemoryUserRepository.findById(
+			user.id.toString(),
+		);
 		const firstAssetId = userAfterFirst?.avatarAssetId;
 
 		// Add second avatar
@@ -177,14 +185,16 @@ describe("Add Asset to User", () => {
 
 		expect(secondResult.isRight()).toBe(true);
 
-		const userAfterSecond = await inMemoryUserRepository.findById(user.id.toString());
+		const userAfterSecond = await inMemoryUserRepository.findById(
+			user.id.toString(),
+		);
 		const secondAssetId = userAfterSecond?.avatarAssetId;
 
 		// Verify the avatar ID was updated
 		expect(firstAssetId).toBeDefined();
 		expect(secondAssetId).toBeDefined();
 		expect(firstAssetId).not.toBe(secondAssetId);
-		
+
 		// Verify both assets were created
 		expect(inMemoryAssetRepository.items).toHaveLength(2);
 	});

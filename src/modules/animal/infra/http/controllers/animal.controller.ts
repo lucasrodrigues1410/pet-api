@@ -74,7 +74,9 @@ export class AnimalController {
 					);
 					throw new NotFoundException();
 				}
-				this.logger.error(`Failed to create animal for user ${userId}. Error: ${result.value}`);
+				this.logger.error(
+					`Failed to create animal for user ${userId}. Error: ${result.value}`,
+				);
 				throw new BadRequestException();
 			}
 

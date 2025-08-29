@@ -30,7 +30,9 @@ export class CreateAnimalUseCase {
 		data: CreateAnimalCaseRequest,
 	): Promise<CreateAnimalCaseResponse> {
 		this.logger.log(`Executing create animal use case for user ${data.userId}`);
-		this.logger.debug(`Create animal data: ${JSON.stringify({ ...data, birthdate: data.birthdate })}`);
+		this.logger.debug(
+			`Create animal data: ${JSON.stringify({ ...data, birthdate: data.birthdate })}`,
+		);
 
 		try {
 			const animal = Animal.create({
@@ -41,17 +43,24 @@ export class CreateAnimalUseCase {
 				userId: new UniqueEntityID(data.userId),
 			});
 
-			this.logger.debug(`Animal entity created with ID: ${animal.id.toString()}`);
+			this.logger.debug(
+				`Animal entity created with ID: ${animal.id.toString()}`,
+			);
 
 			const result = await this.animalRepository.create(animal);
-			
-			this.logger.log(`Animal created successfully in repository. ID: ${result.id.toString()}, Name: ${result.name}`);
-			
+
+			this.logger.log(
+				`Animal created successfully in repository. ID: ${result.id.toString()}, Name: ${result.name}`,
+			);
+
 			return right({
 				animal: result,
 			});
 		} catch (error) {
-			this.logger.error(`Error creating animal for user ${data.userId}`, error.stack);
+			this.logger.error(
+				`Error creating animal for user ${data.userId}`,
+				error.stack,
+			);
 			throw error;
 		}
 	}

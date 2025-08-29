@@ -13,8 +13,12 @@ describe("Search Services Use Case", () => {
 	});
 
 	it("should search services by query", async () => {
-		const services = Array.from({ length: 3 }, () => makeService({ name: "Grooming" }));
-		const otherServices = Array.from({ length: 2 }, () => makeService({ name: "Vaccination" }));
+		const services = Array.from({ length: 3 }, () =>
+			makeService({ name: "Grooming" }),
+		);
+		const otherServices = Array.from({ length: 2 }, () =>
+			makeService({ name: "Vaccination" }),
+		);
 
 		for (const service of [...services, ...otherServices]) {
 			inMemoryServiceRepository.items.push(service);
@@ -28,12 +32,14 @@ describe("Search Services Use Case", () => {
 
 		expect(result.isRight()).toBe(true);
 		expect(result.value?.items).toHaveLength(3);
-		expect(result.value?.items.every(service => service.name.includes("Grooming"))).toBe(true);
+		expect(
+			result.value?.items.every((service) => service.name.includes("Grooming")),
+		).toBe(true);
 	});
 
 	it("should search services by animal type", async () => {
 		const services = Array.from({ length: 2 }, () => makeService());
-		
+
 		for (const service of services) {
 			inMemoryServiceRepository.items.push(service);
 		}
@@ -48,7 +54,7 @@ describe("Search Services Use Case", () => {
 
 	it("should search services by breed", async () => {
 		const services = Array.from({ length: 2 }, () => makeService());
-		
+
 		for (const service of services) {
 			inMemoryServiceRepository.items.push(service);
 		}
@@ -63,7 +69,7 @@ describe("Search Services Use Case", () => {
 
 	it("should search services by category", async () => {
 		const services = Array.from({ length: 2 }, () => makeService());
-		
+
 		for (const service of services) {
 			inMemoryServiceRepository.items.push(service);
 		}
@@ -78,7 +84,7 @@ describe("Search Services Use Case", () => {
 
 	it("should search services by location", async () => {
 		const services = Array.from({ length: 2 }, () => makeService());
-		
+
 		for (const service of services) {
 			inMemoryServiceRepository.items.push(service);
 		}
@@ -98,7 +104,7 @@ describe("Search Services Use Case", () => {
 
 	it("should search services by price range", async () => {
 		const services = Array.from({ length: 2 }, () => makeService());
-		
+
 		for (const service of services) {
 			inMemoryServiceRepository.items.push(service);
 		}
@@ -117,7 +123,7 @@ describe("Search Services Use Case", () => {
 
 	it("should return paginated results", async () => {
 		const services = Array.from({ length: 15 }, () => makeService());
-		
+
 		for (const service of services) {
 			inMemoryServiceRepository.items.push(service);
 		}

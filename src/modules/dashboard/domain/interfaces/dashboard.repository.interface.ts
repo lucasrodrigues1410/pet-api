@@ -9,6 +9,10 @@ export interface DashboardFilters {
 }
 
 export abstract class DashboardRepository {
-	abstract getDashboardMetrics(filters: DashboardFilters): Promise<DashboardMetrics>;
-	abstract getWeeklyPerformance(filters: DashboardFilters): Promise<WeeklyPerformance>;
+	abstract getDashboardMetrics(
+		filters: DashboardFilters,
+	): Promise<DashboardMetrics>;
+	abstract getWeeklyPerformance(
+		filters: DashboardFilters,
+	): Promise<WeeklyPerformance>;
 }

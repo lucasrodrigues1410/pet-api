@@ -25,7 +25,7 @@ type SearchServicesUseCaseResponse = Either<
 
 @Injectable()
 export class SearchServicesUseCase {
-	constructor(private readonly serviceRepository: ServiceRepository) { }
+	constructor(private readonly serviceRepository: ServiceRepository) {}
 
 	async execute(
 		params: SearchServicesUseCaseRequest,

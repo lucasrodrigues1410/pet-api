@@ -8,41 +8,39 @@ let inMemoryRatingRepository: InMemoryRatingRepository;
 let sut: CreateRatingCompanyUseCase;
 
 describe("Create company rating", () => {
-    beforeEach(() => {
-        inMemoryRatingRepository = new InMemoryRatingRepository();
-        sut = new CreateRatingCompanyUseCase(inMemoryRatingRepository as any);
-    });
+	beforeEach(() => {
+		inMemoryRatingRepository = new InMemoryRatingRepository();
+		sut = new CreateRatingCompanyUseCase(inMemoryRatingRepository as any);
+	});
 
-    it("should create a rating for a company", async () => {
-        const rating = makeRating();
+	it("should create a rating for a company", async () => {
+		const rating = makeRating();
 
-        const result = await sut.execute({
-            companyId: rating.companyId,
-            userId: rating.userId,
-            rating: rating.rating,
-            comment: rating.comment,
-        });
+		const result = await sut.execute({
+			companyId: rating.companyId,
+			userId: rating.userId,
+			rating: rating.rating,
+			comment: rating.comment,
+		});
 
-        expect(result.isRight()).toBe(true);
-        expect(inMemoryRatingRepository.items).toHaveLength(1);
-        expect(inMemoryRatingRepository.items[0]).toMatchObject({
-            rating: rating.rating,
-            comment: rating.comment,
-        });
-    });
+		expect(result.isRight()).toBe(true);
+		expect(inMemoryRatingRepository.items).toHaveLength(1);
+		expect(inMemoryRatingRepository.items[0]).toMatchObject({
+			rating: rating.rating,
+			comment: rating.comment,
+		});
+	});
 
-    it("should return ResourceNotFoundError if company does not exist", async () => {
-        inMemoryRatingRepository.shouldThrowNotFound = true;
+	it("should return ResourceNotFoundError if company does not exist", async () => {
+		inMemoryRatingRepository.shouldThrowNotFound = true;
 
-        const result = await sut.execute({
-            companyId: "non-existent",
-            userId: "any-user",
-            rating: 5,
-        });
+		const result = await sut.execute({
+			companyId: "non-existent",
+			userId: "any-user",
+			rating: 5,
+		});
 
-        expect(result.isLeft()).toBe(true);
-        expect(result.value).toBeInstanceOf(ResourceNotFoundError);
-    });
+		expect(result.isLeft()).toBe(true);
+		expect(result.value).toBeInstanceOf(ResourceNotFoundError);
+	});
 });
-
-

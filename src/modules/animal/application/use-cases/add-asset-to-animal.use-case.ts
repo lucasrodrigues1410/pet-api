@@ -24,23 +24,33 @@ export class AddAssetToAnimalUseCase {
 	async execute(
 		data: AddAssetToAnimalRequest,
 	): Promise<AddAssetToAnimalResponse> {
-		this.logger.log(`Executing add asset to animal use case. AnimalId: ${data.animalId}, UserId: ${data.userId}`);
-		this.logger.debug(`File info: ${data.file.originalname}, Size: ${data.file.size} bytes, MimeType: ${data.file.mimetype}`);
+		this.logger.log(
+			`Executing add asset to animal use case. AnimalId: ${data.animalId}, UserId: ${data.userId}`,
+		);
+		this.logger.debug(
+			`File info: ${data.file.originalname}, Size: ${data.file.size} bytes, MimeType: ${data.file.mimetype}`,
+		);
 
 		try {
 			const animal = await this.animalRepository.findById(data.animalId);
 
 			if (!animal) {
-				this.logger.warn(`Animal not found for asset addition. AnimalId: ${data.animalId}`);
+				this.logger.warn(
+					`Animal not found for asset addition. AnimalId: ${data.animalId}`,
+				);
 				return left(new ResourceNotFoundError());
 			}
 
 			if (animal.userId.toString() !== data.userId) {
-				this.logger.warn(`User ${data.userId} attempted to add asset to animal ${data.animalId} owned by user ${animal.userId.toString()}`);
+				this.logger.warn(
+					`User ${data.userId} attempted to add asset to animal ${data.animalId} owned by user ${animal.userId.toString()}`,
+				);
 				return left(new ResourceNotFoundError());
 			}
 
-			this.logger.debug(`Animal found and ownership verified. Proceeding with asset addition`);
+			this.logger.debug(
+				`Animal found and ownership verified. Proceeding with asset addition`,
+			);
 
 			const result = await this.uploadAndCreateAsset.execute({
 				file: data.file,
@@ -49,21 +59,30 @@ export class AddAssetToAnimalUseCase {
 			});
 
 			if (result.isLeft()) {
-				this.logger.error(`Failed to create asset for animal ${data.animalId}. Error: ${result.value.message}`);
+				this.logger.error(
+					`Failed to create asset for animal ${data.animalId}. Error: ${result.value.message}`,
+				);
 				return left(result.value);
 			}
 
-			this.logger.debug(`Asset created successfully. AssetId: ${result.value.asset.id.toString()}`);
+			this.logger.debug(
+				`Asset created successfully. AssetId: ${result.value.asset.id.toString()}`,
+			);
 
 			await this.animalRepository.update(data.animalId, {
 				assetId: result.value.asset.id,
 			});
 
-			this.logger.log(`Asset ${result.value.asset.id.toString()} added successfully to animal ${data.animalId}`);
-			
+			this.logger.log(
+				`Asset ${result.value.asset.id.toString()} added successfully to animal ${data.animalId}`,
+			);
+
 			return right(undefined);
 		} catch (error) {
-			this.logger.error(`Error adding asset to animal ${data.animalId} for user ${data.userId}`, error instanceof Error ? error.stack : String(error));
+			this.logger.error(
+				`Error adding asset to animal ${data.animalId} for user ${data.userId}`,
+				error instanceof Error ? error.stack : String(error),
+			);
 			throw error;
 		}
 	}

@@ -1,7 +1,10 @@
 import { Entity } from "@/core/domain/entities/entity";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 
-export const notificationType = ["user_created", "appointment_status_changed"] as const;
+export const notificationType = [
+	"user_created",
+	"appointment_status_changed",
+] as const;
 export type NotificationType = (typeof notificationType)[number];
 
 export interface NotificationProps {

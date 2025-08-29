@@ -6,7 +6,10 @@ import { UserType } from "@/modules/user/domain/entities/user.entity";
 import { Either, left, right } from "@/shared/either";
 import { NotAllowedError } from "@/shared/errors/errors/not-allowed.error";
 import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
-import { Appointment, AppointmentStatus } from "../../domain/entities/appointment.entity";
+import {
+	Appointment,
+	AppointmentStatus,
+} from "../../domain/entities/appointment.entity";
 import { AppointmentRepository } from "../../domain/repositories/appointment.repository";
 
 type UpdateAppointmentStatusUseCaseInput = {

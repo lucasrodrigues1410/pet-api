@@ -3,7 +3,10 @@ import { Service } from "@/modules/service/domain/entities/service.entity";
 import { Either, right } from "@/shared/either";
 import { PaginationResult } from "@/shared/utils/pagination";
 import { PaginationQuery } from "@/shared/utils/pagination-query";
-import { Appointment, AppointmentStatus } from "../../domain/entities/appointment.entity";
+import {
+	Appointment,
+	AppointmentStatus,
+} from "../../domain/entities/appointment.entity";
 import { AppointmentRepository } from "../../domain/repositories/appointment.repository";
 
 type GetAppointmentByUserIdUseCaseInput = {

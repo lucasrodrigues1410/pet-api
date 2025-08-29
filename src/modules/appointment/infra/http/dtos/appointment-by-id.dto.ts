@@ -15,10 +15,12 @@ const responseDto = appointmentDto
 		animal: z.object({
 			id: z.string(),
 			name: z.string(),
-			asset: z.object({
-				id: z.string(),
-				url: z.string(),
-			}).optional(),
+			asset: z
+				.object({
+					id: z.string(),
+					url: z.string(),
+				})
+				.optional(),
 			breed: z.object({
 				id: z.string(),
 				name: z.string(),
@@ -43,10 +45,12 @@ const responseDto = appointmentDto
 		company: z.object({
 			id: z.string(),
 			name: z.string(),
-			logo: z.object({
-				id: z.string(),
-				url: z.string(),
-			}).optional(),
+			logo: z
+				.object({
+					id: z.string(),
+					url: z.string(),
+				})
+				.optional(),
 		}),
 	});
 

@@ -19,30 +19,43 @@ export class DeleteAnimalUseCase {
 	async execute(
 		data: DeleteAnimalUseCaseRequest,
 	): Promise<DeleteAnimalUseCaseResponse> {
-		this.logger.log(`Executing delete animal use case. AnimalId: ${data.animalId}, UserId: ${data.userId}`);
+		this.logger.log(
+			`Executing delete animal use case. AnimalId: ${data.animalId}, UserId: ${data.userId}`,
+		);
 
 		try {
 			const animal = await this.animalRepository.findById(data.animalId);
 
 			if (!animal) {
-				this.logger.warn(`Animal not found for deletion. AnimalId: ${data.animalId}`);
+				this.logger.warn(
+					`Animal not found for deletion. AnimalId: ${data.animalId}`,
+				);
 				return left(new ResourceNotFoundError());
 			}
 
 			if (animal.userId.toString() !== data.userId) {
-				this.logger.warn(`User ${data.userId} attempted to delete animal ${data.animalId} owned by user ${animal.userId.toString()}`);
+				this.logger.warn(
+					`User ${data.userId} attempted to delete animal ${data.animalId} owned by user ${animal.userId.toString()}`,
+				);
 				return left(new ResourceNotFoundError());
 			}
 
-			this.logger.debug(`Animal found and ownership verified. Proceeding with deletion`);
+			this.logger.debug(
+				`Animal found and ownership verified. Proceeding with deletion`,
+			);
 
 			await this.animalRepository.delete(data.animalId);
-			
-			this.logger.log(`Animal ${data.animalId} deleted successfully for user ${data.userId}`);
-			
+
+			this.logger.log(
+				`Animal ${data.animalId} deleted successfully for user ${data.userId}`,
+			);
+
 			return right(undefined);
 		} catch (error) {
-			this.logger.error(`Error deleting animal ${data.animalId} for user ${data.userId}`, error instanceof Error ? error.stack : String(error));
+			this.logger.error(
+				`Error deleting animal ${data.animalId} for user ${data.userId}`,
+				error instanceof Error ? error.stack : String(error),
+			);
 			throw error;
 		}
 	}

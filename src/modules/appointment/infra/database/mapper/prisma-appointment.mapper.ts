@@ -5,7 +5,6 @@ import {
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { Appointment } from "@/modules/appointment/domain/entities/appointment.entity";
 
-
 export class PrismaAppointmentMapper {
 	static toDomain(prismaAppointment: PrismaAppointment): Appointment {
 		return Appointment.create(

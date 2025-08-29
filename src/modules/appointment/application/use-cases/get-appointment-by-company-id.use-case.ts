@@ -7,7 +7,10 @@ import { Either, right } from "@/shared/either";
 import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
 import { PaginationResult } from "@/shared/utils/pagination";
 import { PaginationQuery } from "@/shared/utils/pagination-query";
-import { Appointment, AppointmentStatus } from "../../domain/entities/appointment.entity";
+import {
+	Appointment,
+	AppointmentStatus,
+} from "../../domain/entities/appointment.entity";
 import { AppointmentRepository } from "../../domain/repositories/appointment.repository";
 
 interface Request {

@@ -19,7 +19,10 @@ import { User } from "@/modules/auth/infra/http/decorators/user.decorator";
 import { UserTypeDecorator } from "@/modules/auth/infra/http/decorators/user-type.decorator";
 import { CompanyGuard } from "@/modules/company/infra/http/guards/company.guard";
 import type { UserType } from "@/modules/user/domain/entities/user.entity";
-import { AppointmentsByClientQueryDto, AppointmentsByClientResponseDto } from "../dtos/appointment-by-client.dto";
+import {
+	AppointmentsByClientQueryDto,
+	AppointmentsByClientResponseDto,
+} from "../dtos/appointment-by-client.dto";
 import {
 	AppointmentsByCompanyQueryDto,
 	AppointmentsByCompanyResponseDto,

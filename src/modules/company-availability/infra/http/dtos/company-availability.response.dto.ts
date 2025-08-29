@@ -6,7 +6,9 @@ const listResponse = z.object({
 	items: z.array(companyAvailabilityDto),
 });
 
-export class CompanyAvailabilityResponseDto extends createZodDto(companyAvailabilityDto) {}
+export class CompanyAvailabilityResponseDto extends createZodDto(
+	companyAvailabilityDto,
+) {}
 export class CompanyAvailabilityListResponseDto extends createZodDto(
 	listResponse,
 ) {}

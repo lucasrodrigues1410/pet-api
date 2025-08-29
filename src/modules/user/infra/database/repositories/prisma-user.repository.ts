@@ -20,7 +20,7 @@ export class PrismaUserRepository implements UserRepository {
 			return null;
 		}
 
-		return PrismaUserMapper.toDomain(response)
+		return PrismaUserMapper.toDomain(response);
 	}
 
 	async findById(id: string): Promise<User | null> {

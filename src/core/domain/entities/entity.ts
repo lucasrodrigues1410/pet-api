@@ -24,5 +24,4 @@ export abstract class Entity<Props> {
 
 		return false;
 	}
-
 }

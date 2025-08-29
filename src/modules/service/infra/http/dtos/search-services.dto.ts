@@ -8,7 +8,7 @@ const request = z.object({
 	location: z
 		.object({
 			latitude: z.number().min(-90).max(90),
-			longitude: z.number().min(-180).max(180), 
+			longitude: z.number().min(-180).max(180),
 			radiusInKm: z.number().min(0.1).max(100).default(10),
 		})
 		.optional(),

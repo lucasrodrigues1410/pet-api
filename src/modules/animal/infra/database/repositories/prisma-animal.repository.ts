@@ -13,18 +13,25 @@ export class AnimalPrismaRepository implements AnimalRepository {
 	constructor(private prismaService: PrismaService) {}
 
 	async create(animal: Animal) {
-		this.logger.log(`Creating animal in database. ID: ${animal.id.toString()}, Name: ${animal.name}`);
-		
+		this.logger.log(
+			`Creating animal in database. ID: ${animal.id.toString()}, Name: ${animal.name}`,
+		);
+
 		try {
 			const data = PrismaAnimalMapper.toPrisma(animal);
 			const response = await this.prismaService.animal.create({
 				data,
 			});
-			
-			this.logger.log(`Animal created successfully in database. ID: ${response.id}`);
+
+			this.logger.log(
+				`Animal created successfully in database. ID: ${response.id}`,
+			);
 			return PrismaAnimalMapper.toDomain(response);
 		} catch (error) {
-			this.logger.error(`Database error creating animal ${animal.id.toString()}`, error instanceof Error ? error.stack : String(error));
+			this.logger.error(
+				`Database error creating animal ${animal.id.toString()}`,
+				error instanceof Error ? error.stack : String(error),
+			);
 			throw error;
 		}
 	}
@@ -32,24 +39,29 @@ export class AnimalPrismaRepository implements AnimalRepository {
 	async update(animalId: string, data: Partial<Omit<Animal, "id">>) {
 		this.logger.log(`Updating animal in database. ID: ${animalId}`);
 		this.logger.debug(`Update data: ${JSON.stringify(data)}`);
-		
+
 		try {
 			const response = await this.prismaService.animal.update({
 				where: { id: animalId, deletedAt: null },
 				data: PrismaAnimalMapper.toPrismaUpdate(data),
 			});
-			
-			this.logger.log(`Animal updated successfully in database. ID: ${response.id}`);
+
+			this.logger.log(
+				`Animal updated successfully in database. ID: ${response.id}`,
+			);
 			return PrismaAnimalMapper.toDomain(response);
 		} catch (error) {
-			this.logger.error(`Database error updating animal ${animalId}`, error instanceof Error ? error.stack : String(error));
+			this.logger.error(
+				`Database error updating animal ${animalId}`,
+				error instanceof Error ? error.stack : String(error),
+			);
 			throw error;
 		}
 	}
 
 	async findById(animalId: string): Promise<Animal | null> {
 		this.logger.debug(`Finding animal by ID in database: ${animalId}`);
-		
+
 		try {
 			const response = await this.prismaService.animal.findUnique({
 				where: { id: animalId.toString(), deletedAt: null },
@@ -63,30 +75,40 @@ export class AnimalPrismaRepository implements AnimalRepository {
 			this.logger.debug(`Animal found in database. ID: ${response.id}`);
 			return PrismaAnimalMapper.toDomain(response);
 		} catch (error) {
-			this.logger.error(`Database error finding animal ${animalId}`, error instanceof Error ? error.stack : String(error));
+			this.logger.error(
+				`Database error finding animal ${animalId}`,
+				error instanceof Error ? error.stack : String(error),
+			);
 			throw error;
 		}
 	}
 
 	async delete(petId: string) {
 		this.logger.log(`Soft deleting animal in database. ID: ${petId}`);
-		
+
 		try {
 			await this.prismaService.animal.update({
 				where: { id: petId },
 				data: { deletedAt: new Date() },
 			});
-			
-			this.logger.log(`Animal soft deleted successfully in database. ID: ${petId}`);
+
+			this.logger.log(
+				`Animal soft deleted successfully in database. ID: ${petId}`,
+			);
 		} catch (error) {
-			this.logger.error(`Database error deleting animal ${petId}`, error instanceof Error ? error.stack : String(error));
+			this.logger.error(
+				`Database error deleting animal ${petId}`,
+				error instanceof Error ? error.stack : String(error),
+			);
 			throw error;
 		}
 	}
 
 	async fetchAllAnimalsByUser(params: { userId: string } & PaginationQuery) {
-		this.logger.log(`Fetching animals by user from database. UserId: ${params.userId}, Page: ${params.page}, Limit: ${params.limit}`);
-		
+		this.logger.log(
+			`Fetching animals by user from database. UserId: ${params.userId}, Page: ${params.page}, Limit: ${params.limit}`,
+		);
+
 		try {
 			const { items, ...rest } = await paginate(
 				({ skip, take }) =>
@@ -103,7 +125,9 @@ export class AnimalPrismaRepository implements AnimalRepository {
 				params,
 			);
 
-			this.logger.log(`Successfully fetched ${items.length} animals for user ${params.userId} from database`);
+			this.logger.log(
+				`Successfully fetched ${items.length} animals for user ${params.userId} from database`,
+			);
 			this.logger.debug(`Pagination meta: ${JSON.stringify(rest)}`);
 
 			return {
@@ -111,7 +135,10 @@ export class AnimalPrismaRepository implements AnimalRepository {
 				...rest,
 			};
 		} catch (error) {
-			this.logger.error(`Database error fetching animals for user ${params.userId}`, error instanceof Error ? error.stack : String(error));
+			this.logger.error(
+				`Database error fetching animals for user ${params.userId}`,
+				error instanceof Error ? error.stack : String(error),
+			);
 			throw error;
 		}
 	}

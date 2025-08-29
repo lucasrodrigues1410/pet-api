@@ -8,4 +8,4 @@ const request = z.object({
 	birthdate: z.iso.date().optional(),
 });
 
-export class CreateAnimalRequestDto extends createZodDto(request) { }
+export class CreateAnimalRequestDto extends createZodDto(request) {}

@@ -23,7 +23,6 @@ export const dashboardMetricsDto = z.object({
 	averageRating: ratingMetricDto,
 });
 
-
 export const appointmentPerformanceDto = z.object({
 	completed: z.number(),
 	total: z.number(),

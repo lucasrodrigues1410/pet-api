@@ -38,7 +38,7 @@ export class SignInCompanyUseCase {
 		const user = await this.userRepository.findByEmail(email);
 
 		var staffRole: StaffRole | undefined;
-		var companyId: string | undefined;	
+		var companyId: string | undefined;
 		const isPasswordValid = await this.hashComparer.compare(
 			password,
 			user?.password ?? "",

@@ -16,11 +16,6 @@ export class AppointmentStatusChangedEvent extends NotificationEvent {
 		public readonly clientEmail: string,
 		public readonly variables: AppointmentStatusChangedEventVariables,
 	) {
-		super(
-			"email",
-			"appointment-status-changed",
-			clientEmail,
-			variables,
-		);
+		super("email", "appointment-status-changed", clientEmail, variables);
 	}
 }

@@ -14,7 +14,7 @@ import { EnvService } from "../env/env.service";
 					password: envService.get("REDIS_PASSWORD"),
 					retryDelayOnFailover: 100,
 					enableReadyCheck: false,
-					maxLoadingTimeout: 0
+					maxLoadingTimeout: 0,
 				},
 				defaultJobOptions: {
 					removeOnComplete: 100,

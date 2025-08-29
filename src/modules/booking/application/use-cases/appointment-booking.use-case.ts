@@ -5,7 +5,10 @@ import { AnimalRepository } from "@/modules/animal/domain/repositories/animal.re
 import { ServiceRepository } from "@/modules/service/domain/repositories/service.repository";
 import { Either, left, right } from "@/shared/either";
 import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
-import { Appointment, CoatType } from "../../../appointment/domain/entities/appointment.entity";
+import {
+	Appointment,
+	CoatType,
+} from "../../../appointment/domain/entities/appointment.entity";
 import { AppointmentRepository } from "../../../appointment/domain/repositories/appointment.repository";
 import { TimeSlotUnavailableError } from "../errors/time-slot-unavailable.error";
 import { AppointmentAvailabilityService } from "../services/appointment-availability.service";
@@ -67,7 +70,9 @@ export class AppointmentBookingUseCase {
 
 		// Alinhação simples do slot: múltiplos de 5 minutos
 		if (startDate.getMinutes() % 5 !== 0) {
-			return left(new TimeSlotUnavailableError("Horário inválido (não alinhado ao slot)"));
+			return left(
+				new TimeSlotUnavailableError("Horário inválido (não alinhado ao slot)"),
+			);
 		}
 
 		// Calcula variação de preço

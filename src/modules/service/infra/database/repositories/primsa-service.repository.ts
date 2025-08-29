@@ -52,9 +52,7 @@ export class PrismaServiceRepository implements ServiceRepository {
 			where: { companyId },
 		});
 
-		return result.map((service) =>
-			PrismaServiceMapper.toDomain(service),
-		);
+		return result.map((service) => PrismaServiceMapper.toDomain(service));
 	}
 
 	async searchServices(

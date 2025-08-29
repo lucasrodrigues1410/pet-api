@@ -17,4 +17,4 @@ export type PaginationMeta = z.infer<typeof paginationMetaDto>;
 export type PaginationResult<T> = {
 	items: T[];
 	meta: PaginationMeta;
-}
+};

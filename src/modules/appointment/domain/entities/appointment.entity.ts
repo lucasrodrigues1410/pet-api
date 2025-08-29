@@ -124,10 +124,7 @@ export class Appointment extends Entity<AppointmentProps> {
 			);
 		}
 
-		if (
-			["in_progress", "completed"].includes(newStatus) &&
-			!isCompany
-		) {
+		if (["in_progress", "completed"].includes(newStatus) && !isCompany) {
 			throw new DomainError(
 				"Only company staff can set appointment status to IN_PROGRESS or COMPLETED.",
 			);
