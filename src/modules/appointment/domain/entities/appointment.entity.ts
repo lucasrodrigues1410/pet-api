@@ -1,7 +1,19 @@
 import { Entity } from "@/core/domain/entities/entity";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { DomainError } from "@/core/domain/errors/domain-error";
-import { AppointmentStatus, CoatType } from "../enums/appointment.enum";
+
+export const coatType = ["short", "medium", "long", "curly"] as const;
+export const appointmentStatus = [
+	"scheduled",
+	"confirmed",
+	"in_progress",
+	"completed",
+	"no_show",
+	"canceled",
+] as const;
+
+export type CoatType = (typeof coatType)[number];
+export type AppointmentStatus = (typeof appointmentStatus)[number];
 
 export interface AppointmentProps {
 	animalId: UniqueEntityID;
@@ -13,13 +25,13 @@ export interface AppointmentProps {
 	endDate: Date;
 	status: AppointmentStatus;
 	price: number;
-	coatType: CoatType;
+	coatType: "short" | "medium" | "long" | "curly";
 }
 
 export class Appointment extends Entity<AppointmentProps> {
 	private static readonly CANCELLABLE_STATUSES: AppointmentStatus[] = [
-		AppointmentStatus.SCHEDULED,
-		AppointmentStatus.CONFIRMED,
+		"scheduled",
+		"confirmed",
 	];
 
 	get animalId() {
@@ -73,7 +85,7 @@ export class Appointment extends Entity<AppointmentProps> {
 			);
 		}
 
-		this.props.status = AppointmentStatus.CANCELED;
+		this.props.status = "canceled";
 	}
 
 	public updateStatus(newStatus: AppointmentStatus, isCompany: boolean): void {
@@ -87,23 +99,12 @@ export class Appointment extends Entity<AppointmentProps> {
 		newStatus: AppointmentStatus,
 	): void {
 		const validTransitions: Record<AppointmentStatus, AppointmentStatus[]> = {
-			[AppointmentStatus.SCHEDULED]: [
-				AppointmentStatus.CONFIRMED,
-				AppointmentStatus.CANCELED,
-				AppointmentStatus.NO_SHOW,
-			],
-			[AppointmentStatus.CONFIRMED]: [
-				AppointmentStatus.IN_PROGRESS,
-				AppointmentStatus.CANCELED,
-				AppointmentStatus.NO_SHOW,
-			],
-			[AppointmentStatus.IN_PROGRESS]: [
-				AppointmentStatus.COMPLETED,
-				AppointmentStatus.CANCELED,
-			],
-			[AppointmentStatus.COMPLETED]: [],
-			[AppointmentStatus.NO_SHOW]: [],
-			[AppointmentStatus.CANCELED]: [],
+			scheduled: ["confirmed", "canceled", "no_show"],
+			confirmed: ["in_progress", "canceled", "no_show"],
+			in_progress: ["completed", "canceled"],
+			completed: [],
+			no_show: [],
+			canceled: [],
 		};
 
 		if (!validTransitions[currentStatus]?.includes(newStatus)) {
@@ -117,15 +118,14 @@ export class Appointment extends Entity<AppointmentProps> {
 		newStatus: AppointmentStatus,
 		isCompany: boolean,
 	): void {
-		if (newStatus === AppointmentStatus.NO_SHOW && !isCompany) {
+		if (newStatus === "no_show" && !isCompany) {
 			throw new DomainError(
 				"Only company staff can set appointment status to NO_SHOW.",
 			);
 		}
 
 		if (
-			(newStatus === AppointmentStatus.IN_PROGRESS ||
-				newStatus === AppointmentStatus.COMPLETED) &&
+			["in_progress", "completed"].includes(newStatus) &&
 			!isCompany
 		) {
 			throw new DomainError(
@@ -151,7 +151,7 @@ export class Appointment extends Entity<AppointmentProps> {
 		return new Appointment(
 			{
 				...props,
-				status: props.status ?? AppointmentStatus.SCHEDULED,
+				status: props.status ?? "scheduled",
 			},
 			id,
 		);

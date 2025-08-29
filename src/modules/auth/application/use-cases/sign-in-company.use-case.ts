@@ -58,6 +58,7 @@ export class SignInCompanyUseCase {
 			type: user.type,
 			role: staffRole,
 			companyId: companyId,
+			avatar: user.avatar?.url,
 		});
 
 		return right(

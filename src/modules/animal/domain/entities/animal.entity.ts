@@ -9,6 +9,8 @@ export interface AnimalProps {
 	age?: number | null;
 	weight?: number | null;
 	assetId?: UniqueEntityID;
+	size?: "small" | "medium" | "large" | null;
+	ageStage?: "puppy" | "adult" | "senior" | null;
 }
 
 type RawBirthdate = Date | string | null;
@@ -38,16 +40,44 @@ export class Animal extends Entity<AnimalProps> {
 		return this.props.assetId;
 	}
 
+	get size() {
+		return this.props.size;
+	}
+
+	get ageStage() {
+		return this.props.ageStage;
+	}
+
 	public static create(
-		props: Omit<AnimalProps, "age"> & { birthdate?: RawBirthdate },
+		props: Omit<AnimalProps, "age" | "size" | "ageStage"> & {
+			birthdate?: RawBirthdate;
+		},
 		id?: UniqueEntityID,
 	): Animal {
+		const size = props.weight
+			? props.weight <= 8
+				? "small"
+				: props.weight <= 20
+					? "medium"
+					: "large"
+			: "small";
+		const age = props.birthdate
+			? differenceInYears(new Date(), new Date(props.birthdate))
+			: null;
+		const ageStage = age
+			? age < 1
+				? "puppy"
+				: age < 10
+					? "adult"
+					: "senior"
+			: "puppy";
+
 		return new Animal(
 			{
 				...props,
-				age: props.birthdate
-					? differenceInYears(new Date(), new Date(props.birthdate))
-					: null,
+				age,
+				size,
+				ageStage,
 			},
 			id,
 		);

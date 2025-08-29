@@ -74,7 +74,7 @@ export class PrismaDashboardRepository implements DashboardRepository {
 				),
 			]);
 
-		// Avaliação média (simulada - como não há tabela de avaliações, usaremos uma lógica baseada em agendamentos concluídos)
+		// Avaliação média real da empresa
 		const averageRating = await this.getAverageRating(companyId);
 
 		return DashboardMetrics.create({
@@ -190,7 +190,7 @@ export class PrismaDashboardRepository implements DashboardRepository {
 		return this.prisma.appointment.count({
 			where: {
 				companyId,
-				createdAt: {
+				startDate: {
 					gte: startDate,
 					lte: endDate,
 				},
@@ -207,7 +207,7 @@ export class PrismaDashboardRepository implements DashboardRepository {
 		const result = await this.prisma.appointment.aggregate({
 			where: {
 				companyId,
-				createdAt: {
+				startDate: {
 					gte: startDate,
 					lte: endDate,
 				},
@@ -230,7 +230,7 @@ export class PrismaDashboardRepository implements DashboardRepository {
 		const result = await this.prisma.appointment.findMany({
 			where: {
 				companyId,
-				createdAt: {
+				startDate: {
 					gte: startDate,
 					lte: endDate,
 				},
@@ -254,7 +254,7 @@ export class PrismaDashboardRepository implements DashboardRepository {
 		return this.prisma.appointment.count({
 			where: {
 				companyId,
-				createdAt: {
+				startDate: {
 					gte: startDate,
 					lte: endDate,
 				},
@@ -270,41 +270,72 @@ export class PrismaDashboardRepository implements DashboardRepository {
 		const last30Days = subDays(new Date(), 30);
 		const previous30Days = subDays(last30Days, 30);
 
-		// Simulando avaliação baseada na taxa de conclusão de agendamentos
-		const [completedLast30, totalLast30, completedPrevious30, totalPrevious30] =
-			await Promise.all([
-				this.getAppointmentsByStatus(
-					companyId,
-					last30Days,
-					new Date(),
-					AppointmentStatus.COMPLETED,
-				),
-				this.getAppointmentsByStatus(companyId, last30Days, new Date()),
-				this.getAppointmentsByStatus(
-					companyId,
-					previous30Days,
-					last30Days,
-					AppointmentStatus.COMPLETED,
-				),
-				this.getAppointmentsByStatus(companyId, previous30Days, last30Days),
-			]);
+		// Busca os dados reais da empresa
+		const company = await this.prisma.company.findUnique({
+			where: { id: companyId },
+			select: {
+				averageRating: true,
+				ratingCount: true,
+			},
+		});
 
-		const currentRating = this.calculateRatingFromCompletionRate(
-			completedLast30,
-			totalLast30,
-		);
-		const previousRating = this.calculateRatingFromCompletionRate(
-			completedPrevious30,
-			totalPrevious30,
-		);
+		if (!company) {
+			return {
+				rating: 0,
+				changePercentage: 0,
+				baseCount: 0,
+			};
+		}
+
+		// Busca ratings dos últimos 30 dias para calcular a mudança
+		const [ratingsLast30Days, ratingsPrevious30Days] = await Promise.all([
+			this.prisma.rating.findMany({
+				where: {
+					companyId,
+					createdAt: {
+						gte: last30Days,
+						lte: new Date(),
+					},
+				},
+				select: {
+					rating: true,
+				},
+			}),
+			this.prisma.rating.findMany({
+				where: {
+					companyId,
+					createdAt: {
+						gte: previous30Days,
+						lt: last30Days,
+					},
+				},
+				select: {
+					rating: true,
+				},
+			}),
+		]);
+
+		// Calcula média dos últimos 30 dias
+		const currentRating =
+			ratingsLast30Days.length > 0
+				? ratingsLast30Days.reduce((sum, r) => sum + r.rating, 0) /
+				  ratingsLast30Days.length
+				: company.averageRating;
+
+		// Calcula média dos 30 dias anteriores
+		const previousRating =
+			ratingsPrevious30Days.length > 0
+				? ratingsPrevious30Days.reduce((sum, r) => sum + r.rating, 0) /
+				  ratingsPrevious30Days.length
+				: company.averageRating;
 
 		return {
-			rating: currentRating,
+			rating: Math.round(currentRating * 10) / 10,
 			changePercentage: this.calculatePercentageChange(
 				currentRating,
 				previousRating,
 			),
-			baseCount: totalLast30,
+			baseCount: company.ratingCount,
 		};
 	}
 
@@ -313,30 +344,44 @@ export class PrismaDashboardRepository implements DashboardRepository {
 		startDate: Date,
 		endDate: Date,
 	): Promise<{ rating: number; baseCount: number }> {
-		const [completed, total] = await Promise.all([
-			this.getAppointmentsByStatus(
+		// Busca ratings no período especificado
+		const ratings = await this.prisma.rating.findMany({
+			where: {
 				companyId,
-				startDate,
-				endDate,
-				AppointmentStatus.COMPLETED,
-			),
-			this.getAppointmentsByStatus(companyId, startDate, endDate),
-		]);
+				createdAt: {
+					gte: startDate,
+					lte: endDate,
+				},
+			},
+			select: {
+				rating: true,
+			},
+		});
+
+		// Se não há ratings no período, usa a média geral da empresa
+		if (ratings.length === 0) {
+			const company = await this.prisma.company.findUnique({
+				where: { id: companyId },
+				select: {
+					averageRating: true,
+					ratingCount: true,
+				},
+			});
+
+			return {
+				rating: company?.averageRating || 0,
+				baseCount: company?.ratingCount || 0,
+			};
+		}
+
+		// Calcula a média dos ratings no período
+		const averageRating =
+			ratings.reduce((sum, r) => sum + r.rating, 0) / ratings.length;
 
 		return {
-			rating: this.calculateRatingFromCompletionRate(completed, total),
-			baseCount: total,
+			rating: Math.round(averageRating * 10) / 10,
+			baseCount: ratings.length,
 		};
-	}
-
-	private calculateRatingFromCompletionRate(
-		completed: number,
-		total: number,
-	): number {
-		if (total === 0) return 4.5; // Rating padrão
-		const completionRate = completed / total;
-		// Converte taxa de conclusão em rating de 3.0 a 5.0
-		return Math.round((3.0 + completionRate * 2.0) * 10) / 10;
 	}
 
 	private calculatePercentageChange(current: number, previous: number): number {

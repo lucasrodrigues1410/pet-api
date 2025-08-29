@@ -1,9 +1,8 @@
 import { Entity } from "@/core/domain/entities/entity";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 
-export enum CategoryType {
-	PETSHOP = "PETSHOP",
-}
+export const categoryType = ["petshop"] as const;
+export type CategoryType = (typeof categoryType)[number];
 
 export interface CategoryProps {
 	name: string;

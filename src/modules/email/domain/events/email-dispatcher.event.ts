@@ -1,4 +1,3 @@
-import { NotificationChannel } from "@/modules/notification/domain/enums/notification-channel.enum";
 import { NotificationEvent } from "@/modules/notification/domain/events/notification.event";
 import { TemplateVariablesMap } from "../templates/template-variables-map";
 
@@ -10,6 +9,6 @@ export class EmailDispatchEvent<
 		public readonly target: string,
 		public readonly variables: TemplateVariablesMap[T],
 	) {
-		super(NotificationChannel.EMAIL, templateKey, target, variables);
+		super("email", templateKey, target, variables);
 	}
 }

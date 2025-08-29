@@ -8,16 +8,19 @@ import { PrismaUserMapper } from "../mappers/prisma-user.mapper";
 export class PrismaUserRepository implements UserRepository {
 	constructor(private readonly prisma: PrismaService) {}
 
-	async findByEmail(email): Promise<User | null> {
+	async findByEmail(email) {
 		const response = await this.prisma.user.findFirst({
 			where: { email },
+			include: {
+				avatar: true,
+			},
 		});
 
 		if (!response) {
 			return null;
 		}
 
-		return PrismaUserMapper.toDomain(response);
+		return PrismaUserMapper.toDomain(response)
 	}
 
 	async findById(id: string): Promise<User | null> {

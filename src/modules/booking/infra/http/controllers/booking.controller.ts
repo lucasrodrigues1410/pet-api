@@ -15,7 +15,6 @@ import { User } from "@/modules/auth/infra/http/decorators/user.decorator";
 import { UserTypeDecorator } from "@/modules/auth/infra/http/decorators/user-type.decorator";
 import { AppointmentBookingUseCase } from "@/modules/booking/application/use-cases/appointment-booking.use-case";
 import { ListAvailableDatesUseCase } from "@/modules/booking/application/use-cases/list-available-dates.use-case";
-import { UserType } from "@/modules/user/domain/entities/user.entity";
 import { CreateAppointmentRequestDto } from "../dtos/create-appointment.dto";
 import {
 	ListAvailableDatesRequestDto,
@@ -64,7 +63,7 @@ export class BookingController {
 		description:
 			"Inicia o processo de criação de um agendamento, verificando a disponibilidade do horário e criando uma intenção de agendamento.",
 	})
-	@UserTypeDecorator(UserType.CUSTOMER)
+	@UserTypeDecorator("customer")
 	async createAppointment(
 		@User("sub") userId: string,
 		@Body() params: CreateAppointmentRequestDto,

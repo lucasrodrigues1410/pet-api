@@ -18,7 +18,7 @@ import { CompanyModule } from "./modules/company/company.module";
 import { DashboardModule } from "./modules/dashboard/dashboard.module";
 import { EmailModule } from "./modules/email/email.module";
 import { NotificationModule } from "./modules/notification/notification.module";
-import { PriceVariationModule } from "./modules/price-variation/price-variation.module";
+import { RatingModule } from "./modules/rating/rating.module";
 import { ServiceModule } from "./modules/service/service.module";
 import { StaffModule } from "./modules/staff/staff.module";
 import { UserModule } from "./modules/user/user.module";
@@ -41,12 +41,12 @@ import { UserModule } from "./modules/user/user.module";
 		BreedModule,
 		AssetModule,
 		CompanyModule,
-		PriceVariationModule,
 		AppointmentModule,
 		BookingModule,
 		StaffModule,
 		NotificationModule,
 		DashboardModule,
+		RatingModule,
 	],
 	providers: [
 		{

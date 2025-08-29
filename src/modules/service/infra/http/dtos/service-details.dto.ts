@@ -4,8 +4,7 @@ import { categoryDto } from "@/modules/category/infra/http/dtos/category.dto";
 import { companyDto } from "@/modules/company/infra/http/dtos/company.dto";
 import { serviceDto } from "./service.dto";
 
-export const serviceDetailsDto = z.object({
-	...serviceDto.shape,
+export const serviceDetailsDto = serviceDto.extend({
 	company: companyDto,
 	categories: z.array(categoryDto),
 });

@@ -6,8 +6,7 @@ import { User } from "@/modules/user/domain/entities/user.entity";
 import type { DateRange } from "@/shared/types/date-range";
 import { PaginationResult } from "@/shared/utils/pagination";
 import { PaginationQuery } from "@/shared/utils/pagination-query";
-import { Appointment } from "../entities/appointment.entity";
-import { AppointmentStatus } from "../enums/appointment.enum";
+import { Appointment, AppointmentStatus } from "../entities/appointment.entity";
 
 export abstract class AppointmentRepository {
 	abstract findById(id: string): Promise<
@@ -21,17 +20,25 @@ export abstract class AppointmentRepository {
 	>;
 	abstract findByUserId(params: {
 		userId: string;
-		query: PaginationQuery;
-	}): Promise<PaginationResult<Appointment & {
-			animal: Animal;
-			service: Service;
-		}
-	>>;
+		query: PaginationQuery & {
+			startDate?: Date;
+			endDate?: Date;
+			status?: AppointmentStatus[];
+		};
+	}): Promise<
+		PaginationResult<
+			Appointment & {
+				animal: Animal;
+				service: Service;
+			}
+		>
+	>;
 	abstract findByCompanyId(params: {
 		companyId: string;
 		query: PaginationQuery & {
-			startDate?: Date | null;
-			endDate?: Date | null;
+			startDate?: Date;
+			endDate?: Date;
+			status?: AppointmentStatus[];
 		};
 	}): Promise<
 		PaginationResult<

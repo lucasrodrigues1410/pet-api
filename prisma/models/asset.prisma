@@ -5,13 +5,13 @@ model Asset {
   fileType     String? @map("file_type")
   width        Int?
   height       Int?
-  thumbnailUrl String?
+  thumbnailUrl String? @map("thumbnail_url")
   fileId       String? @map("file_id")
   userId       String  @map("user_id")
 
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
 
   companyImage CompanyImage[]
   animal       Animal[]

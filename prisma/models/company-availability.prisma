@@ -1,11 +1,11 @@
 enum DayOfWeek {
-  SUNDAY
-  MONDAY
-  TUESDAY
-  WEDNESDAY
-  THURSDAY
-  FRIDAY
-  SATURDAY
+  sunday
+  monday
+  tuesday
+  wednesday
+  thursday
+  friday
+  saturday
 }
 
 model CompanyAvailability {

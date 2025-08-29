@@ -2,16 +2,18 @@ import { Category } from "src/modules/category/domain/entities/category.entity";
 import { Company } from "src/modules/company/domain/entities/company.entity";
 import { Entity } from "@/core/domain/entities/entity";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
-import { PriceRange } from "./value-objects/price-range.value-object";
+import { Rules } from "./value-objects/rules.value-object";
 
 export interface ServiceProps {
 	name: string;
 	description?: string | null;
-	priceRange: PriceRange;
+	price: number;
 	isActive: boolean;
-	duration?: number | null;
+	duration: number;
 	companyId: UniqueEntityID;
 	details?: Record<string, unknown> | null;
+	rules?: Rules[];
+	rulesPrompt?: string | null;
 }
 
 export class Service extends Entity<ServiceProps> {
@@ -23,8 +25,8 @@ export class Service extends Entity<ServiceProps> {
 		return this.props.description;
 	}
 
-	get priceRange() {
-		return this.props.priceRange;
+	get price() {
+		return this.props.price;
 	}
 
 	get isActive() {
@@ -41,6 +43,14 @@ export class Service extends Entity<ServiceProps> {
 
 	get details() {
 		return this.props.details;
+	}
+
+	get rules() {
+		return this.props.rules;
+	}
+
+	get rulesPrompt() {
+		return this.props.rulesPrompt;
 	}
 
 	public static create(props: ServiceProps, id?: UniqueEntityID): Service {
@@ -60,11 +70,12 @@ export class Service extends Entity<ServiceProps> {
 			id: this.id.toString(),
 			name: this.name,
 			description: this.description,
-			priceRange: this.priceRange?.toObject(),
+			price: this.price,
 			isActive: this.isActive,
 			duration: this.duration,
 			companyId: this.companyId.toString(),
 			details: this.details,
+			rules: this.rules?.map((rule) => rule.toObject()),
 		};
 	}
 }

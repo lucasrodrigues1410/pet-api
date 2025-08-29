@@ -1,20 +1,20 @@
 import { beforeEach, describe, expect, it } from "bun:test";
+import { CommandBus } from "@nestjs/cqrs";
 import { makeAppointment } from "test/factories/make-appointment";
 import { InMemoryAppointmentRepository } from "test/repositories/in-memory-appointment.repository";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
-import { UserType } from "@/modules/user/domain/entities/user.entity";
 import { NotAllowedError } from "@/shared/errors/errors/not-allowed.error";
 import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
-import { AppointmentStatus } from "../../domain/enums/appointment.enum";
 import { UpdateAppointmentStatusUseCase } from "./update-appointment-status.use-case";
 
 let useCase: UpdateAppointmentStatusUseCase;
 let appointmentRepository: InMemoryAppointmentRepository;
+let commandBus: CommandBus;
 
 describe("UpdateAppointmentStatusUseCase", () => {
 	const mockAppointment = makeAppointment(
 		{
-			status: AppointmentStatus.SCHEDULED,
+			status: "scheduled",
 			companyId: new UniqueEntityID("company-1"),
 			animalId: new UniqueEntityID("animal-1"),
 			clientId: new UniqueEntityID("client-1"),
@@ -25,7 +25,13 @@ describe("UpdateAppointmentStatusUseCase", () => {
 
 	beforeEach(async () => {
 		appointmentRepository = new InMemoryAppointmentRepository();
-		useCase = new UpdateAppointmentStatusUseCase(appointmentRepository);
+		commandBus = {
+			execute: async () => {},
+		} as unknown as CommandBus;
+		useCase = new UpdateAppointmentStatusUseCase(
+			appointmentRepository,
+			commandBus,
+		);
 	});
 
 	describe("Cliente atualizando status", () => {
@@ -34,9 +40,9 @@ describe("UpdateAppointmentStatusUseCase", () => {
 
 			const result = await useCase.execute({
 				appointmentId: "appointment-1",
-				newStatus: AppointmentStatus.CANCELED,
+				newStatus: "canceled",
 				userId: "client-1",
-				userType: UserType.CUSTOMER,
+				userType: "customer",
 			});
 
 			expect(result.isRight()).toBe(true);
@@ -48,9 +54,9 @@ describe("UpdateAppointmentStatusUseCase", () => {
 
 			const result = await useCase.execute({
 				appointmentId: "appointment-1",
-				newStatus: AppointmentStatus.NO_SHOW,
+				newStatus: "no_show",
 				userId: "client-1",
-				userType: UserType.CUSTOMER,
+				userType: "customer",
 			});
 
 			expect(result.isLeft()).toBe(true);
@@ -62,9 +68,9 @@ describe("UpdateAppointmentStatusUseCase", () => {
 
 			const result = await useCase.execute({
 				appointmentId: "appointment-1",
-				newStatus: AppointmentStatus.CANCELED,
+				newStatus: "canceled",
 				userId: "other-client",
-				userType: UserType.CUSTOMER,
+				userType: "customer",
 			});
 
 			expect(result.isLeft()).toBe(true);
@@ -75,21 +81,23 @@ describe("UpdateAppointmentStatusUseCase", () => {
 	describe("Empresa atualizando status", () => {
 		it("deve permitir empresa definir status NO_SHOW", async () => {
 			appointmentRepository.items = [
-				makeAppointment({
-					status: AppointmentStatus.SCHEDULED,
-					companyId: new UniqueEntityID("company-1"),
-					animalId: new UniqueEntityID("animal-1"),
-					clientId: new UniqueEntityID("client-1"),
-					serviceId: new UniqueEntityID("service-1"),
-				},
-				new UniqueEntityID("appointment-1"),
-			)];
+				makeAppointment(
+					{
+						status: "scheduled",
+						companyId: new UniqueEntityID("company-1"),
+						animalId: new UniqueEntityID("animal-1"),
+						clientId: new UniqueEntityID("client-1"),
+						serviceId: new UniqueEntityID("service-1"),
+					},
+					new UniqueEntityID("appointment-1"),
+				),
+			];
 
 			const result = await useCase.execute({
 				appointmentId: "appointment-1",
-				newStatus: AppointmentStatus.NO_SHOW,
+				newStatus: "no_show",
 				userId: "staff-1",
-				userType: UserType.COMPANY,
+				userType: "company",
 				companyId: "company-1",
 			});
 
@@ -102,9 +110,9 @@ describe("UpdateAppointmentStatusUseCase", () => {
 
 			const result = await useCase.execute({
 				appointmentId: "appointment-1",
-				newStatus: AppointmentStatus.COMPLETED,
+				newStatus: "completed",
 				userId: "staff-1",
-				userType: UserType.COMPANY,
+				userType: "company",
 				companyId: "other-company",
 			});
 
@@ -119,9 +127,9 @@ describe("UpdateAppointmentStatusUseCase", () => {
 
 			const result = await useCase.execute({
 				appointmentId: "non-existent",
-				newStatus: AppointmentStatus.CANCELED,
+				newStatus: "canceled",
 				userId: "client-1",
-				userType: UserType.CUSTOMER,
+				userType: "customer",
 			});
 
 			expect(result.isLeft()).toBe(true);
@@ -131,7 +139,7 @@ describe("UpdateAppointmentStatusUseCase", () => {
 		it("deve retornar erro para transição inválida de status", async () => {
 			const completedAppointment = makeAppointment(
 				{
-					status: AppointmentStatus.COMPLETED,
+					status: "completed",
 				},
 				new UniqueEntityID("appointment-1"),
 			);
@@ -140,9 +148,9 @@ describe("UpdateAppointmentStatusUseCase", () => {
 
 			const result = await useCase.execute({
 				appointmentId: "appointment-1",
-				newStatus: AppointmentStatus.SCHEDULED,
+				newStatus: "scheduled",
 				userId: "client-1",
-				userType: UserType.CUSTOMER,
+				userType: "customer",
 			});
 
 			expect(result.isLeft()).toBe(true);

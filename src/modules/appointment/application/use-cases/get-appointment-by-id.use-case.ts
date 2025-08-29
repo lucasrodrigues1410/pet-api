@@ -44,10 +44,8 @@ export class GetAppointmentByIdUseCase {
 		}
 
 		if (
-			(userType === UserType.CUSTOMER &&
-				appointment.clientId.toString() !== userId) ||
-			(userType === UserType.COMPANY &&
-				appointment.companyId.toString() !== companyId)
+			(userType === "customer" && appointment.clientId.toString() !== userId) ||
+			(userType === "company" && appointment.companyId.toString() !== companyId)
 		) {
 			return left(
 				new ResourceNotFoundError(

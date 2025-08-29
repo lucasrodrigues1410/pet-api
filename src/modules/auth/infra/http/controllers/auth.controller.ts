@@ -64,6 +64,7 @@ export class AuthController {
 			name: result.value.name,
 			email: result.value.email,
 			accessToken: result.value.accessToken,
+			avatar: result.value.avatar?.url,
 		};
 	}
 
@@ -124,6 +125,7 @@ export class AuthController {
 			accessToken: result.value.accessToken,
 			staffRole: result.value.staffRole,
 			companyId: result.value.companyId,
+			avatar: result.value.avatar?.url,
 		};
 	}
 

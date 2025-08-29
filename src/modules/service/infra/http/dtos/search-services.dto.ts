@@ -1,5 +1,6 @@
 import { createZodDto } from "nestjs-zod";
 import { z } from "zod";
+import { makePaginatedDto } from "@/shared/utils/pagination";
 import { serviceDto } from "./service.dto";
 
 const request = z.object({
@@ -7,7 +8,7 @@ const request = z.object({
 	location: z
 		.object({
 			latitude: z.number().min(-90).max(90),
-			longitude: z.number().min(-180).max(180),
+			longitude: z.number().min(-180).max(180), 
 			radiusInKm: z.number().min(0.1).max(100).default(10),
 		})
 		.optional(),
@@ -19,15 +20,9 @@ const request = z.object({
 		.optional(),
 });
 
-const response = z.object({
-	...serviceDto.shape,
-	priceRange: z
-		.object({
-			min: z.number(),
-			max: z.number(),
-		})
-		.default({ min: 0, max: 0 }),
-});
+const response = serviceDto;
 
-export class SearchServicesRequestDto extends createZodDto(request) { }
-export class SearchServicesResponseDto extends createZodDto(response) { }
+export class SearchServicesRequestDto extends createZodDto(request) {}
+export class SearchServicesResponseDto extends createZodDto(
+	makePaginatedDto(response),
+) {}

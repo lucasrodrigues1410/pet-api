@@ -11,6 +11,7 @@ const signInResponse = z.object({
 	name: z.string(),
 	email: z.string(),
 	accessToken: z.jwt(),
+	avatar: z.string().optional(),
 });
 
 export class SignInRequestDto extends createZodDto(signInRequest) {}

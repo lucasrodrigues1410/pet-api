@@ -6,7 +6,6 @@ import { UserTypeDecorator } from "@/modules/auth/infra/http/decorators/user-typ
 import { CompanyGuard } from "@/modules/company/infra/http/guards/company.guard";
 import { GetDashboardMetricsUseCase } from "@/modules/dashboard/application/use-cases/get-dashboard-metrics.use-case";
 import { GetDashboardPerformanceUseCase } from "@/modules/dashboard/application/use-cases/get-dashboard-performance.use-case";
-import { UserType } from "@/modules/user/domain/entities/user.entity";
 import { DashboardQueryDto } from "../dtos/dashboard.query.dto";
 import {
 	DashboardMetricsResponse,
@@ -15,7 +14,7 @@ import {
 
 @ApiTags("Dashboard")
 @Controller("dashboard")
-@UserTypeDecorator(UserType.COMPANY)
+@UserTypeDecorator("company")
 @UseGuards(CompanyGuard)
 export class DashboardController {
 	constructor(

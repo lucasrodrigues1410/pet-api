@@ -1,6 +1,5 @@
 import { Injectable } from "@nestjs/common";
 import { SendEmailUseCase } from "@/modules/email/application/use-cases/send-email.use-case";
-import { NotificationChannel } from "../../domain/enums/notification-channel.enum";
 import { NotificationEvent } from "../../domain/events/notification.event";
 
 type Payload = NotificationEvent;
@@ -9,7 +8,7 @@ type Payload = NotificationEvent;
 export class ProcessNotificationUseCase {
 	constructor(private readonly sendEmailUseCase: SendEmailUseCase) {}
 	async execute(params: Payload) {
-		if (params.provider === NotificationChannel.EMAIL) {
+		if (params.provider === "email") {
 			await this.sendEmailUseCase.execute(params);
 		}
 	}

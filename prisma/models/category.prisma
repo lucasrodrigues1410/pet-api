@@ -16,5 +16,5 @@ model Category {
 }
 
 enum ServiceType {
-  PETSHOP
+  petshop
 }

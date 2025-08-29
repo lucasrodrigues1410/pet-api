@@ -1,12 +1,20 @@
 import { createZodDto } from "nestjs-zod";
 import { z } from "zod";
+import { appointmentStatus } from "@/modules/appointment/domain/entities/appointment.entity";
 import { makePaginatedDto } from "@/shared/utils/pagination";
 import { paginationQuerySchema } from "@/shared/utils/pagination-query";
 import { appointmentDto } from "./appointment.dto";
 
 const queryDto = paginationQuerySchema.extend({
-	startDate: z.iso.datetime().optional(),
-	endDate: z.iso.datetime().optional(),
+	startDate: z.iso
+		.date()
+		.optional()
+		.transform((date) => (date ? new Date(date) : undefined)),
+	endDate: z.iso
+		.date()
+		.optional()
+		.transform((date) => (date ? new Date(date) : undefined)),
+	status: z.array(z.enum(appointmentStatus)).optional(),
 });
 
 const responseDto = appointmentDto
@@ -22,10 +30,6 @@ const responseDto = appointmentDto
 		animal: z.object({
 			id: z.string(),
 			name: z.string(),
-			asset: z.object({
-				id: z.string(),
-				url: z.string(),
-			}).optional(),
 			breed: z.object({
 				id: z.string(),
 				name: z.string(),

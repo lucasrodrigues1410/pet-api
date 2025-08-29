@@ -2,11 +2,8 @@ import { Entity } from "@/core/domain/entities/entity";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { Asset } from "@/modules/asset/domain/entities/asset";
 
-export enum UserType {
-	CUSTOMER = "CUSTOMER",
-	COMPANY = "COMPANY",
-	ADMIN = "ADMIN",
-}
+export const userType = ["customer", "company", "admin"] as const;
+export type UserType = (typeof userType)[number];
 
 export interface UserProps {
 	email: string;

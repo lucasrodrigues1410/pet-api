@@ -8,6 +8,8 @@ export interface CompanyProps {
 	contact?: string;
 	description?: string;
 	logo?: Asset;
+	averageRating?: number;
+	ratingCount?: number;
 }
 
 export class Company extends Entity<CompanyProps> {
@@ -29,6 +31,14 @@ export class Company extends Entity<CompanyProps> {
 
 	get logo() {
 		return this.props.logo;
+	}
+
+	get averageRating() {
+		return this.props.averageRating;
+	}
+
+	get ratingCount() {
+		return this.props.ratingCount;
 	}
 
 	public static create(props: CompanyProps, id?: UniqueEntityID): Company {

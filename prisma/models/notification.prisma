@@ -1,6 +1,6 @@
 model Notification {
   id        String    @id @default(cuid())
-  userId    String
+  userId    String    @map("user_id")
   user      User      @relation(fields: [userId], references: [id])
   type      String
   message   String

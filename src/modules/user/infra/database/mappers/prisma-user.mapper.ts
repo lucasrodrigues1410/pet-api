@@ -8,7 +8,9 @@ import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { PrismaAssetMapper } from "@/modules/asset/infra/database/mappers/prisma-asset.mapper";
 
 export class PrismaUserMapper {
-	static toDomain(prismaUser: PrismaUser & { avatar?: PrismaAsset | null | undefined }): User {
+	static toDomain(
+		prismaUser: PrismaUser & { avatar?: PrismaAsset | null | undefined },
+	): User {
 		return User.create(
 			{
 				name: prismaUser.name,

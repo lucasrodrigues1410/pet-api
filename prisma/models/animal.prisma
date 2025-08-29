@@ -8,7 +8,6 @@ model Animal {
   assetId   String?   @map("asset_id")
   birthdate DateTime? @map("birthdate")
   weight    Float?    @db.DoublePrecision
-
   asset       Asset?        @relation(fields: [assetId], references: [id])
   appointment Appointment[] @relation("AnimalAppointments")
 
@@ -18,6 +17,7 @@ model Animal {
 
   @@map("animals")
 }
+
 
 model AnimalType {
   id     String  @id @default(cuid())

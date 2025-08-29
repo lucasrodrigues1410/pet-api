@@ -2,8 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { Prisma } from "prisma/generated/client";
 import { PrismaService } from "@/core/infra/prisma/prisma.service";
 import { PrismaAnimalMapper } from "@/modules/animal/infra/database/mappers/prisma-animal.mapper";
-import { Appointment } from "@/modules/appointment/domain/entities/appointment.entity";
-import { AppointmentStatus } from "@/modules/appointment/domain/enums/appointment.enum";
+import { Appointment, AppointmentStatus } from "@/modules/appointment/domain/entities/appointment.entity";
 import { AppointmentRepository } from "@/modules/appointment/domain/repositories/appointment.repository";
 import { PrismaBreedMapper } from "@/modules/breed/infra/database/mappers/prisma-breed.mapper";
 import { PrismaCompanyMapper } from "@/modules/company/infra/database/mappers/prisma-company.mapper";
@@ -25,11 +24,7 @@ const appointmentDefaultInclude = {
 			avatar: true,
 		},
 	},
-	service: {
-		include: {
-			priceVariation: true,
-		},
-	},
+	service: true,
 } satisfies Prisma.AppointmentInclude;
 
 @Injectable()
@@ -66,6 +61,18 @@ export class PrismaAppointmentRepository implements AppointmentRepository {
 		const filter = {
 			clientId: params.userId,
 		} as Prisma.AppointmentWhereInput;
+
+		if (params.query.startDate) {
+			filter.startDate = { gte: params.query.startDate };
+		}
+
+		if (params.query.endDate) {
+			filter.endDate = { lte: params.query.endDate };
+		}
+
+		if (params.query.status) {
+			filter.status = { in: params.query.status };
+		}
 
 		const appointments = await paginate(
 			({ skip, take }) =>
@@ -106,6 +113,10 @@ export class PrismaAppointmentRepository implements AppointmentRepository {
 
 		if (params.query.endDate) {
 			filter.endDate = { lte: params.query.endDate };
+		}
+
+		if (params.query.status) {
+			filter.status = { in: params.query.status };
 		}
 
 		const { items, meta } = await paginate(

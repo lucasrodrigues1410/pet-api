@@ -11,7 +11,8 @@ model User {
   appointment  Appointment[]
   notification Notification[]
   avatar       Asset?         @relation(fields: [avatarAssetId], references: [id], onDelete: Cascade)
-
+  ratings      Rating[]
+  
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @updatedAt @map("updated_at")
   deletedAt DateTime? @map("deleted_at")
@@ -21,7 +22,7 @@ model User {
 }
 
 enum UserType {
-  CUSTOMER
-  COMPANY
-  ADMIN
+  customer
+  company
+  admin
 }

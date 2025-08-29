@@ -2,16 +2,14 @@ import { Injectable } from "@nestjs/common";
 import { addMinutes } from "date-fns";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { AnimalRepository } from "@/modules/animal/domain/repositories/animal.repository";
-import { CoatType } from "@/modules/appointment/domain/enums/appointment.enum";
-import { PriceCalculator } from "@/modules/price-variation/application/services/price-calculator.service";
-import { VariationType } from "@/modules/price-variation/domain/entities/price-variation.entity";
 import { ServiceRepository } from "@/modules/service/domain/repositories/service.repository";
 import { Either, left, right } from "@/shared/either";
 import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
-import { Appointment } from "../../../appointment/domain/entities/appointment.entity";
+import { Appointment, CoatType } from "../../../appointment/domain/entities/appointment.entity";
 import { AppointmentRepository } from "../../../appointment/domain/repositories/appointment.repository";
 import { TimeSlotUnavailableError } from "../errors/time-slot-unavailable.error";
 import { AppointmentAvailabilityService } from "../services/appointment-availability.service";
+import { RulesExecutionService } from "../services/rules-execution.service";
 
 interface AppointmentBookingUseCaseRequest {
 	serviceId: string;
@@ -33,7 +31,7 @@ export class AppointmentBookingUseCase {
 	constructor(
 		private readonly appointmentAvailabilityService: AppointmentAvailabilityService,
 		private readonly serviceRepository: ServiceRepository,
-		private readonly priceCalculator: PriceCalculator,
+		private readonly rulesExecution: RulesExecutionService,
 		private readonly animalRepository: AnimalRepository,
 		private readonly appointmentRepository: AppointmentRepository,
 	) {}
@@ -45,36 +43,57 @@ export class AppointmentBookingUseCase {
 		date,
 		coatType,
 	}: AppointmentBookingUseCaseRequest): Promise<AppointmentBookingUseCaseResponse> {
-		// Valida existência do serviço
-		const service = await this.serviceRepository.findById(serviceId);
+		const [service, animal] = await Promise.all([
+			this.serviceRepository.findById(serviceId),
+			this.animalRepository.findById(animalId),
+		]);
 		if (!service) {
 			return left(new ResourceNotFoundError("Serviço não encontrado"));
 		}
-
-		// Valida existência do animal
-		const animal = await this.animalRepository.findById(animalId);
 		if (!animal) {
 			return left(new ResourceNotFoundError("Animal não encontrado"));
 		}
 
+		// Validações de negócio básicas
+		if (!service.isActive) {
+			return left(new TimeSlotUnavailableError("Serviço inativo"));
+		}
+
 		const startDate = new Date(date);
-		const serviceDuration = service.duration || 0;
-		const endDate = addMinutes(startDate, serviceDuration);
+		const now = new Date();
+		if (startDate <= now) {
+			return left(new TimeSlotUnavailableError("Data passada não permitida"));
+		}
+
+		// Alinhação simples do slot: múltiplos de 5 minutos
+		if (startDate.getMinutes() % 5 !== 0) {
+			return left(new TimeSlotUnavailableError("Horário inválido (não alinhado ao slot)"));
+		}
+
+		// Calcula variação de preço
+		const ruleExecutionResult = await this.rulesExecution.execute(
+			animal,
+			service.rules || [],
+		);
+
+		const basePrice = service.price;
+		const priceAdjustment = ruleExecutionResult?.price ?? 0;
+		const totalPrice = basePrice + priceAdjustment;
+
+		const baseDurationMinutes = service.duration;
+		const finalDurationMinutes = baseDurationMinutes;
+
+		const endDate = addMinutes(startDate, finalDurationMinutes);
 
 		// Verifica se o horário está disponível
 		const available = await this.appointmentAvailabilityService.getAvailability(
 			service.companyId.toString(),
 			startDate,
-			serviceDuration,
+			finalDurationMinutes,
 		);
 		if (!available.isValid || !available.staffChoiced) {
 			return left(new TimeSlotUnavailableError("Horário indisponível"));
 		}
-
-		// Calcula variação de preço
-		const price = await this.priceCalculator.calculate(service.id.toString(), [
-			{ type: VariationType.SIZE, value: animal.weight ?? 0 },
-		]);
 
 		const appointmentIntent = Appointment.create({
 			serviceId: new UniqueEntityID(serviceId),
@@ -84,7 +103,7 @@ export class AppointmentBookingUseCase {
 			companyId: service.companyId,
 			startDate,
 			endDate,
-			price: price + (service.priceRange?.min ?? 0),
+			price: totalPrice,
 			coatType,
 		});
 

@@ -23,11 +23,6 @@ export class PrismaServiceRepository implements ServiceRepository {
 						category: true,
 					},
 				},
-				priceVariation: {
-					select: {
-						price: true,
-					},
-				},
 			},
 		});
 
@@ -35,21 +30,12 @@ export class PrismaServiceRepository implements ServiceRepository {
 			return undefined;
 		}
 
-		var service = Object.assign(
-			PrismaServiceMapper.toDomain({
-				...result,
-				maxPrice: result.priceVariation.reduce(
-					(sum, v) => sum + v.price.toNumber(),
-					0,
-				),
-			}),
-			{
-				company: PrismaCompanyMapper.toDomain(result.company),
-				categories: result.categories.map((category) =>
-					PrismaCategoryMapper.toDomain(category.category),
-				),
-			},
-		);
+		var service = Object.assign(PrismaServiceMapper.toDomain(result), {
+			company: PrismaCompanyMapper.toDomain(result.company),
+			categories: result.categories.map((category) =>
+				PrismaCategoryMapper.toDomain(category.category),
+			),
+		});
 
 		return service;
 	}
@@ -64,23 +50,10 @@ export class PrismaServiceRepository implements ServiceRepository {
 	async findByCompanyId(companyId: string) {
 		const result = await this.prismaService.service.findMany({
 			where: { companyId },
-			include: {
-				priceVariation: {
-					select: {
-						price: true,
-					},
-				},
-			},
 		});
 
 		return result.map((service) =>
-			PrismaServiceMapper.toDomain({
-				...service,
-				maxPrice: service.priceVariation.reduce(
-					(sum, v) => sum + v.price.toNumber(),
-					0,
-				),
-			}),
+			PrismaServiceMapper.toDomain(service),
 		);
 	}
 
@@ -153,11 +126,6 @@ export class PrismaServiceRepository implements ServiceRepository {
 								category: true,
 							},
 						},
-						priceVariation: {
-							select: {
-								price: true,
-							},
-						},
 					},
 					orderBy: { createdAt: "desc" },
 					skip,
@@ -171,13 +139,7 @@ export class PrismaServiceRepository implements ServiceRepository {
 		);
 
 		const servicesWithRelations = items.map((service) => {
-			const serviceEntity = PrismaServiceMapper.toDomain({
-				...service,
-				maxPrice: service.priceVariation.reduce(
-					(sum, v) => sum + v.price.toNumber(),
-					0,
-				),
-			});
+			const serviceEntity = PrismaServiceMapper.toDomain(service);
 			const company = PrismaCompanyMapper.toDomain(service.company);
 			const categories = service.categories.map(({ category }) =>
 				PrismaCategoryMapper.toDomain(category),

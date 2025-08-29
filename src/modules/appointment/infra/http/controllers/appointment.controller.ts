@@ -18,9 +18,8 @@ import { UpdateAppointmentStatusUseCase } from "@/modules/appointment/applicatio
 import { User } from "@/modules/auth/infra/http/decorators/user.decorator";
 import { UserTypeDecorator } from "@/modules/auth/infra/http/decorators/user-type.decorator";
 import { CompanyGuard } from "@/modules/company/infra/http/guards/company.guard";
-import { UserType } from "@/modules/user/domain/entities/user.entity";
-import { PaginationQueryDto } from "@/shared/utils/pagination-query";
-import { AppointmentsByClientResponseDto } from "../dtos/appointment-by-client.dto";
+import type { UserType } from "@/modules/user/domain/entities/user.entity";
+import { AppointmentsByClientQueryDto, AppointmentsByClientResponseDto } from "../dtos/appointment-by-client.dto";
 import {
 	AppointmentsByCompanyQueryDto,
 	AppointmentsByCompanyResponseDto,
@@ -44,7 +43,7 @@ export class AppointmentController {
 	@Get(":id")
 	@ApiOperation({ summary: "Retorna um agendamento pelo ID" })
 	@ZodResponse({ type: AppointmentByIdResponseDto })
-	@UserTypeDecorator(UserType.CUSTOMER, UserType.COMPANY)
+	@UserTypeDecorator("customer", "company")
 	async getAppointmentById(
 		@Param("id") id: string,
 		@User("sub") userId: string,
@@ -76,7 +75,7 @@ export class AppointmentController {
 	@Get("/company/:companyId")
 	@ApiOperation({ summary: "Retorna todos os agendamentos da empresa" })
 	@ZodResponse({ status: 200, type: AppointmentsByCompanyResponseDto })
-	@UserTypeDecorator(UserType.COMPANY)
+	@UserTypeDecorator("company")
 	@UseGuards(CompanyGuard)
 	async getAllCompanyAppointments(
 		@Param("companyId") companyId: string,
@@ -84,11 +83,7 @@ export class AppointmentController {
 	) {
 		const response = await this.getAppointmentByCompanyIdUseCase.execute({
 			companyId,
-			query: {
-				...query,
-				startDate: query.startDate ? new Date(query.startDate) : undefined,
-				endDate: query.endDate ? new Date(query.endDate) : undefined,
-			},
+			query,
 		});
 
 		if (response.isLeft()) {
@@ -114,10 +109,10 @@ export class AppointmentController {
 	@Get("/user")
 	@ApiOperation({ summary: "Retorna todos os agendamentos do cliente" })
 	@ZodResponse({ status: 200, type: AppointmentsByClientResponseDto })
-	@UserTypeDecorator(UserType.CUSTOMER)
+	@UserTypeDecorator("customer")
 	async getAllAppointments(
 		@User("sub") userId: string,
-		@Query() query: PaginationQueryDto,
+		@Query() query: AppointmentsByClientQueryDto,
 	) {
 		const response = await this.getAppointmentByUserIdUseCase.execute({
 			userId,
@@ -143,7 +138,7 @@ export class AppointmentController {
 	@Patch(":id/status")
 	@ApiOperation({ summary: "Atualiza o status de um agendamento" })
 	@ZodResponse({ status: 200, type: UpdateAppointmentStatusResponseDto })
-	@UserTypeDecorator(UserType.CUSTOMER, UserType.COMPANY)
+	@UserTypeDecorator("customer", "company")
 	async updateAppointmentStatus(
 		@Param("id") appointmentId: string,
 		@Body() updateStatusDto: UpdateAppointmentStatusDto,

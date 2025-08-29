@@ -1,6 +1,5 @@
 import { Animal } from "@/modules/animal/domain/entities/animal.entity";
-import { Appointment } from "@/modules/appointment/domain/entities/appointment.entity";
-import { AppointmentStatus } from "@/modules/appointment/domain/enums/appointment.enum";
+import { Appointment, AppointmentStatus } from "@/modules/appointment/domain/entities/appointment.entity";
 import { AppointmentRepository } from "@/modules/appointment/domain/repositories/appointment.repository";
 import { Breed } from "@/modules/breed/domain/entities/breed.entity";
 import { Company } from "@/modules/company/domain/entities/company.entity";

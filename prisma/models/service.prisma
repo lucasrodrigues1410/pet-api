@@ -10,10 +10,13 @@ model Service {
   capacity       Int?
   createdAt      DateTime                @default(now()) @map("created_at")
   updatedAt      DateTime                @updatedAt @map("updated_at")
+  rules          Json?
+  rulesPrompt    String? @map("rules_prompt")
+
   company        Company                 @relation(fields: [companyId], references: [id])
   appointments   Appointment[]
   categories     ServiceCategory[]
-  priceVariation ServicePriceVariation[]
+  promotions     ServicePromotion[]
 
   @@map("services")
 }
@@ -27,4 +30,32 @@ model ServiceCategory {
 
   @@id([serviceId, categoryId])
   @@map("service_categories")
+}
+
+model ServicePromotion {
+  serviceId String @map("service_id")
+  promotionId String @map("promotion_id")
+  service Service @relation(fields: [serviceId], references: [id])
+  promotion Promotion @relation(fields: [promotionId], references: [id])
+
+  @@id([serviceId, promotionId])
+  @@map("service_promotions")
+}
+
+model Promotion {
+  id String @id @default(cuid())
+  name String
+  description String?
+  discount Decimal @db.Decimal(10, 2)
+  startDate DateTime @map("start_date")
+  endDate DateTime @map("end_date")
+  isActive Boolean @default(true) @map("is_active")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  servicePromotions ServicePromotion[]
+
+  @@map("promotions")
 }

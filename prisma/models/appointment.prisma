@@ -1,16 +1,16 @@
 model Appointment {
   id        String            @id @default(cuid())
-  startDate DateTime
-  endDate   DateTime
-  status    AppointmentStatus @default(SCHEDULED)
+  startDate DateTime          @map("start_date")
+  endDate   DateTime          @map("end_date")
+  status    AppointmentStatus @default(scheduled)
   price     Decimal           @db.Decimal(10, 2)
-  coatType  CoatType
+  coatType  CoatType          @map("coat_type")
 
-  animalId  String
-  serviceId String
-  staffId   String
-  clientId  String
-  companyId String
+  animalId  String            @map("animal_id")
+  serviceId String            @map("service_id")
+  staffId   String            @map("staff_id")
+  clientId  String            @map("client_id")
+  companyId String            @map("company_id")
 
   animal  Animal      @relation("AnimalAppointments", fields: [animalId], references: [id], onDelete: Cascade)
   service Service     @relation(fields: [serviceId], references: [id], onDelete: Restrict)
@@ -18,25 +18,26 @@ model Appointment {
   client  User        @relation(fields: [clientId], references: [id], onDelete: Restrict)
   company Company     @relation(fields: [companyId], references: [id], onDelete: Restrict)
 
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
 
   @@index([animalId])
   @@index([status])
 }
 
 enum AppointmentStatus {
-  SCHEDULED
-  CONFIRMED
-  IN_PROGRESS
-  COMPLETED
-  NO_SHOW
-  CANCELED
+  scheduled
+  confirmed
+  in_progress
+  completed
+  no_show
+  canceled
 }
 
 enum CoatType {
-  SHORT
-  MEDIUM
-  LONG
+  short
+  medium
+  long
+  curly
 }

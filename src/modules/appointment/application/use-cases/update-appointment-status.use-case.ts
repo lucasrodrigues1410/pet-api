@@ -1,11 +1,12 @@
 import { Injectable } from "@nestjs/common";
+import { CommandBus } from "@nestjs/cqrs";
 import { DomainError } from "@/core/domain/errors/domain-error";
+import { SendClientAppointmentChangeStatusNotificationCommand } from "@/modules/notification/application/commands/send-appointment-change-status.handler";
 import { UserType } from "@/modules/user/domain/entities/user.entity";
 import { Either, left, right } from "@/shared/either";
 import { NotAllowedError } from "@/shared/errors/errors/not-allowed.error";
 import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
-import { Appointment } from "../../domain/entities/appointment.entity";
-import { AppointmentStatus } from "../../domain/enums/appointment.enum";
+import { Appointment, AppointmentStatus } from "../../domain/entities/appointment.entity";
 import { AppointmentRepository } from "../../domain/repositories/appointment.repository";
 
 type UpdateAppointmentStatusUseCaseInput = {
@@ -13,7 +14,7 @@ type UpdateAppointmentStatusUseCaseInput = {
 	newStatus: AppointmentStatus;
 	userId: string;
 	userType: UserType;
-	companyId?: string; // Para usuários empresa
+	companyId?: string;
 };
 
 type UpdateAppointmentStatusUseCaseOutput = Either<
@@ -23,7 +24,10 @@ type UpdateAppointmentStatusUseCaseOutput = Either<
 
 @Injectable()
 export class UpdateAppointmentStatusUseCase {
-	constructor(private readonly appointmentRepository: AppointmentRepository) {}
+	constructor(
+		private readonly appointmentRepository: AppointmentRepository,
+		private readonly commandBus: CommandBus,
+	) {}
 
 	async execute({
 		appointmentId,
@@ -60,12 +64,24 @@ export class UpdateAppointmentStatusUseCase {
 
 		try {
 			// Atualizar status usando as regras de domínio
-			const isCompany = userType === UserType.COMPANY;
-			appointment.updateStatus(newStatus, isCompany);
+			appointment.updateStatus(newStatus, userType === "company");
 
 			// Persistir alteração
 			await this.appointmentRepository.updateStatus(appointmentId, newStatus);
 
+			this.commandBus.execute(
+				new SendClientAppointmentChangeStatusNotificationCommand({
+					appointmentStatus: appointment.status,
+					userName: appointment.client.name,
+					userEmail: appointment.client.email,
+					petName: appointment.animal.name,
+					serviceName: appointment.service.name,
+					providerName: appointment.company.name,
+					appointmentId: appointmentId,
+					clientId: appointment.clientId.toString(),
+					updatedOn: new Date(),
+				}),
+			);
 			return right(appointment);
 		} catch (error) {
 			if (error instanceof DomainError) {
@@ -81,11 +97,11 @@ export class UpdateAppointmentStatusUseCase {
 		userType: UserType,
 		companyId?: string,
 	): boolean {
-		if (userType === UserType.CUSTOMER) {
+		if (userType === "customer") {
 			return appointment.clientId.toString() === userId;
 		}
 
-		if (userType === UserType.COMPANY) {
+		if (userType === "company") {
 			return appointment.companyId.toString() === companyId;
 		}
 

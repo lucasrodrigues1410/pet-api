@@ -23,7 +23,7 @@ describe("Get a service", () => {
 			service: expect.objectContaining({
 				name: service.name,
 				description: service.description,
-				priceRange: service.priceRange,
+				price: service.price,
 				companyId: service.companyId,
 			}),
 		});

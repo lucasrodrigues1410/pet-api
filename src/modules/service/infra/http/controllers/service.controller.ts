@@ -16,9 +16,8 @@ import { ZodResponse } from "nestjs-zod";
 import { Public } from "@/modules/auth/infra/http/decorators/public.decorator";
 import { UserTypeDecorator } from "@/modules/auth/infra/http/decorators/user-type.decorator";
 import { CompanyGuard } from "@/modules/company/infra/http/guards/company.guard";
-import { StaffRole } from "@/modules/staff/domain/entities/staff.entity";
+import { TranslateRulesUseCase } from "@/modules/service/application/use-cases/translate-rules.use-case";
 import { StaffRoles } from "@/modules/staff/infra/decorators/staff-roles.decorator";
-import { UserType } from "@/modules/user/domain/entities/user.entity";
 import { PaginationQueryDto } from "@/shared/utils/pagination-query";
 import { DeactivateServiceUseCase } from "../../../application/use-cases/deactivate-service.use-case";
 import { GetServiceByIdUseCase } from "../../../application/use-cases/get-service-by-id.use-case";
@@ -36,6 +35,7 @@ export class ServiceController {
 		private readonly listServicesByCompanyUseCase: ListServicesByCompanyUseCase,
 		private readonly deactivateServiceUseCase: DeactivateServiceUseCase,
 		private readonly searchServicesUseCase: SearchServicesUseCase,
+		private readonly translateRulesUseCase: TranslateRulesUseCase,
 	) {}
 
 	@Get("/:id")
@@ -52,8 +52,8 @@ export class ServiceController {
 
 		return {
 			...service,
-			categories: result.value.service.categories.map((c) => c.toObject()),
 			company: result.value.service.company.toObject(),
+			categories: result.value.service.categories.map((c) => c.toObject()),
 		};
 	}
 
@@ -100,8 +100,8 @@ export class ServiceController {
 	@Patch("/:id/company/:companyId/deactivate")
 	@HttpCode(204)
 	@ApiOperation({ summary: "Inativar serviço da empresa" })
-	@UserTypeDecorator(UserType.COMPANY)
-	@StaffRoles(StaffRole.ADMIN, StaffRole.MANAGER)
+	@UserTypeDecorator("company")
+	@StaffRoles("admin", "manager")
 	@UseGuards(CompanyGuard)
 	async deactivateService(
 		@Param("id") id: string,
@@ -115,5 +115,20 @@ export class ServiceController {
 		if (result.isLeft()) {
 			throw new NotFoundException(result.value.message);
 		}
+	}
+
+	@Post("rules/translate")
+	@Public()
+	@ApiOperation({ summary: "Traduzir regras de serviço" })
+	async translateRules(@Body() body: { rules: string }) {
+		if (!body.rules) {
+			throw new BadRequestException("Rules are required");
+		}
+
+		const result = await this.translateRulesUseCase.execute({
+			rules: body.rules,
+		});
+
+		return result;
 	}
 }

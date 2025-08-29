@@ -45,6 +45,7 @@ export class SignInUseCase {
 			name: user.name,
 			email: user.email,
 			type: user.type,
+			avatar: user.avatar?.url,
 		});
 
 		return right(Object.assign(user, { accessToken }));
