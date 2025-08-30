@@ -1,7 +1,7 @@
 {
 	"name": "pet-api-nest",
-	"version": "0.0.1",
-	"description": "",
+	"version": "1.0.0",
+	"description": "API de Cuidados com Animais",
 	"author": "",
 	"private": true,
 	"license": "UNLICENSED",
