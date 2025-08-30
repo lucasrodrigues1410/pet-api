@@ -24,6 +24,12 @@ model Appointment {
 
   @@index([animalId])
   @@index([status])
+  @@index([companyId, startDate])
+  @@index([clientId, status])
+  @@index([serviceId, startDate])
+  @@index([startDate, endDate])
+  @@index([staffId, startDate])
+  @@index([deletedAt])
 }
 
 enum AppointmentStatus {

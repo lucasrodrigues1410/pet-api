@@ -9,5 +9,7 @@ model Rating {
   company Company @relation(fields: [companyId], references: [id])
   user    User    @relation(fields: [userId], references: [id])
 
+  @@unique([userId, companyId])
+  @@index([companyId, createdAt])
   @@map("ratings")
 }

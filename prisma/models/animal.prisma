@@ -15,6 +15,8 @@ model Animal {
   updatedAt DateTime  @updatedAt @map("updated_at")
   deletedAt DateTime? @map("deleted_at")
 
+  @@index([userId, deletedAt])
+  @@index([breedId])
   @@map("animals")
 }
 

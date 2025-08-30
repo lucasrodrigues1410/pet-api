@@ -9,5 +9,7 @@ model Notification {
   updatedAt DateTime? @updatedAt @map("updated_at")
 
   @@index([userId], name: "idx_notification_user_id")
+  @@index([userId, read, createdAt])
+  @@index([type, createdAt])
   @@map("notifications")
 }

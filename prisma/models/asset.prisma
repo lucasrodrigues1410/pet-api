@@ -19,5 +19,6 @@ model Asset {
   user         User[]
 
   @@index([url])
+  @@index([userId, deletedAt])
   @@map("assets")
 }

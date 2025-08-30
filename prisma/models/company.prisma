@@ -21,6 +21,7 @@ model Company {
   appointment                  Appointment[]
   logo                         Asset?                         @relation(fields: [logoAssetId], references: [id])
 
+  @@index([deletedAt])
   @@map("companies")
 }
 
@@ -35,6 +36,7 @@ model UserCompany {
   appointment Appointment[]
 
   @@unique([userId, companyId])
+  @@index([companyId, role])
   @@map("user_companies")
 }
 

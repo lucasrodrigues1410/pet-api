@@ -19,6 +19,8 @@ model Service {
   promotions       ServicePromotion[]
   priceAdjustments PriceAdjustment[]
 
+  @@index([companyId, isActive])
+  @@index([isActive])
   @@map("services")
 }
 
@@ -58,5 +60,7 @@ model Promotion {
 
   servicePromotions ServicePromotion[]
 
+  @@index([deletedAt])
+  @@index([isActive, startDate, endDate])
   @@map("promotions")
 }

@@ -20,6 +20,8 @@ model CompanyAvailability {
   updatedAt      DateTime  @updatedAt @map("updated_at")
   company        Company   @relation(fields: [companyId], references: [id])
 
+  @@index([companyId, day])
+  @@unique([companyId, day])
   @@map("company_availabilities")
 }
 
@@ -33,5 +35,6 @@ model CompanyAvailabilityException {
   updatedAt DateTime @updatedAt @map("updated_at")
   company   Company  @relation(fields: [companyId], references: [id])
 
+  @@index([companyId, startDate, endDate])
   @@map("company_availability_exceptions")
 }

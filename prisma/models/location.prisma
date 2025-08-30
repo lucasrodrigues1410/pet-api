@@ -14,17 +14,21 @@ model Location {
   updatedAt       DateTime          @updatedAt @map("updated_at")
   companyLocation CompanyLocation[]
 
+  @@index([city, state])
+  @@index([latitude, longitude])
   @@map("locations")
 }
 
 model CompanyLocation {
-  id         Int       @id @default(autoincrement())
-  companyId  Int
+  id         String    @id @default(cuid())
+  companyId  String    @map("company_id")
   location   Location  @relation(fields: [locationId], references: [id])
-  locationId Int
+  locationId Int       @map("location_id")
   createdAt  DateTime  @default(now()) @map("created_at")
   updatedAt  DateTime  @updatedAt @map("updated_at")
-  company    Company[]
+  company    Company   @relation(fields: [companyId], references: [id])
 
+  @@index([companyId])
+  @@index([locationId])
   @@map("company_locations")
 }
