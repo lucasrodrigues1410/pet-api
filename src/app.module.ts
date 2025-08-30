@@ -29,6 +29,7 @@ import { UserModule } from "./modules/user/user.module";
 		ConfigModule.forRoot({
 			isGlobal: true,
 			validate: (env) => envSchema.parse(env),
+			cache: true,
 		}),
 		CqrsModule.forRoot(),
 		EnvModule,

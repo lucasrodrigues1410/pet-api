@@ -15,6 +15,7 @@ import { EnvService } from "../env/env.service";
 					retryDelayOnFailover: 100,
 					enableReadyCheck: false,
 					maxLoadingTimeout: 0,
+					lazyConnect: true,
 				},
 				defaultJobOptions: {
 					removeOnComplete: 100,
@@ -24,6 +25,7 @@ import { EnvService } from "../env/env.service";
 						type: "exponential",
 						delay: 1000,
 					},
+					ttl: 24 * 60 * 60 * 1000,
 				},
 			}),
 		}),

@@ -19,7 +19,6 @@ import { JwtStrategy } from "./infra/strategies/jwt.strategy";
 	imports: [
 		JwtModule.registerAsync({
 			inject: [EnvService],
-			global: true,
 			useFactory: async (env: EnvService) => ({
 				secret: env.get("JWT_SECRET")!,
 			}),
@@ -29,7 +28,6 @@ import { JwtStrategy } from "./infra/strategies/jwt.strategy";
 	],
 	controllers: [AuthController],
 	providers: [
-		EnvService,
 		JwtStrategy,
 		SignInUseCase,
 		SignUpUseCase,
