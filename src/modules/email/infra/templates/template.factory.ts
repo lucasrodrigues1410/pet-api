@@ -3,22 +3,32 @@ import type { ITemplateFactory } from "../../domain/interfaces/template-factory"
 import { TemplateVariablesMap } from "../../domain/templates/template-variables-map";
 
 export class TemplateFactory implements ITemplateFactory {
-	private templates = new Map<string, EmailTemplate<any>>();
+	private templates = new Map<keyof TemplateVariablesMap, EmailTemplate<any>>();
 
-	register<T extends Record<string, unknown>>(
-		templateName: keyof TemplateVariablesMap,
-		template: EmailTemplate<T>,
+	register<K extends keyof TemplateVariablesMap>(
+		templateName: K,
+		template: EmailTemplate<TemplateVariablesMap[K]>,
 	): void {
 		this.templates.set(templateName, template);
 	}
 
-	get<T extends Record<string, unknown>>(
-		templateName: string,
-	): EmailTemplate<T> {
+	get<K extends keyof TemplateVariablesMap>(
+		templateName: K,
+	): EmailTemplate<TemplateVariablesMap[K]> {
 		const template = this.templates.get(templateName);
 		if (!template) {
 			throw new Error(`Template ${templateName} not found`);
 		}
-		return template as EmailTemplate<T>;
+		return template as EmailTemplate<TemplateVariablesMap[K]>;
+	}
+
+	// Método auxiliar para obter todas as chaves disponíveis
+	getAvailableTemplates(): (keyof TemplateVariablesMap)[] {
+		return Array.from(this.templates.keys());
+	}
+
+	// Método para verificar se um template existe
+	hasTemplate(templateName: keyof TemplateVariablesMap): boolean {
+		return this.templates.has(templateName);
 	}
 }

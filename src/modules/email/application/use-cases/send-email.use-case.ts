@@ -4,11 +4,14 @@ import type {
 	ISendMailOptions,
 } from "../../domain/interfaces/email-service";
 import type { ITemplateFactory } from "../../domain/interfaces/template-factory";
+import { TemplateVariablesMap } from "../../domain/templates/template-variables-map";
 
-interface SendEmailUseCaseInput {
-	templateKey: string;
+interface SendEmailUseCaseInput<
+	K extends keyof TemplateVariablesMap = keyof TemplateVariablesMap,
+> {
+	templateKey: K;
 	target: string;
-	variables: Record<string, unknown>;
+	variables: TemplateVariablesMap[K];
 }
 
 @Injectable()
@@ -21,7 +24,9 @@ export class SendEmailUseCase {
 		private readonly emailService: IEmailService,
 	) {}
 
-	async execute(params: SendEmailUseCaseInput): Promise<void> {
+	async execute<K extends keyof TemplateVariablesMap>(
+		params: SendEmailUseCaseInput<K>,
+	): Promise<void> {
 		const template = this.templateFactory.get(params.templateKey);
 		const html = await template.render(params.variables);
 
@@ -30,6 +35,12 @@ export class SendEmailUseCase {
 			subject: template.subject,
 			html,
 		};
+
 		await this.emailService.sendMail(mailOptions);
+	}
+
+	// Método auxiliar para verificar templates disponíveis
+	getAvailableTemplates(): (keyof TemplateVariablesMap)[] {
+		return this.templateFactory.getAvailableTemplates();
 	}
 }

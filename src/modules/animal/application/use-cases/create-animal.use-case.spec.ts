@@ -12,9 +12,7 @@ describe("Create Animal", () => {
 	beforeEach(() => {
 		inMemoryAnimalRepository = new InMemoryAnimalRepository();
 
-		sut = new CreateAnimalUseCase(
-			inMemoryAnimalRepository,
-		);
+		sut = new CreateAnimalUseCase(inMemoryAnimalRepository);
 	});
 
 	it("should create an animal", async () => {

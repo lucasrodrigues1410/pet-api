@@ -15,20 +15,21 @@ export class JwtGuard extends AuthGuard("jwt") {
 
 	private metadataCache: Map<string, { isPublic: boolean }> = new Map();
 
-	
 	async canActivate(context: ExecutionContext) {
 		const handler = context.getHandler();
 		const cacheKey = handler.name;
-		
+
 		if (!this.metadataCache.has(cacheKey)) {
-		  const isPublic = this.reflector.getAllAndOverride("isPublic", [
-			handler,
-			context.getClass(),
-		  ]);
-		  this.metadataCache.set(cacheKey, { isPublic });
+			const isPublic = this.reflector.getAllAndOverride("isPublic", [
+				handler,
+				context.getClass(),
+			]);
+			this.metadataCache.set(cacheKey, { isPublic });
 		}
-		
-		const { isPublic } = this.metadataCache.get(cacheKey) as { isPublic: boolean };
+
+		const { isPublic } = this.metadataCache.get(cacheKey) as {
+			isPublic: boolean;
+		};
 		if (isPublic) return true;
 
 		// Executa o AuthGuard padrão para validação do token

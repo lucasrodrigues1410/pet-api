@@ -52,7 +52,7 @@ export class CreateServiceUseCase {
 			rulesPrompt: data.rules,
 			companyId: new UniqueEntityID(data.companyId),
 		});
-		
+
 		await this.serviceRepository.create(service, data.categoryIds);
 		return right(undefined);
 	}

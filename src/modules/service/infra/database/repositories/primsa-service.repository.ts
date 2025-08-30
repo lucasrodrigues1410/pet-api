@@ -17,14 +17,15 @@ export class PrismaServiceRepository implements ServiceRepository {
 		await this.prismaService.service.create({
 			data: {
 				...PrismaServiceMapper.toPrisma(service),
-				...(categoryIds && categoryIds.length > 0 && {
-					categories: {
-						create: categoryIds.map(categoryId => ({
-							categoryId,
-							assignedAt: new Date()
-						}))
-					}
-				})
+				...(categoryIds &&
+					categoryIds.length > 0 && {
+						categories: {
+							create: categoryIds.map((categoryId) => ({
+								categoryId,
+								assignedAt: new Date(),
+							})),
+						},
+					}),
 			},
 		});
 	}

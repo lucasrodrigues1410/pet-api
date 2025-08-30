@@ -117,27 +117,17 @@ export class PrismaDashboardRepository implements DashboardRepository {
 		// Performance de agendamentos da semana
 		const [scheduledAppointments, completedAppointments] = await Promise.all([
 			this.getAppointmentsByStatus(companyId, weekStart, weekEnd, undefined),
-			this.getAppointmentsByStatus(
-				companyId,
-				weekStart,
-				weekEnd,
-				'completed',
-			),
+			this.getAppointmentsByStatus(companyId, weekStart, weekEnd, "completed"),
 		]);
 
 		// Taxa de conversão (simulada - agendamentos confirmados vs agendados)
 		const [confirmedThisWeek, confirmedPreviousWeek] = await Promise.all([
-			this.getAppointmentsByStatus(
-				companyId,
-				weekStart,
-				weekEnd,
-				'confirmed',
-			),
+			this.getAppointmentsByStatus(companyId, weekStart, weekEnd, "confirmed"),
 			this.getAppointmentsByStatus(
 				companyId,
 				previousWeekStart,
 				previousWeekEnd,
-				'confirmed',
+				"confirmed",
 			),
 		]);
 
@@ -211,7 +201,7 @@ export class PrismaDashboardRepository implements DashboardRepository {
 					gte: startDate,
 					lte: endDate,
 				},
-				status: 'completed',
+				status: "completed",
 				deletedAt: null,
 			},
 			_sum: {
@@ -313,7 +303,7 @@ export class PrismaDashboardRepository implements DashboardRepository {
 				},
 			}),
 		]);
-	
+
 		// Calcula média dos últimos 30 dias
 		const currentRating =
 			ratingsLast30Days.length > 0

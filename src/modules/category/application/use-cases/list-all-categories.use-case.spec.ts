@@ -44,9 +44,9 @@ describe("List All Categories Use Case", () => {
 
 	it("should return single category when only one exists", async () => {
 		// Arrange
-		const category = makeCategory({ 
+		const category = makeCategory({
 			name: "Pet Shop",
-			description: "Categoria para produtos de pet shop" 
+			description: "Categoria para produtos de pet shop",
 		});
 		inMemoryCategoryRepository.items = [category];
 
@@ -62,10 +62,10 @@ describe("List All Categories Use Case", () => {
 
 	it("should maintain category properties correctly", async () => {
 		// Arrange
-		const category = makeCategory({ 
+		const category = makeCategory({
 			name: "Serviços Médicos",
 			type: "petshop",
-			description: "Serviços veterinários e médicos"
+			description: "Serviços veterinários e médicos",
 		});
 		inMemoryCategoryRepository.items = [category];
 

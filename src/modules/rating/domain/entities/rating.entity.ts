@@ -30,7 +30,10 @@ export class Rating extends Entity<RatingProps> {
 		return this.props.createdAt;
 	}
 
-	public static create(props: Omit<RatingProps, "createdAt"> & { createdAt?: Date }, id?: UniqueEntityID): Rating {
+	public static create(
+		props: Omit<RatingProps, "createdAt"> & { createdAt?: Date },
+		id?: UniqueEntityID,
+	): Rating {
 		return new Rating(
 			{
 				...props,
