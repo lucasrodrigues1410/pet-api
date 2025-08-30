@@ -10,7 +10,7 @@ export const daysOfWeek = [
 	"thursday",
 	"friday",
 	"saturday",
-];
+] as const;
 export type DaysOfWeek = (typeof daysOfWeek)[number];
 
 export interface CompanyAvailabilityProps {

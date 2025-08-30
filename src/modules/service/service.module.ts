@@ -1,4 +1,6 @@
 import { Module } from "@nestjs/common";
+import { CompanyModule } from "../company/company.module";
+import { CreateServiceUseCase } from "./application/use-cases/create-service.use-case";
 import { DeactivateServiceUseCase } from "./application/use-cases/deactivate-service.use-case";
 import { GetServiceByIdUseCase } from "./application/use-cases/get-service-by-id.use-case";
 import { ListServicesByCompanyUseCase } from "./application/use-cases/list-services-by-company.use-case";
@@ -11,6 +13,7 @@ import { ServiceController } from "./infra/http/controllers/service.controller";
 import { GoogleAIRulesTranslatorRepository } from "./infra/repositories/google-ai-rules-translator.repository";
 
 @Module({
+	imports: [CompanyModule],
 	controllers: [ServiceController],
 	providers: [
 		ListServicesByCompanyUseCase,
@@ -18,6 +21,7 @@ import { GoogleAIRulesTranslatorRepository } from "./infra/repositories/google-a
 		DeactivateServiceUseCase,
 		SearchServicesUseCase,
 		TranslateRulesUseCase,
+		CreateServiceUseCase,
 		{
 			provide: ServiceRepository,
 			useClass: PrismaServiceRepository,

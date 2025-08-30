@@ -17,8 +17,8 @@ describe("Create company rating", () => {
 		const rating = makeRating();
 
 		const result = await sut.execute({
-			companyId: rating.companyId,
-			userId: rating.userId,
+			companyId: rating.companyId.toString(),
+			userId: rating.userId.toString(),
 			rating: rating.rating,
 			comment: rating.comment,
 		});

@@ -5,7 +5,7 @@ import {
 	Injectable,
 } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
-import { StaffRole } from "@/modules/staff/domain/entities/staff.entity";
+import type { StaffRole } from "@/modules/staff/domain/entities/staff.entity";
 import { STAFF_ROLES_KEY } from "@/modules/staff/infra/decorators/staff-roles.decorator";
 
 @Injectable()

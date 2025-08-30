@@ -1,4 +1,5 @@
 import { Injectable } from "@nestjs/common";
+import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { RatingRepository } from "@/modules/rating/domain/repositories/rating.repository";
 import { Either, left, right } from "@/shared/either";
 import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
@@ -22,8 +23,8 @@ export class CreateRatingCompanyUseCase {
 	): Promise<CreateRatingCompanyUseCaseResponse> {
 		try {
 			const ratingEntity = Rating.create({
-				companyId: rating.companyId,
-				userId: rating.userId,
+				companyId: new UniqueEntityID(rating.companyId),
+				userId: new UniqueEntityID(rating.userId),
 				rating: rating.rating,
 				comment: rating.comment,
 			});

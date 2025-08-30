@@ -1,14 +1,15 @@
 import { faker } from "@faker-js/faker";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
-import { Rating } from "@/modules/rating/domain/entities/rating.entity";
+import { Rating, RatingProps } from "@/modules/rating/domain/entities/rating.entity";
 
-export function makeRating(override: Partial<Rating> = {}) {
+export function makeRating(override: Partial<RatingProps & { id?: UniqueEntityID }> = {}) {
     const rating = Rating.create({
-        companyId: (override as any).companyId ?? new UniqueEntityID().toString(),
-        userId: (override as any).userId ?? new UniqueEntityID().toString(),
-        rating: (override as any).rating ?? faker.number.int({ min: 1, max: 5 }),
-        comment: (override as any).comment ?? faker.lorem.sentence(),
-    });
+        companyId: override.companyId ?? new UniqueEntityID(),
+        userId: override.userId ?? new UniqueEntityID(),
+        rating: override.rating ?? faker.number.int({ min: 1, max: 5 }),
+        comment: override.comment ?? faker.lorem.sentence(),
+        createdAt: override.createdAt ?? faker.date.recent(),
+    }, override.id);
 
     return rating;
 }

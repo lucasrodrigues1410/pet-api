@@ -34,7 +34,7 @@ export class PrismaServiceMapper {
 			isActive: service.isActive,
 			name: service.name,
 			companyId: service.companyId.toString(),
-			details: service.details as Prisma.JsonObject,
+			details: (service.details ?? null) as Prisma.JsonObject,
 			rulesPrompt: service.rulesPrompt,
 			rules: service.rules?.map((rule) =>
 				rule.toObject(),

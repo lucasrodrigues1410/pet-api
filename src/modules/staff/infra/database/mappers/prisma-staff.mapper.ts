@@ -5,7 +5,7 @@ import {
 } from "prisma/generated/client";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { PrismaAppointmentMapper } from "@/modules/appointment/infra/database/mapper/prisma-appointment.mapper";
-import { Staff, StaffRole } from "@/modules/staff/domain/entities/staff.entity";
+import { Staff, type StaffRole } from "@/modules/staff/domain/entities/staff.entity";
 
 export class PrismaStaffMapper {
 	static toDomain(

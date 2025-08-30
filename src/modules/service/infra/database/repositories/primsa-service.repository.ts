@@ -13,6 +13,22 @@ import { PrismaServiceMapper } from "../mappers/prisma-service.mapper";
 export class PrismaServiceRepository implements ServiceRepository {
 	constructor(private prismaService: PrismaService) {}
 
+	async create(service: Service, categoryIds?: string[]) {
+		await this.prismaService.service.create({
+			data: {
+				...PrismaServiceMapper.toPrisma(service),
+				...(categoryIds && categoryIds.length > 0 && {
+					categories: {
+						create: categoryIds.map(categoryId => ({
+							categoryId,
+							assignedAt: new Date()
+						}))
+					}
+				})
+			},
+		});
+	}
+
 	async findById(id: string) {
 		const result = await this.prismaService.service.findUnique({
 			where: { id },

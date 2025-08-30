@@ -8,6 +8,12 @@ import { paginate } from "@/shared/utils/paginator";
 export class InMemoryServiceRepository implements ServiceRepository {
 	public items: Service[] = [];
 
+	async create(service: Service, categoryIds?: string[]) {
+		// Para testes em memória, apenas adicionamos o serviço
+		// As categorias seriam tratadas em um repositório real
+		this.items.push(service);
+	}
+
 	async findById(id: string) {
 		const result = this.items.find((service) => service.id.toString() === id);
 		if (!result) {

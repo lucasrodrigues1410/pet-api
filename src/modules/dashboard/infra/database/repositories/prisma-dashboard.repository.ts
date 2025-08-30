@@ -121,7 +121,7 @@ export class PrismaDashboardRepository implements DashboardRepository {
 				companyId,
 				weekStart,
 				weekEnd,
-				AppointmentStatus.COMPLETED,
+				'completed',
 			),
 		]);
 
@@ -131,13 +131,13 @@ export class PrismaDashboardRepository implements DashboardRepository {
 				companyId,
 				weekStart,
 				weekEnd,
-				AppointmentStatus.CONFIRMED,
+				'confirmed',
 			),
 			this.getAppointmentsByStatus(
 				companyId,
 				previousWeekStart,
 				previousWeekEnd,
-				AppointmentStatus.CONFIRMED,
+				'confirmed',
 			),
 		]);
 
@@ -211,7 +211,7 @@ export class PrismaDashboardRepository implements DashboardRepository {
 					gte: startDate,
 					lte: endDate,
 				},
-				status: AppointmentStatus.COMPLETED,
+				status: 'completed',
 				deletedAt: null,
 			},
 			_sum: {
@@ -278,7 +278,6 @@ export class PrismaDashboardRepository implements DashboardRepository {
 				ratingCount: true,
 			},
 		});
-
 		if (!company) {
 			return {
 				rating: 0,
@@ -314,7 +313,7 @@ export class PrismaDashboardRepository implements DashboardRepository {
 				},
 			}),
 		]);
-
+	
 		// Calcula média dos últimos 30 dias
 		const currentRating =
 			ratingsLast30Days.length > 0

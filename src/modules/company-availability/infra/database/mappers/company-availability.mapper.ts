@@ -4,17 +4,14 @@ import {
 	CompanyAvailability as PrismaCompanyAvailability,
 } from "prisma/generated/client";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
-import {
-	CompanyAvailability,
-	DaysOfWeek,
-} from "@/modules/company-availability/domain/entities/company-availability.entity";
+import { CompanyAvailability } from "@/modules/company-availability/domain/entities/company-availability.entity";
 
 export class PrismaCompanyAvailabilityMapper {
 	static toDomain(prismaPriceVariation: PrismaCompanyAvailability) {
 		return CompanyAvailability.create(
 			{
 				companyId: new UniqueEntityID(prismaPriceVariation.companyId),
-				day: prismaPriceVariation.day as DaysOfWeek,
+				day: prismaPriceVariation.day,
 				startTime: format(prismaPriceVariation.startTime, "HH:mm"),
 				endTime: format(prismaPriceVariation.endTime, "HH:mm"),
 				lunchStartTime: format(prismaPriceVariation.lunchStartTime, "HH:mm"),

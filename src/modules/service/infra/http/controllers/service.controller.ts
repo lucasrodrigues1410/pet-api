@@ -14,15 +14,18 @@ import {
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { ZodResponse } from "nestjs-zod";
 import { Public } from "@/modules/auth/infra/http/decorators/public.decorator";
+import { User } from "@/modules/auth/infra/http/decorators/user.decorator";
 import { UserTypeDecorator } from "@/modules/auth/infra/http/decorators/user-type.decorator";
 import { CompanyGuard } from "@/modules/company/infra/http/guards/company.guard";
-import { TranslateRulesUseCase } from "@/modules/service/application/use-cases/translate-rules.use-case";
+import { CreateServiceUseCase } from "@/modules/service/application/use-cases/create-service.use-case";
 import { StaffRoles } from "@/modules/staff/infra/decorators/staff-roles.decorator";
+import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
 import { PaginationQueryDto } from "@/shared/utils/pagination-query";
 import { DeactivateServiceUseCase } from "../../../application/use-cases/deactivate-service.use-case";
 import { GetServiceByIdUseCase } from "../../../application/use-cases/get-service-by-id.use-case";
 import { ListServicesByCompanyUseCase } from "../../../application/use-cases/list-services-by-company.use-case";
 import { SearchServicesUseCase } from "../../../application/use-cases/search-services.use-case";
+import { CreateServiceRequestDto } from "../dtos/create-service.dto";
 import { SearchServicesRequestDto } from "../dtos/search-services.dto";
 import { ServiceResponseList } from "../dtos/service.dto";
 import { ServiceDetailsResponse } from "../dtos/service-details.dto";
@@ -35,7 +38,7 @@ export class ServiceController {
 		private readonly listServicesByCompanyUseCase: ListServicesByCompanyUseCase,
 		private readonly deactivateServiceUseCase: DeactivateServiceUseCase,
 		private readonly searchServicesUseCase: SearchServicesUseCase,
-		private readonly translateRulesUseCase: TranslateRulesUseCase,
+		private readonly createServiceUseCase: CreateServiceUseCase,
 	) {}
 
 	@Get("/:id")
@@ -117,18 +120,26 @@ export class ServiceController {
 		}
 	}
 
-	@Post("rules/translate")
-	@Public()
-	@ApiOperation({ summary: "Traduzir regras de serviço" })
-	async translateRules(@Body() body: { rules: string }) {
-		if (!body.rules) {
-			throw new BadRequestException("Rules are required");
-		}
-
-		const result = await this.translateRulesUseCase.execute({
-			rules: body.rules,
+	@Post()
+	@ApiOperation({ summary: "Criar serviço" })
+	@HttpCode(201)
+	@UserTypeDecorator("company")
+	@UseGuards(CompanyGuard)
+	async createService(
+		@Body() body: CreateServiceRequestDto,
+		@User("companyId") companyId: string,
+	) {
+		const result = await this.createServiceUseCase.execute({
+			...body,
+			categoryIds: body.categoryId ? [body.categoryId] : undefined,
+			companyId,
 		});
 
-		return result;
+		if (result.isLeft()) {
+			if (result.value instanceof ResourceNotFoundError) {
+				throw new NotFoundException(result.value.message);
+			}
+			throw new BadRequestException();
+		}
 	}
 }

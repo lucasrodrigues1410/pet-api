@@ -9,7 +9,7 @@ export async function createUser(prisma: PrismaClient) {
 			email: "vitor@gmail.com",
 			password: await Bun.password.hash("123456"),
 			name: "Vitor",
-			type: "CUSTOMER",
+			type: "customer",
 		},
 	});
 
@@ -21,7 +21,7 @@ export async function createUser(prisma: PrismaClient) {
 			email: "vitor-empresa@gmail.com",
 			password: await Bun.password.hash("123456"),
 			name: "Vitor Empresa",
-			type: "COMPANY",
+			type: "company",
 		},
 	});
 }

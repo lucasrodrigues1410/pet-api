@@ -14,6 +14,7 @@ import { AuthModule } from "./modules/auth/auth.module";
 import { JwtGuard } from "./modules/auth/infra/http/guards/jwt.guard";
 import { BookingModule } from "./modules/booking/booking.module";
 import { BreedModule } from "./modules/breed/breed.module";
+import { CategoryModule } from "./modules/category/category.module";
 import { CompanyModule } from "./modules/company/company.module";
 import { DashboardModule } from "./modules/dashboard/dashboard.module";
 import { EmailModule } from "./modules/email/email.module";
@@ -39,6 +40,7 @@ import { UserModule } from "./modules/user/user.module";
 		AnimalModule,
 		ServiceModule,
 		BreedModule,
+		CategoryModule,
 		AssetModule,
 		CompanyModule,
 		AppointmentModule,

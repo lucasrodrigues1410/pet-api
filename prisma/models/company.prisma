@@ -1,17 +1,17 @@
 model Company {
-  id          String    @id @default(cuid())
-  name        String
-  address     String?
-  contact     String?
-  description String?
-  createdAt   DateTime  @default(now()) @map("created_at")
-  updatedAt   DateTime  @updatedAt @map("updated_at")
-  deletedAt   DateTime? @map("deleted_at")
-  logoAssetId String?   @map("logo_asset_id")
-  averageRating   Float     @default(0) @map("average_rating")
-  ratingCount     Int       @default(0) @map("rating_count")
+  id            String    @id @default(cuid())
+  name          String
+  address       String?
+  contact       String?
+  description   String?
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+  deletedAt     DateTime? @map("deleted_at")
+  logoAssetId   String?   @map("logo_asset_id")
+  averageRating Float     @default(0) @map("average_rating")
+  ratingCount   Int       @default(0) @map("rating_count")
 
-  ratings         Rating[]
+  ratings                      Rating[]
   companyUsers                 UserCompany[]
   companyAvailability          CompanyAvailability[]
   companyAvailabilityException CompanyAvailabilityException[]

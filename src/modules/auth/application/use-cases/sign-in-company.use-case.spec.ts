@@ -34,7 +34,7 @@ describe("SignInCompany", () => {
 		const user = makeUser({
 			email: "johndoe@example.com",
 			password: await fakeHasher.hash("123456"),
-			type: "CUSTOMER",
+			type: "customer",
 		});
 		inMemoryUserRepository.items.push(user);
 
@@ -60,7 +60,7 @@ describe("SignInCompany", () => {
 		const user = makeUser({
 			email: "johndoe@example.com",
 			password: await fakeHasher.hash("123456"),
-			type: "CUSTOMER",
+			type: "customer",
 		});
 		inMemoryUserRepository.items.push(user);
 

@@ -1,13 +1,13 @@
 model Animal {
-  id        String    @id @default(cuid())
-  userId    String    @map("user_id")
-  user      User      @relation(fields: [userId], references: [id])
-  breedId   String    @map("breed_id")
-  breed     Breed     @relation(fields: [breedId], references: [id])
-  name      String    @db.VarChar(255)
-  assetId   String?   @map("asset_id")
-  birthdate DateTime? @map("birthdate")
-  weight    Float?    @db.DoublePrecision
+  id          String        @id @default(cuid())
+  userId      String        @map("user_id")
+  user        User          @relation(fields: [userId], references: [id])
+  breedId     String        @map("breed_id")
+  breed       Breed         @relation(fields: [breedId], references: [id])
+  name        String        @db.VarChar(255)
+  assetId     String?       @map("asset_id")
+  birthdate   DateTime?     @map("birthdate")
+  weight      Float?        @db.DoublePrecision
   asset       Asset?        @relation(fields: [assetId], references: [id])
   appointment Appointment[] @relation("AnimalAppointments")
 
@@ -17,7 +17,6 @@ model Animal {
 
   @@map("animals")
 }
-
 
 model AnimalType {
   id     String  @id @default(cuid())

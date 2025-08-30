@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { UserRepository } from "src/modules/user/domain/repositories/user.repository";
-import { StaffRole } from "@/modules/staff/domain/entities/staff.entity";
+import type { StaffRole } from "@/modules/staff/domain/entities/staff.entity";
 import { StaffRepository } from "@/modules/staff/domain/repositories/staff.repository";
 import { User } from "@/modules/user/domain/entities/user.entity";
 import { Either, left, right } from "@/shared/either";

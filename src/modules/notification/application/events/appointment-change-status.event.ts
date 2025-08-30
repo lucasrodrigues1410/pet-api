@@ -10,7 +10,6 @@ export class SendClientAppointmentChangeStatusEmailHandler
 	constructor(private readonly eventDispatcher: NotificationPublisher) {}
 
 	async handle(event: AppointmentChangeStatusEvent): Promise<void> {
-		console.log(event);
 		await this.eventDispatcher.dispatch(
 			new EmailDispatchEvent("appointment-status-changed", event.userEmail, {
 				userName: event.userName,

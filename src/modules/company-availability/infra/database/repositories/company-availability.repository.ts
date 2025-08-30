@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { PrismaService } from "@/core/infra/prisma/prisma.service";
 import {
 	CompanyAvailability,
-	DaysOfWeek,
+	type DaysOfWeek,
 } from "@/modules/company-availability/domain/entities/company-availability.entity";
 import { CompanyAvailabilityRepository } from "@/modules/company-availability/domain/repositories/company-availability.repository";
 import { PrismaCompanyAvailabilityMapper } from "../mappers/company-availability.mapper";

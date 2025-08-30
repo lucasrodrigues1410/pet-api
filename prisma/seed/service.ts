@@ -7,7 +7,7 @@ export async function createService(prisma: PrismaClient) {
 		create: {
 			id: "category-1",
 			name: "Grooming",
-			type: "PETSHOP",
+			type: "petshop",
 		},
 	});
 

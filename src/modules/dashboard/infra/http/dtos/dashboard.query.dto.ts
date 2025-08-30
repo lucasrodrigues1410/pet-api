@@ -1,4 +1,4 @@
-import { endOfDay, startOfDay } from "date-fns";
+import { endOfMonth, startOfMonth } from "date-fns";
 import { createZodDto } from "nestjs-zod";
 import { z } from "zod";
 
@@ -6,11 +6,11 @@ export const queryDto = z.object({
 	startDate: z.iso
 		.datetime()
 		.optional()
-		.default(startOfDay(new Date()).toISOString()),
+		.default(startOfMonth(new Date()).toISOString()),
 	endDate: z.iso
 		.datetime()
 		.optional()
-		.default(endOfDay(new Date()).toISOString()),
+		.default(endOfMonth(new Date()).toISOString()),
 });
 
 export class DashboardQueryDto extends createZodDto(queryDto) {}

@@ -1,6 +1,6 @@
 import {
 	CompanyAvailability,
-	DaysOfWeek,
+	type DaysOfWeek,
 } from "../entities/company-availability.entity";
 
 export abstract class CompanyAvailabilityRepository {
