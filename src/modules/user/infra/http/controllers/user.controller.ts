@@ -2,42 +2,30 @@ import {
 	BadRequestException,
 	Body,
 	Controller,
-	Get,
+	FileTypeValidator,
 	HttpCode,
 	HttpStatus,
+	MaxFileSizeValidator,
+	ParseFilePipe,
+	Post,
 	Put,
+	UploadedFile,
+	UseInterceptors,
 } from "@nestjs/common";
+import { FileInterceptor } from "@nestjs/platform-express";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { User } from "src/modules/auth/infra/http/decorators/user.decorator";
-import { FindUserByIdUseCase } from "@/modules/user/application/use-cases/find-user-by-id.use-case";
+import { AddAssetToUserUseCase } from "@/modules/user/application/use-cases/add-asset-to-user.use-case";
 import { UpdateUserProfileUseCase } from "@/modules/user/application/use-cases/update-user-profile.use-case";
 import { UpdateUserRequestDto } from "../dtos/update-user.dto";
-import { UserResponse } from "../dtos/user.response.dto";
-import { UserPresenter } from "../presenters/user.presenter";
 
 @ApiTags("Usuários")
 @Controller("users")
 export class UserController {
 	constructor(
-		private readonly findUserByIdUseCase: FindUserByIdUseCase,
 		private readonly updateUserProfileUseCase: UpdateUserProfileUseCase,
+		private readonly addAssetToUserUseCase: AddAssetToUserUseCase,
 	) {}
-
-	@Get("me")
-	@ApiOperation({ summary: "Buscar usuário autenticado" })
-	@HttpCode(HttpStatus.OK)
-	@ApiResponse({
-		status: HttpStatus.OK,
-		type: UserResponse,
-	})
-	async getUser(@User("sub") userId: string) {
-		const result = await this.findUserByIdUseCase.execute({ userId });
-		if (result.isLeft()) {
-			throw new BadRequestException();
-		}
-		const user = result.value.user;
-		return UserPresenter.toHTTP(user);
-	}
 
 	@Put("edit")
 	@ApiOperation({ summary: "Editar usuário autenticado" })
@@ -57,6 +45,36 @@ export class UserController {
 
 		if (response.isLeft()) {
 			throw new BadRequestException(response.value.message);
+		}
+	}
+
+	@Post("avatar")
+	@ApiOperation({ summary: "Adicionar avatar do usuário" })
+	@HttpCode(201)
+	@UseInterceptors(FileInterceptor("file"))
+	async addAvatar(
+		@User("sub") userId: string,
+		@UploadedFile(
+			new ParseFilePipe({
+				validators: [
+					new MaxFileSizeValidator({
+						maxSize: 1024 * 1024 * 2,
+					}),
+					new FileTypeValidator({
+						fileType: ".(png|jpg|jpeg)",
+					}),
+				],
+			}),
+		)
+		file: Express.Multer.File,
+	) {
+		const result = await this.addAssetToUserUseCase.execute({
+			userId,
+			file: file as Express.Multer.File,
+		});
+
+		if (result.isLeft()) {
+			throw new BadRequestException();
 		}
 	}
 }

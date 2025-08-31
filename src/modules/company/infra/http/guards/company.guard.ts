@@ -5,7 +5,7 @@ import {
 	Injectable,
 } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
-import { StaffRole } from "@/modules/staff/domain/entities/staff.entity";
+import type { StaffRole } from "@/modules/staff/domain/entities/staff.entity";
 import { STAFF_ROLES_KEY } from "@/modules/staff/infra/decorators/staff-roles.decorator";
 
 @Injectable()
@@ -18,7 +18,7 @@ export class CompanyGuard implements CanActivate {
 			this.reflector.get<StaffRole[]>(STAFF_ROLES_KEY, context.getHandler()) ||
 			[];
 
-		const companyId = request.params.companyId;
+		const companyId = request.params.companyId || request.user.companyId;
 		const user = request.user;
 
 		if (!companyId) {

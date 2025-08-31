@@ -4,10 +4,6 @@ import {
 } from "prisma/generated/client";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { Appointment } from "@/modules/appointment/domain/entities/appointment.entity";
-import {
-	AppointmentStatus,
-	CoatType,
-} from "@/modules/appointment/domain/enums/appointment.enum";
 
 export class PrismaAppointmentMapper {
 	static toDomain(prismaAppointment: PrismaAppointment): Appointment {
@@ -21,8 +17,8 @@ export class PrismaAppointmentMapper {
 				startDate: prismaAppointment.startDate,
 				endDate: prismaAppointment.endDate,
 				price: prismaAppointment.price.toNumber(),
-				status: prismaAppointment.status as AppointmentStatus,
-				coatType: prismaAppointment.coatType as CoatType,
+				status: prismaAppointment.status,
+				coatType: prismaAppointment.coatType,
 			},
 			new UniqueEntityID(prismaAppointment.id),
 		);
@@ -43,6 +39,14 @@ export class PrismaAppointmentMapper {
 			price: Prisma.Decimal(appointment.price),
 			staffId: appointment.staffId.toString(),
 			coatType: appointment.coatType,
+		};
+	}
+
+	static toPersistenceUpdate(
+		appointment: Partial<Appointment>,
+	): Prisma.AppointmentUncheckedUpdateInput {
+		return {
+			status: appointment.status,
 		};
 	}
 }

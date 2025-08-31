@@ -1,17 +1,16 @@
-import { Breed } from "src/modules/breed/domain/entities/breed.entity";
+import { differenceInYears } from "date-fns";
 import { Entity } from "@/core/domain/entities/entity";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
-import { Asset } from "@/modules/asset/domain/entities/asset";
 
 export interface AnimalProps {
 	userId: UniqueEntityID;
 	breedId: UniqueEntityID;
 	name: string;
-	birthdate?: Date | null;
+	age?: number | null;
 	weight?: number | null;
-	breed?: Breed | undefined | null;
 	assetId?: UniqueEntityID;
-	asset?: Asset;
+	size?: "small" | "medium" | "large" | null;
+	ageStage?: "puppy" | "adult" | "senior" | null;
 }
 
 type RawBirthdate = Date | string | null;
@@ -29,54 +28,82 @@ export class Animal extends Entity<AnimalProps> {
 		return this.props.name;
 	}
 
-	get birthdate() {
-		return this.props.birthdate;
+	get age() {
+		return this.props.age;
 	}
 
 	get weight() {
 		return this.props.weight;
 	}
 
-	get breed() {
-		return this.props.breed;
-	}
-
 	get assetId() {
 		return this.props.assetId;
 	}
 
-	get asset() {
-		return this.props.asset;
+	get size() {
+		return this.props.size;
+	}
+
+	get ageStage() {
+		return this.props.ageStage;
 	}
 
 	public static create(
-		props: Omit<AnimalProps, "birthdate"> & { birthdate?: RawBirthdate },
+		props: Omit<AnimalProps, "age" | "size" | "ageStage"> & {
+			birthdate?: RawBirthdate;
+		},
 		id?: UniqueEntityID,
 	): Animal {
+		const size = props.weight
+			? props.weight <= 8
+				? "small"
+				: props.weight <= 20
+					? "medium"
+					: "large"
+			: "small";
+		const age = props.birthdate
+			? differenceInYears(new Date(), new Date(props.birthdate))
+			: null;
+		const ageStage = age
+			? age < 1
+				? "puppy"
+				: age < 10
+					? "adult"
+					: "senior"
+			: "puppy";
+
 		return new Animal(
 			{
 				...props,
-				birthdate: props.birthdate ? new Date(props.birthdate) : null,
+				age,
+				size,
+				ageStage,
 			},
 			id,
 		);
 	}
 
-	public update(
-		props: Partial<
-			Omit<AnimalProps, "birthdate"> & { birthdate?: RawBirthdate }
-		>,
-	) {
+	public update(props: Partial<AnimalProps>) {
 		this.props = {
 			userId: this.userId,
 			breedId: this.breedId,
 			name: props.name ?? this.name,
-			birthdate: props.birthdate ? new Date(props.birthdate) : this.birthdate,
+			age: props.age ?? this.age,
 			weight: props.weight ?? this.weight,
-			breed: props.breed ?? this.breed,
 			assetId: props.assetId ?? this.assetId,
-			asset: props.asset ?? this.asset,
 		};
 		return this;
+	}
+
+	public toObject() {
+		return {
+			id: this.id.toString(),
+			userId: this.userId.toString(),
+			breedId: this.breedId.toString(),
+			name: this.name,
+			age: this.age,
+			weight: this.weight,
+			assetId: this.assetId?.toString(),
+		};
 	}
 }

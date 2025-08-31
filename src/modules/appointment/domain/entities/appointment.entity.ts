@@ -1,7 +1,19 @@
 import { Entity } from "@/core/domain/entities/entity";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { DomainError } from "@/core/domain/errors/domain-error";
-import { AppointmentStatus, CoatType } from "../enums/appointment.enum";
+
+export const coatType = ["short", "medium", "long", "curly"] as const;
+export const appointmentStatus = [
+	"scheduled",
+	"confirmed",
+	"in_progress",
+	"completed",
+	"no_show",
+	"canceled",
+] as const;
+
+export type CoatType = (typeof coatType)[number];
+export type AppointmentStatus = (typeof appointmentStatus)[number];
 
 export interface AppointmentProps {
 	animalId: UniqueEntityID;
@@ -13,13 +25,13 @@ export interface AppointmentProps {
 	endDate: Date;
 	status: AppointmentStatus;
 	price: number;
-	coatType: CoatType;
+	coatType: "short" | "medium" | "long" | "curly";
 }
 
 export class Appointment extends Entity<AppointmentProps> {
 	private static readonly CANCELLABLE_STATUSES: AppointmentStatus[] = [
-		AppointmentStatus.SCHEDULED,
-		AppointmentStatus.CONFIRMED,
+		"scheduled",
+		"confirmed",
 	];
 
 	get animalId() {
@@ -36,6 +48,10 @@ export class Appointment extends Entity<AppointmentProps> {
 
 	get status() {
 		return this.props.status;
+	}
+
+	set status(status: AppointmentStatus) {
+		this.props.status = status;
 	}
 
 	get price() {
@@ -69,7 +85,50 @@ export class Appointment extends Entity<AppointmentProps> {
 			);
 		}
 
-		this.props.status = AppointmentStatus.CANCELED;
+		this.props.status = "canceled";
+	}
+
+	public updateStatus(newStatus: AppointmentStatus, isCompany: boolean): void {
+		this.validateStatusTransition(this.props.status, newStatus);
+		this.validateStatusPermissions(newStatus, isCompany);
+		this.props.status = newStatus;
+	}
+
+	private validateStatusTransition(
+		currentStatus: AppointmentStatus,
+		newStatus: AppointmentStatus,
+	): void {
+		const validTransitions: Record<AppointmentStatus, AppointmentStatus[]> = {
+			scheduled: ["confirmed", "canceled", "no_show"],
+			confirmed: ["in_progress", "canceled", "no_show"],
+			in_progress: ["completed", "canceled"],
+			completed: [],
+			no_show: [],
+			canceled: [],
+		};
+
+		if (!validTransitions[currentStatus]?.includes(newStatus)) {
+			throw new DomainError(
+				`Invalid status transition from '${currentStatus}' to '${newStatus}'.`,
+			);
+		}
+	}
+
+	private validateStatusPermissions(
+		newStatus: AppointmentStatus,
+		isCompany: boolean,
+	): void {
+		if (newStatus === "no_show" && !isCompany) {
+			throw new DomainError(
+				"Only company staff can set appointment status to NO_SHOW.",
+			);
+		}
+
+		if (["in_progress", "completed"].includes(newStatus) && !isCompany) {
+			throw new DomainError(
+				"Only company staff can set appointment status to IN_PROGRESS or COMPLETED.",
+			);
+		}
 	}
 
 	public static create(
@@ -78,10 +137,6 @@ export class Appointment extends Entity<AppointmentProps> {
 		},
 		id?: UniqueEntityID,
 	): Appointment {
-		if (props.startDate < new Date()) {
-			throw new DomainError("startDate must be in the future");
-		}
-
 		if (props.startDate >= props.endDate) {
 			throw new DomainError("startDate must be before endDate");
 		}
@@ -93,9 +148,25 @@ export class Appointment extends Entity<AppointmentProps> {
 		return new Appointment(
 			{
 				...props,
-				status: props.status ?? AppointmentStatus.SCHEDULED,
+				status: props.status ?? "scheduled",
 			},
 			id,
 		);
+	}
+
+	public toObject() {
+		return {
+			id: this.id.toString(),
+			animalId: this.animalId.toString(),
+			staffId: this.staffId.toString(),
+			serviceId: this.serviceId.toString(),
+			companyId: this.companyId.toString(),
+			startDate: this.startDate.toISOString(),
+			endDate: this.endDate.toISOString(),
+			status: this.status,
+			price: this.price,
+			coatType: this.coatType,
+			clientId: this.clientId.toString(),
+		};
 	}
 }

@@ -1,6 +1,12 @@
-import { Appointment } from "@/modules/appointment/domain/entities/appointment.entity";
+import { Animal } from "@/modules/animal/domain/entities/animal.entity";
+import { Appointment, AppointmentStatus } from "@/modules/appointment/domain/entities/appointment.entity";
 import { AppointmentRepository } from "@/modules/appointment/domain/repositories/appointment.repository";
+import { Breed } from "@/modules/breed/domain/entities/breed.entity";
+import { Company } from "@/modules/company/domain/entities/company.entity";
+import { Service } from "@/modules/service/domain/entities/service.entity";
+import { User } from "@/modules/user/domain/entities/user.entity";
 import { DateRange } from "@/shared/types/date-range";
+import { PaginationResult } from "@/shared/utils/pagination";
 import { paginate } from "@/shared/utils/paginator";
 import { makeAnimal } from "../factories/make-animal";
 import { makeCompany } from "../factories/make-company";
@@ -23,7 +29,12 @@ export class InMemoryAppointmentRepository implements AppointmentRepository {
 			company: makeCompany({ id: result.companyId }),
 		});
 
-		return appointmentWithRelations;
+		return appointmentWithRelations as Appointment & {
+			animal: Animal & { breed: Breed };
+			client: User;
+			service: Service;
+			company: Company;
+		};
 	}
 
 	async findByUserId(
@@ -42,7 +53,9 @@ export class InMemoryAppointmentRepository implements AppointmentRepository {
 			params.query,
 		);
 
-		return result;
+		return result as PaginationResult<
+			Appointment & { animal: Animal; service: Service }
+		>;
 	}
 
 	async findByCompanyId(
@@ -62,7 +75,13 @@ export class InMemoryAppointmentRepository implements AppointmentRepository {
 			params.query,
 		);
 
-		return result;
+		return result as PaginationResult<
+			Appointment & {
+				animal: Animal & { breed: Breed };
+				client: User;
+				service: Service;
+			}
+		>;
 	}
 
 	async create(appointment: Appointment) {
@@ -80,12 +99,10 @@ export class InMemoryAppointmentRepository implements AppointmentRepository {
 		});
 	}
 
-	async update(appointment: Appointment) {
-		const index = this.items.findIndex(
-			(item) => item.id.toString() === appointment.id.toString(),
-		);
+	async updateStatus(id: string, status: AppointmentStatus) {
+		const index = this.items.findIndex((item) => item.id.toString() === id);
 		if (index !== -1) {
-			this.items[index] = appointment;
+			this.items[index].status = status;
 		}
 	}
 }

@@ -1,47 +1,43 @@
 import {
 	Prisma,
+	Asset as PrismaAsset,
 	Company as PrismaCompany,
-	CompanyAvailability as PrismaCompanyAvailability,
-	CompanyAvailabilityException as PrismaCompanyAvailabilityException,
 } from "prisma/generated/client";
 import { Company } from "src/modules/company/domain/entities/company.entity";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
-import { PrismaCompanyAvailabilityMapper } from "@/modules/company-availability/infra/database/mappers/company-availability.mapper";
-import { PrismaCompanyAvailabilityExceptionMapper } from "@/modules/company-availability/infra/database/mappers/company-availability-exception.mapper";
+import { PrismaAssetMapper } from "@/modules/asset/infra/database/mappers/prisma-asset.mapper";
 
 export class PrismaCompanyMapper {
 	static toDomain(
 		prismaCompany: PrismaCompany & {
-			companyAvailability?: PrismaCompanyAvailability[];
-			companyAvailabilityExceptions?: PrismaCompanyAvailabilityException[];
+			logo?: PrismaAsset | null;
 		},
 	): Company {
-		const companyAvailabilityDomain = prismaCompany.companyAvailability?.map(
-			PrismaCompanyAvailabilityMapper.toDomain,
-		);
-		const companyAvailabilityExceptionsDomain =
-			prismaCompany.companyAvailabilityExceptions?.map(
-				PrismaCompanyAvailabilityExceptionMapper.toDomain,
-			);
-
 		return Company.create(
 			{
 				name: prismaCompany.name,
 				address: prismaCompany.address || undefined,
 				contact: prismaCompany.contact || undefined,
-				availability: companyAvailabilityDomain,
-				availabilityExceptions: companyAvailabilityExceptionsDomain,
+				description: prismaCompany.description || undefined,
+				logo: prismaCompany.logo
+					? PrismaAssetMapper.toDomain(prismaCompany.logo)
+					: undefined,
+				averageRating: prismaCompany.averageRating,
+				ratingCount: prismaCompany.ratingCount,
 			},
 			new UniqueEntityID(prismaCompany.id),
 		);
 	}
 
-	static toPrisma(animal: Company): Prisma.CompanyUncheckedCreateInput {
+	static toPrisma(company: Company): Prisma.CompanyUncheckedCreateInput {
 		return {
-			id: animal.id.toString(),
-			name: animal.name,
-			address: animal.address,
-			contact: animal.contact,
+			id: company.id.toString(),
+			name: company.name,
+			address: company.address,
+			contact: company.contact,
+			description: company.description,
+			averageRating: company.averageRating || 0,
+			ratingCount: company.ratingCount || 0,
 		};
 	}
 }

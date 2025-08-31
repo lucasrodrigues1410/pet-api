@@ -2,21 +2,20 @@ import { Entity } from "@/core/domain/entities/entity";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { TimeRange } from "./value-objects/time-range";
 
-export enum DaysOfWeek {
-	SUNDAY = "SUNDAY",
-	MONDAY = "MONDAY",
-	TUESDAY = "TUESDAY",
-	WEDNESDAY = "WEDNESDAY",
-	THURSDAY = "THURSDAY",
-	FRIDAY = "FRIDAY",
-	SATURDAY = "SATURDAY",
-}
-
-export const daysOfWeek = Object.values(DaysOfWeek);
+export const daysOfWeek = [
+	"sunday",
+	"monday",
+	"tuesday",
+	"wednesday",
+	"thursday",
+	"friday",
+	"saturday",
+] as const;
+export type DaysOfWeek = (typeof daysOfWeek)[number];
 
 export interface CompanyAvailabilityProps {
 	companyId: UniqueEntityID;
-	day: keyof typeof DaysOfWeek;
+	day: DaysOfWeek;
 	timeRange: TimeRange;
 	launchTime: TimeRange;
 }
@@ -47,8 +46,7 @@ export class CompanyAvailability extends Entity<CompanyAvailabilityProps> {
 		},
 		id?: UniqueEntityID,
 	): CompanyAvailability {
-		const daysOfWeek = Object.values(DaysOfWeek);
-		if (!daysOfWeek.includes(props.day as DaysOfWeek)) {
+		if (!daysOfWeek.includes(props.day)) {
 			throw new Error(
 				`Invalid day: ${props.day}. Must be one of ${daysOfWeek.join(", ")}`,
 			);
@@ -68,5 +66,15 @@ export class CompanyAvailability extends Entity<CompanyAvailabilityProps> {
 			id,
 		);
 		return companyAvailability;
+	}
+
+	public toObject() {
+		return {
+			id: this.id.toString(),
+			companyId: this.companyId.toString(),
+			day: this.day,
+			timeRange: this.timeRange.toObject(),
+			launchTime: this.launchTime.toObject(),
+		};
 	}
 }

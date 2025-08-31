@@ -1,23 +1,28 @@
-import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { faker } from "@faker-js/faker";
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "src/core/infra/prisma/prisma.service";
 import { User, UserProps } from "src/modules/user/domain/entities/user.entity";
 import { PrismaUserMapper } from "src/modules/user/infra/database/mappers/prisma-user.mapper";
+import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 
-export function makeUser(override: Partial<User> = {}, id?: UniqueEntityID) {
-	const student = User.create(
+export function makeUser(
+	override: Partial<UserProps & { id?: UniqueEntityID }> = {},
+) {
+	const user = User.create(
 		{
-			email: faker.internet.email(),
-			name: faker.person.fullName(),
-			password: faker.internet.password(),
-			type: faker.helpers.arrayElement(["CUSTOMER", "ADMIN", "COMPANY"]),
-			...override,
+			email: override.email ?? faker.internet.email(),
+			name: override.name ?? faker.person.fullName(),
+			password: override.password ?? faker.internet.password(),
+			type:
+				override.type ??
+				faker.helpers.arrayElement(["customer", "admin", "company"]),
+			avatarAssetId: override.avatarAssetId,
+			avatar: override.avatar,
 		},
-		id,
+		override.id,
 	);
 
-	return student;
+	return user;
 }
 
 @Injectable()

@@ -1,16 +1,10 @@
 import { createZodDto } from "nestjs-zod";
 import z from "zod";
-import { animalDto } from "./animal.dto";
 
 const request = z.object({
-	...animalDto
-		.pick({
-			name: true,
-			breedId: true,
-
-			weight: true,
-		})
-		.required().shape,
+	name: z.string(),
+	weight: z.number(),
+	breedId: z.string(),
 	birthdate: z.iso.date().optional(),
 });
 

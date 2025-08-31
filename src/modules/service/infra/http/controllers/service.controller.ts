@@ -8,43 +8,45 @@ import {
 	Param,
 	Patch,
 	Post,
-	Put,
+	Query,
 	UseGuards,
 } from "@nestjs/common";
-import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
-import { UserType } from "@/modules/auth/infra/http/decorators/user-type.decorator";
+import { ApiOperation, ApiTags } from "@nestjs/swagger";
+import { ZodResponse } from "nestjs-zod";
+import { Public } from "@/modules/auth/infra/http/decorators/public.decorator";
+import { User } from "@/modules/auth/infra/http/decorators/user.decorator";
+import { UserTypeDecorator } from "@/modules/auth/infra/http/decorators/user-type.decorator";
 import { CompanyGuard } from "@/modules/company/infra/http/guards/company.guard";
-import { StaffRole } from "@/modules/staff/domain/entities/staff.entity";
+import { CreateServiceUseCase } from "@/modules/service/application/use-cases/create-service.use-case";
 import { StaffRoles } from "@/modules/staff/infra/decorators/staff-roles.decorator";
-import { CreateServiceUseCase } from "../../../application/use-cases/create-service.use-case";
+import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
+import { PaginationQueryDto } from "@/shared/utils/pagination-query";
 import { DeactivateServiceUseCase } from "../../../application/use-cases/deactivate-service.use-case";
 import { GetServiceByIdUseCase } from "../../../application/use-cases/get-service-by-id.use-case";
+import { GetServiceRecommendationsUseCase } from "../../../application/use-cases/get-service-recommendations.use-case";
 import { ListServicesByCompanyUseCase } from "../../../application/use-cases/list-services-by-company.use-case";
-import { UpdateServiceUseCase } from "../../../application/use-cases/update-service.use-case";
+import { SearchServicesUseCase } from "../../../application/use-cases/search-services.use-case";
 import { CreateServiceRequestDto } from "../dtos/create-service.dto";
-import { ServiceResponse } from "../dtos/service.response.dto";
-import { ServiceDetailsResponse } from "../dtos/service-details.response.dto";
-import { UpdateServiceRequestDto } from "../dtos/update-service.dto";
-import { ServicePresenter } from "../presenters/service.presenter";
-import { ServiceDetailsPresenter } from "../presenters/service-details.presenter";
+import { SearchServicesRequestDto } from "../dtos/search-services.dto";
+import { ServiceResponseList } from "../dtos/service.dto";
+import { ServiceDetailsResponse } from "../dtos/service-details.dto";
+import { ServiceRecommendationsResponse } from "../dtos/service-recommendations.dto";
 
-@ApiTags("services")
+@ApiTags("Serviços")
 @Controller("services")
 export class ServiceController {
 	constructor(
 		private readonly getServiceByIdUseCase: GetServiceByIdUseCase,
 		private readonly listServicesByCompanyUseCase: ListServicesByCompanyUseCase,
-		private readonly createServiceUseCase: CreateServiceUseCase,
-		private readonly updateServiceUseCase: UpdateServiceUseCase,
 		private readonly deactivateServiceUseCase: DeactivateServiceUseCase,
+		private readonly searchServicesUseCase: SearchServicesUseCase,
+		private readonly createServiceUseCase: CreateServiceUseCase,
+		private readonly getServiceRecommendationsUseCase: GetServiceRecommendationsUseCase,
 	) {}
 
 	@Get("/:id")
 	@ApiOperation({ summary: "Buscar serviço por ID" })
-	@ApiResponse({
-		status: 200,
-		type: ServiceDetailsResponse,
-	})
+	@ZodResponse({ status: 200, type: ServiceDetailsResponse })
 	async getServiceById(@Param("id") id: string) {
 		const result = await this.getServiceByIdUseCase.execute({ id });
 
@@ -52,15 +54,18 @@ export class ServiceController {
 			throw new NotFoundException(result.value.message);
 		}
 
-		return ServiceDetailsPresenter.toHTTP(result.value.service);
+		const service = result.value.service.toObject();
+
+		return {
+			...service,
+			company: result.value.service.company.toObject(),
+			categories: result.value.service.categories.map((c) => c.toObject()),
+		};
 	}
 
 	@Get("/company/:companyId")
 	@ApiOperation({ summary: "Listar serviços por empresa" })
-	@ApiResponse({
-		status: 200,
-		type: [ServiceResponse],
-	})
+	@ZodResponse({ status: 200, type: ServiceResponseList })
 	async listServicesByCompany(@Param("companyId") companyId: string) {
 		const result = await this.listServicesByCompanyUseCase.execute({
 			companyId,
@@ -70,62 +75,72 @@ export class ServiceController {
 			throw new BadRequestException();
 		}
 
-		return result.value.services.map(ServicePresenter.toHTTP);
+		return {
+			items: result.value.services.map((i) => i.toObject()),
+		};
 	}
 
-	@Post("/company/:companyId")
-	@HttpCode(201)
-	@ApiOperation({ summary: "Criar serviço para empresa" })
-	@ApiResponse({
-		status: 201,
-		type: ServiceResponse,
-	})
-	@UserType("COMPANY")
-	@StaffRoles(StaffRole.ADMIN, StaffRole.MANAGER)
-	@UseGuards(CompanyGuard)
-	async createService(
-		@Param("companyId") companyId: string,
-		@Body() data: CreateServiceRequestDto,
-	) {
-		const result = await this.createServiceUseCase.execute({
-			...data,
-			companyId,
+	@Get("/recommendations")
+	@Public()
+	@ApiOperation({ summary: "Obter recomendações de serviços populares" })
+	@ZodResponse({ status: 200, type: ServiceRecommendationsResponse })
+	async getServiceRecommendations() {
+		const result = await this.getServiceRecommendationsUseCase.execute({
+			limit: 10,
 		});
 
 		if (result.isLeft()) {
 			throw new BadRequestException();
 		}
 
-		return ServicePresenter.toHTTP(result.value.service);
+		return {
+			items: result.value.services.map((i) => {
+				return {
+					...i.toObject(),
+					company: {
+						id: i.company.id.toString(),
+						name: i.company.name,
+						contact: i.company.contact ?? null,
+					},
+					categories: i.categories.map((c) => {
+						return {
+							id: c.id.toString(),
+							name: c.name,
+						};
+					}),
+				};
+			}),
+		};
 	}
 
-	@Put("/:id/company/:companyId")
-	@HttpCode(204)
-	@ApiOperation({ summary: "Atualizar serviço da empresa" })
-	@UserType("COMPANY")
-	@StaffRoles(StaffRole.ADMIN, StaffRole.MANAGER)
-	@UseGuards(CompanyGuard)
-	async updateService(
-		@Param("id") id: string,
-		@Param("companyId") companyId: string,
-		@Body() data: UpdateServiceRequestDto,
+	@Post("/search")
+	@Public()
+	@ApiOperation({ summary: "Buscar serviços com filtros avançados" })
+	@ZodResponse({ status: 200, type: ServiceResponseList })
+	async searchServices(
+		@Body() data: SearchServicesRequestDto,
+		@Query() query: PaginationQueryDto,
 	) {
-		const result = await this.updateServiceUseCase.execute({
-			id,
-			companyId,
+		const result = await this.searchServicesUseCase.execute({
 			...data,
+			...query,
 		});
 
 		if (result.isLeft()) {
-			throw new NotFoundException(result.value.message);
+			throw new BadRequestException();
 		}
+
+		return {
+			items: result.value.items.map((i) => i.toObject()),
+			meta: result.value.meta,
+		};
 	}
 
 	@Patch("/:id/company/:companyId/deactivate")
 	@HttpCode(204)
 	@ApiOperation({ summary: "Inativar serviço da empresa" })
-	@UserType("COMPANY")
-	@StaffRoles(StaffRole.ADMIN, StaffRole.MANAGER)
+	@UserTypeDecorator("company")
+	@StaffRoles("admin", "manager")
 	@UseGuards(CompanyGuard)
 	async deactivateService(
 		@Param("id") id: string,
@@ -138,6 +153,29 @@ export class ServiceController {
 
 		if (result.isLeft()) {
 			throw new NotFoundException(result.value.message);
+		}
+	}
+
+	@Post()
+	@ApiOperation({ summary: "Criar serviço" })
+	@HttpCode(201)
+	@UserTypeDecorator("company")
+	@UseGuards(CompanyGuard)
+	async createService(
+		@Body() body: CreateServiceRequestDto,
+		@User("companyId") companyId: string,
+	) {
+		const result = await this.createServiceUseCase.execute({
+			...body,
+			categoryIds: body.categoryId ? [body.categoryId] : undefined,
+			companyId,
+		});
+
+		if (result.isLeft()) {
+			if (result.value instanceof ResourceNotFoundError) {
+				throw new NotFoundException(result.value.message);
+			}
+			throw new BadRequestException();
 		}
 	}
 }

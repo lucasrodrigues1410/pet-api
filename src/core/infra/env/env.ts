@@ -15,6 +15,7 @@ export const envSchema = z.object({
 	SMTP_PORT: z.coerce.number(),
 	SMTP_USER: z.string(),
 	SMTP_PASS: z.string(),
+	GOOGLE_GENERATIVE_AI_API_KEY: z.string(),
 });
 
 export type Env = z.infer<typeof envSchema>;

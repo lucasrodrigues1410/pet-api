@@ -1,18 +1,20 @@
+import { createZodDto } from "nestjs-zod";
 import { z } from "zod";
 
 export const serviceDto = z.object({
 	id: z.string(),
 	name: z.string(),
-	description: z.string().optional(),
+	description: z.string().nullish(),
 	price: z.number(),
 	isActive: z.boolean(),
-	duration: z.number().optional(),
+	duration: z.number(),
 	companyId: z.string(),
-	details: z.record(z.string(), z.unknown()).optional(),
-	priceRange: z
-		.object({
-			min: z.number(),
-			max: z.number(),
-		})
-		.default({ min: 0, max: 0 }),
+	details: z.record(z.string(), z.unknown()).nullish(),
 });
+
+const listResponse = z.object({
+	items: z.array(serviceDto),
+});
+
+export class ServiceResponse extends createZodDto(serviceDto) {}
+export class ServiceResponseList extends createZodDto(listResponse) {}

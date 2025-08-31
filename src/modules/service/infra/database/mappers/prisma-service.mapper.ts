@@ -1,31 +1,26 @@
 import { Prisma, Service as PrismaService } from "prisma/generated/client";
-import { Decimal } from "prisma/generated/internal/prismaNamespace";
 import { Service } from "src/modules/service/domain/entities/service.entity";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
-import { PriceRange } from "@/modules/service/domain/entities/value-objects/price-range.value-object";
+import {
+	Rules,
+	RulesProps,
+} from "@/modules/service/domain/entities/value-objects/rules.value-object";
 
 export class PrismaServiceMapper {
-	static toDomain(
-		prismaService: PrismaService & {
-			maxPrice?: number | Decimal | null;
-		},
-	): Service {
+	static toDomain(prismaService: PrismaService): Service {
 		return Service.create(
 			{
 				description: prismaService.description,
 				price: prismaService.price.toNumber(),
-				duration: prismaService.duration,
+				duration: prismaService.duration ?? 0,
 				isActive: prismaService.isActive,
 				name: prismaService.name,
 				companyId: new UniqueEntityID(prismaService.companyId),
-				priceRange: PriceRange.create(
-					prismaService.maxPrice
-						? {
-								min: Number(prismaService.price),
-								max: Number(prismaService.maxPrice),
-							}
-						: undefined,
+				rulesPrompt: prismaService.rulesPrompt,
+				rules: (prismaService.rules as Array<unknown>)?.map((rule) =>
+					Rules.create(rule as unknown as RulesProps),
 				),
+				details: prismaService.details as Record<string, unknown>,
 			},
 			new UniqueEntityID(prismaService.id),
 		);
@@ -39,7 +34,11 @@ export class PrismaServiceMapper {
 			isActive: service.isActive,
 			name: service.name,
 			companyId: service.companyId.toString(),
-			details: service.details as Prisma.JsonObject,
+			details: (service.details ?? null) as Prisma.JsonObject,
+			rulesPrompt: service.rulesPrompt,
+			rules: service.rules?.map((rule) =>
+				rule.toObject(),
+			) as Prisma.InputJsonValue,
 		};
 	}
 
@@ -52,8 +51,11 @@ export class PrismaServiceMapper {
 			duration: service.duration,
 			isActive: service.isActive,
 			name: service.name,
-			companyId: service.companyId?.toString(),
 			details: service.details as Prisma.JsonObject,
+			rulesPrompt: service.rulesPrompt,
+			rules: service.rules?.map((rule) =>
+				rule.toObject(),
+			) as Prisma.InputJsonValue,
 		};
 	}
 }

@@ -2,17 +2,14 @@ import { Entity } from "@/core/domain/entities/entity";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { Appointment } from "@/modules/appointment/domain/entities/appointment.entity";
 
+export const staffRole = ["admin", "manager", "employee"] as const;
+export type StaffRole = (typeof staffRole)[number];
+
 export interface StaffProps {
 	userId: UniqueEntityID;
 	companyId: UniqueEntityID;
 	role: StaffRole;
 	appointments?: Appointment[];
-}
-
-export enum StaffRole {
-	ADMIN = "ADMIN",
-	MANAGER = "MANAGER",
-	EMPLOYEE = "EMPLOYEE",
 }
 
 export class Staff extends Entity<StaffProps> {

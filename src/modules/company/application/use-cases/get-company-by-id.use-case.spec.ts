@@ -14,7 +14,7 @@ describe("Get a company", () => {
 
 	it("should get a company by id", async () => {
 		const company = makeCompany();
-		inMemoryCompaniesRepository.create(company);
+		inMemoryCompaniesRepository.items.push(company);
 		const result = await sut.execute({
 			id: company.id.toString(),
 		});

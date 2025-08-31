@@ -1,0 +1,31 @@
+enum PriceAdjustmentType {
+  discount
+  surcharge
+}
+
+enum PriceAdjustmentMethod {
+  percentage
+  fixed
+}
+
+model PriceAdjustment {
+  id              String                @id @default(cuid())
+  name            String
+  description     String?
+  serviceId       String?               @map("service_id")
+  type            PriceAdjustmentType
+  method          PriceAdjustmentMethod
+  value           Decimal               @db.Decimal(10, 2)
+  isActive        Boolean               @default(true) @map("is_active")
+  validFrom       DateTime?             @map("valid_from")
+  validTo         DateTime?             @map("valid_to")
+
+  createdAt       DateTime              @default(now()) @map("created_at")
+  updatedAt       DateTime              @updatedAt @map("updated_at")
+
+  service   Service? @relation(fields: [serviceId], references: [id])
+
+  @@index([serviceId])
+  @@index([isActive, validFrom, validTo])
+  @@map("price_adjustments")
+}

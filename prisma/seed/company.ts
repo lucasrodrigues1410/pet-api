@@ -18,7 +18,7 @@ export async function createCompany(prisma: PrismaClient) {
 			id: "user-company-1",
 			userId: "user-2",
 			companyId: "company-1",
-			role: "ADMIN",
+			role: "admin",
 		},
 	});
 
@@ -29,7 +29,7 @@ export async function createCompany(prisma: PrismaClient) {
 			create: {
 				id: `company-1-${day}`,
 				companyId: "company-1",
-				day,
+				day: day as any,
 				startTime: set(new Date(), {
 					hours: 8,
 					minutes: 0,

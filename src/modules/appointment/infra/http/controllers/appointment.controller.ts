@@ -1,78 +1,88 @@
 import {
+	Body,
 	Controller,
+	ForbiddenException,
 	Get,
 	NotFoundException,
 	Param,
+	Patch,
 	Query,
 	UseGuards,
 } from "@nestjs/common";
-import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
-import { PaginationPresenter } from "@/core/infra/presenters/pagination.presenter";
-import { AnimalPresenter } from "@/modules/animal/infra/http/presenters/animal.presenter";
+import { ApiOperation, ApiTags } from "@nestjs/swagger";
+import { ZodResponse } from "nestjs-zod";
 import { GetAppointmentByCompanyIdUseCase } from "@/modules/appointment/application/use-cases/get-appointment-by-company-id.use-case";
 import { GetAppointmentByIdUseCase } from "@/modules/appointment/application/use-cases/get-appointment-by-id.use-case";
 import { GetAppointmentByUserIdUseCase } from "@/modules/appointment/application/use-cases/get-appointment-by-user-id.use-case";
+import { UpdateAppointmentStatusUseCase } from "@/modules/appointment/application/use-cases/update-appointment-status.use-case";
 import { User } from "@/modules/auth/infra/http/decorators/user.decorator";
-import { UserType } from "@/modules/auth/infra/http/decorators/user-type.decorator";
+import { UserTypeDecorator } from "@/modules/auth/infra/http/decorators/user-type.decorator";
 import { CompanyGuard } from "@/modules/company/infra/http/guards/company.guard";
-import { CompanyPresenter } from "@/modules/company/infra/http/presenters/company.presenter";
-import { ServicePresenter } from "@/modules/service/infra/http/presenters/service.presenter";
-import { UserPresenter } from "@/modules/user/infra/http/presenters/user.presenter";
-import { PaginationQueryDto } from "@/shared/utils/pagination-query";
+import type { UserType } from "@/modules/user/domain/entities/user.entity";
 import {
-	AppointmentDetailResponse,
-	AppointmentDetailsPaginatedResponse,
-} from "../dtos/appointment.response.dto";
-import { AppointmentPresenter } from "../presenters/appointment.presenter";
+	AppointmentsByClientQueryDto,
+	AppointmentsByClientResponseDto,
+} from "../dtos/appointment-by-client.dto";
+import {
+	AppointmentsByCompanyQueryDto,
+	AppointmentsByCompanyResponseDto,
+} from "../dtos/appointment-by-company.dto";
+import { AppointmentByIdResponseDto } from "../dtos/appointment-by-id.dto";
+import {
+	UpdateAppointmentStatusDto,
+	UpdateAppointmentStatusResponseDto,
+} from "../dtos/update-appointment-status.dto";
 
 @ApiTags("Agendamentos")
-@Controller("appointment")
+@Controller("appointments")
 export class AppointmentController {
 	constructor(
 		private readonly getAppointmentByIdUseCase: GetAppointmentByIdUseCase,
 		private readonly getAppointmentByUserIdUseCase: GetAppointmentByUserIdUseCase,
 		private readonly getAppointmentByCompanyIdUseCase: GetAppointmentByCompanyIdUseCase,
+		private readonly updateAppointmentStatusUseCase: UpdateAppointmentStatusUseCase,
 	) {}
 
 	@Get(":id")
-	@ApiOperation({
-		summary: "Retorna um agendamento pelo ID",
-	})
-	@ApiResponse({
-		status: 200,
-		type: AppointmentDetailResponse,
-	})
-	@UserType("CUSTOMER", "COMPANY")
+	@ApiOperation({ summary: "Retorna um agendamento pelo ID" })
+	@ZodResponse({ type: AppointmentByIdResponseDto })
+	@UserTypeDecorator("customer", "company")
 	async getAppointmentById(
-		@Param("id") userId: string,
-		@User("sub") id: string,
-	): Promise<AppointmentDetailResponse> {
+		@Param("id") id: string,
+		@User("sub") userId: string,
+		@User("type") userType: UserType,
+		@User("companyId") companyId?: string,
+	) {
 		const response = await this.getAppointmentByIdUseCase.execute({
 			id,
 			userId,
+			userType,
+			companyId,
 		});
 
 		if (response.isLeft()) {
 			throw new NotFoundException(response.value.message);
 		}
-
 		return {
-			...AppointmentPresenter.toHTTP(response.value),
-			animal: AnimalPresenter.toHTTP(response.value.animal),
-			client: UserPresenter.toHTTP(response.value.client),
-			service: ServicePresenter.toHTTP(response.value.service),
-			company: CompanyPresenter.toHTTP(response.value.company),
+			...response.value.toObject(),
+			animal: {
+				...response.value.animal.toObject(),
+				breed: response.value.animal.breed.toObject(),
+			},
+			client: response.value.client.toObject(),
+			service: response.value.service.toObject(),
+			company: response.value.company.toObject(),
 		};
 	}
 
 	@Get("/company/:companyId")
 	@ApiOperation({ summary: "Retorna todos os agendamentos da empresa" })
-	@ApiResponse({ status: 200, type: AppointmentDetailsPaginatedResponse })
-	@UserType("COMPANY")
+	@ZodResponse({ status: 200, type: AppointmentsByCompanyResponseDto })
+	@UserTypeDecorator("company")
 	@UseGuards(CompanyGuard)
 	async getAllCompanyAppointments(
 		@Param("companyId") companyId: string,
-		@Query() query: PaginationQueryDto,
+		@Query() query: AppointmentsByCompanyQueryDto,
 	) {
 		const response = await this.getAppointmentByCompanyIdUseCase.execute({
 			companyId,
@@ -83,24 +93,29 @@ export class AppointmentController {
 			throw new NotFoundException(response.value.message);
 		}
 
-		return PaginationPresenter.toHTTP({
+		return {
 			meta: response.value.meta,
-			items: response.value.items.map(AppointmentPresenter.toHTTP),
-		});
+			items: response.value.items.map((item) => {
+				return {
+					...item.toObject(),
+					animal: {
+						...item.animal.toObject(),
+						breed: item.animal.breed?.toObject(),
+					},
+					client: item.client.toObject(),
+					service: item.service.toObject(),
+				};
+			}),
+		};
 	}
 
 	@Get("/user")
-	@ApiOperation({
-		summary: "Retorna todos os agendamentos do cliente",
-	})
-	@ApiResponse({
-		status: 200,
-		type: AppointmentDetailsPaginatedResponse,
-	})
-	@UserType("CUSTOMER")
+	@ApiOperation({ summary: "Retorna todos os agendamentos do cliente" })
+	@ZodResponse({ status: 200, type: AppointmentsByClientResponseDto })
+	@UserTypeDecorator("customer")
 	async getAllAppointments(
 		@User("sub") userId: string,
-		@Query() query: PaginationQueryDto,
+		@Query() query: AppointmentsByClientQueryDto,
 	) {
 		const response = await this.getAppointmentByUserIdUseCase.execute({
 			userId,
@@ -111,9 +126,50 @@ export class AppointmentController {
 			throw new NotFoundException();
 		}
 
-		return PaginationPresenter.toHTTP({
+		return {
 			meta: response.value.meta,
-			items: response.value.items.map(AppointmentPresenter.toHTTP),
+			items: response.value.items.map((item) => {
+				return {
+					...item.toObject(),
+					animal: item.animal.toObject(),
+					service: item.service.toObject(),
+				};
+			}),
+		};
+	}
+
+	@Patch(":id/status")
+	@ApiOperation({ summary: "Atualiza o status de um agendamento" })
+	@ZodResponse({ status: 200, type: UpdateAppointmentStatusResponseDto })
+	@UserTypeDecorator("customer", "company")
+	async updateAppointmentStatus(
+		@Param("id") appointmentId: string,
+		@Body() updateStatusDto: UpdateAppointmentStatusDto,
+		@User("sub") userId: string,
+		@User("type") userType: UserType,
+		@User("companyId") companyId?: string,
+	) {
+		const response = await this.updateAppointmentStatusUseCase.execute({
+			appointmentId,
+			newStatus: updateStatusDto.status,
+			userId,
+			userType,
+			companyId,
 		});
+
+		if (response.isLeft()) {
+			const error = response.value;
+			if (error.constructor.name === "ResourceNotFoundError") {
+				throw new NotFoundException(error.message);
+			}
+			throw new ForbiddenException(error.message);
+		}
+
+		const appointment = response.value;
+		return {
+			id: appointment.id.toString(),
+			status: appointment.status,
+			updatedAt: new Date().toISOString(),
+		};
 	}
 }

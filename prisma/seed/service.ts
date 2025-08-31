@@ -7,7 +7,7 @@ export async function createService(prisma: PrismaClient) {
 		create: {
 			id: "category-1",
 			name: "Grooming",
-			type: "PETSHOP",
+			type: "petshop",
 		},
 	});
 
@@ -41,15 +41,5 @@ export async function createService(prisma: PrismaClient) {
 		},
 	});
 
-	await prisma.servicePriceVariation.upsert({
-		where: { id: "service-price-variation-1" },
-		update: {},
-		create: {
-			id: "service-price-variation-1",
-			price: 50,
-			value: "SMALL",
-			variation: "SIZE",
-			serviceId: "service-1",
-		},
-	});
+	
 }

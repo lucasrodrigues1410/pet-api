@@ -14,7 +14,7 @@ describe("Get a service", () => {
 
 	it("should get a service by id", async () => {
 		const service = makeService();
-		inMemoryServicesRepository.create(service);
+		inMemoryServicesRepository.items.push(service);
 		const result = await sut.execute({
 			id: service.id.toString(),
 		});

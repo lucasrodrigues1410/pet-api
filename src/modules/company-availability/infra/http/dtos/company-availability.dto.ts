@@ -1,17 +1,9 @@
-import { createZodDto } from "nestjs-zod";
-import { z } from "zod";
-import { DaysOfWeek } from "../../../domain/entities/company-availability.entity";
+import z from "zod";
+import { daysOfWeek } from "@/modules/company-availability/domain/entities/company-availability.entity";
 
-export const body = z.object({
-	startTime: z.iso.time(),
-	endTime: z.iso.time(),
-	lunchStartTime: z.iso.time(),
-	lunchEndTime: z.iso.time(),
-});
-const params = z.object({
+export const companyAvailabilityDto = z.object({
 	companyId: z.string(),
-	day: z.enum(DaysOfWeek),
+	day: z.enum(daysOfWeek),
+	timeRange: z.object({ startTime: z.iso.time(), endTime: z.iso.time() }),
+	launchTime: z.object({ startTime: z.iso.time(), endTime: z.iso.time() }),
 });
-
-export class UpsertCompanyAvailabilityBodyDto extends createZodDto(body) {}
-export class CompanyAvailabilityParamsDto extends createZodDto(params) {}

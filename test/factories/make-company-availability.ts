@@ -1,14 +1,13 @@
+import { faker } from "@faker-js/faker";
+import { Injectable } from "@nestjs/common";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { PrismaService } from "@/core/infra/prisma/prisma.service";
 import {
 	CompanyAvailability,
 	CompanyAvailabilityProps,
-	DaysOfWeek,
+	daysOfWeek,
 } from "@/modules/company-availability/domain/entities/company-availability.entity";
 import { PrismaCompanyAvailabilityMapper } from "@/modules/company-availability/infra/database/mappers/company-availability.mapper";
-import { faker } from "@faker-js/faker";
-import { Injectable } from "@nestjs/common";
-import { format } from "date-fns";
 
 export function makeCompanyAvailability(
 	override: Partial<
@@ -22,7 +21,7 @@ export function makeCompanyAvailability(
 	const companyAvailability = CompanyAvailability.create(
 		{
 			companyId: new UniqueEntityID(),
-			day: faker.helpers.arrayElement(Object.values(DaysOfWeek)),
+			day: faker.helpers.arrayElement(daysOfWeek),
 			endTime: "17:00",
 			startTime: "08:00",
 			lunchEndTime: "13:00",

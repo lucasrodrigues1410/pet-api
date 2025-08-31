@@ -10,7 +10,7 @@ import { InMemoryCompanyAvailabilityExceptionRepository } from "test/repositorie
 import { InMemoryServiceRepository } from "test/repositories/in-memory-service.repository";
 import { InMemoryStaffRepository } from "test/repositories/in-memory-staff.repository";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
-import { DaysOfWeek } from "@/modules/company-availability/domain/entities/company-availability.entity";
+import { daysOfWeek } from "@/modules/company-availability/domain/entities/company-availability.entity";
 import { Service } from "@/modules/service/domain/entities/service.entity";
 import { Staff } from "@/modules/staff/domain/entities/staff.entity";
 import { Either } from "@/shared/either";
@@ -73,7 +73,7 @@ describe("ListAvailableDatesUseCase", () => {
 	});
 
 	it("should return available slots when company is open and no conflicts exist", async () => {
-		const dayOfWeek = Object.values(DaysOfWeek)[getDay(defaultDate)];
+		const dayOfWeek = daysOfWeek[getDay(defaultDate)];
 		const companyAvailability = makeCompanyAvailability({
 			companyId: companyId,
 			day: dayOfWeek,
@@ -107,7 +107,7 @@ describe("ListAvailableDatesUseCase", () => {
 
 	it("should return ResourceNotFoundError when the service is not found", async () => {
 		const nonExistentServiceId = "non-existent-service-id";
-		const dayOfWeek = Object.values(DaysOfWeek)[getDay(defaultDate)];
+		const dayOfWeek = daysOfWeek[getDay(defaultDate)];
 		const companyAvailability = makeCompanyAvailability({
 			// Adiciona disponibilidade para isolar o erro no serviço
 			companyId: companyId,
@@ -128,7 +128,7 @@ describe("ListAvailableDatesUseCase", () => {
 	});
 
 	it("should return no slots when the requested date/time is outside company operating hours for that day", async () => {
-		const dayOfWeek = Object.values(DaysOfWeek)[getDay(defaultDate)];
+		const dayOfWeek = daysOfWeek[getDay(defaultDate)];
 		const companyAvailability = makeCompanyAvailability({
 			companyId: companyId,
 			day: dayOfWeek,
@@ -160,7 +160,7 @@ describe("ListAvailableDatesUseCase", () => {
 		inMemoryStaffRepository.items[0].appointments = [appointment];
 		inMemoryAppointmentRepository.items.push(appointment);
 
-		const dayOfWeek = Object.values(DaysOfWeek)[getDay(defaultDate)];
+		const dayOfWeek = daysOfWeek[getDay(defaultDate)];
 		const companyAvailability = makeCompanyAvailability({
 			companyId: companyId,
 			day: dayOfWeek,

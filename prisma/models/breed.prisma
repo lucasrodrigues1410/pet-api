@@ -1,9 +1,9 @@
 model Breed {
-    id           String     @id @default(cuid())
-    animalTypeId String     @map("animal_type_id")
-    animalType   AnimalType @relation(fields: [animalTypeId], references: [id])
-    name         String     @unique @db.VarChar(255)
-    animals      Animal[]
+  id           String     @id @default(cuid())
+  animalTypeId String     @map("animal_type_id")
+  animalType   AnimalType @relation(fields: [animalTypeId], references: [id])
+  name         String     @unique @db.VarChar(255)
+  animals      Animal[]
 
-    @@map("breeds")
+  @@map("breeds")
 }

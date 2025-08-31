@@ -1,26 +1,10 @@
-import {
-	Prisma,
-	Animal as PrismaAnimal,
-	Asset as PrismaAsset,
-	Breed as PrismaBreed,
-} from "prisma/generated/client";
+import { subYears } from "date-fns";
+import { Prisma, Animal as PrismaAnimal } from "prisma/generated/client";
 import { Animal } from "src/modules/animal/domain/entities/animal.entity";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
-import { PrismaAssetMapper } from "@/modules/asset/infra/database/mappers/prisma-asset.mapper";
-import { PrismaBreedMapper } from "@/modules/breed/infra/database/mappers/prisma-breed.mapper";
 
 export class PrismaAnimalMapper {
-	static toDomain(
-		prismaAnimal: PrismaAnimal & { breed?: PrismaBreed; asset?: PrismaAsset },
-	): Animal {
-		const breed = prismaAnimal.breed
-			? PrismaBreedMapper.toDomain(prismaAnimal.breed)
-			: undefined;
-
-		const asset = prismaAnimal.asset
-			? PrismaAssetMapper.toDomain(prismaAnimal.asset)
-			: undefined;
-
+	static toDomain(prismaAnimal: PrismaAnimal): Animal {
 		return Animal.create(
 			{
 				userId: new UniqueEntityID(prismaAnimal.userId),
@@ -31,8 +15,7 @@ export class PrismaAnimalMapper {
 				name: prismaAnimal.name,
 				birthdate: prismaAnimal.birthdate,
 				weight: prismaAnimal.weight,
-				breed,
-				asset,
+				coat: prismaAnimal.coat,
 			},
 			new UniqueEntityID(prismaAnimal.id),
 		);
@@ -45,8 +28,9 @@ export class PrismaAnimalMapper {
 			breedId: animal.breedId.toString(),
 			assetId: animal.assetId?.toString(),
 			name: animal.name,
-			birthdate: animal.birthdate,
+			birthdate: animal.age ? subYears(new Date(), animal.age) : null,
 			weight: animal.weight,
+			coat: animal.coat,
 		};
 	}
 
@@ -59,8 +43,9 @@ export class PrismaAnimalMapper {
 			breedId: animal.breedId?.toString(),
 			assetId: animal.assetId?.toString(),
 			name: animal.name,
-			birthdate: animal.birthdate,
+			birthdate: animal.age ? subYears(new Date(), animal.age) : null,
 			weight: animal.weight,
+			coat: animal.coat,
 		};
 	}
 }

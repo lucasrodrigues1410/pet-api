@@ -1,7 +1,7 @@
 import { set } from "date-fns";
 import { createZodDto } from "nestjs-zod";
 import { z } from "zod";
-import { CoatType } from "@/modules/appointment/domain/enums/appointment.enum";
+import { coatType } from "@/modules/appointment/domain/entities/appointment.entity";
 
 const request = z.object({
 	date: z.iso.datetime().transform((val) =>
@@ -12,7 +12,7 @@ const request = z.object({
 	),
 	serviceId: z.string(),
 	animalId: z.string(),
-	coatType: z.enum(CoatType),
+	coatType: z.enum(coatType),
 });
 
 export class CreateAppointmentRequestDto extends createZodDto(request) {}

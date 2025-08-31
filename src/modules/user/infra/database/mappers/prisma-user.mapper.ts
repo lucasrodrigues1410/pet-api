@@ -1,15 +1,26 @@
-import { Prisma, User as PrismaUser } from "prisma/generated/client";
-import { User } from "src/modules/user/domain/entities/user.entity";
+import {
+	Prisma,
+	Asset as PrismaAsset,
+	User as PrismaUser,
+} from "prisma/generated/client";
+import { User, UserType } from "src/modules/user/domain/entities/user.entity";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
+import { PrismaAssetMapper } from "@/modules/asset/infra/database/mappers/prisma-asset.mapper";
 
 export class PrismaUserMapper {
-	static toDomain(prismaUser: PrismaUser): User {
+	static toDomain(
+		prismaUser: PrismaUser & { avatar?: PrismaAsset | null | undefined },
+	): User {
 		return User.create(
 			{
 				name: prismaUser.name,
 				email: prismaUser.email,
-				type: prismaUser.type,
+				type: prismaUser.type as UserType,
 				password: prismaUser.password,
+				avatar: prismaUser.avatar
+					? PrismaAssetMapper.toDomain(prismaUser.avatar)
+					: undefined,
+				avatarAssetId: prismaUser.avatarAssetId ?? undefined,
 			},
 			new UniqueEntityID(prismaUser.id),
 		);
@@ -22,6 +33,7 @@ export class PrismaUserMapper {
 			email: user.email,
 			password: user.password,
 			type: user.type,
+			avatarAssetId: user.avatarAssetId ?? undefined,
 		};
 	}
 }

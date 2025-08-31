@@ -1,24 +1,18 @@
 import { beforeEach, describe, expect, it } from "bun:test";
 import { faker } from "@faker-js/faker";
 import { InMemoryAnimalRepository } from "test/repositories/in-memory-animal.repository";
-import { InMemoryAssetRepository } from "test/repositories/in-memory-asset.repository";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { CreateAnimalUseCase } from "./create-animal.use-case";
 
 let inMemoryAnimalRepository: InMemoryAnimalRepository;
-let inMemoryAssetRepository: InMemoryAssetRepository;
 
 let sut: CreateAnimalUseCase;
 
 describe("Create Animal", () => {
 	beforeEach(() => {
 		inMemoryAnimalRepository = new InMemoryAnimalRepository();
-		inMemoryAssetRepository = new InMemoryAssetRepository();
 
-		sut = new CreateAnimalUseCase(
-			inMemoryAnimalRepository,
-			inMemoryAssetRepository,
-		);
+		sut = new CreateAnimalUseCase(inMemoryAnimalRepository);
 	});
 
 	it("should create an animal", async () => {

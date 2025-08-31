@@ -1,7 +1,6 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
-import { AssetRepository } from "@/modules/asset/domain/repositories/asset.repository";
-import { Either, left, right } from "@/shared/either";
+import { Either, right } from "@/shared/either";
 import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
 import { Animal } from "../../domain/entities/animal.entity";
 import { AnimalRepository } from "../../domain/repositories/animal.repository";
@@ -12,7 +11,6 @@ interface CreateAnimalCaseRequest {
 	breedId: string;
 	weight: number;
 	userId: string;
-	assetId?: string;
 }
 
 type CreateAnimalCaseResponse = Either<
@@ -24,33 +22,46 @@ type CreateAnimalCaseResponse = Either<
 
 @Injectable()
 export class CreateAnimalUseCase {
-	constructor(
-		private readonly animalRepository: AnimalRepository,
-		private readonly assetRepository: AssetRepository,
-	) {}
+	private readonly logger = new Logger(CreateAnimalUseCase.name);
+
+	constructor(private readonly animalRepository: AnimalRepository) {}
 
 	async execute(
 		data: CreateAnimalCaseRequest,
 	): Promise<CreateAnimalCaseResponse> {
-		const animal = Animal.create({
-			name: data.name,
-			birthdate: data.birthdate,
-			breedId: new UniqueEntityID(data.breedId),
-			weight: data.weight,
-			userId: new UniqueEntityID(data.userId),
-			assetId: data.assetId ? new UniqueEntityID(data.assetId) : undefined,
-		});
-		const existsAsset = animal.assetId
-			? await this.assetRepository.existsByIds([animal.assetId.toString()])
-			: true;
+		this.logger.log(`Executing create animal use case for user ${data.userId}`);
+		this.logger.debug(
+			`Create animal data: ${JSON.stringify({ ...data, birthdate: data.birthdate })}`,
+		);
 
-		if (!existsAsset) {
-			return left(new ResourceNotFoundError());
+		try {
+			const animal = Animal.create({
+				name: data.name,
+				birthdate: data.birthdate,
+				breedId: new UniqueEntityID(data.breedId),
+				weight: data.weight,
+				userId: new UniqueEntityID(data.userId),
+			});
+
+			this.logger.debug(
+				`Animal entity created with ID: ${animal.id.toString()}`,
+			);
+
+			const result = await this.animalRepository.create(animal);
+
+			this.logger.log(
+				`Animal created successfully in repository. ID: ${result.id.toString()}, Name: ${result.name}`,
+			);
+
+			return right({
+				animal: result,
+			});
+		} catch (error) {
+			this.logger.error(
+				`Error creating animal for user ${data.userId}`,
+				error.stack,
+			);
+			throw error;
 		}
-
-		const result = await this.animalRepository.create(animal);
-		return right({
-			animal: result,
-		});
 	}
 }

@@ -1,6 +1,6 @@
 import { createZodDto } from "nestjs-zod";
 import { z } from "zod";
-import { PaginatedDto } from "@/shared/utils/pagination";
+import { makePaginatedDto } from "@/shared/utils/pagination";
 import { breedDto } from "./breed.dto";
 
 const listResponse = z.object({
@@ -10,5 +10,5 @@ const listResponse = z.object({
 export class BreedResponse extends createZodDto(breedDto) {}
 export class BreedListResponse extends createZodDto(listResponse) {}
 export class BreedListResponseWithPagination extends createZodDto(
-	PaginatedDto(breedDto),
+	makePaginatedDto(breedDto),
 ) {}

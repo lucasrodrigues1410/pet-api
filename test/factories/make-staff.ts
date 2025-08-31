@@ -5,7 +5,7 @@ import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import {
 	Staff,
 	StaffProps,
-	StaffRole,
+	staffRole,
 } from "@/modules/staff/domain/entities/staff.entity";
 import { PrismaStaffMapper } from "@/modules/staff/infra/database/mappers/prisma-staff.mapper";
 
@@ -13,7 +13,7 @@ export function makeStaff(override: Partial<Staff> = {}, id?: UniqueEntityID) {
 	const staff = Staff.create(
 		{
 			companyId: new UniqueEntityID(),
-			role: faker.helpers.arrayElement(Object.values(StaffRole)),
+			role: faker.helpers.arrayElement(staffRole),
 			userId: new UniqueEntityID(),
 			...override,
 		},

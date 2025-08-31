@@ -27,4 +27,11 @@ export class PriceRange extends ValueObject<PriceRangeProps> {
 		}
 		return new PriceRange(props);
 	}
+
+	public toObject() {
+		return {
+			min: this.min,
+			max: this.max,
+		};
+	}
 }
