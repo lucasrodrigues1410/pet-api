@@ -5,8 +5,8 @@ import { assetDto } from "@/modules/asset/infra/http/dtos/asset.dto";
 export const companyDto = z.object({
 	id: z.string(),
 	name: z.string(),
-	address: z.string().optional(),
-	contact: z.string().optional(),
+	address: z.string().nullish(),
+	contact: z.string().nullish(),
 	logo: assetDto.optional(),
 });
 

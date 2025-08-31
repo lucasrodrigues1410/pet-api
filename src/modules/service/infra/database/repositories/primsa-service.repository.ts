@@ -32,7 +32,10 @@ export class PrismaServiceRepository implements ServiceRepository {
 
 	async findById(id: string) {
 		const result = await this.prismaService.service.findUnique({
-			where: { id },
+			where: { 
+				id,
+				isActive: true 
+			},
 			include: {
 				company: true,
 				categories: {
@@ -66,7 +69,10 @@ export class PrismaServiceRepository implements ServiceRepository {
 
 	async findByCompanyId(companyId: string) {
 		const result = await this.prismaService.service.findMany({
-			where: { companyId },
+			where: { 
+				companyId,
+				isActive: true 
+			},
 		});
 
 		return result.map((service) => PrismaServiceMapper.toDomain(service));
@@ -170,5 +176,51 @@ export class PrismaServiceRepository implements ServiceRepository {
 			items: servicesWithRelations,
 			...rest,
 		};
+	}
+
+	async findMostPopular(limit = 10) {
+		const result = await this.prismaService.service.findMany({
+			where: { 
+				isActive: true 
+			},
+			include: {
+				company: true,
+				categories: {
+					include: {
+						category: true,
+					},
+				},
+				_count: {
+					select: {
+						appointments: {
+							where: {
+								status: {
+									in: ['scheduled', 'confirmed', 'completed']
+								}
+							}
+						}
+					}
+				}
+			},
+			orderBy: {
+				appointments: {
+					_count: 'desc'
+				}
+			},
+			take: limit,
+		});
+
+		return result.map((service) => {
+			const serviceEntity = PrismaServiceMapper.toDomain(service);
+			const company = PrismaCompanyMapper.toDomain(service.company);
+			const categories = service.categories.map(({ category }) =>
+				PrismaCategoryMapper.toDomain(category),
+			);
+
+			return Object.assign(serviceEntity, {
+				company,
+				categories,
+			});
+		});
 	}
 }

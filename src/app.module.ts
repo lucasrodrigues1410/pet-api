@@ -18,6 +18,7 @@ import { CategoryModule } from "./modules/category/category.module";
 import { CompanyModule } from "./modules/company/company.module";
 import { DashboardModule } from "./modules/dashboard/dashboard.module";
 import { EmailModule } from "./modules/email/email.module";
+import { HealthModule } from "./modules/health/health.module";
 import { NotificationModule } from "./modules/notification/notification.module";
 import { RatingModule } from "./modules/rating/rating.module";
 import { ServiceModule } from "./modules/service/service.module";
@@ -50,6 +51,7 @@ import { UserModule } from "./modules/user/user.module";
 		NotificationModule,
 		DashboardModule,
 		RatingModule,
+		HealthModule,
 	],
 	providers: [
 		{

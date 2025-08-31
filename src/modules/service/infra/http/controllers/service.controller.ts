@@ -23,12 +23,14 @@ import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found
 import { PaginationQueryDto } from "@/shared/utils/pagination-query";
 import { DeactivateServiceUseCase } from "../../../application/use-cases/deactivate-service.use-case";
 import { GetServiceByIdUseCase } from "../../../application/use-cases/get-service-by-id.use-case";
+import { GetServiceRecommendationsUseCase } from "../../../application/use-cases/get-service-recommendations.use-case";
 import { ListServicesByCompanyUseCase } from "../../../application/use-cases/list-services-by-company.use-case";
 import { SearchServicesUseCase } from "../../../application/use-cases/search-services.use-case";
 import { CreateServiceRequestDto } from "../dtos/create-service.dto";
 import { SearchServicesRequestDto } from "../dtos/search-services.dto";
 import { ServiceResponseList } from "../dtos/service.dto";
 import { ServiceDetailsResponse } from "../dtos/service-details.dto";
+import { ServiceRecommendationsResponse } from "../dtos/service-recommendations.dto";
 
 @ApiTags("Serviços")
 @Controller("services")
@@ -39,6 +41,7 @@ export class ServiceController {
 		private readonly deactivateServiceUseCase: DeactivateServiceUseCase,
 		private readonly searchServicesUseCase: SearchServicesUseCase,
 		private readonly createServiceUseCase: CreateServiceUseCase,
+		private readonly getServiceRecommendationsUseCase: GetServiceRecommendationsUseCase,
 	) {}
 
 	@Get("/:id")
@@ -74,6 +77,39 @@ export class ServiceController {
 
 		return {
 			items: result.value.services.map((i) => i.toObject()),
+		};
+	}
+
+	@Get("/recommendations")
+	@Public()
+	@ApiOperation({ summary: "Obter recomendações de serviços populares" })
+	@ZodResponse({ status: 200, type: ServiceRecommendationsResponse })
+	async getServiceRecommendations() {
+		const result = await this.getServiceRecommendationsUseCase.execute({
+			limit: 10,
+		});
+
+		if (result.isLeft()) {
+			throw new BadRequestException();
+		}
+
+		return {
+			items: result.value.services.map((i) => {
+				return {
+					...i.toObject(),
+					company: {
+						id: i.company.id.toString(),
+						name: i.company.name,
+						contact: i.company.contact ?? null,
+					},
+					categories: i.categories.map((c) => {
+						return {
+							id: c.id.toString(),
+							name: c.name,
+						};
+					}),
+				};
+			}),
 		};
 	}
 

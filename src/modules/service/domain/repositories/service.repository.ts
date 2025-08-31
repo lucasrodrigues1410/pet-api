@@ -1,3 +1,5 @@
+import { Category } from "@/modules/category/domain/entities/category.entity";
+import { Company } from "@/modules/company/domain/entities/company.entity";
 import { PaginationResult } from "@/shared/utils/pagination";
 import { PaginationQuery } from "@/shared/utils/pagination-query";
 import { Service, ServiceWithRelations } from "../entities/service.entity";
@@ -21,4 +23,10 @@ export abstract class ServiceRepository {
 			};
 		} & PaginationQuery,
 	): Promise<PaginationResult<ServiceWithRelations>>;
+	abstract findMostPopular(limit?: number): Promise<
+		(Service & {
+			company: Pick<Company, "id" | "name" | "contact">;
+			categories:Pick<Category, "id" | "name">[];
+		})[]
+	>;
 }
