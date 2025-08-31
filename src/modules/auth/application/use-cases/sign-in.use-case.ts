@@ -36,7 +36,7 @@ export class SignInUseCase {
 			user?.password ?? "",
 		);
 
-		if (!user || !isPasswordValid || user.type !== "CUSTOMER") {
+		if (!user || !isPasswordValid || user.type !== "customer") {
 			return left(new InvalidCredentialsError());
 		}
 

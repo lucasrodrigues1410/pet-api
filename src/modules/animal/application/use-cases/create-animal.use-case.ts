@@ -59,7 +59,7 @@ export class CreateAnimalUseCase {
 		} catch (error) {
 			this.logger.error(
 				`Error creating animal for user ${data.userId}`,
-				error.stack,
+				(error as Error).stack,
 			);
 			throw error;
 		}

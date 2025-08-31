@@ -15,7 +15,6 @@ export class PrismaAnimalMapper {
 				name: prismaAnimal.name,
 				birthdate: prismaAnimal.birthdate,
 				weight: prismaAnimal.weight,
-				coat: prismaAnimal.coat,
 			},
 			new UniqueEntityID(prismaAnimal.id),
 		);
@@ -30,7 +29,6 @@ export class PrismaAnimalMapper {
 			name: animal.name,
 			birthdate: animal.age ? subYears(new Date(), animal.age) : null,
 			weight: animal.weight,
-			coat: animal.coat,
 		};
 	}
 
@@ -45,7 +43,6 @@ export class PrismaAnimalMapper {
 			name: animal.name,
 			birthdate: animal.age ? subYears(new Date(), animal.age) : null,
 			weight: animal.weight,
-			coat: animal.coat,
 		};
 	}
 }

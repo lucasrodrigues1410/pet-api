@@ -10,7 +10,6 @@ export class RulesExecutionService {
 		const values = new Map<string, (string | undefined | null)[]>([
 			["size", [animal.size]],
 			["age", [animal.ageStage]],
-			["coat", [animal.coat]],
 		]);
 
 		for (const rule of rules) {
