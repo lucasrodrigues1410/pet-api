@@ -1,5 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { SendEmailUseCase } from "@/modules/email/application/use-cases/send-email.use-case";
+import { TemplateVariablesMap } from "@/modules/email/domain/templates/template-variables-map";
 import { NotificationEvent } from "../../domain/events/notification.event";
 
 type Payload = NotificationEvent;
@@ -15,7 +16,19 @@ export class ProcessNotificationUseCase {
 
 	constructor(private readonly sendEmailUseCase: SendEmailUseCase) {
 		this.providers = {
-			email: this.sendEmailUseCase,
+			email: {
+				execute: async (params: Payload) => {
+					if (!(params.templateKey in ({} as TemplateVariablesMap))) {
+						throw new Error(`Invalid template key: ${params.templateKey}`);
+					}
+
+					await this.sendEmailUseCase.execute({
+						templateKey: params.templateKey as keyof TemplateVariablesMap,
+						target: params.target,
+						variables: params.variables as any,
+					});
+				},
+			},
 		};
 	}
 
