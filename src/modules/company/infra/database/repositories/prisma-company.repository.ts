@@ -7,6 +7,7 @@ import { PrismaCompanyAvailabilityMapper as AvlbyMapper } from "@/modules/compan
 import { PrismaLocationMapper } from "@/modules/location/infra/database/mappers/prisma-location.mapper";
 import { PrismaServiceMapper } from "@/modules/service/infra/database/mappers/prisma-service.mapper";
 import { calculateLocationBounds } from "@/shared/utils/geo-location.util";
+import { normalizeText } from "@/shared/utils/normalize-text";
 import { paginate } from "@/shared/utils/paginator";
 import { PrismaCompanyMapper } from "../mappers/prisma-company.mapper";
 
@@ -65,20 +66,49 @@ export class PrismaCompanyRepository implements CompanyRepository {
 
 		const orConditions: Prisma.CompanyWhereInput[] = [];
 
-		// Busca por query no nome da empresa, descrição ou nome dos serviços
 		if (query) {
-			orConditions.push(
-				{ name: { contains: query, mode: "insensitive" } },
-				{ description: { contains: query, mode: "insensitive" } },
-				{
+			const normalizedQuery = normalizeText(query);
+			const keywords = normalizedQuery
+				.split(" ")
+				.filter(
+					(word) =>
+						word.length > 2 &&
+						!["e", "de", "da", "do", "em", "para", "com"].includes(word),
+				);
+
+			if (keywords.length > 0) {
+				const serviceConditions = keywords.map((keyword) => ({
 					services: {
 						some: {
-							name: { contains: query, mode: "insensitive" },
+							name: {
+								contains: keyword,
+								mode: "insensitive",
+							},
 							isActive: true,
 						},
 					},
-				},
-			);
+				})) as Prisma.CompanyWhereInput[];
+
+				const nameConditions = keywords.map((keyword) => ({
+					name: {
+						contains: keyword,
+						mode: "insensitive",
+					},
+				})) as Prisma.CompanyWhereInput[];
+
+				const descriptionConditions = keywords.map((keyword) => ({
+					description: {
+						contains: keyword,
+						mode: "insensitive",
+					},
+				})) as Prisma.CompanyWhereInput[];
+
+				orConditions.push(
+					...serviceConditions,
+					...nameConditions,
+					...descriptionConditions,
+				);
+			}
 		}
 
 		// Geolocalização (caixa) aplicada via companyLocations
@@ -113,10 +143,7 @@ export class PrismaCompanyRepository implements CompanyRepository {
 					skip,
 					take,
 				}),
-			() =>
-				this.prismaService.company.count({
-					where: whereConditions,
-				}),
+			async () => this.prismaService.company.count({ where: whereConditions }),
 			paginationParams,
 		);
 
