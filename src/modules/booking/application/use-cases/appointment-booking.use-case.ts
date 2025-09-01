@@ -86,7 +86,7 @@ export class AppointmentBookingUseCase {
 		const totalPrice = basePrice + priceAdjustment;
 
 		const baseDurationMinutes = service.duration;
-		const finalDurationMinutes = baseDurationMinutes;
+		const finalDurationMinutes = baseDurationMinutes + (ruleExecutionResult?.durationMinutes ?? 0);
 
 		const endDate = addMinutes(startDate, finalDurationMinutes);
 

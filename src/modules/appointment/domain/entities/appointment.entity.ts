@@ -148,7 +148,7 @@ export class Appointment extends Entity<AppointmentProps> {
 		return new Appointment(
 			{
 				...props,
-				status: props.status ?? "scheduled",
+				status: props.status ?? "confirmed",
 			},
 			id,
 		);
