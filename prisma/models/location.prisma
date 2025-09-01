@@ -1,5 +1,5 @@
 model Location {
-  id              Int               @id @default(autoincrement())
+  id              String            @id @default(cuid())
   addressLine     String            @map("address_line") @db.VarChar(255)
   number          String            @db.VarChar(20)
   complement      String?           @db.VarChar(255)
@@ -12,23 +12,10 @@ model Location {
   longitude       Decimal           @db.Decimal(11, 8)
   createdAt       DateTime          @default(now()) @map("created_at")
   updatedAt       DateTime          @updatedAt @map("updated_at")
-  companyLocation CompanyLocation[]
+
+  company         Company[]
 
   @@index([city, state])
   @@index([latitude, longitude])
   @@map("locations")
-}
-
-model CompanyLocation {
-  id         String    @id @default(cuid())
-  companyId  String    @map("company_id")
-  location   Location  @relation(fields: [locationId], references: [id])
-  locationId Int       @map("location_id")
-  createdAt  DateTime  @default(now()) @map("created_at")
-  updatedAt  DateTime  @updatedAt @map("updated_at")
-  company    Company   @relation(fields: [companyId], references: [id])
-
-  @@index([companyId])
-  @@index([locationId])
-  @@map("company_locations")
 }

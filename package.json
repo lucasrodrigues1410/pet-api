@@ -12,7 +12,8 @@
 		"start": "bun run src/main.ts",
 		"test": "bun test",
 		"email": "email dev --dir src/modules/email/infra/templates/components",
-		"db:seed": "bun prisma/seed/index.ts"
+		"db:seed": "bun prisma/seed/index.ts",
+		"db:seed:assets": "bun prisma/seed/asset.ts"
 	},
 	"dependencies": {
 		"@ai-sdk/google": "^2.0.11",
@@ -35,7 +36,7 @@
 		"date-fns": "^4.1.0",
 		"helmet": "^8.1.0",
 		"imagekit": "^6.0.0",
-		"nestjs-zod": "^5.0.0",
+		"nestjs-zod": "^5.0.1",
 		"passport-jwt": "^4.0.1",
 		"reflect-metadata": "^0.2.2",
 		"zod": "^4.1.5"

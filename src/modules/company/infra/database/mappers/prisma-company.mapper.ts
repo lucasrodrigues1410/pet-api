@@ -16,7 +16,6 @@ export class PrismaCompanyMapper {
 		return Company.create(
 			{
 				name: prismaCompany.name,
-				address: prismaCompany.address || undefined,
 				contact: prismaCompany.contact || undefined,
 				description: prismaCompany.description || undefined,
 				logo: prismaCompany.logo
@@ -24,6 +23,7 @@ export class PrismaCompanyMapper {
 					: undefined,
 				averageRating: prismaCompany.averageRating,
 				ratingCount: prismaCompany.ratingCount,
+				locationId: new UniqueEntityID(prismaCompany.locationId),
 			},
 			new UniqueEntityID(prismaCompany.id),
 		);
@@ -33,11 +33,11 @@ export class PrismaCompanyMapper {
 		return {
 			id: company.id.toString(),
 			name: company.name,
-			address: company.address,
 			contact: company.contact,
 			description: company.description,
 			averageRating: company.averageRating || 0,
 			ratingCount: company.ratingCount || 0,
+			locationId: company.locationId.toString(),
 		};
 	}
 }

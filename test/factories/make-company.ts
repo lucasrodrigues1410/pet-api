@@ -9,20 +9,20 @@ import { PrismaCompanyMapper } from "src/modules/company/infra/database/mappers/
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 
 export function makeCompany(
-	override: Partial<Company> = {},
+	override: Partial<CompanyProps> = {},
 	id?: UniqueEntityID,
 ) {
-	const student = Company.create(
+	const company = Company.create(
 		{
 			name: faker.company.name(),
-			address: faker.location.streetAddress(),
 			contact: faker.phone.number(),
+			locationId: new UniqueEntityID(),
 			...override,
 		},
 		id,
 	);
 
-	return student;
+	return company;
 }
 
 @Injectable()

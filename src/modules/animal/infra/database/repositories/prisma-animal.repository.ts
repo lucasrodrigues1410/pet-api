@@ -1,6 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { PrismaService } from "@/core/infra/prisma/prisma.service";
-import { PaginationQuery } from "@/shared/utils/pagination-query";
+import type { PaginationQuery } from "@/shared/utils/pagination-query";
 import { paginate } from "@/shared/utils/paginator";
 import { Animal } from "../../../domain/entities/animal.entity";
 import { AnimalRepository } from "../../../domain/repositories/animal.repository";

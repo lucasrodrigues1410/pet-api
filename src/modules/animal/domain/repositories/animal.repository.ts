@@ -1,5 +1,5 @@
 import { PaginationResult } from "@/shared/utils/pagination";
-import { PaginationQuery } from "@/shared/utils/pagination-query";
+import type { PaginationQuery } from "@/shared/utils/pagination-query";
 import { Animal } from "../entities/animal.entity";
 
 export abstract class AnimalRepository {

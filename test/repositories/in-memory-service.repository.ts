@@ -3,12 +3,11 @@ import {
 	ServiceWithRelations,
 } from "src/modules/service/domain/entities/service.entity";
 import { ServiceRepository } from "src/modules/service/domain/repositories/service.repository";
-import { paginate } from "@/shared/utils/paginator";
 
 export class InMemoryServiceRepository implements ServiceRepository {
 	public items: Service[] = [];
 
-	async create(service: Service, categoryIds?: string[]) {
+	async create(service: Service, _?: string[]) {
 		// Para testes em memória, apenas adicionamos o serviço
 		// As categorias seriam tratadas em um repositório real
 		this.items.push(service);
@@ -34,22 +33,5 @@ export class InMemoryServiceRepository implements ServiceRepository {
 			(service) => service.companyId.toString() === companyId,
 		);
 		return result;
-	}
-
-	async searchServices(
-		params: Parameters<ServiceRepository["searchServices"]>[0],
-	) {
-		const { query } =
-			params;
-
-		var items = this.items.filter((service) =>
-			service.name.includes(query || ""),
-		) as ServiceWithRelations[];
-
-		return paginate(
-			async () => items.slice(0, 10),
-			async () => items.length,
-			params,
-		);
 	}
 }

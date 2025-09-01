@@ -1,4 +1,3 @@
-import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { faker } from "@faker-js/faker";
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "src/core/infra/prisma/prisma.service";
@@ -7,6 +6,7 @@ import {
 	AnimalProps,
 } from "src/modules/animal/domain/entities/animal.entity";
 import { PrismaAnimalMapper } from "src/modules/animal/infra/database/mappers/prisma-animal.mapper";
+import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 
 export function makeAnimal(
 	override: Partial<Animal> = {},
