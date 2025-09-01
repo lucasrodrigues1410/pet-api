@@ -25,7 +25,7 @@ describe("SignIn", () => {
 		const user = makeUser({
 			email: "johndoe@example.com",
 			password: await fakeHasher.hash("123456"),
-			type: "CUSTOMER",
+			type: "customer",
 		});
 		inMemoryUserRepository.items.push(user);
 		const result = await sut.execute({
@@ -45,7 +45,7 @@ describe("SignIn", () => {
 		const user = makeUser({
 			email: "johndoe@example.com",
 			password: await fakeHasher.hash("123456"),
-			type: "COMPANY",
+			type: "company",
 		});
 		inMemoryUserRepository.items.push(user);
 		const result = await sut.execute({

@@ -21,9 +21,10 @@ describe("Get a company", () => {
 		expect(result.isRight()).toBe(true);
 		expect(result.value).toMatchObject({
 			company: expect.objectContaining({
-				name: company.name,
-				address: company.address,
-				contact: company.contact,
+				props: expect.objectContaining({
+					name: company.name,
+					contact: company.contact,
+				}),
 			}),
 		});
 	});

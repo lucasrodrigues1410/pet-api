@@ -2,7 +2,7 @@ import { Animal } from "@/modules/animal/domain/entities/animal.entity";
 import { Service } from "@/modules/service/domain/entities/service.entity";
 import { Either, right } from "@/shared/either";
 import { PaginationResult } from "@/shared/utils/pagination";
-import { PaginationQuery } from "@/shared/utils/pagination-query";
+import type { PaginationQuery } from "@/shared/utils/pagination-query";
 import {
 	Appointment,
 	AppointmentStatus,

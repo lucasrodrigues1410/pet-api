@@ -6,7 +6,7 @@ import { User } from "@/modules/user/domain/entities/user.entity";
 import { Either, right } from "@/shared/either";
 import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
 import { PaginationResult } from "@/shared/utils/pagination";
-import { PaginationQuery } from "@/shared/utils/pagination-query";
+import type { PaginationQuery } from "@/shared/utils/pagination-query";
 import {
 	Appointment,
 	AppointmentStatus,

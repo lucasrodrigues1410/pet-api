@@ -13,7 +13,7 @@ async function bootstrap() {
 		rawBody: true,
 		cors: true,
 		bodyParser: true,
-		logger: ["error", "warn"],
+		//logger: ["error", "warn","log"],
 	});
 
 	app.use(compression());
