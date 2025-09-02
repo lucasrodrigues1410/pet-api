@@ -84,6 +84,7 @@ export class AppointmentController {
 		@Param("companyId") companyId: string,
 		@Query() query: AppointmentsByCompanyQueryDto,
 	) {
+
 		const response = await this.getAppointmentByCompanyIdUseCase.execute({
 			companyId,
 			query,

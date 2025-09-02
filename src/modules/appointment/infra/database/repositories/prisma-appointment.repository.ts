@@ -122,6 +122,18 @@ export class PrismaAppointmentRepository implements AppointmentRepository {
 			filter.status = { in: params.query.status };
 		}
 
+		if (params.query.query) {
+			filter.animal = {
+				name: { contains: params.query.query, mode: "insensitive" },
+			};
+			filter.client = {
+				name: { contains: params.query.query, mode: "insensitive" },
+			};
+			filter.service = {
+				name: { contains: params.query.query, mode: "insensitive" },
+			};
+		}
+
 		const { items, meta } = await paginate(
 			({ skip, take }) =>
 				this.prismaService.appointment.findMany({

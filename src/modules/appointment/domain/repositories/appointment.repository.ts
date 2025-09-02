@@ -39,6 +39,7 @@ export abstract class AppointmentRepository {
 			startDate?: Date;
 			endDate?: Date;
 			status?: AppointmentStatus[];
+			query?: string;
 		};
 	}): Promise<
 		PaginationResult<

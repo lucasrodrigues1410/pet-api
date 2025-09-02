@@ -7,14 +7,18 @@ import { appointmentDto } from "./appointment.dto";
 
 const queryDto = paginationQuerySchema.extend({
 	startDate: z.iso
-		.date()
+		.datetime()
 		.optional()
 		.transform((date) => (date ? new Date(date) : undefined)),
 	endDate: z.iso
-		.date()
+		.datetime()
 		.optional()
 		.transform((date) => (date ? new Date(date) : undefined)),
-	status: z.array(z.enum(appointmentStatus)).optional(),
+	query: z.string().optional(),
+	status: z.preprocess(
+		(val) => (typeof val === 'string' ? val.split(',') : val),
+		z.array(z.enum(appointmentStatus)).optional()
+	  ),
 });
 
 const responseDto = appointmentDto
