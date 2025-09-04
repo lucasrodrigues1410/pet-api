@@ -32,7 +32,7 @@ const appointmentDefaultInclude = {
 
 @Injectable()
 export class PrismaAppointmentRepository implements AppointmentRepository {
-	constructor(private prismaService: PrismaService) {}
+	constructor(private prismaService: PrismaService) { }
 
 	async findById(id: string) {
 		const appointment = await this.prismaService.appointment.findUnique({
@@ -108,31 +108,15 @@ export class PrismaAppointmentRepository implements AppointmentRepository {
 	) {
 		const filter = {
 			companyId: params.companyId,
+			OR: [
+				{ client: { name: { contains: params.query.query, mode: "insensitive" } } },
+				{ service: { name: { contains: params.query.query, mode: "insensitive" } } },
+				{ animal: { name: { contains: params.query.query, mode: "insensitive" } } },
+			],
+			startDate: { gte: params.query.startDate },
+			endDate: { lte: params.query.endDate },
+			status: { in: params.query.status },
 		} as Prisma.AppointmentWhereInput;
-
-		if (params.query.startDate) {
-			filter.startDate = { gte: params.query.startDate };
-		}
-
-		if (params.query.endDate) {
-			filter.endDate = { lte: params.query.endDate };
-		}
-
-		if (params.query.status) {
-			filter.status = { in: params.query.status };
-		}
-
-		if (params.query.query) {
-			filter.animal = {
-				name: { contains: params.query.query, mode: "insensitive" },
-			};
-			filter.client = {
-				name: { contains: params.query.query, mode: "insensitive" },
-			};
-			filter.service = {
-				name: { contains: params.query.query, mode: "insensitive" },
-			};
-		}
 
 		const { items, meta } = await paginate(
 			({ skip, take }) =>
@@ -146,7 +130,6 @@ export class PrismaAppointmentRepository implements AppointmentRepository {
 			() => this.prismaService.appointment.count({ where: filter }),
 			params.query,
 		);
-
 		return {
 			meta,
 			items: items.map((appointment) =>

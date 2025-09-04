@@ -11,7 +11,7 @@ export class BreedController {
 	constructor(private readonly listBreedsUseCase: ListBreedsUseCase) {}
 
 	@Get()
-	@ApiOperation({ summary: "Listar todas as raças" })
+	@ApiOperation({ summary: "Listar todas as raças",operationId: "getAllBreeds" })
 	@ZodResponse({ status: 200, type: BreedListResponse })
 	async getAll(@Query() query: ListBreedsQueryDto): Promise<BreedListResponse> {
 		const result = await this.listBreedsUseCase.execute(query);

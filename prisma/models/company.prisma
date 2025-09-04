@@ -35,6 +35,10 @@ model UserCompany {
   company     Company       @relation(fields: [companyId], references: [id])
   appointment Appointment[]
 
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
   @@unique([userId, companyId])
   @@index([companyId, role])
   @@map("user_companies")

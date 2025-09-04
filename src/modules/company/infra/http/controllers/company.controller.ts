@@ -27,8 +27,8 @@ export class CompanyController {
 	) {}
 
 	@Get("search")
-	@ApiOperation({ summary: "Buscar empresas por query e localização" })
-	@ZodResponse({ type: SearchCompaniesResponseDto })
+	@ApiOperation({ summary: "Buscar empresas por query e localização",operationId: "searchCompanies" })
+	@ZodResponse({ status: 200, type: SearchCompaniesResponseDto })
 	@Public()
 	async searchCompanies(
 		@Query() searchParams: SearchCompaniesRequestDto,
@@ -55,8 +55,8 @@ export class CompanyController {
 	}
 
 	@Get(":id")
-	@ApiOperation({ summary: "Buscar empresa por ID" })
-	@ZodResponse({ type: CompanyByIdResponseDto })
+	@ApiOperation({ summary: "Buscar empresa por ID",operationId: "getCompanyById" })
+	@ZodResponse({ status: 200, type: CompanyByIdResponseDto })
 	@Public()
 	async getCompanyById(@Param("id") id: string) {
 		const result = await this.getCompanyByIdUseCase.execute({ id });

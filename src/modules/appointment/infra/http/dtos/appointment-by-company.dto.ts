@@ -5,7 +5,7 @@ import { makePaginatedDto } from "@/shared/utils/pagination";
 import { paginationQuerySchema } from "@/shared/utils/pagination-query";
 import { appointmentDto } from "./appointment.dto";
 
-const queryDto = paginationQuerySchema.extend({
+export const queryDto = paginationQuerySchema.extend({
 	startDate: z.iso
 		.datetime()
 		.optional()
@@ -15,13 +15,14 @@ const queryDto = paginationQuerySchema.extend({
 		.optional()
 		.transform((date) => (date ? new Date(date) : undefined)),
 	query: z.string().optional(),
-	status: z.preprocess(
-		(val) => (typeof val === 'string' ? val.split(',') : val),
-		z.array(z.enum(appointmentStatus)).optional()
-	  ),
+	status: z
+		.preprocess((val) => {
+			if (typeof val === 'string') return val.split(',');
+			return undefined;
+		}, z.array(z.enum(appointmentStatus)).optional())
 });
 
-const responseDto = appointmentDto
+export const responseDto = appointmentDto
 	.pick({
 		id: true,
 		startDate: true,
@@ -57,7 +58,7 @@ const responseDto = appointmentDto
 		}),
 	});
 
-export class AppointmentsByCompanyQueryDto extends createZodDto(queryDto) {}
+export class AppointmentsByCompanyQueryDto extends createZodDto(queryDto) { }
 export class AppointmentsByCompanyResponseDto extends createZodDto(
 	makePaginatedDto(responseDto),
-) {}
+) { }

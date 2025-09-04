@@ -36,7 +36,7 @@ export class ServiceController {
 	) {}
 
 	@Get("/company/:companyId")
-	@ApiOperation({ summary: "Listar serviços por empresa" })
+	@ApiOperation({ summary: "Listar serviços por empresa",operationId: "listServicesByCompany" })
 	@ZodResponse({ status: 200, type: ServiceResponseList })
 	async listServicesByCompany(@Param("companyId") companyId: string) {
 		const result = await this.listServicesByCompanyUseCase.execute({
@@ -54,7 +54,7 @@ export class ServiceController {
 
 	@Patch("/:id/company/:companyId/deactivate")
 	@HttpCode(204)
-	@ApiOperation({ summary: "Inativar serviço da empresa" })
+	@ApiOperation({ summary: "Inativar serviço da empresa",operationId: "deactivateService" })
 	@UserTypeDecorator("company")
 	@StaffRoles("admin", "manager")
 	@UseGuards(CompanyGuard)
@@ -73,7 +73,7 @@ export class ServiceController {
 	}
 
 	@Post()
-	@ApiOperation({ summary: "Criar serviço" })
+	@ApiOperation({ summary: "Criar serviço",operationId: "createService" })
 	@HttpCode(201)
 	@UserTypeDecorator("company")
 	@UseGuards(CompanyGuard)
@@ -96,7 +96,7 @@ export class ServiceController {
 	}
 
 	@Get("/:id")
-	@ApiOperation({ summary: "Buscar serviço por ID" })
+	@ApiOperation({ summary: "Buscar serviço por ID",operationId: "getServiceById" })
 	@ZodResponse({ status: 200, type: ServiceDetailsResponse })
 	async getServiceById(@Param("id") id: string) {
 		const result = await this.getServiceByIdUseCase.execute({ id });

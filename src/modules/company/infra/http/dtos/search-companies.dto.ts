@@ -9,8 +9,8 @@ const request = z.object({
 	query: z.string().optional(),
 	location: z
 		.object({
-			latitude: z.number().min(-90).max(90),
-			longitude: z.number().min(-180).max(180),
+			latitude: z.number().min(-90).max(90).meta({ example: -23.5505 }),
+			longitude: z.number().min(-180).max(180).meta({ example: -46.6333 }),
 			radiusInKm: z.number().min(0.1).max(100).default(10),
 		})
 		.optional(),

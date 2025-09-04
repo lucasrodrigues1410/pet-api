@@ -68,7 +68,6 @@ export class PrismaServiceRepository implements ServiceRepository {
 		const result = await this.prismaService.service.findMany({
 			where: { 
 				companyId,
-				isActive: true 
 			},
 		});
 

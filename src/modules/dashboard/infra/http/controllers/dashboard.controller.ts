@@ -25,10 +25,11 @@ export class DashboardController {
 	@Get("metrics")
 	@ApiOperation({
 		summary: "Obter métricas do dashboard",
+		operationId: "getDashboardMetrics",
 		description:
 			"Retorna as principais métricas do dashboard: agendamentos hoje, faturamento mensal, clientes ativos e avaliação média",
 	})
-	@ZodResponse({ type: DashboardMetricsResponse })
+	@ZodResponse({ status: 200, type: DashboardMetricsResponse })
 	async getDashboardMetrics(
 		@Query() query: DashboardQueryDto,
 		@User("companyId") companyId: string,
@@ -63,10 +64,11 @@ export class DashboardController {
 	@Get("performance")
 	@ApiOperation({
 		summary: "Obter performance semanal",
+		operationId: "getWeeklyPerformance",
 		description:
 			"Retorna métricas de performance da semana: agendamentos, taxa de conversão e satisfação",
 	})
-	@ZodResponse({ type: WeeklyPerformanceResponse })
+	@ZodResponse({ status: 200, type: WeeklyPerformanceResponse })
 	async getWeeklyPerformance(
 		@User("companyId") companyId: string,
 		@Query() query: DashboardQueryDto,

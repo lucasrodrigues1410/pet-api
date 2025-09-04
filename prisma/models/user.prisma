@@ -12,6 +12,7 @@ model User {
   notification Notification[]
   avatar       Asset?         @relation(fields: [avatarAssetId], references: [id], onDelete: Cascade)
   ratings      Rating[]
+  invites      Invite[]
 
   createdAt       DateTime          @default(now()) @map("created_at")
   updatedAt       DateTime          @updatedAt @map("updated_at")

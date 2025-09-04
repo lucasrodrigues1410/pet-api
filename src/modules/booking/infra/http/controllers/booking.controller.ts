@@ -31,6 +31,7 @@ export class BookingController {
 
 	@ApiOperation({
 		summary: "Lista as datas disponíveis para um serviço e empresa específicos",
+		operationId: "listAvailableDates",
 	})
 	@ZodResponse({ status: 200, type: ListAvailableDatesResponseDto })
 	@Get("available-dates/:companyId/:serviceId/:date")
@@ -60,6 +61,7 @@ export class BookingController {
 	@HttpCode(201)
 	@ApiOperation({
 		summary: "Cria um agendamento, iniciando o processo de pagamento",
+		operationId: "createAppointment",
 		description:
 			"Inicia o processo de criação de um agendamento, verificando a disponibilidade do horário e criando uma intenção de agendamento.",
 	})

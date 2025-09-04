@@ -1,8 +1,8 @@
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
-import { APP_GUARD, APP_PIPE } from "@nestjs/core";
+import { APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from "@nestjs/core";
 import { CqrsModule } from "@nestjs/cqrs";
-import { ZodValidationPipe } from "nestjs-zod";
+import { ZodSerializerInterceptor, ZodValidationPipe } from "nestjs-zod";
 import { BullEventDispatcherModule } from "./core/infra/bull/bull-event-dispatcher.module";
 import { envSchema } from "./core/infra/env/env";
 import { EnvModule } from "./core/infra/env/env.module";
@@ -19,6 +19,7 @@ import { CompanyModule } from "./modules/company/company.module";
 import { DashboardModule } from "./modules/dashboard/dashboard.module";
 import { EmailModule } from "./modules/email/email.module";
 import { HealthModule } from "./modules/health/health.module";
+import { InviteModule } from "./modules/invite/invite.module";
 import { NotificationModule } from "./modules/notification/notification.module";
 import { RatingModule } from "./modules/rating/rating.module";
 import { ServiceModule } from "./modules/service/service.module";
@@ -48,6 +49,7 @@ import { UserModule } from "./modules/user/user.module";
 		AppointmentModule,
 		BookingModule,
 		StaffModule,
+		InviteModule,
 		NotificationModule,
 		DashboardModule,
 		RatingModule,
@@ -62,6 +64,7 @@ import { UserModule } from "./modules/user/user.module";
 			provide: APP_GUARD,
 			useClass: JwtGuard,
 		},
+		{ provide: APP_INTERCEPTOR, useClass: ZodSerializerInterceptor },
 	],
 })
-export class AppModule {}
+export class AppModule { }

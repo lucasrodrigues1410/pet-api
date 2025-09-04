@@ -12,7 +12,7 @@ export class CategoryController {
 	) {}
 
 	@Get()
-	@ApiOperation({ summary: "Listar todas as categorias" })
+	@ApiOperation({ summary: "Listar todas as categorias",operationId: "listAllCategories" })
 	@ZodResponse({
 		status: 200,
 		type: CategoryResponse,

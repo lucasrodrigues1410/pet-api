@@ -11,7 +11,7 @@ export class CompanyAvailabilityController {
 	constructor(private readonly getUseCase: GetCompanyAvailabilityUseCase) {}
 
 	@Get("company/:companyId")
-	@ApiOperation({ summary: "Listar disponibilidade da empresa" })
+	@ApiOperation({ summary: "Listar disponibilidade da empresa",operationId: "listCompanyAvailability" })
 	@ZodResponse({ status: 200, type: CompanyAvailabilityListResponseDto })
 	@Public()
 	async list(@Param("companyId") companyId: string) {

@@ -28,7 +28,7 @@ export class UserController {
 	) {}
 
 	@Put("edit")
-	@ApiOperation({ summary: "Editar usuário autenticado" })
+	@ApiOperation({ summary: "Editar usuário autenticado",operationId: "editUser" })
 	@HttpCode(HttpStatus.NO_CONTENT)
 	@ApiResponse({
 		status: HttpStatus.NO_CONTENT,
@@ -49,7 +49,7 @@ export class UserController {
 	}
 
 	@Post("avatar")
-	@ApiOperation({ summary: "Adicionar avatar do usuário" })
+	@ApiOperation({ summary: "Adicionar avatar do usuário",operationId: "addAvatar" })
 	@HttpCode(201)
 	@UseInterceptors(FileInterceptor("file"))
 	async addAvatar(

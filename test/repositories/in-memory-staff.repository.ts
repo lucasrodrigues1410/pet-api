@@ -1,5 +1,9 @@
-import { Staff } from "@/modules/staff/domain/entities/staff.entity";
+import { Staff, StaffRole } from "@/modules/staff/domain/entities/staff.entity";
 import { StaffRepository } from "@/modules/staff/domain/repositories/staff.repository";
+import { User } from "@/modules/user/domain/entities/user.entity";
+import { PaginationResult } from "@/shared/utils/pagination";
+import { PaginationQuery } from "@/shared/utils/pagination-query";
+import { paginate } from "@/shared/utils/paginator";
 
 export class InMemoryStaffRepository implements StaffRepository {
 	public items: Staff[] = [];
@@ -16,27 +20,38 @@ export class InMemoryStaffRepository implements StaffRepository {
 		return staff || null;
 	}
 
-	async findByCompanyId(companyId: string) {
-		const staff = this.items.filter(
-			(staff) => staff.companyId.toString() === companyId,
-		);
-		return staff;
-	}
-
-	async fetchCompanyStaffWithAppointmentsInDateRange(
+	async findByCompanyId(
 		companyId: string,
-		_,
+		query: PaginationQuery & {
+			query?: string;
+			roles?: StaffRole[];
+		},
 	) {
+		const result = await paginate(
+			async ({ skip, take }) => {
+				const staff = this.items.filter(
+					(staff) => staff.companyId.toString() === companyId,
+				);
+				return staff.slice(skip, skip + take);
+			},
+			async () => {
+				return this.items.filter(
+					(staff) => staff.companyId.toString() === companyId,
+				).length;
+			},
+			query,
+		);
+		return result as PaginationResult<Staff & { user: User }>;
+	}
+
+	async fetchCompanyStaffWithAppointmentsInDateRange(companyId: string, _) {
 		const staff = this.items.filter(
 			(staff) => staff.companyId.toString() === companyId,
 		);
 		return staff;
 	}
 
-	async findAvailableForSlot(
-		companyId: string,
-		_,
-	): Promise<Staff[]> {
+	async findAvailableForSlot(companyId: string, _): Promise<Staff[]> {
 		const staff = this.items.filter(
 			(staff) => staff.companyId.toString() === companyId,
 		);
@@ -45,5 +60,9 @@ export class InMemoryStaffRepository implements StaffRepository {
 
 	async create(staff: Staff) {
 		this.items.push(staff);
+	}
+
+	async delete(id: string) {
+		this.items = this.items.filter((s) => s.id.toString() !== id);
 	}
 }

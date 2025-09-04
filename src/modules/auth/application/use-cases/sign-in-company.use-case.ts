@@ -13,7 +13,7 @@ interface SignInCompanyUseCaseRequest {
 	password: string;
 }
 
-type SignInCompanyUseCaseResponse = Either<
+export type SignInCompanyUseCaseResponse = Either<
 	InvalidCredentialsError,
 	User & {
 		accessToken: string;

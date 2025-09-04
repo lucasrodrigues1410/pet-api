@@ -47,7 +47,7 @@ export class AnimalController {
 	) {}
 
 	@Post()
-	@ApiOperation({ summary: "Cria um animal" })
+	@ApiOperation({ summary: "Cria um animal",operationId: "createAnimal" })
 	@UserTypeDecorator("customer")
 	@HttpCode(201)
 	async create(
@@ -93,7 +93,7 @@ export class AnimalController {
 	}
 
 	@Get("user/:id")
-	@ApiOperation({ summary: "Listar todos os animais de um usuário" })
+	@ApiOperation({ summary: "Listar todos os animais de um usuário",operationId: "listAnimalsFromUser" })
 	@ZodResponse({ status: 200, type: AnimalPaginatedResponse })
 	@UserTypeDecorator("customer")
 	async listAll(
@@ -132,7 +132,7 @@ export class AnimalController {
 	}
 
 	@Put(":id")
-	@ApiOperation({ summary: "Atualizar um animal" })
+	@ApiOperation({ summary: "Atualizar um animal",operationId: "updateAnimal" })
 	@UserTypeDecorator("customer")
 	@HttpCode(200)
 	async update(
@@ -175,7 +175,7 @@ export class AnimalController {
 	}
 
 	@Delete(":id")
-	@ApiOperation({ summary: "Deletar um animal" })
+	@ApiOperation({ summary: "Deletar um animal",operationId: "deleteAnimal" })
 	@UserTypeDecorator("customer")
 	@HttpCode(204)
 	async delete(@User("sub") userId: string, @Param("id") animalId: string) {
@@ -213,7 +213,7 @@ export class AnimalController {
 	}
 
 	@Post(":id/asset")
-	@ApiOperation({ summary: "Adicionar um asset a um animal" })
+	@ApiOperation({ summary: "Adicionar um asset a um animal",operationId: "addAssetToAnimal" })
 	@UserTypeDecorator("customer")
 	@HttpCode(201)
 	@UseInterceptors(FileInterceptor("file"))
