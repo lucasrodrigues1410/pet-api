@@ -12,7 +12,6 @@ import {
 } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { ZodResponse } from "nestjs-zod";
-import { SignInCompanyUseCase } from "@/modules/auth/application/use-cases/sign-in-company.use-case";
 import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
 import { AcceptInviteUseCase } from "../../../application/use-cases/accept-invite.use-case";
 import { GetSessionUseCase } from "../../../application/use-cases/get-session.use-case";
@@ -26,7 +25,6 @@ import { User } from "../decorators/user.decorator";
 import { AcceptInviteRequestDto, AcceptInviteResponseDto } from "../dtos/accept-invite.dto";
 import { SessionResponseDto } from "../dtos/session.dto";
 import { SignInRequestDto, SignInResponseDto } from "../dtos/sign-in.dto";
-import { SignInCompanyResponseDto } from "../dtos/sign-in-company.dto";
 import { SignUpRequestDto } from "../dtos/sign-up.dto";
 
 @ApiTags("Autenticação")
@@ -35,7 +33,6 @@ export class AuthController {
 	constructor(
 		private signInUseCase: SignInUseCase,
 		private signUpUseCase: SignUpUseCase,
-		private signInCompanyUseCase: SignInCompanyUseCase,
 		private getSessionUseCase: GetSessionUseCase,
 		private acceptInviteUseCase: AcceptInviteUseCase,
 	) {}
@@ -46,11 +43,12 @@ export class AuthController {
 	@Public()
 	@HttpCode(HttpStatus.OK)
 	async signIn(@Body() body: SignInRequestDto) {
-		const { email, password } = body;
+		const { email, password, type } = body;
 
 		const result = await this.signInUseCase.execute({
 			email,
 			password,
+			type,
 		});
 
 		if (result.isLeft()) {
@@ -68,8 +66,11 @@ export class AuthController {
 			id: result.value.id.toString(),
 			name: result.value.name,
 			email: result.value.email,
+			type: result.value.type,
 			accessToken: result.value.accessToken,
-			avatar: result.value.avatar?.url,
+			avatar: result.value.avatar?.url,	
+			staffRole: result.value.staffRole,
+			companyId: result.value.companyId,
 		};
 	}
 
@@ -97,41 +98,6 @@ export class AuthController {
 					throw new BadRequestException(error.message);
 			}
 		}
-	}
-
-	@Post("sign-in/company")
-	@ApiOperation({ summary: "Login empresarial", operationId: "signInCompany" })
-	@ZodResponse({ status: 200, type: SignInCompanyResponseDto })
-	@Public()
-	@HttpCode(HttpStatus.OK)
-	async signInCompany(@Body() body: SignInRequestDto) {
-		const { email, password } = body;
-
-		const result = await this.signInCompanyUseCase.execute({
-			email,
-			password,
-		});
-
-		if (result.isLeft()) {
-			const error = result.value;
-
-			switch (error.constructor) {
-				case InvalidCredentialsError:
-					throw new UnauthorizedException(error.message);
-				default:
-					throw new BadRequestException(error.message);
-			}
-		}
-
-		return {
-			id: result.value.id.toString(),
-			name: result.value.name,
-			email: result.value.email,
-			accessToken: result.value.accessToken,
-			staffRole: result.value.staffRole,
-			companyId: result.value.companyId,
-			avatar: result.value.avatar?.url,
-		};
 	}
 
 	@Get("session")
@@ -189,6 +155,7 @@ export class AuthController {
 			staffRole: result.value.staffRole,
 			companyId: result.value.companyId,
 			avatar: result.value.avatar?.url,
+			type: result.value.type,
 		};
 	}
 }

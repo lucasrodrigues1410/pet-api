@@ -80,17 +80,20 @@ export class InMemoryCompanyRepository implements CompanyRepository {
 			// Cria um objeto que preserva os getters da Company e adiciona address e image
 			const companyWithExtras = Object.create(Object.getPrototypeOf(company));
 			Object.assign(companyWithExtras, company);
-			companyWithExtras.address = companyLocation || this.createDefaultLocation();
-			companyWithExtras.image = companyImage || Asset.create({
-				fileId: new UniqueEntityID().toString(),
-				fileType: "image/png",
-				height: 100,
-				name: "default.png",
-				thumbnailUrl: "https://example.com/default-thumb.png",
-				url: "https://example.com/default.png",
-				width: 100,
-				userId: new UniqueEntityID(),
-			});
+			companyWithExtras.address =
+				companyLocation || this.createDefaultLocation();
+			companyWithExtras.image =
+				companyImage ||
+				Asset.create({
+					fileId: new UniqueEntityID().toString(),
+					fileType: "image/png",
+					height: 100,
+					name: "default.png",
+					thumbnailUrl: "https://example.com/default-thumb.png",
+					url: "https://example.com/default.png",
+					width: 100,
+					userId: new UniqueEntityID(),
+				});
 
 			return companyWithExtras;
 		});
@@ -101,6 +104,24 @@ export class InMemoryCompanyRepository implements CompanyRepository {
 			},
 			async () => companiesWithDetails.length,
 			paginationParams,
+		);
+	}
+
+	async update(id: string, data: Partial<Company>) {
+		const companyIndex = this.items.findIndex((c) => c.id.toString() === id);
+		if (companyIndex === -1)  throw new Error("Company not found");
+		this.items[companyIndex] = Company.create(
+			{
+				name: data.name || this.items[companyIndex].name,
+				locationId: data.locationId || this.items[companyIndex].locationId,
+				logo: data.logo || this.items[companyIndex].logo,
+				averageRating:
+					data.averageRating || this.items[companyIndex].averageRating,
+				ratingCount: data.ratingCount || this.items[companyIndex].ratingCount,
+				contact: data.contact || this.items[companyIndex].contact,
+				description: data.description || this.items[companyIndex].description,
+			},
+			this.items[companyIndex].id,
 		);
 	}
 }

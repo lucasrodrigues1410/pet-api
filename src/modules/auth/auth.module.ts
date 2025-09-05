@@ -7,7 +7,6 @@ import { UserModule } from "../user/user.module";
 import { AcceptInviteUseCase } from "./application/use-cases/accept-invite.use-case";
 import { GetSessionUseCase } from "./application/use-cases/get-session.use-case";
 import { SignInUseCase } from "./application/use-cases/sign-in.use-case";
-import { SignInCompanyUseCase } from "./application/use-cases/sign-in-company.use-case";
 import { SignUpUseCase } from "./application/use-cases/sign-up.use-case";
 import { Encrypter } from "./domain/interfaces/encrypter.interface";
 import { HashComparer } from "./domain/interfaces/hash-comparer.interface";
@@ -35,7 +34,6 @@ import { JwtStrategy } from "./infra/strategies/jwt.strategy";
 		SignInUseCase,
 		SignUpUseCase,
 		GetSessionUseCase,
-		SignInCompanyUseCase,
 		AcceptInviteUseCase,
 		{ provide: Encrypter, useClass: JwtEncrypter },
 		{ provide: HashComparer, useClass: BcryptHasher },

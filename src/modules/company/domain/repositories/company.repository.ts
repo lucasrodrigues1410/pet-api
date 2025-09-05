@@ -30,4 +30,5 @@ export abstract class CompanyRepository {
 			};
 		} & PaginationQuery,
 	): Promise<PaginationResult<SearchCompanyResult>>;
+	abstract update(id: string, data: Partial<Company>): Promise<void>;
 }

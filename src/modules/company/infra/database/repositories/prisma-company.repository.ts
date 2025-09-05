@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { Prisma } from "prisma/generated/client";
 import { PrismaService } from "src/core/infra/prisma/prisma.service";
 import { PrismaAssetMapper as AssetMapper } from "@/modules/asset/infra/database/mappers/prisma-asset.mapper";
+import { Company } from "@/modules/company/domain/entities/company.entity";
 import { CompanyRepository } from "@/modules/company/domain/repositories/company.repository";
 import { PrismaCompanyAvailabilityMapper as AvlbyMapper } from "@/modules/company-availability/infra/database/mappers/company-availability.mapper";
 import { PrismaLocationMapper } from "@/modules/location/infra/database/mappers/prisma-location.mapper";
@@ -161,5 +162,14 @@ export class PrismaCompanyRepository implements CompanyRepository {
 			items: companiesWithServices,
 			meta,
 		};
+	}
+
+	async update(id: string, data: Partial<Company>): Promise<void> {
+		await this.prismaService.company.update({
+			where: { id },
+			data: {
+				logoAssetId: data.logoAssetId?.toString(),
+			},
+		});
 	}
 }

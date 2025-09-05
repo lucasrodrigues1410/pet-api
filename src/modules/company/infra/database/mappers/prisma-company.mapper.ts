@@ -24,6 +24,9 @@ export class PrismaCompanyMapper {
 				averageRating: prismaCompany.averageRating,
 				ratingCount: prismaCompany.ratingCount,
 				locationId: new UniqueEntityID(prismaCompany.locationId),
+				logoAssetId: prismaCompany.logoAssetId
+					? new UniqueEntityID(prismaCompany.logoAssetId)
+					: undefined,
 			},
 			new UniqueEntityID(prismaCompany.id),
 		);
@@ -38,6 +41,7 @@ export class PrismaCompanyMapper {
 			averageRating: company.averageRating || 0,
 			ratingCount: company.ratingCount || 0,
 			locationId: company.locationId.toString(),
+			logoAssetId: company.logoAssetId?.toString(),
 		};
 	}
 }

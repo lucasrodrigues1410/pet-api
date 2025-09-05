@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it } from "bun:test";
 import { FakeEncrypter } from "test/cryptography/fake-encrypter";
 import { FakeHasher } from "test/cryptography/fake-hasher";
 import { makeUser } from "test/factories/make-user";
+import { InMemoryStaffRepository } from "test/repositories/in-memory-staff.repository";
 import { InMemoryUserRepository } from "test/repositories/in-memory-user.repository";
 import { InvalidCredentialsError } from "../../domain/errors/invalid-credentials.error";
 import { SignInUseCase } from "./sign-in.use-case";
@@ -9,6 +10,7 @@ import { SignInUseCase } from "./sign-in.use-case";
 let inMemoryUserRepository: InMemoryUserRepository;
 let fakeHasher: FakeHasher;
 let encrypter: FakeEncrypter;
+let inMemoryStaffRepository: InMemoryStaffRepository;
 
 let sut: SignInUseCase;
 
@@ -17,8 +19,14 @@ describe("SignIn", () => {
 		inMemoryUserRepository = new InMemoryUserRepository();
 		fakeHasher = new FakeHasher();
 		encrypter = new FakeEncrypter();
+		inMemoryStaffRepository = new InMemoryStaffRepository();
 
-		sut = new SignInUseCase(inMemoryUserRepository, fakeHasher, encrypter);
+		sut = new SignInUseCase(
+			inMemoryUserRepository,
+			inMemoryStaffRepository,
+			fakeHasher,
+			encrypter,
+		);
 	});
 
 	it("should sign in", async () => {
@@ -31,6 +39,7 @@ describe("SignIn", () => {
 		const result = await sut.execute({
 			email: user.email,
 			password: "123456",
+			type: "customer",
 		});
 
 		expect(result.isRight()).toBe(true);
@@ -51,6 +60,7 @@ describe("SignIn", () => {
 		const result = await sut.execute({
 			email: user.email,
 			password: "123456",
+			type: "company",
 		});
 
 		expect(result.isLeft()).toBe(true);

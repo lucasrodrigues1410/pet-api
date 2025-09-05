@@ -7,8 +7,8 @@ import { Either, left, right } from "@/shared/either";
 import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
 import { HashGenerator } from "../../domain/interfaces/hash-generator.interface";
 import {
-	SignInCompanyUseCase,
-} from "./sign-in-company.use-case";
+	SignInUseCase,
+} from "./sign-in.use-case";
 
 interface AcceptInviteUseCaseRequest {
 	token: string;
@@ -19,8 +19,8 @@ type AcceptInviteUseCaseResponse = Either<
 	ResourceNotFoundError,
 	User & {
 		accessToken: string;
-		staffRole: StaffRole;
-		companyId: string;
+		staffRole?: StaffRole;
+		companyId?: string;
 	}
 >;
 
@@ -30,7 +30,7 @@ export class AcceptInviteUseCase {
 
 	constructor(
 		private readonly inviteRepository: InviteRepository,
-		private readonly signInOnCompanyUseCase: SignInCompanyUseCase,
+		private readonly signInUseCase: SignInUseCase,
 		private readonly userRepository: UserRepository,
 		private readonly hashGenerator: HashGenerator,
 	) {}
@@ -44,7 +44,6 @@ export class AcceptInviteUseCase {
 		try {
 			// Buscar o convite pelo token
 			const invite = await this.inviteRepository.findByToken(token);
-			console.log(invite);
 			if (!invite) {
 				this.logger.warn(`Invite not found for token: ${token}`);
 				return left(new ResourceNotFoundError("Convite não encontrado"));
@@ -88,20 +87,21 @@ export class AcceptInviteUseCase {
 
 			this.logger.log(`Invite marked as used: ${token}`);
 
-			const signInOnCompanyUseCaseResponse =
-				await this.signInOnCompanyUseCase.execute({
+			const signInUseCaseResponse =
+				await this.signInUseCase.execute({
 					email: user.email,
 					password,
+					type: "company",
 				});
 
 			this.logger.log(`Invite accepted successfully for user: ${user.email}`);
 
-			if (signInOnCompanyUseCaseResponse.isLeft()) {
-				this.logger.error(`Error signing in on company: ${signInOnCompanyUseCaseResponse.value}`);
-				return left(signInOnCompanyUseCaseResponse.value);
+			if (signInUseCaseResponse.isLeft()) {
+				this.logger.error(`Error signing in on company: ${signInUseCaseResponse.value}`);
+				return left(signInUseCaseResponse.value);
 			}
 
-			return right(signInOnCompanyUseCaseResponse.value);
+			return right(signInUseCaseResponse.value);
 		} catch (error) {
 			this.logger.error(
 				`Error accepting invite with token: ${token}`,
