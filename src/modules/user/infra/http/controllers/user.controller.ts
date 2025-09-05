@@ -3,20 +3,31 @@ import {
 	Body,
 	Controller,
 	FileTypeValidator,
+	Get,
 	HttpCode,
 	HttpStatus,
 	MaxFileSizeValidator,
 	ParseFilePipe,
 	Post,
 	Put,
+	Query,
 	UploadedFile,
+	UseGuards,
 	UseInterceptors,
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { ZodResponse } from "nestjs-zod";
 import { User } from "src/modules/auth/infra/http/decorators/user.decorator";
+import { UserTypeDecorator } from "@/modules/auth/infra/http/decorators/user-type.decorator";
+import { CompanyGuard } from "@/modules/company/infra/http/guards/company.guard";
 import { AddAssetToUserUseCase } from "@/modules/user/application/use-cases/add-asset-to-user.use-case";
+import { ListCompanyClientsUseCase } from "@/modules/user/application/use-cases/list-company-clients.use-case";
 import { UpdateUserProfileUseCase } from "@/modules/user/application/use-cases/update-user-profile.use-case";
+import {
+	ListCompanyClientsQueryDto,
+	ListCompanyClientsResponseDto,
+} from "../dtos/list-company-clients.dto";
 import { UpdateUserRequestDto } from "../dtos/update-user.dto";
 
 @ApiTags("Usuários")
@@ -25,10 +36,14 @@ export class UserController {
 	constructor(
 		private readonly updateUserProfileUseCase: UpdateUserProfileUseCase,
 		private readonly addAssetToUserUseCase: AddAssetToUserUseCase,
+		private readonly listCompanyClientsUseCase: ListCompanyClientsUseCase,
 	) {}
 
 	@Put("edit")
-	@ApiOperation({ summary: "Editar usuário autenticado",operationId: "editUser" })
+	@ApiOperation({
+		summary: "Editar usuário autenticado",
+		operationId: "editUser",
+	})
 	@HttpCode(HttpStatus.NO_CONTENT)
 	@ApiResponse({
 		status: HttpStatus.NO_CONTENT,
@@ -49,7 +64,10 @@ export class UserController {
 	}
 
 	@Post("avatar")
-	@ApiOperation({ summary: "Adicionar avatar do usuário",operationId: "addAvatar" })
+	@ApiOperation({
+		summary: "Adicionar avatar do usuário",
+		operationId: "addAvatar",
+	})
 	@HttpCode(201)
 	@UseInterceptors(FileInterceptor("file"))
 	async addAvatar(
@@ -76,5 +94,36 @@ export class UserController {
 		if (result.isLeft()) {
 			throw new BadRequestException();
 		}
+	}
+
+	@Get("company/:companyId/clients")
+	@ApiOperation({
+		summary: "Listar clientes que fizeram agendamentos na empresa",
+		operationId: "listCompanyClients",
+	})
+	@ZodResponse({ status: 200, type: ListCompanyClientsResponseDto })
+	@UserTypeDecorator("company")
+	@UseGuards(CompanyGuard)
+	async listCompanyClients(
+		@User("companyId") companyId: string,
+		@Query() query: ListCompanyClientsQueryDto,
+	) {
+		const result = await this.listCompanyClientsUseCase.execute({
+			companyId,
+			query,
+		});
+
+		if (result.isLeft()) {
+			throw new BadRequestException();
+		}
+
+		return {
+			items: result.value.clients.items.map((client) => ({
+				...client.toObject(),
+				appointmentsCount: client.appointmentsCount,
+				lastAppointmentDate: client.lastAppointmentDate?.toISOString() ?? null,
+			})),
+			meta: result.value.clients.meta,
+		};
 	}
 }
