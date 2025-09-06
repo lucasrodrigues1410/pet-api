@@ -7,6 +7,7 @@ import {
 	HttpCode,
 	HttpStatus,
 	MaxFileSizeValidator,
+	Param,
 	ParseFilePipe,
 	Post,
 	Put,
@@ -105,7 +106,7 @@ export class UserController {
 	@UserTypeDecorator("company")
 	@UseGuards(CompanyGuard)
 	async listCompanyClients(
-		@User("companyId") companyId: string,
+		@Param("companyId") companyId: string,
 		@Query() query: ListCompanyClientsQueryDto,
 	) {
 		const result = await this.listCompanyClientsUseCase.execute({

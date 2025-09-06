@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
+import { Prisma } from "prisma/generated/client";
 import { PrismaService } from "src/core/infra/prisma/prisma.service";
-import { PaginationResult } from "@/shared/utils/pagination";
 import type { PaginationQuery } from "@/shared/utils/pagination-query";
 import { paginate } from "@/shared/utils/paginator";
 import { User } from "../../../domain/entities/user.entity";
@@ -62,19 +62,19 @@ export class PrismaUserRepository implements UserRepository {
 		const { companyId, query } = params;
 
 		const whereClause = {
-			appointments: {
+			appointment: {
 				some: {
 					companyId,
 				},
 			},
-			type: "customer" as const,
+			type: "customer",
 			...(query.search && {
 				OR: [
-					{ name: { contains: query.search, mode: "insensitive" as const } },
-					{ email: { contains: query.search, mode: "insensitive" as const } },
+					{ name: { contains: query.search, mode: "insensitive" } },
+					{ email: { contains: query.search, mode: "insensitive" } },
 				],
 			}),
-		};
+		} as Prisma.UserWhereInput;
 
 		const { items, meta } = await paginate(
 			({ skip, take }) =>
@@ -107,15 +107,12 @@ export class PrismaUserRepository implements UserRepository {
 
 		return {
 			items: items.map((item) => {
-				return {
-					...PrismaUserMapper.toDomain(item),
+				return Object.assign(PrismaUserMapper.toDomain(item), {
 					appointmentsCount: item._count.appointment,
 					lastAppointmentDate: item.appointment[0].startDate,
-				};
+				});
 			}),
 			meta,
-		} as PaginationResult<
-			User & { appointmentsCount: number; lastAppointmentDate: Date | null }
-		>;
+		};
 	}
 }
