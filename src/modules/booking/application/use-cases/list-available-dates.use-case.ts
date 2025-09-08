@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { endOfDay, format, getDay, isValid, startOfDay } from "date-fns";
+import { endOfDay, getDay, isValid, startOfDay } from "date-fns";
 import { daysOfWeek } from "@/modules/company-availability/domain/entities/company-availability.entity";
 import { CompanyAvailabilityRepository } from "@/modules/company-availability/domain/repositories/company-availability.repository";
 import { CompanyAvailabilityExcpetionRepository } from "@/modules/company-availability/domain/repositories/company-availability-exception.repository";
@@ -78,12 +78,6 @@ export class ListAvailableDatesUseCase {
 				new ResourceNotFoundError("Disponibilidade da empresa não encontrada"),
 			);
 		}
-		// Verifica se a data está no intervalo de operação da empresa
-		const { startTime, endTime } = companyAvailability.timeRange;
-		const isDateInRange = this.isDateWithinRange(date, startTime, endTime);
-		if (!isDateInRange) {
-			return right({ slots: [] });
-		}
 
 		// Gera os time slots possíveis
 		const timeSlots = this.timeSlotGenerator.generateTimeSlots(
@@ -103,16 +97,6 @@ export class ListAvailableDatesUseCase {
 			companyExceptions: companyAvailabilityExceptions ?? [],
 			launchTime: companyAvailability.launchTime,
 		});
-
 		return right({ slots: availableSlots });
-	}
-
-	private isDateWithinRange(
-		date: Date,
-		startTime: string,
-		endTime: string,
-	): boolean {
-		const formattedDate = format(date, "HH:mm");
-		return formattedDate >= startTime && formattedDate <= endTime;
 	}
 }

@@ -13,7 +13,7 @@ const request = z.object({
 			longitude: z.number().min(-180).max(180).meta({ example: -46.6333 }),
 			radiusInKm: z.number().min(0.1).max(100).default(10),
 		})
-		.optional(),
+		.nullish(),
 });
 
 const response = companyDto.omit({ logo: true }).extend({

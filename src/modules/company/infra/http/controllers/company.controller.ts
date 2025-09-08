@@ -54,7 +54,7 @@ export class CompanyController {
 	) {
 		const result = await this.searchCompaniesUseCase.execute({
 			query: searchParams.query,
-			location: searchParams.location,
+			location: searchParams.location ?? undefined,
 			pagination,
 		});
 

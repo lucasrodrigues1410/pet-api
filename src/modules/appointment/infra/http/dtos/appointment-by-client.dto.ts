@@ -1,6 +1,9 @@
 import { createZodDto } from "nestjs-zod";
 import { z } from "zod";
+import { animalDto } from "@/modules/animal/infra/http/dtos/animal.dto";
 import { appointmentStatus } from "@/modules/appointment/domain/entities/appointment.entity";
+import { companyDto } from "@/modules/company/infra/http/dtos/company.dto";
+import { serviceDto } from "@/modules/service/infra/http/dtos/service.dto";
 import { makePaginatedDto } from "@/shared/utils/pagination";
 import { appointmentDto } from "./appointment.dto";
 
@@ -26,14 +29,9 @@ const responseDto = appointmentDto
 		status: true,
 	})
 	.extend({
-		animal: z.object({
-			id: z.string(),
-			name: z.string(),
-		}),
-		service: z.object({
-			id: z.string(),
-			name: z.string(),
-		}),
+		animal: animalDto,
+		service: serviceDto,
+		company: companyDto,
 	});
 
 export class AppointmentsByClientQueryDto extends createZodDto(queryDto) {}

@@ -59,6 +59,8 @@ export class Company extends Entity<CompanyProps> {
 			logo: this.logo?.toObject(),
 			logoAssetId: this.logoAssetId,
 			locationId: this.locationId.toString(),
+			averageRating: this.averageRating,
+			ratingCount: this.ratingCount,
 		};
 	}
 }

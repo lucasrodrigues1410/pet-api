@@ -43,37 +43,7 @@ export class AppointmentController {
 		private readonly updateAppointmentStatusUseCase: UpdateAppointmentStatusUseCase,
 	) {}
 
-	@Get(":id")
-	@ApiOperation({ summary: "Retorna um agendamento pelo ID",operationId: "getAppointmentById" })
-	@ZodResponse({ status: 200, type: AppointmentByIdResponseDto })
-	@UserTypeDecorator("customer", "company")
-	async getAppointmentById(
-		@Param("id") id: string,
-		@User("sub") userId: string,
-		@User("type") userType: UserType,
-		@User("companyId") companyId?: string,
-	) {
-		const response = await this.getAppointmentByIdUseCase.execute({
-			id,
-			userId,
-			userType,
-			companyId,
-		});
-
-		if (response.isLeft()) {
-			throw new NotFoundException(response.value.message);
-		}
-		return {
-			...response.value.toObject(),
-			animal: {
-				...response.value.animal.toObject(),
-				breed: response.value.animal.breed.toObject(),
-			},
-			client: response.value.client.toObject(),
-			service: response.value.service.toObject(),
-			company: response.value.company.toObject(),
-		};
-	}
+	
 
 	@Get("/company/:companyId")
 	@ApiOperation({ summary: "Retorna todos os agendamentos da empresa",operationId: "getAllCompanyAppointments" })
@@ -133,6 +103,7 @@ export class AppointmentController {
 					...item.toObject(),
 					animal: item.animal.toObject(),
 					service: item.service.toObject(),
+					company: item.company.toObject(),
 				};
 			}),
 		};
@@ -170,6 +141,39 @@ export class AppointmentController {
 			id: appointment.id.toString(),
 			status: appointment.status,
 			updatedAt: new Date().toISOString(),
+		};
+	}
+
+	@Get(":id")
+	@ApiOperation({ summary: "Retorna um agendamento pelo ID",operationId: "getAppointmentById" })
+	@ZodResponse({ status: 200, type: AppointmentByIdResponseDto })
+	@UserTypeDecorator("customer", "company")
+	async getAppointmentById(
+		@Param("id") id: string,
+		@User("sub") userId: string,
+		@User("type") userType: UserType,
+		@User("companyId") companyId?: string,
+	) {
+		const response = await this.getAppointmentByIdUseCase.execute({
+			id,
+			userId,
+			userType,
+			companyId,
+		});
+
+		if (response.isLeft()) {
+			throw new NotFoundException(response.value.message);
+		}
+		return {
+			...response.value.toObject(),
+			animal: {
+				...response.value.animal.toObject(),
+				breed: response.value.animal.breed.toObject(),
+				asset: response.value.animal.asset?.toObject(),
+			},
+			client: response.value.client.toObject(),
+			service: response.value.service.toObject(),
+			company: response.value.company.toObject(),
 		};
 	}
 }

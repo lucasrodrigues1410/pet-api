@@ -50,11 +50,8 @@ export class AppointmentBookingUseCase {
 			this.serviceRepository.findById(serviceId),
 			this.animalRepository.findById(animalId),
 		]);
-		if (!service) {
-			return left(new ResourceNotFoundError("Serviço não encontrado"));
-		}
-		if (!animal) {
-			return left(new ResourceNotFoundError("Animal não encontrado"));
+		if (!service || !animal) {
+			return left(new ResourceNotFoundError());
 		}
 
 		// Validações de negócio básicas
@@ -66,13 +63,6 @@ export class AppointmentBookingUseCase {
 		const now = new Date();
 		if (startDate <= now) {
 			return left(new TimeSlotUnavailableError("Data passada não permitida"));
-		}
-
-		// Alinhação simples do slot: múltiplos de 5 minutos
-		if (startDate.getMinutes() % 5 !== 0) {
-			return left(
-				new TimeSlotUnavailableError("Horário inválido (não alinhado ao slot)"),
-			);
 		}
 
 		// Calcula variação de preço
@@ -89,7 +79,6 @@ export class AppointmentBookingUseCase {
 		const finalDurationMinutes = baseDurationMinutes + (ruleExecutionResult?.durationMinutes ?? 0);
 
 		const endDate = addMinutes(startDate, finalDurationMinutes);
-
 		// Verifica se o horário está disponível
 		const available = await this.appointmentAvailabilityService.getAvailability(
 			service.companyId.toString(),

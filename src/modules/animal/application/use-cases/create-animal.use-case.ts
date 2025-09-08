@@ -1,4 +1,5 @@
 import { Injectable, Logger } from "@nestjs/common";
+import { subYears } from "date-fns";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { Either, right } from "@/shared/either";
 import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
@@ -7,7 +8,7 @@ import { AnimalRepository } from "../../domain/repositories/animal.repository";
 
 interface CreateAnimalCaseRequest {
 	name: string;
-	birthdate?: Date | string | null;
+	age?: number | null;
 	breedId: string;
 	weight: number;
 	userId: string;
@@ -30,14 +31,11 @@ export class CreateAnimalUseCase {
 		data: CreateAnimalCaseRequest,
 	): Promise<CreateAnimalCaseResponse> {
 		this.logger.log(`Executing create animal use case for user ${data.userId}`);
-		this.logger.debug(
-			`Create animal data: ${JSON.stringify({ ...data, birthdate: data.birthdate })}`,
-		);
-
+		
 		try {
 			const animal = Animal.create({
 				name: data.name,
-				birthdate: data.birthdate,
+				birthdate: data.age ? subYears(new Date(), data.age) : null,
 				breedId: new UniqueEntityID(data.breedId),
 				weight: data.weight,
 				userId: new UniqueEntityID(data.userId),

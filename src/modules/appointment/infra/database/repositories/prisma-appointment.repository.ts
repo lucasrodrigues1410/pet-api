@@ -7,6 +7,7 @@ import {
 	AppointmentStatus,
 } from "@/modules/appointment/domain/entities/appointment.entity";
 import { AppointmentRepository } from "@/modules/appointment/domain/repositories/appointment.repository";
+import { PrismaAssetMapper } from "@/modules/asset/infra/database/mappers/prisma-asset.mapper";
 import { PrismaBreedMapper } from "@/modules/breed/infra/database/mappers/prisma-breed.mapper";
 import { PrismaCompanyMapper } from "@/modules/company/infra/database/mappers/prisma-company.mapper";
 import { PrismaServiceMapper } from "@/modules/service/infra/database/mappers/prisma-service.mapper";
@@ -28,11 +29,16 @@ const appointmentDefaultInclude = {
 		},
 	},
 	service: true,
+	company: {
+		include: {
+			logo: true,
+		},
+	},
 } satisfies Prisma.AppointmentInclude;
 
 @Injectable()
 export class PrismaAppointmentRepository implements AppointmentRepository {
-	constructor(private prismaService: PrismaService) { }
+	constructor(private prismaService: PrismaService) {}
 
 	async findById(id: string) {
 		const appointment = await this.prismaService.appointment.findUnique({
@@ -51,6 +57,9 @@ export class PrismaAppointmentRepository implements AppointmentRepository {
 		return Object.assign(PrismaAppointmentMapper.toDomain(appointment), {
 			animal: Object.assign(PrismaAnimalMapper.toDomain(appointment.animal), {
 				breed: PrismaBreedMapper.toDomain(appointment.animal.breed),
+				asset: appointment.animal.asset
+					? PrismaAssetMapper.toDomain(appointment.animal.asset)
+					: undefined,
 			}),
 			client: PrismaUserMapper.toDomain(appointment.client),
 			service: PrismaServiceMapper.toDomain(appointment.service),
@@ -63,19 +72,10 @@ export class PrismaAppointmentRepository implements AppointmentRepository {
 	) {
 		const filter = {
 			clientId: params.userId,
+			...(params.query.startDate && { startDate: { gte: params.query.startDate } }),
+			...(params.query.endDate && { endDate: { lte: params.query.endDate } }),
+			...(params.query.status && { status: { in: params.query.status } }),
 		} as Prisma.AppointmentWhereInput;
-
-		if (params.query.startDate) {
-			filter.startDate = { gte: params.query.startDate };
-		}
-
-		if (params.query.endDate) {
-			filter.endDate = { lte: params.query.endDate };
-		}
-
-		if (params.query.status) {
-			filter.status = { in: params.query.status };
-		}
 
 		const appointments = await paginate(
 			({ skip, take }) =>
@@ -98,6 +98,7 @@ export class PrismaAppointmentRepository implements AppointmentRepository {
 				Object.assign(PrismaAppointmentMapper.toDomain(appointment), {
 					animal: PrismaAnimalMapper.toDomain(appointment.animal),
 					service: PrismaServiceMapper.toDomain(appointment.service),
+					company: PrismaCompanyMapper.toDomain(appointment.company),
 				}),
 			),
 		};
@@ -109,9 +110,21 @@ export class PrismaAppointmentRepository implements AppointmentRepository {
 		const filter = {
 			companyId: params.companyId,
 			OR: [
-				{ client: { name: { contains: params.query.query, mode: "insensitive" } } },
-				{ service: { name: { contains: params.query.query, mode: "insensitive" } } },
-				{ animal: { name: { contains: params.query.query, mode: "insensitive" } } },
+				{
+					client: {
+						name: { contains: params.query.query, mode: "insensitive" },
+					},
+				},
+				{
+					service: {
+						name: { contains: params.query.query, mode: "insensitive" },
+					},
+				},
+				{
+					animal: {
+						name: { contains: params.query.query, mode: "insensitive" },
+					},
+				},
 			],
 			startDate: { gte: params.query.startDate },
 			endDate: { lte: params.query.endDate },

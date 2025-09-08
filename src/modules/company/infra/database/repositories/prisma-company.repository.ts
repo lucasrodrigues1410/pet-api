@@ -17,7 +17,7 @@ export class PrismaCompanyRepository implements CompanyRepository {
 	constructor(private prismaService: PrismaService) {}
 
 	async findById(id: string) {
-		const result = await this.prismaService.company.findFirst({
+		const result = await this.prismaService.company.findUnique({
 			where: {
 				id,
 				deletedAt: null,
@@ -27,6 +27,7 @@ export class PrismaCompanyRepository implements CompanyRepository {
 					include: {
 						asset: true,
 					},
+					take: 1,
 				},
 				logo: true,
 				companyAvailability: true,
