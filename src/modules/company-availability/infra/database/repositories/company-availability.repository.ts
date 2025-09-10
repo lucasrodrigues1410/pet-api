@@ -16,9 +16,7 @@ export class PrismaCompanyAvailabilityRepository
 	async findAllByCompanyId(companyId: string) {
 		const companyAvailability =
 			await this.prismaService.companyAvailability.findMany({
-				where: {
-					companyId: companyId,
-				},
+				where: { companyId: companyId },
 			});
 
 		return companyAvailability.map((availability) =>
@@ -29,10 +27,7 @@ export class PrismaCompanyAvailabilityRepository
 	async findByCompanyIdAndDayOfWeek(companyId: string, dayOfWeek: DaysOfWeek) {
 		const companyAvailability =
 			await this.prismaService.companyAvailability.findFirst({
-				where: {
-					companyId: companyId,
-					day: dayOfWeek,
-				},
+				where: { companyId: companyId, day: dayOfWeek },
 			});
 
 		if (!companyAvailability) {
@@ -59,9 +54,7 @@ export class PrismaCompanyAvailabilityRepository
 				},
 			});
 		} else {
-			saved = await this.prismaService.companyAvailability.create({
-				data,
-			});
+			saved = await this.prismaService.companyAvailability.create({ data });
 		}
 		return PrismaCompanyAvailabilityMapper.toDomain(saved);
 	}

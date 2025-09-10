@@ -37,8 +37,6 @@ export class GetCompanyByIdUseCase {
 			return left(new ResourceNotFoundError());
 		}
 
-		return right({
-			company,
-		});
+		return right({ company });
 	}
 }

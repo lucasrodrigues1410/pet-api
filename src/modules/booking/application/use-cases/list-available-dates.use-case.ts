@@ -62,10 +62,7 @@ export class ListAvailableDatesUseCase {
 				),
 				this.companyAvailabilityException.findExceptionsByCompanyAndPeriod(
 					companyId,
-					{
-						startDate,
-						endDate,
-					},
+					{ startDate, endDate },
 				),
 				this.staffRepo.fetchCompanyStaffWithAppointmentsInDateRange(companyId, {
 					startDate,

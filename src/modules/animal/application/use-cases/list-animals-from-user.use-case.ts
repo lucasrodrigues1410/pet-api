@@ -7,9 +7,7 @@ import type { PaginationQuery } from "@/shared/utils/pagination-query";
 import { Animal } from "../../domain/entities/animal.entity";
 import { AnimalRepository } from "../../domain/repositories/animal.repository";
 
-type ListAnimalsFromUserUseCaseRequest = {
-	userId: string;
-} & PaginationQuery;
+type ListAnimalsFromUserUseCaseRequest = { userId: string } & PaginationQuery;
 
 type ListAnimalsFromUserUseCaseResponse = Either<
 	null,

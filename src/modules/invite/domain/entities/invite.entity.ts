@@ -70,6 +70,14 @@ export class Invite extends Entity<InviteProps> {
 		this.props.updatedAt = new Date();
 	}
 
+	public isExpired(now: Date): boolean {
+		return this.props.expiresAt < now;
+	}
+
+	public isUsed(): boolean {
+		return !!this.props.usedAt;
+	}
+
 	public toObject() {
 		return {
 			id: this.id.toString(),

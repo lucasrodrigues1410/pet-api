@@ -43,10 +43,7 @@ export class InviteController {
 			"Cria um usuário parcial e envia convite para funcionário se juntar à empresa",
 		operationId: "inviteEmployee",
 	})
-	@ZodResponse({
-		status: 201,
-		type: InviteEmployeeResponseDto,
-	})
+	@ZodResponse({ status: 201, type: InviteEmployeeResponseDto })
 	@UserTypeDecorator("company")
 	@UseGuards(CompanyGuard)
 	@StaffRoles("admin", "manager")
@@ -91,20 +88,20 @@ export class InviteController {
 	@HttpCode(HttpStatus.OK)
 	@ApiOperation({
 		summary: "Validar token de convite",
-		description: "Verifica se um token de convite é válido, não expirou e não foi usado",
+		description:
+			"Verifica se um token de convite é válido, não expirou e não foi usado",
 		operationId: "validateInvite",
 	})
-	@ZodResponse({
-		status: 200,
-		type: ValidateInviteResponseDto,
-	})
+	@ZodResponse({ status: 200, type: ValidateInviteResponseDto })
 	@Public()
-	async validateInvite(@Param("token") token: string): Promise<ValidateInviteResponseDto> {
+	async validateInvite(
+		@Param("token") token: string,
+	): Promise<ValidateInviteResponseDto> {
 		const result = await this.validateInviteUseCase.execute({ token });
 
 		if (result.isLeft()) {
 			const error = result.value;
-			
+
 			switch (error.constructor) {
 				case ResourceNotFoundError:
 					throw new NotFoundException(error.message);
@@ -128,14 +125,16 @@ export class InviteController {
 			isValid,
 			isExpired,
 			isUsed,
-			invite: isValid ? {
-				id: invite.id.toString(),
-				token: invite.token,
-				expiresAt: invite.expiresAt.toISOString(),
-				usedAt: invite.usedAt?.toISOString(),
-				userId: invite.userId.toString(),
-				user: invite.user.toObject(),
-			} : undefined,
+			invite: isValid
+				? {
+						id: invite.id.toString(),
+						token: invite.token,
+						expiresAt: invite.expiresAt.toISOString(),
+						usedAt: invite.usedAt?.toISOString(),
+						userId: invite.userId.toString(),
+						user: invite.user.toObject(),
+					}
+				: undefined,
 			message,
 		};
 	}

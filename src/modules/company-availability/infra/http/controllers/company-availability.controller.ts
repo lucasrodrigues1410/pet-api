@@ -11,7 +11,10 @@ export class CompanyAvailabilityController {
 	constructor(private readonly getUseCase: GetCompanyAvailabilityUseCase) {}
 
 	@Get("company/:companyId")
-	@ApiOperation({ summary: "Listar disponibilidade da empresa",operationId: "listCompanyAvailability" })
+	@ApiOperation({
+		summary: "Listar disponibilidade da empresa",
+		operationId: "listCompanyAvailability",
+	})
 	@ZodResponse({ status: 200, type: CompanyAvailabilityListResponseDto })
 	@Public()
 	async list(@Param("companyId") companyId: string) {
@@ -20,8 +23,6 @@ export class CompanyAvailabilityController {
 			throw new NotFoundException();
 		}
 
-		return {
-			items: result.value.items.map((a) => a.toObject()),
-		};
+		return { items: result.value.items.map((a) => a.toObject()) };
 	}
 }

@@ -54,10 +54,7 @@ export class AnimalController {
 		@Body() data: CreateAnimalRequestDto,
 	) {
 		const result = await this.createAnimalUseCase.execute({
-			breedId: data.breedId,
-			name: data.name,
-			weight: data.weight,
-			birthdate: data.birthdate,
+			...data,
 			userId,
 		});
 
@@ -68,9 +65,7 @@ export class AnimalController {
 			throw new BadRequestException();
 		}
 
-		return {
-			id: result.value.animal.id.toString(),
-		};
+		return { id: result.value.animal.id.toString() };
 	}
 
 	@Get("user/:id")
@@ -112,12 +107,9 @@ export class AnimalController {
 	})
 	@UserTypeDecorator("customer")
 	@HttpCode(201)
-	@UseInterceptors(FileInterceptor('file'))
-	@ApiConsumes('multipart/form-data')
-	@ApiBody({
-	  description: 'Envio de imagem',
-	  type: UploadAnimalImageDto,
-	})
+	@UseInterceptors(FileInterceptor("file"))
+	@ApiConsumes("multipart/form-data")
+	@ApiBody({ description: "Envio de imagem", type: UploadAnimalImageDto })
 	async addAsset(
 		@User("sub") userId: string,
 		@Param("id") animalId: string,
@@ -162,10 +154,7 @@ export class AnimalController {
 	@UserTypeDecorator("customer")
 	@HttpCode(204)
 	async delete(@User("sub") userId: string, @Param("id") animalId: string) {
-		const result = await this.deleteAnimalUseCase.execute({
-			userId,
-			animalId,
-		});
+		const result = await this.deleteAnimalUseCase.execute({ userId, animalId });
 
 		if (result.isLeft()) {
 			if (result.value instanceof ResourceNotFoundError) {

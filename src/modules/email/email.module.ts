@@ -30,14 +30,8 @@ import { BullEmailProcessor } from "./infra/queue/bull-email-processor.service";
 	],
 	providers: [
 		...TemplateProviders,
-		{
-			provide: "IEmailService",
-			useClass: NodemailerEmailService,
-		},
-		{
-			provide: EmailPublisher,
-			useClass: BullEmailDispatcher,
-		},
+		{ provide: "IEmailService", useClass: NodemailerEmailService },
+		{ provide: EmailPublisher, useClass: BullEmailDispatcher },
 		SendEmailUseCase,
 		QueueEmailUseCase,
 		BullEmailProcessor,

@@ -42,9 +42,7 @@ export class Notification extends Entity<NotificationProps> {
 	}
 
 	public static create(
-		props: Omit<NotificationProps, "createdAt"> & {
-			createdAt?: Date;
-		},
+		props: Omit<NotificationProps, "createdAt"> & { createdAt?: Date },
 		id?: UniqueEntityID,
 	): Notification {
 		// Validações

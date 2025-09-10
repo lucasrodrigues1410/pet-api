@@ -132,9 +132,7 @@ export class Appointment extends Entity<AppointmentProps> {
 	}
 
 	public static create(
-		props: Omit<AppointmentProps, "status"> & {
-			status?: AppointmentStatus;
-		},
+		props: Omit<AppointmentProps, "status"> & { status?: AppointmentStatus },
 		id?: UniqueEntityID,
 	): Appointment {
 		if (props.startDate >= props.endDate) {
@@ -146,10 +144,7 @@ export class Appointment extends Entity<AppointmentProps> {
 		}
 
 		return new Appointment(
-			{
-				...props,
-				status: props.status ?? "confirmed",
-			},
+			{ ...props, status: props.status ?? "confirmed" },
 			id,
 		);
 	}

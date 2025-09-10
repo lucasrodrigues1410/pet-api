@@ -29,18 +29,8 @@ export class PrismaServiceRepository implements ServiceRepository {
 
 	async findById(id: string) {
 		const result = await this.prismaService.service.findUnique({
-			where: { 
-				id,
-				isActive: true 
-			},
-			include: {
-				company: true,
-				categories: {
-					include: {
-						category: true,
-					},
-				},
-			},
+			where: { id, isActive: true },
+			include: { company: true, categories: { include: { category: true } } },
 		});
 
 		if (!result) {
@@ -66,9 +56,7 @@ export class PrismaServiceRepository implements ServiceRepository {
 
 	async findByCompanyId(companyId: string) {
 		const result = await this.prismaService.service.findMany({
-			where: { 
-				companyId,
-			},
+			where: { companyId },
 		});
 
 		return result.map((service) => PrismaServiceMapper.toDomain(service));

@@ -10,7 +10,9 @@ import type { PaginationQuery } from "@/shared/utils/pagination-query";
 import { Appointment, AppointmentStatus } from "../entities/appointment.entity";
 
 export abstract class AppointmentRepository {
-	abstract findById(id: string): Promise<
+	abstract findById(
+		id: string,
+	): Promise<
 		| (Appointment & {
 				animal: Animal & { breed: Breed; asset?: Asset };
 				client: User;
@@ -28,11 +30,7 @@ export abstract class AppointmentRepository {
 		};
 	}): Promise<
 		PaginationResult<
-			Appointment & {
-				animal: Animal;
-				service: Service;
-				company: Company;
-			}
+			Appointment & { animal: Animal; service: Service; company: Company }
 		>
 	>;
 	abstract findByCompanyId(params: {

@@ -1,7 +1,6 @@
 import { z } from "zod";
 import { staffRole } from "@/modules/staff/domain/entities/staff.entity";
 
-
 export const staffDto = z.object({
 	id: z.string(),
 	userId: z.string(),

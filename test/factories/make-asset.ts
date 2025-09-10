@@ -1,9 +1,6 @@
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
-import { Asset, AssetProps } from "@/modules/asset/domain/entities/asset";
-import { PrismaAssetMapper } from "@/modules/asset/infra/database/mappers/prisma-asset.mapper";
+import { Asset } from "@/modules/asset/domain/entities/asset";
 import { faker } from "@faker-js/faker";
-import { Injectable } from "@nestjs/common";
-import { PrismaService } from "src/core/infra/prisma/prisma.service";
 
 export function makeAsset(override: Partial<Asset> = {}, id?: UniqueEntityID) {
 	const asset = Asset.create(
@@ -22,19 +19,4 @@ export function makeAsset(override: Partial<Asset> = {}, id?: UniqueEntityID) {
 	);
 
 	return asset;
-}
-
-@Injectable()
-export class AssetFactory {
-	constructor(private prisma: PrismaService) {}
-
-	async makePrismaAsset(data: Partial<AssetProps> = {}): Promise<Asset> {
-		const asset = makeAsset(data);
-
-		await this.prisma.asset.create({
-			data: PrismaAssetMapper.toPrisma(asset),
-		});
-
-		return asset;
-	}
 }

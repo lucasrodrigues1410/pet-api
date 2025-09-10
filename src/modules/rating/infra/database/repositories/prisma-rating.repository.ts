@@ -15,17 +15,12 @@ export class PrismaRatingRepository implements RatingRepository {
 	async create(rating: Rating) {
 		return this.prisma.$transaction(async (tx) => {
 			// Cria o rating
-			await tx.rating.create({
-				data: PrismaRatingMapper.toPrisma(rating),
-			});
+			await tx.rating.create({ data: PrismaRatingMapper.toPrisma(rating) });
 
 			// Busca a empresa atual para recalcular a média
 			const company = await tx.company.findUnique({
 				where: { id: rating.companyId.toString() },
-				select: {
-					averageRating: true,
-					ratingCount: true,
-				},
+				select: { averageRating: true, ratingCount: true },
 			});
 
 			if (!company) {
@@ -43,10 +38,7 @@ export class PrismaRatingRepository implements RatingRepository {
 			// Atualiza empresa com os novos valores
 			await tx.company.update({
 				where: { id: rating.companyId.toString() },
-				data: {
-					averageRating: newAverage,
-					ratingCount: newRatingCount,
-				},
+				data: { averageRating: newAverage, ratingCount: newRatingCount },
 			});
 		});
 	}
@@ -59,19 +51,9 @@ export class PrismaRatingRepository implements RatingRepository {
 					orderBy: { createdAt: "desc" },
 					skip,
 					take,
-					include: {
-						user: {
-							select: {
-								id: true,
-								name: true,
-							},
-						},
-					},
+					include: { user: { select: { id: true, name: true } } },
 				}),
-			() =>
-				this.prisma.rating.count({
-					where: { companyId: data.companyId },
-				}),
+			() => this.prisma.rating.count({ where: { companyId: data.companyId } }),
 			data,
 		);
 
@@ -90,10 +72,7 @@ export class PrismaRatingRepository implements RatingRepository {
 	async getCompanyRatingStats(companyId: string) {
 		const company = await this.prisma.company.findUnique({
 			where: { id: companyId },
-			select: {
-				averageRating: true,
-				ratingCount: true,
-			},
+			select: { averageRating: true, ratingCount: true },
 		});
 
 		if (!company) {
@@ -104,21 +83,14 @@ export class PrismaRatingRepository implements RatingRepository {
 		const distribution = await this.prisma.rating.groupBy({
 			by: ["rating"],
 			where: { companyId },
-			_count: {
-				rating: true,
-			},
-			orderBy: {
-				rating: "desc",
-			},
+			_count: { rating: true },
+			orderBy: { rating: "desc" },
 		});
 
 		// Garante que todas as notas de 1 a 5 estejam representadas
 		const fullDistribution = [5, 4, 3, 2, 1].map((rating) => {
 			const found = distribution.find((d) => d.rating === rating);
-			return {
-				rating,
-				count: found ? found._count.rating : 0,
-			};
+			return { rating, count: found ? found._count.rating : 0 };
 		});
 
 		return {

@@ -8,18 +8,12 @@ import { StaffController } from "./infra/http/controllers/staff.controller";
 	imports: [],
 	controllers: [StaffController],
 	providers: [
-		{
-			provide: StaffRepository,
-			useClass: PrismaStaffRepository,
-		},
+		{ provide: StaffRepository, useClass: PrismaStaffRepository },
 		ListStaffByCompanyUseCase,
 		DeleteStaffUseCase,
 	],
 	exports: [
-		{
-			provide: StaffRepository,
-			useClass: PrismaStaffRepository,
-		},
+		{ provide: StaffRepository, useClass: PrismaStaffRepository },
 		ListStaffByCompanyUseCase,
 		DeleteStaffUseCase,
 	],

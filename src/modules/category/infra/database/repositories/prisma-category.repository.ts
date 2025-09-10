@@ -9,9 +9,7 @@ export class PrismaCategoryRepository implements CategoryRepository {
 
 	async findAll() {
 		const categories = await this.prisma.category.findMany({
-			orderBy: {
-				name: "asc",
-			},
+			orderBy: { name: "asc" },
 		});
 
 		return categories.map(PrismaCategoryMapper.toDomain);

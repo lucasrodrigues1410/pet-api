@@ -12,20 +12,9 @@ import { BreedController } from "./infra/http/controllers/breed.controller";
 	controllers: [BreedController],
 	providers: [
 		ListBreedsUseCase,
-		{
-			provide: BASE_BREED_REPOSITORY,
-			useClass: PrismaBreedRepository,
-		},
-		{
-			provide: BreedRepository,
-			useClass: CachingBreedRepository,
-		},
+		{ provide: BASE_BREED_REPOSITORY, useClass: PrismaBreedRepository },
+		{ provide: BreedRepository, useClass: CachingBreedRepository },
 	],
-	exports: [
-		{
-			provide: BreedRepository,
-			useClass: CachingBreedRepository,
-		},
-	],
+	exports: [{ provide: BreedRepository, useClass: CachingBreedRepository }],
 })
 export class BreedModule {}

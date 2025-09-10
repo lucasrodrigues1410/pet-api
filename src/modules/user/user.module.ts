@@ -14,16 +14,8 @@ import { UserController } from "./infra/http/controllers/user.controller";
 		UpdateUserProfileUseCase,
 		AddAssetToUserUseCase,
 		ListCompanyClientsUseCase,
-		{
-			provide: UserRepository,
-			useClass: PrismaUserRepository,
-		},
+		{ provide: UserRepository, useClass: PrismaUserRepository },
 	],
-	exports: [
-		{
-			provide: UserRepository,
-			useClass: PrismaUserRepository,
-		},
-	],
+	exports: [{ provide: UserRepository, useClass: PrismaUserRepository }],
 })
 export class UserModule {}

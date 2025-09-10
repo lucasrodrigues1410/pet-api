@@ -1,79 +1,100 @@
-import { beforeEach, describe, expect, it } from "bun:test";
+import { beforeEach, describe, expect, it, jest } from "bun:test";
+import { Test } from "@nestjs/testing";
 import { makeAnimal } from "test/factories/make-animal";
-import { MockEventDispatcher } from "test/mocks/mock-event-dispatcher";
-import { InMemoryAnimalRepository } from "test/repositories/in-memory-animal.repository";
-import { InMemoryAssetRepository } from "test/repositories/in-memory-asset.repository";
+import { AssetRepository } from "@/modules/asset/domain/repositories/asset.repository";
+import { AnimalRepository } from "../../domain/repositories/animal.repository";
 import { UpdateAnimalUseCase } from "./update-animal.use-case";
 
-let inMemoryAnimalRepository: InMemoryAnimalRepository;
-let inMemoryAssetRepository: InMemoryAssetRepository;
-let eventDispatcher: MockEventDispatcher;
+describe("Update Animal", () => {
+	let moduleRef: any;
+	let sut: UpdateAnimalUseCase;
 
-let sut: UpdateAnimalUseCase;
+	const mockAnimalRepo = { findById: jest.fn(), update: jest.fn() };
 
-describe("Update", () => {
-	beforeEach(() => {
-		inMemoryAnimalRepository = new InMemoryAnimalRepository();
-		inMemoryAssetRepository = new InMemoryAssetRepository();
-		eventDispatcher = new MockEventDispatcher();
+	const mockAssetRepo = { existsByIds: jest.fn() };
 
-		sut = new UpdateAnimalUseCase(
-			inMemoryAnimalRepository,
-			inMemoryAssetRepository,
-			eventDispatcher,
-		);
+	beforeEach(async () => {
+		mockAnimalRepo.findById.mockReset();
+		mockAnimalRepo.update.mockReset();
+		mockAssetRepo.existsByIds.mockReset();
+
+		moduleRef = await Test.createTestingModule({
+			providers: [
+				UpdateAnimalUseCase,
+				{ provide: AnimalRepository, useValue: mockAnimalRepo },
+				{ provide: AssetRepository, useValue: mockAssetRepo },
+			],
+		}).compile();
+
+		sut = moduleRef.get(UpdateAnimalUseCase);
 	});
 
 	it("should be able to update an animal", async () => {
 		const oldAnimal = makeAnimal();
-		await inMemoryAnimalRepository.create(oldAnimal);
-
 		const newAnimal = makeAnimal();
-		const response = await sut.execute({
+		const updatedAnimal = { ...oldAnimal, name: newAnimal.name };
+
+		const params = {
 			animalId: oldAnimal.id.toString(),
 			userId: oldAnimal.userId.toString(),
 			name: newAnimal.name,
-			birthdate: newAnimal.birthdate?.toISOString(),
+			age: newAnimal.age,
 			weight: newAnimal.weight,
-		});
+		};
+
+		mockAnimalRepo.findById.mockResolvedValueOnce(oldAnimal);
+		mockAssetRepo.existsByIds.mockResolvedValueOnce(true);
+		mockAnimalRepo.update.mockResolvedValueOnce(updatedAnimal);
+
+		const response = await sut.execute(params);
 
 		expect(response.isRight()).toBeTruthy();
-		expect(inMemoryAnimalRepository.items).toHaveLength(1);
-		const animal = inMemoryAnimalRepository.items[0];
-		expect(animal.name).toEqual(newAnimal.name);
+		expect(mockAnimalRepo.findById).toHaveBeenCalledWith(params.animalId);
+		expect(mockAnimalRepo.update).toHaveBeenCalledWith(
+			params.animalId,
+			expect.objectContaining({ name: params.name, weight: params.weight }),
+		);
 	});
 
 	it("should not be able to update an animal that does not exist", async () => {
 		const oldAnimal = makeAnimal();
-		await inMemoryAnimalRepository.create(oldAnimal);
-
 		const newAnimal = makeAnimal();
-		const response = await sut.execute({
+
+		const params = {
 			animalId: "non-existing-id",
 			userId: oldAnimal.userId.toString(),
 			name: newAnimal.name,
-			birthdate: newAnimal.birthdate?.toISOString(),
+			age: newAnimal.age,
 			weight: newAnimal.weight,
-		});
+		};
+
+		mockAnimalRepo.findById.mockResolvedValueOnce(null);
+
+		const response = await sut.execute(params);
 
 		expect(response.isLeft()).toBeTruthy();
-		expect(inMemoryAnimalRepository.items).toHaveLength(1);
+		expect(mockAnimalRepo.findById).toHaveBeenCalledWith(params.animalId);
+		expect(mockAnimalRepo.update).not.toHaveBeenCalled();
 	});
 
 	it("should not be able to update an animal of another user", async () => {
 		const oldAnimal = makeAnimal();
-		await inMemoryAnimalRepository.create(oldAnimal);
-
 		const newAnimal = makeAnimal();
-		const response = await sut.execute({
+
+		const params = {
 			animalId: oldAnimal.id.toString(),
 			userId: newAnimal.userId.toString(),
 			name: newAnimal.name,
-			birthdate: newAnimal.birthdate?.toISOString(),
+			age: newAnimal.age,
 			weight: newAnimal.weight,
-		});
+		};
+
+		mockAnimalRepo.findById.mockResolvedValueOnce(oldAnimal);
+
+		const response = await sut.execute(params);
 
 		expect(response.isLeft()).toBeTruthy();
-		expect(inMemoryAnimalRepository.items).toHaveLength(1);
+		expect(mockAnimalRepo.findById).toHaveBeenCalledWith(params.animalId);
+		expect(mockAnimalRepo.update).not.toHaveBeenCalled();
 	});
 });

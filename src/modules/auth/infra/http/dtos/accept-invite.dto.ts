@@ -10,4 +10,6 @@ const acceptInviteRequest = z.object({
 const acceptInviteResponse = signInResponse;
 
 export class AcceptInviteRequestDto extends createZodDto(acceptInviteRequest) {}
-export class AcceptInviteResponseDto extends createZodDto(acceptInviteResponse) {}
+export class AcceptInviteResponseDto extends createZodDto(
+	acceptInviteResponse,
+) {}

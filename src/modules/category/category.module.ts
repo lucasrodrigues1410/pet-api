@@ -8,16 +8,10 @@ import { CategoryController } from "./infra/http/controllers/category.controller
 	controllers: [CategoryController],
 	providers: [
 		ListAllCategoriesUseCase,
-		{
-			provide: CategoryRepository,
-			useClass: PrismaCategoryRepository,
-		},
+		{ provide: CategoryRepository, useClass: PrismaCategoryRepository },
 	],
 	exports: [
-		{
-			provide: CategoryRepository,
-			useClass: PrismaCategoryRepository,
-		},
+		{ provide: CategoryRepository, useClass: PrismaCategoryRepository },
 	],
 })
 export class CategoryModule {}

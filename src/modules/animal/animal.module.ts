@@ -18,16 +18,8 @@ import { AnimalController } from "./infra/http/controllers/animal.controller";
 		UpdateAnimalUseCase,
 		DeleteAnimalUseCase,
 		AddAssetToAnimalUseCase,
-		{
-			provide: AnimalRepository,
-			useClass: AnimalPrismaRepository,
-		},
+		{ provide: AnimalRepository, useClass: AnimalPrismaRepository },
 	],
-	exports: [
-		{
-			provide: AnimalRepository,
-			useClass: AnimalPrismaRepository,
-		},
-	],
+	exports: [{ provide: AnimalRepository, useClass: AnimalPrismaRepository }],
 })
 export class AnimalModule {}

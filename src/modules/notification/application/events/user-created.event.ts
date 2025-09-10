@@ -17,9 +17,7 @@ export class SendUserCreatedEmailHandler
 
 		try {
 			await this.eventDispatcher.dispatch(
-				new EmailDispatchEvent("welcome", event.email, {
-					name: event.name,
-				}),
+				new EmailDispatchEvent("welcome", event.email, { name: event.name }),
 			);
 
 			this.logger.log(`Welcome email dispatched for user: ${event.userId}`);

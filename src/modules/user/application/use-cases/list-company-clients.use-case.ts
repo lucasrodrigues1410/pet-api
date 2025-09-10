@@ -7,9 +7,7 @@ import { UserRepository } from "../../domain/repositories/user.repository";
 
 interface ListCompanyClientsUseCaseRequest {
 	companyId: string;
-	query: PaginationQuery & {
-		search?: string;
-	};
+	query: PaginationQuery & { search?: string };
 }
 
 type ListCompanyClientsUseCaseResponse = Either<
@@ -34,8 +32,6 @@ export class ListCompanyClientsUseCase {
 			query,
 		});
 
-		return right({
-			clients,
-		});
+		return right({ clients });
 	}
 }

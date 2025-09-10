@@ -23,11 +23,7 @@ type GetAppointmentByUserIdUseCaseInput = {
 type GetAppointmentByUserIdUseCaseOutput = Either<
 	null,
 	PaginationResult<
-		Appointment & {
-			animal: Animal;
-			service: Service;
-			company: Company;
-		}
+		Appointment & { animal: Animal; service: Service; company: Company }
 	>
 >;
 

@@ -16,10 +16,12 @@ const request = z.object({
 		.nullish(),
 });
 
-const response = companyDto.omit({ logo: true }).extend({
-	address: locationDto,
-	image: assetDto.pick({ id: true, url: true }).optional(),
-});
+const response = companyDto
+	.omit({ logo: true })
+	.extend({
+		address: locationDto,
+		image: assetDto.pick({ id: true, url: true }).optional(),
+	});
 
 export class SearchCompaniesRequestDto extends createZodDto(request) {}
 export class SearchCompaniesResponseDto extends createZodDto(

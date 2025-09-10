@@ -35,9 +35,6 @@ export class TimeRange extends ValueObject<TimeRangeProps> {
 	}
 
 	public toObject() {
-		return {
-			startTime: this.startTime,
-			endTime: this.endTime,
-		};
+		return { startTime: this.startTime, endTime: this.endTime };
 	}
 }

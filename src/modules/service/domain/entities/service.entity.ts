@@ -58,13 +58,6 @@ export class Service extends Entity<ServiceProps> {
 		return service;
 	}
 
-	public update(data: Partial<ServiceProps>): void {
-		this.props = {
-			...this.props,
-			...data,
-		};
-	}
-
 	public toObject() {
 		return {
 			id: this.id.toString(),

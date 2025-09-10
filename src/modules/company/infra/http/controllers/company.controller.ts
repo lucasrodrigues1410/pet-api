@@ -104,16 +104,13 @@ export class CompanyController {
 	@HttpCode(HttpStatus.CREATED)
 	@UserTypeDecorator("company")
 	@UseGuards(CompanyGuard)
-	@UseInterceptors(FileInterceptor('file'))
-	@ApiConsumes('multipart/form-data')
-	@ApiBody({
-	  description: 'Envio de imagem',
-	  type: UploadImageDto,
-	})
+	@UseInterceptors(FileInterceptor("file"))
+	@ApiConsumes("multipart/form-data")
+	@ApiBody({ description: "Envio de imagem", type: UploadImageDto })
 	async addLogo(
 		@User() payload: UserPayload,
 		@Param("id") companyId: string,
-		@UploadedFile() file: Express.Multer.File
+		@UploadedFile() file: Express.Multer.File,
 	) {
 		const result = await this.addLogoToCompanyUseCase.execute({
 			companyId,
@@ -125,8 +122,6 @@ export class CompanyController {
 			throw new BadRequestException();
 		}
 
-		return {
-			message: "Logo adicionado com sucesso",
-		};
+		return { message: "Logo adicionado com sucesso" };
 	}
 }

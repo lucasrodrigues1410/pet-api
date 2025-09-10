@@ -39,16 +39,13 @@ export class User extends Entity<UserProps> {
 		return this.props.avatarAssetId;
 	}
 
+	set password(password: string) {
+		this.props.password = password;
+	}
+
 	public static create(props: UserProps, id?: UniqueEntityID): User {
 		const user = new User(props, id);
 		return user;
-	}
-
-	public update(data: Partial<UserProps>): void {
-		this.props = {
-			...this.props,
-			...data,
-		};
 	}
 
 	public toObject() {

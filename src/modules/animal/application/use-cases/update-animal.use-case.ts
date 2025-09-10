@@ -18,9 +18,7 @@ interface UpdateAnimalUseCaseRequest {
 
 type UpdateAnimalUseCaseResponse = Either<
 	ResourceNotFoundError,
-	{
-		animal: Animal;
-	}
+	{ animal: Animal }
 >;
 
 @Injectable()
@@ -35,43 +33,41 @@ export class UpdateAnimalUseCase {
 	): Promise<UpdateAnimalUseCaseResponse> {
 		const animal = await this.animalRepository.findById(data.animalId);
 
-			if (!animal) {
-				return left(new ResourceNotFoundError());
-			}
+		if (!animal) {
+			return left(new ResourceNotFoundError());
+		}
 
-			if (animal.userId.toString() !== data.userId) {
-				return left(new ResourceNotFoundError());
-			}
+		if (animal.userId.toString() !== data.userId) {
+			return left(new ResourceNotFoundError());
+		}
 
-			const newAnimal = Animal.create(
-				{
-					breedId: animal.breedId,
-					name: data.name ?? animal.name,
-					birthdate: data.age ? subYears(new Date(), data.age) : null,
-					weight: data.weight ?? animal.weight,
-					assetId: data.assetId
-						? new UniqueEntityID(data.assetId)
-						: animal.assetId,
-					userId: animal.userId,
-				},
-				animal.id,
-			);
+		const newAnimal = Animal.create(
+			{
+				breedId: animal.breedId,
+				name: data.name ?? animal.name,
+				birthdate: data.age ? subYears(new Date(), data.age) : null,
+				weight: data.weight ?? animal.weight,
+				assetId: data.assetId
+					? new UniqueEntityID(data.assetId)
+					: animal.assetId,
+				userId: animal.userId,
+			},
+			animal.id,
+		);
 
-			const existsAsset = data.assetId
-				? await this.assetRepository.existsByIds([data.assetId.toString()])
-				: true;
+		const existsAsset = data.assetId
+			? await this.assetRepository.existsByIds([data.assetId.toString()])
+			: true;
 
-			if (!existsAsset) {
-				return left(new ResourceNotFoundError());
-			}
+		if (!existsAsset) {
+			return left(new ResourceNotFoundError());
+		}
 
-			const updatedAnimal = await this.animalRepository.update(
-				newAnimal.id.toString(),
-				newAnimal,
-			);
+		const updatedAnimal = await this.animalRepository.update(
+			newAnimal.id.toString(),
+			newAnimal,
+		);
 
-			return right({
-				animal: updatedAnimal,
-			});
+		return right({ animal: updatedAnimal });
 	}
 }

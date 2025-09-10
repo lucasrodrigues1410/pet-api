@@ -8,10 +8,7 @@ import { PaginationQuery } from "@/shared/utils/pagination-query";
 
 interface ListStaffByCompanyUseCaseRequest {
 	companyId: string;
-	query: PaginationQuery & {
-		query?: string;
-		roles?: StaffRole[];
-	};
+	query: PaginationQuery & { query?: string; roles?: StaffRole[] };
 }
 
 type ListStaffByCompanyUseCaseResponse = Either<

@@ -13,21 +13,14 @@ type FindCompanyResult = Company & {
 	address: Location;
 };
 
-type SearchCompanyResult = Company & {
-	address: Location;
-	image: Asset;
-};
+type SearchCompanyResult = Company & { address: Location; image: Asset };
 
 export abstract class CompanyRepository {
 	abstract findById(id: string): Promise<FindCompanyResult | null>;
 	abstract searchCompanies(
 		params: {
 			query?: string;
-			location?: {
-				latitude: number;
-				longitude: number;
-				radiusInKm?: number;
-			};
+			location?: { latitude: number; longitude: number; radiusInKm?: number };
 		} & PaginationQuery,
 	): Promise<PaginationResult<SearchCompanyResult>>;
 	abstract update(id: string, data: Partial<Company>): Promise<void>;

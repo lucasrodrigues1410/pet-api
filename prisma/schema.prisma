@@ -1,6 +1,5 @@
 generator client {
   provider        = "prisma-client"
-  previewFeatures = ["typedSql","driverAdapters", "queryCompiler"]
   output          = "./generated"
 
   runtime  = "bun"

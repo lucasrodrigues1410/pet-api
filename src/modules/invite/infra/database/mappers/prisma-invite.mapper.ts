@@ -4,15 +4,18 @@ import { Invite } from "@/modules/invite/domain/entities/invite.entity";
 
 export class PrismaInviteMapper {
 	static toDomain(prismaInvite: PrismaInvite): Invite {
-		return Invite.create({
-			userId: new UniqueEntityID(prismaInvite.userId),
-			token: prismaInvite.token,
-			expiresAt: prismaInvite.expiresAt,
-			usedAt: prismaInvite.usedAt ?? undefined,
-			createdAt: prismaInvite.createdAt,
-			updatedAt: prismaInvite.updatedAt,
-			deletedAt: prismaInvite.deletedAt ?? undefined,
-		}, new UniqueEntityID(prismaInvite.id));
+		return Invite.create(
+			{
+				userId: new UniqueEntityID(prismaInvite.userId),
+				token: prismaInvite.token,
+				expiresAt: prismaInvite.expiresAt,
+				usedAt: prismaInvite.usedAt ?? undefined,
+				createdAt: prismaInvite.createdAt,
+				updatedAt: prismaInvite.updatedAt,
+				deletedAt: prismaInvite.deletedAt ?? undefined,
+			},
+			new UniqueEntityID(prismaInvite.id),
+		);
 	}
 
 	static toPrisma(invite: Invite): PrismaInvite {
@@ -28,7 +31,9 @@ export class PrismaInviteMapper {
 		};
 	}
 
-	static toPrismaUpdate(invite: Partial<Invite>): Prisma.InviteUncheckedUpdateInput {
+	static toPrismaUpdate(
+		invite: Partial<Invite>,
+	): Prisma.InviteUncheckedUpdateInput {
 		return {
 			usedAt: invite.usedAt ?? null,
 			updatedAt: invite.updatedAt ?? new Date(),

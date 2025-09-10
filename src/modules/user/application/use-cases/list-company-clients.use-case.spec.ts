@@ -1,20 +1,29 @@
-import { beforeEach, describe, expect, it } from "bun:test";
+import { beforeEach, describe, expect, it, jest } from "bun:test";
+import { Test } from "@nestjs/testing";
 import { makeAnimal } from "test/factories/make-animal";
 import { makeAppointment } from "test/factories/make-appointment";
 import { makeCompany } from "test/factories/make-company";
 import { makeService } from "test/factories/make-service";
 import { makeStaff } from "test/factories/make-staff";
 import { makeUser } from "test/factories/make-user";
-import { InMemoryUserRepository } from "test/repositories/in-memory-user.repository";
+import { UserRepository } from "../../domain/repositories/user.repository";
 import { ListCompanyClientsUseCase } from "./list-company-clients.use-case";
 
-let inMemoryUsersRepository: InMemoryUserRepository;
 let sut: ListCompanyClientsUseCase;
+let moduleRef: any;
+
+const mockUserRepository = { findClientsByCompanyId: jest.fn() };
 
 describe("List company clients", () => {
-	beforeEach(() => {
-		inMemoryUsersRepository = new InMemoryUserRepository();
-		sut = new ListCompanyClientsUseCase(inMemoryUsersRepository);
+	beforeEach(async () => {
+		mockUserRepository.findClientsByCompanyId.mockReset();
+		moduleRef = await Test.createTestingModule({
+			providers: [
+				ListCompanyClientsUseCase,
+				{ provide: UserRepository, useValue: mockUserRepository },
+			],
+		}).compile();
+		sut = moduleRef.get(ListCompanyClientsUseCase);
 	});
 
 	it("should list clients that have appointments with the company", async () => {
@@ -25,7 +34,7 @@ describe("List company clients", () => {
 
 		const client1 = makeUser({ type: "customer" });
 		const client2 = makeUser({ type: "customer" });
-		const client3 = makeUser({ type: "customer" });
+		/* const client3 = makeUser({ type: "customer" }); */
 
 		const animal1 = makeAnimal({ userId: client1.id });
 		const animal2 = makeAnimal({ userId: client2.id });
@@ -47,33 +56,32 @@ describe("List company clients", () => {
 			animalId: animal2.id,
 		});
 
-		// Add users and appointments to repositories
-		inMemoryUsersRepository.create(client1);
-		inMemoryUsersRepository.create(client2);
-		inMemoryUsersRepository.create(client3);
-
-		// Add appointments to the repository
-		inMemoryUsersRepository.appointments.push({
-			id: appointment1.id.toString(),
-			companyId: company.id.toString(),
-			clientId: client1.id.toString(),
-			startDate: appointment1.startDate,
-		});
-
-		inMemoryUsersRepository.appointments.push({
-			id: appointment2.id.toString(),
-			companyId: company.id.toString(),
-			clientId: client2.id.toString(),
-			startDate: appointment2.startDate,
+		mockUserRepository.findClientsByCompanyId.mockResolvedValue({
+			items: [
+				{
+					id: client1.id.toString(),
+					name: client1.name,
+					email: client1.email,
+					appointmentsCount: 1,
+					lastAppointmentDate: appointment1.startDate,
+				},
+				{
+					id: client2.id.toString(),
+					name: client2.name,
+					email: client2.email,
+					appointmentsCount: 1,
+					lastAppointmentDate: appointment2.startDate,
+				},
+			],
+			total: 2,
+			page: 1,
+			limit: 10,
 		});
 
 		// Act
 		const result = await sut.execute({
 			companyId: company.id.toString(),
-			query: {
-				page: 1,
-				limit: 10,
-			},
+			query: { page: 1, limit: 10 },
 		});
 
 		// Assert
@@ -86,17 +94,19 @@ describe("List company clients", () => {
 	it("should return empty list when no clients have appointments with the company", async () => {
 		// Arrange
 		const company = makeCompany({});
-		const client = makeUser({ type: "customer" });
+		/* const client = makeUser({ type: "customer" }); */
 
-		inMemoryUsersRepository.create(client);
+		mockUserRepository.findClientsByCompanyId.mockResolvedValue({
+			items: [],
+			total: 0,
+			page: 1,
+			limit: 10,
+		});
 
 		// Act
 		const result = await sut.execute({
 			companyId: company.id.toString(),
-			query: {
-				page: 1,
-				limit: 10,
-			},
+			query: { page: 1, limit: 10 },
 		});
 
 		// Assert
@@ -134,32 +144,34 @@ describe("List company clients", () => {
 			animalId: animal2.id,
 		});
 
-		inMemoryUsersRepository.create(client1);
-		inMemoryUsersRepository.create(client2);
-
-		// Add appointments to the repository
-		inMemoryUsersRepository.appointments.push({
-			id: appointment1.id.toString(),
-			companyId: company.id.toString(),
-			clientId: client1.id.toString(),
-			startDate: appointment1.startDate,
-		});
-
-		inMemoryUsersRepository.appointments.push({
-			id: appointment2.id.toString(),
-			companyId: company.id.toString(),
-			clientId: client2.id.toString(),
-			startDate: appointment2.startDate,
-		});
+		mockUserRepository.findClientsByCompanyId.mockImplementation(
+			async ({ query }) => {
+				const search = query?.search ?? "";
+				const source = [
+					{
+						id: client1.id.toString(),
+						name: client1.name,
+						email: client1.email,
+						appointmentsCount: 1,
+						lastAppointmentDate: appointment1.startDate,
+					},
+					{
+						id: client2.id.toString(),
+						name: client2.name,
+						email: client2.email,
+						appointmentsCount: 1,
+						lastAppointmentDate: appointment2.startDate,
+					},
+				];
+				const filtered = source.filter((c) => c.name.includes(search));
+				return { items: filtered, total: filtered.length, page: 1, limit: 10 };
+			},
+		);
 
 		// Act
 		const result = await sut.execute({
 			companyId: company.id.toString(),
-			query: {
-				page: 1,
-				limit: 10,
-				search: "João",
-			},
+			query: { page: 1, limit: 10, search: "João" },
 		});
 
 		// Assert

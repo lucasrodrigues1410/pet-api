@@ -7,17 +7,8 @@ import { PrismaUnitOfWork } from "./prisma-unit-of-work.service";
 @Module({
 	providers: [
 		PrismaService,
-		{
-			provide: UnitOfWork,
-			useClass: PrismaUnitOfWork,
-		},
+		{ provide: UnitOfWork, useClass: PrismaUnitOfWork },
 	],
-	exports: [
-		PrismaService,
-		{
-			provide: UnitOfWork,
-			useClass: PrismaUnitOfWork,
-		},
-	],
+	exports: [PrismaService, { provide: UnitOfWork, useClass: PrismaUnitOfWork }],
 })
 export class PrismaModule {}

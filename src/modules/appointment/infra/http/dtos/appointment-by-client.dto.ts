@@ -5,9 +5,10 @@ import { appointmentStatus } from "@/modules/appointment/domain/entities/appoint
 import { companyDto } from "@/modules/company/infra/http/dtos/company.dto";
 import { serviceDto } from "@/modules/service/infra/http/dtos/service.dto";
 import { makePaginatedDto } from "@/shared/utils/pagination";
+import { paginationQuerySchema } from "@/shared/utils/pagination-query";
 import { appointmentDto } from "./appointment.dto";
 
-const queryDto = z.object({
+const queryDto = paginationQuerySchema.extend({
 	startDate: z.iso
 		.date()
 		.optional()
@@ -28,11 +29,7 @@ const responseDto = appointmentDto
 		coatType: true,
 		status: true,
 	})
-	.extend({
-		animal: animalDto,
-		service: serviceDto,
-		company: companyDto,
-	});
+	.extend({ animal: animalDto, service: serviceDto, company: companyDto });
 
 export class AppointmentsByClientQueryDto extends createZodDto(queryDto) {}
 export class AppointmentsByClientResponseDto extends createZodDto(

@@ -1,31 +1,49 @@
-import { beforeEach, describe, expect, it } from "bun:test";
+import { beforeEach, describe, expect, it, jest } from "bun:test";
+import { Test } from "@nestjs/testing";
 import { makeAsset } from "test/factories/make-asset";
-import { MockUploader } from "test/mocks/mock-uploader";
-import { InMemoryAssetRepository } from "test/repositories/in-memory-asset.repository";
 import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
+import { AssetRepository } from "../../domain/repositories/asset.repository";
+import { Uploader } from "../../domain/storage/uploader";
 import { DeleteAssetByIdUseCase } from "./delete-asset-by-id.use-case";
 
-let assetRepository: InMemoryAssetRepository;
-let uploader: MockUploader;
+describe("DeleteAssetByIdUseCase", () => {
+	let moduleRef: any;
+	let sut: DeleteAssetByIdUseCase;
 
-let sut: DeleteAssetByIdUseCase;
+	const mockAssetRepo = {
+		create: jest.fn(),
+		delete: jest.fn(),
+		existsByIds: jest.fn(),
+		findById: jest.fn(),
+	};
 
-describe("Delete asset by id", () => {
-	beforeEach(() => {
-		assetRepository = new InMemoryAssetRepository();
-		uploader = new MockUploader();
+	const mockUploader = { upload: jest.fn(), delete: jest.fn() };
 
-		sut = new DeleteAssetByIdUseCase(assetRepository, uploader);
+	beforeEach(async () => {
+		mockAssetRepo.create.mockReset();
+		mockAssetRepo.delete.mockReset();
+		mockAssetRepo.existsByIds.mockReset();
+		mockAssetRepo.findById.mockReset();
+		mockUploader.upload.mockReset();
+		mockUploader.delete.mockReset();
+
+		moduleRef = await Test.createTestingModule({
+			providers: [
+				DeleteAssetByIdUseCase,
+				{ provide: AssetRepository, useValue: mockAssetRepo },
+				{ provide: Uploader, useValue: mockUploader },
+			],
+		}).compile();
+
+		sut = moduleRef.get(DeleteAssetByIdUseCase);
 	});
 
 	it("should be able to delete an asset by id", async () => {
 		const asset = makeAsset();
-		uploader.items.push({
-			fileName: asset.name,
-			url: asset.url,
-			id: asset.id.toString(),
-		});
-		assetRepository.items.push(asset);
+
+		mockAssetRepo.findById.mockResolvedValueOnce(asset);
+		mockAssetRepo.delete.mockResolvedValueOnce(undefined);
+		mockUploader.delete.mockResolvedValueOnce(undefined);
 
 		const result = await sut.execute({
 			assetId: asset.id.toString(),
@@ -33,10 +51,14 @@ describe("Delete asset by id", () => {
 		});
 
 		expect(result.isRight()).toBe(true);
-		expect(assetRepository.items).toHaveLength(0);
+		expect(mockAssetRepo.findById).toHaveBeenCalledWith(asset.id.toString());
+		expect(mockAssetRepo.delete).toHaveBeenCalledWith(asset.id.toString());
+		expect(mockUploader.delete).toHaveBeenCalledWith(asset.fileId);
 	});
 
 	it("should not be able to delete an asset that does not exist", async () => {
+		mockAssetRepo.findById.mockResolvedValueOnce(null);
+
 		const result = await sut.execute({
 			assetId: "non-existing-asset-id",
 			userId: "non-existing-user-id",
@@ -44,16 +66,17 @@ describe("Delete asset by id", () => {
 
 		expect(result.isLeft()).toBe(true);
 		expect(result.value).toBeInstanceOf(ResourceNotFoundError);
+		expect(mockAssetRepo.findById).toHaveBeenCalledWith(
+			"non-existing-asset-id",
+		);
+		expect(mockAssetRepo.delete).not.toHaveBeenCalled();
+		expect(mockUploader.delete).not.toHaveBeenCalled();
 	});
 
-	it("should not able to delete an asset that is not pertent to the user", async () => {
+	it("should not be able to delete an asset that is not owned by the user", async () => {
 		const asset = makeAsset();
-		uploader.items.push({
-			fileName: asset.name,
-			url: asset.url,
-			id: asset.id.toString(),
-		});
-		assetRepository.items.push(asset);
+
+		mockAssetRepo.findById.mockResolvedValueOnce(asset);
 
 		const result = await sut.execute({
 			assetId: asset.id.toString(),
@@ -62,8 +85,8 @@ describe("Delete asset by id", () => {
 
 		expect(result.isLeft()).toBe(true);
 		expect(result.value).toBeInstanceOf(ResourceNotFoundError);
-		expect(assetRepository.items).toHaveLength(1);
-		expect(uploader.items).toHaveLength(1);
-		expect(uploader.items[0].id).toBe(asset.id.toString());
+		expect(mockAssetRepo.findById).toHaveBeenCalledWith(asset.id.toString());
+		expect(mockAssetRepo.delete).not.toHaveBeenCalled();
+		expect(mockUploader.delete).not.toHaveBeenCalled();
 	});
 });

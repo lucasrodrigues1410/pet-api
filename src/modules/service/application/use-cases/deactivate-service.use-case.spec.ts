@@ -1,22 +1,37 @@
-import { beforeEach, describe, expect, it } from "bun:test";
+import { beforeEach, describe, expect, it, jest } from "bun:test";
+import { Test } from "@nestjs/testing";
 import { makeService } from "test/factories/make-service";
-import { InMemoryServiceRepository } from "test/repositories/in-memory-service.repository";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
+import { ServiceRepository } from "../../domain/repositories/service.repository";
 import { DeactivateServiceUseCase } from "./deactivate-service.use-case";
 
-let inMemoryServicesRepository: InMemoryServiceRepository;
+interface MockServiceRepository {
+	findById: jest.Mock;
+	update: jest.Mock;
+}
+let mockServiceRepository: MockServiceRepository;
 let sut: DeactivateServiceUseCase;
+let moduleRef: any;
 
 describe("Deactivate Service", () => {
-	beforeEach(() => {
-		inMemoryServicesRepository = new InMemoryServiceRepository();
-		sut = new DeactivateServiceUseCase(inMemoryServicesRepository);
+	beforeEach(async () => {
+		mockServiceRepository = {
+			findById: jest.fn(async () => undefined),
+			update: jest.fn(async () => undefined),
+		};
+		moduleRef = await Test.createTestingModule({
+			providers: [
+				DeactivateServiceUseCase,
+				{ provide: ServiceRepository, useValue: mockServiceRepository },
+			],
+		}).compile();
+		sut = moduleRef.get(DeactivateServiceUseCase);
 	});
 
 	it("should be able to deactivate a service", async () => {
 		const companyId = new UniqueEntityID();
 		const service = makeService({ companyId, isActive: true });
-		inMemoryServicesRepository.items.push(service);
+		mockServiceRepository.findById.mockResolvedValueOnce(service);
 
 		const result = await sut.execute({
 			id: service.id.toString(),
@@ -24,15 +39,14 @@ describe("Deactivate Service", () => {
 		});
 
 		expect(result.isRight()).toBe(true);
-
-		// Verify service is marked as inactive
-		const deactivatedService = await inMemoryServicesRepository.findById(
+		expect(mockServiceRepository.update).toHaveBeenCalledWith(
 			service.id.toString(),
+			{ isActive: false },
 		);
-		expect(deactivatedService?.isActive).toBe(false);
 	});
 
 	it("should return error when service not found", async () => {
+		mockServiceRepository.findById.mockResolvedValueOnce(undefined);
 		const result = await sut.execute({
 			id: "non-existent-id",
 			companyId: "non-existent-company-id",
@@ -50,9 +64,10 @@ describe("Deactivate Service", () => {
 		const service2 = makeService({ companyId, isActive: true });
 		const service3 = makeService({ companyId, isActive: true });
 
-		inMemoryServicesRepository.items.push(service1);
-		inMemoryServicesRepository.items.push(service2);
-		inMemoryServicesRepository.items.push(service3);
+		mockServiceRepository.findById
+			.mockResolvedValueOnce(service1)
+			.mockResolvedValueOnce(service2)
+			.mockResolvedValueOnce(service3);
 
 		// Deactivate first service
 		const result1 = await sut.execute({
@@ -68,26 +83,22 @@ describe("Deactivate Service", () => {
 		});
 		expect(result2.isRight()).toBe(true);
 
-		// Verify both are marked as inactive
-		const deactivatedService1 = await inMemoryServicesRepository.findById(
+		expect(mockServiceRepository.update).toHaveBeenNthCalledWith(
+			1,
 			service1.id.toString(),
+			{ isActive: false },
 		);
-		const deactivatedService2 = await inMemoryServicesRepository.findById(
+		expect(mockServiceRepository.update).toHaveBeenNthCalledWith(
+			2,
 			service2.id.toString(),
+			{ isActive: false },
 		);
-		const activeService3 = await inMemoryServicesRepository.findById(
-			service3.id.toString(),
-		);
-
-		expect(deactivatedService1?.isActive).toBe(false);
-		expect(deactivatedService2?.isActive).toBe(false);
-		expect(activeService3?.isActive).toBe(true);
 	});
 
 	it("should handle deactivating already deactivated service", async () => {
 		const companyId = new UniqueEntityID();
-		const service = makeService({ companyId, isActive: false }); // Already inactive
-		inMemoryServicesRepository.items.push(service);
+		const service = makeService({ companyId, isActive: false });
+		mockServiceRepository.findById.mockResolvedValueOnce(service);
 
 		const result = await sut.execute({
 			id: service.id.toString(),
@@ -95,11 +106,9 @@ describe("Deactivate Service", () => {
 		});
 
 		expect(result.isRight()).toBe(true);
-
-		// Service should remain inactive
-		const deactivatedService = await inMemoryServicesRepository.findById(
+		expect(mockServiceRepository.update).toHaveBeenCalledWith(
 			service.id.toString(),
+			{ isActive: false },
 		);
-		expect(deactivatedService?.isActive).toBe(false);
 	});
 });

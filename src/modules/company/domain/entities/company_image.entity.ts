@@ -24,9 +24,6 @@ export class CompanyImage extends Entity<CompanyImageProps> {
 	}
 
 	public toObject() {
-		return {
-			id: this.id.toString(),
-			asset: this.asset.toObject(),
-		};
+		return { id: this.id.toString(), asset: this.asset.toObject() };
 	}
 }

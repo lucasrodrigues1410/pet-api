@@ -1,17 +1,28 @@
-import { beforeEach, describe, expect, it } from "bun:test";
-import { InMemoryInviteRepository } from "test/repositories/in-memory-invite.repository";
+import { beforeEach, describe, expect, it, jest } from "bun:test";
+import { Test } from "@nestjs/testing";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
 import { Invite } from "../../domain/entities/invite.entity";
+import { InviteRepository } from "../../domain/repositories/invite.repository";
 import { ValidateInviteUseCase } from "./validate-invite.use-case";
 
-let inMemoryInviteRepository: InMemoryInviteRepository;
+let moduleRef: any;
 let sut: ValidateInviteUseCase;
 
+const mockInviteRepository = { findByToken: jest.fn() };
+
 describe("Validate Invite", () => {
-	beforeEach(() => {
-		inMemoryInviteRepository = new InMemoryInviteRepository();
-		sut = new ValidateInviteUseCase(inMemoryInviteRepository);
+	beforeEach(async () => {
+		mockInviteRepository.findByToken.mockReset();
+
+		moduleRef = await Test.createTestingModule({
+			providers: [
+				ValidateInviteUseCase,
+				{ provide: InviteRepository, useValue: mockInviteRepository },
+			],
+		}).compile();
+
+		sut = moduleRef.get(ValidateInviteUseCase);
 	});
 
 	it("should validate a valid invite successfully", async () => {
@@ -24,7 +35,7 @@ describe("Validate Invite", () => {
 			expiresAt,
 		});
 
-		await inMemoryInviteRepository.items.push(invite);
+		mockInviteRepository.findByToken.mockResolvedValueOnce(invite);
 
 		const result = await sut.execute({ token: "valid-token" });
 
@@ -46,6 +57,8 @@ describe("Validate Invite", () => {
 	});
 
 	it("should return error when invite is not found", async () => {
+		mockInviteRepository.findByToken.mockResolvedValueOnce(null);
+
 		const result = await sut.execute({ token: "non-existent-token" });
 
 		expect(result.isLeft()).toBe(true);
@@ -62,7 +75,7 @@ describe("Validate Invite", () => {
 			expiresAt,
 		});
 
-		await inMemoryInviteRepository.items.push(invite);
+		mockInviteRepository.findByToken.mockResolvedValueOnce(invite);
 
 		const result = await sut.execute({ token: "expired-token" });
 
@@ -87,9 +100,8 @@ describe("Validate Invite", () => {
 			expiresAt,
 		});
 
-		// Marcar como usado
 		invite.markAsUsed();
-		await inMemoryInviteRepository.items.push(invite);
+		mockInviteRepository.findByToken.mockResolvedValueOnce(invite);
 
 		const result = await sut.execute({ token: "used-token" });
 
@@ -114,9 +126,8 @@ describe("Validate Invite", () => {
 			expiresAt,
 		});
 
-		// Marcar como usado
 		invite.markAsUsed();
-		await inMemoryInviteRepository.items.push(invite);
+		mockInviteRepository.findByToken.mockResolvedValueOnce(invite);
 
 		const result = await sut.execute({ token: "expired-used-token" });
 

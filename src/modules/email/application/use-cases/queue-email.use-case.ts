@@ -30,10 +30,7 @@ export class QueueEmailUseCase {
 			params.templateKey,
 			params.target,
 			params.variables,
-			{
-				priority: params.priority || "normal",
-				delay: params.delay,
-			},
+			{ priority: params.priority || "normal", delay: params.delay },
 		);
 
 		await this.emailPublisher.dispatch(event);
@@ -55,9 +52,6 @@ export class QueueEmailUseCase {
 		params: QueueEmailUseCaseInput<K>,
 		delayInMinutes: number,
 	): Promise<void> {
-		return this.execute({
-			...params,
-			delay: delayInMinutes * 60 * 1000,
-		});
+		return this.execute({ ...params, delay: delayInMinutes * 60 * 1000 });
 	}
 }

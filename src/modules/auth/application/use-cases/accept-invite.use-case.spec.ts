@@ -1,59 +1,79 @@
-import { beforeEach, describe, expect, it } from "bun:test";
-import { FakeEncrypter } from "test/cryptography/fake-encrypter";
-import { FakeHasher } from "test/cryptography/fake-hasher";
-import { makeStaff } from "test/factories/make-staff";
+import { beforeEach, describe, expect, it, jest } from "bun:test";
+import { Test } from "@nestjs/testing";
 import { makeUser } from "test/factories/make-user";
-import { InMemoryInviteRepository } from "test/repositories/in-memory-invite.repository";
-import { InMemoryStaffRepository } from "test/repositories/in-memory-staff.repository";
-import { InMemoryUserRepository } from "test/repositories/in-memory-user.repository";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { Invite } from "@/modules/invite/domain/entities/invite.entity";
+import {
+	InviteAlreadyUsedError,
+	InviteExpiredError,
+	InviteNotFoundError,
+} from "@/modules/invite/domain/errors/error";
+import { InviteRepository } from "@/modules/invite/domain/repositories/invite.repository";
+import { UserRepository } from "@/modules/user/domain/repositories/user.repository";
+import { right } from "@/shared/either";
 import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
+import { HashGenerator } from "../../domain/interfaces/hash-generator.interface";
 import { AcceptInviteUseCase } from "./accept-invite.use-case";
 import { SignInUseCase } from "./sign-in.use-case";
 
-let inMemoryInviteRepository: InMemoryInviteRepository;
-let signInUseCase: SignInUseCase;
-let inMemoryUserRepository: InMemoryUserRepository;
-let inMemoryStaffRepository: InMemoryStaffRepository;
-let fakeHasher: FakeHasher;
-let fakeEncrypter: FakeEncrypter;
-let sut: AcceptInviteUseCase;
+describe("AcceptInviteUseCase", () => {
+	let moduleRef: any;
+	let sut: AcceptInviteUseCase;
 
-describe("Accept Invite", () => {
-	const user = makeUser({
-		email: "employee@example.com",
-		name: "Test Employee",
-		type: "company",
-	});
-	const staff = makeStaff({ userId: user.id });
+	const mockInviteRepo = {
+		findByToken: jest.fn(),
+		create: jest.fn(),
+		update: jest.fn(),
+		delete: jest.fn(),
+		markAsUsedIfUnused: jest.fn(),
+	};
 
-	beforeEach(() => {
-		inMemoryInviteRepository = new InMemoryInviteRepository();
-		inMemoryUserRepository = new InMemoryUserRepository();
-		inMemoryStaffRepository = new InMemoryStaffRepository();
-		fakeHasher = new FakeHasher();
-		fakeEncrypter = new FakeEncrypter();
-		signInUseCase = new SignInUseCase(
-			inMemoryUserRepository,
-			inMemoryStaffRepository,
-			fakeHasher,
-			fakeEncrypter,
-		);
+	const mockUserRepo = {
+		findByEmail: jest.fn(),
+		findById: jest.fn(),
+		create: jest.fn(),
+		update: jest.fn(),
+		delete: jest.fn(),
+	};
 
-		inMemoryUserRepository.items.push(user);
-		inMemoryStaffRepository.items.push(staff);
+	const mockHashGenerator = { hash: jest.fn() };
 
-		sut = new AcceptInviteUseCase(
-			inMemoryInviteRepository,
-			signInUseCase,
-			inMemoryUserRepository,
-			fakeHasher,
-		);
+	const mockSignInUseCase = { execute: jest.fn() };
+
+	beforeEach(async () => {
+		mockInviteRepo.findByToken.mockReset();
+		mockInviteRepo.create.mockReset();
+		mockInviteRepo.update.mockReset();
+		mockInviteRepo.delete.mockReset();
+		mockInviteRepo.markAsUsedIfUnused.mockReset();
+		mockUserRepo.findByEmail.mockReset();
+		mockUserRepo.findById.mockReset();
+		mockUserRepo.create.mockReset();
+		mockUserRepo.update.mockReset();
+		mockUserRepo.delete.mockReset();
+		mockHashGenerator.hash.mockReset();
+		mockSignInUseCase.execute.mockReset();
+
+		moduleRef = await Test.createTestingModule({
+			providers: [
+				AcceptInviteUseCase,
+				{ provide: InviteRepository, useValue: mockInviteRepo },
+				{ provide: UserRepository, useValue: mockUserRepo },
+				{ provide: HashGenerator, useValue: mockHashGenerator },
+				{ provide: SignInUseCase, useValue: mockSignInUseCase },
+			],
+		}).compile();
+
+		sut = moduleRef.get(AcceptInviteUseCase);
 	});
 
 	it("should accept invite successfully", async () => {
-		// Criar convite válido
+		const user = makeUser({
+			email: "employee@example.com",
+			name: "Test Employee",
+			type: "company",
+		});
+
 		const expiresAt = new Date();
 		expiresAt.setDate(expiresAt.getDate() + 7);
 
@@ -62,7 +82,26 @@ describe("Accept Invite", () => {
 			token: "valid-token",
 			expiresAt,
 		});
-		await inMemoryInviteRepository.items.push(invite);
+
+		const hashedPassword = "hashed-password";
+		const signInResult = {
+			id: user.id,
+			name: user.name,
+			email: user.email,
+			type: user.type,
+			password: user.password,
+			avatar: user.avatar,
+			accessToken: "access-token",
+			staffRole: "admin",
+			companyId: "company-id",
+		};
+
+		mockInviteRepo.findByToken.mockResolvedValueOnce(invite);
+		mockUserRepo.findById.mockResolvedValueOnce(user);
+		mockHashGenerator.hash.mockResolvedValueOnce(hashedPassword);
+		mockUserRepo.update.mockResolvedValueOnce(undefined);
+		mockInviteRepo.markAsUsedIfUnused.mockResolvedValueOnce(true);
+		mockSignInUseCase.execute.mockResolvedValueOnce(right(signInResult));
 
 		const result = await sut.execute({
 			token: "valid-token",
@@ -72,36 +111,51 @@ describe("Accept Invite", () => {
 		expect(result.isRight()).toBe(true);
 
 		if (result.isRight()) {
-			const { name, email, password, accessToken } = result.value;
+			const { user, accessToken } = result.value;
 
-			// Verificar se o usuário foi retornado
-			expect(email).toBe("employee@example.com");
-			expect(name).toBe("Test Employee");
-			expect(accessToken).toBeDefined();
-
-			// Verificar se a senha foi atualizada (FakeHasher adiciona "-hashed")
-			expect(password).toContain("newpassword123-hashed");
-
-			// Verificar se o convite foi marcado como usado
-			const updatedInvite = inMemoryInviteRepository.items.find(
-				(i) => i.token === "valid-token",
-			);
-			expect(updatedInvite?.usedAt).toBeDefined();
+			expect(user.email).toBe("employee@example.com");
+			expect(user.name).toBe("Test Employee");
+			expect(accessToken).toBe("access-token");
 		}
+
+		expect(mockInviteRepo.findByToken).toHaveBeenCalledWith("valid-token");
+		expect(mockUserRepo.findById).toHaveBeenCalledWith(user.id.toString());
+		expect(mockHashGenerator.hash).toHaveBeenCalledWith("newpassword123");
+		expect(mockUserRepo.update).toHaveBeenCalledWith(user.id.toString(), {
+			password: hashedPassword,
+		});
+		expect(mockInviteRepo.markAsUsedIfUnused).toHaveBeenCalledWith(
+			invite.id.toString(),
+			expect.any(Date),
+		);
+		expect(mockSignInUseCase.execute).toHaveBeenCalledWith({
+			email: user.email,
+			password: "newpassword123",
+			type: "company",
+		});
 	});
 
 	it("should return error when invite is not found", async () => {
-		const result = await sut.execute({
-			token: "non-existent-token",
-			password: "newpassword123",
-		});
+		mockInviteRepo.findByToken.mockResolvedValueOnce(null);
 
-		expect(result.isLeft()).toBe(true);
-		expect(result.value).toBeInstanceOf(ResourceNotFoundError);
+		await expect(
+			sut.execute({ token: "non-existent-token", password: "newpassword123" }),
+		).rejects.toThrow(InviteNotFoundError);
+
+		expect(mockInviteRepo.findByToken).toHaveBeenCalledWith(
+			"non-existent-token",
+		);
+		expect(mockUserRepo.findById).not.toHaveBeenCalled();
+		expect(mockHashGenerator.hash).not.toHaveBeenCalled();
 	});
 
 	it("should return error when invite is expired", async () => {
-		// Criar convite expirado
+		const user = makeUser({
+			email: "employee@example.com",
+			name: "Test Employee",
+			type: "company",
+		});
+
 		const expiresAt = new Date();
 		expiresAt.setDate(expiresAt.getDate() - 1); // 1 dia no passado
 
@@ -110,19 +164,25 @@ describe("Accept Invite", () => {
 			token: "expired-token",
 			expiresAt,
 		});
-		await inMemoryInviteRepository.items.push(invite);
 
-		const result = await sut.execute({
-			token: "expired-token",
-			password: "newpassword123",
-		});
+		mockInviteRepo.findByToken.mockResolvedValueOnce(invite);
 
-		expect(result.isLeft()).toBe(true);
-		expect(result.value).toBeInstanceOf(ResourceNotFoundError);
+		await expect(
+			sut.execute({ token: "expired-token", password: "newpassword123" }),
+		).rejects.toThrow(InviteExpiredError);
+
+		expect(mockInviteRepo.findByToken).toHaveBeenCalledWith("expired-token");
+		expect(mockUserRepo.findById).not.toHaveBeenCalled();
+		expect(mockHashGenerator.hash).not.toHaveBeenCalled();
 	});
 
 	it("should return error when invite is already used", async () => {
-		// Criar convite já usado
+		const user = makeUser({
+			email: "employee@example.com",
+			name: "Test Employee",
+			type: "company",
+		});
+
 		const expiresAt = new Date();
 		expiresAt.setDate(expiresAt.getDate() + 7);
 
@@ -132,19 +192,19 @@ describe("Accept Invite", () => {
 			expiresAt,
 		});
 		invite.markAsUsed();
-		await inMemoryInviteRepository.items.push(invite);
 
-		const result = await sut.execute({
-			token: "used-token",
-			password: "newpassword123",
-		});
+		mockInviteRepo.findByToken.mockResolvedValueOnce(invite);
 
-		expect(result.isLeft()).toBe(true);
-		expect(result.value).toBeInstanceOf(ResourceNotFoundError);
+		await expect(
+			sut.execute({ token: "used-token", password: "newpassword123" }),
+		).rejects.toThrow(InviteAlreadyUsedError);
+
+		expect(mockInviteRepo.findByToken).toHaveBeenCalledWith("used-token");
+		expect(mockUserRepo.findById).not.toHaveBeenCalled();
+		expect(mockHashGenerator.hash).not.toHaveBeenCalled();
 	});
 
 	it("should return error when user is not found", async () => {
-		// Criar convite sem usuário associado
 		const expiresAt = new Date();
 		expiresAt.setDate(expiresAt.getDate() + 7);
 
@@ -153,19 +213,28 @@ describe("Accept Invite", () => {
 			token: "orphan-token",
 			expiresAt,
 		});
-		await inMemoryInviteRepository.items.push(invite);
 
-		const result = await sut.execute({
-			token: "orphan-token",
-			password: "newpassword123",
-		});
+		mockInviteRepo.findByToken.mockResolvedValueOnce(invite);
+		mockUserRepo.findById.mockResolvedValueOnce(null);
 
-		expect(result.isLeft()).toBe(true);
-		expect(result.value).toBeInstanceOf(ResourceNotFoundError);
+		await expect(
+			sut.execute({ token: "orphan-token", password: "newpassword123" }),
+		).rejects.toThrow(ResourceNotFoundError);
+
+		expect(mockInviteRepo.findByToken).toHaveBeenCalledWith("orphan-token");
+		expect(mockUserRepo.findById).toHaveBeenCalledWith(
+			invite.userId.toString(),
+		);
+		expect(mockHashGenerator.hash).not.toHaveBeenCalled();
 	});
 
-	it("should generate access token with correct payload", async () => {
-		// Criar convite válido
+	it("should return error when invite is used concurrently", async () => {
+		const user = makeUser({
+			email: "employee@example.com",
+			name: "Test Employee",
+			type: "company",
+		});
+
 		const expiresAt = new Date();
 		expiresAt.setDate(expiresAt.getDate() + 7);
 
@@ -174,7 +243,60 @@ describe("Accept Invite", () => {
 			token: "valid-token",
 			expiresAt,
 		});
-		await inMemoryInviteRepository.items.push(invite);
+
+		const hashedPassword = "hashed-password";
+
+		mockInviteRepo.findByToken.mockResolvedValueOnce(invite);
+		mockUserRepo.findById.mockResolvedValueOnce(user);
+		mockHashGenerator.hash.mockResolvedValueOnce(hashedPassword);
+		mockUserRepo.update.mockResolvedValueOnce(undefined);
+		mockInviteRepo.markAsUsedIfUnused.mockResolvedValueOnce(false);
+
+		await expect(
+			sut.execute({ token: "valid-token", password: "newpassword123" }),
+		).rejects.toThrow(InviteAlreadyUsedError);
+
+		expect(mockInviteRepo.markAsUsedIfUnused).toHaveBeenCalledWith(
+			invite.id.toString(),
+			expect.any(Date),
+		);
+	});
+
+	it("should generate access token with correct payload", async () => {
+		const user = makeUser({
+			email: "employee@example.com",
+			name: "Test Employee",
+			type: "company",
+		});
+
+		const expiresAt = new Date();
+		expiresAt.setDate(expiresAt.getDate() + 7);
+
+		const invite = Invite.create({
+			userId: user.id,
+			token: "valid-token",
+			expiresAt,
+		});
+
+		const hashedPassword = "hashed-password";
+		const signInResult = {
+			id: user.id,
+			name: user.name,
+			email: user.email,
+			type: user.type,
+			password: user.password,
+			avatar: user.avatar,
+			accessToken: "access-token-with-payload",
+			staffRole: "admin",
+			companyId: "company-id",
+		};
+
+		mockInviteRepo.findByToken.mockResolvedValueOnce(invite);
+		mockUserRepo.findById.mockResolvedValueOnce(user);
+		mockHashGenerator.hash.mockResolvedValueOnce(hashedPassword);
+		mockUserRepo.update.mockResolvedValueOnce(undefined);
+		mockInviteRepo.markAsUsedIfUnused.mockResolvedValueOnce(true);
+		mockSignInUseCase.execute.mockResolvedValueOnce(right(signInResult));
 
 		const result = await sut.execute({
 			token: "valid-token",
@@ -185,12 +307,13 @@ describe("Accept Invite", () => {
 
 		if (result.isRight()) {
 			const { accessToken } = result.value;
-
-			// FakeEncrypter retorna um token com o payload
-			expect(accessToken).toContain(user.id.toString());
-			expect(accessToken).toContain("Test Employee");
-			expect(accessToken).toContain("employee@example.com");
-			expect(accessToken).toContain("company");
+			expect(accessToken).toBe("access-token-with-payload");
 		}
+
+		expect(mockSignInUseCase.execute).toHaveBeenCalledWith({
+			email: user.email,
+			password: "newpassword123",
+			type: "company",
+		});
 	});
 });

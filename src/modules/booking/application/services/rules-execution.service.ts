@@ -19,10 +19,7 @@ export class RulesExecutionService {
 			for (const option of rule.options) {
 				if (!actual) continue;
 				if (this.evaluateOption(option, actual)) {
-					return {
-						price: option.price,
-						durationMinutes: option.time ?? 0,
-					};
+					return { price: option.price, durationMinutes: option.time ?? 0 };
 				}
 			}
 		}

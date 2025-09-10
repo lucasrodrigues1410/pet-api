@@ -15,11 +15,10 @@ export const queryDto = paginationQuerySchema.extend({
 		.optional()
 		.transform((date) => (date ? new Date(date) : undefined)),
 	query: z.string().optional(),
-	status: z
-		.preprocess((val) => {
-			if (typeof val === 'string') return val.split(',');
-			return undefined;
-		}, z.array(z.enum(appointmentStatus)).optional())
+	status: z.preprocess((val) => {
+		if (typeof val === "string") return val.split(",");
+		return undefined;
+	}, z.array(z.enum(appointmentStatus)).optional()),
 });
 
 export const responseDto = appointmentDto
@@ -35,30 +34,19 @@ export const responseDto = appointmentDto
 		animal: z.object({
 			id: z.string(),
 			name: z.string(),
-			breed: z.object({
-				id: z.string(),
-				name: z.string(),
-			}),
+			breed: z.object({ id: z.string(), name: z.string() }),
 			age: z.number().nullish(),
 			weight: z.number().nullish(),
 		}),
 		client: z.object({
 			id: z.string(),
 			name: z.string(),
-			avatar: z
-				.object({
-					id: z.string(),
-					url: z.string(),
-				})
-				.optional(),
+			avatar: z.object({ id: z.string(), url: z.string() }).optional(),
 		}),
-		service: z.object({
-			id: z.string(),
-			name: z.string(),
-		}),
+		service: z.object({ id: z.string(), name: z.string() }),
 	});
 
-export class AppointmentsByCompanyQueryDto extends createZodDto(queryDto) { }
+export class AppointmentsByCompanyQueryDto extends createZodDto(queryDto) {}
 export class AppointmentsByCompanyResponseDto extends createZodDto(
 	makePaginatedDto(responseDto),
-) { }
+) {}

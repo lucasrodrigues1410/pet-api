@@ -6,10 +6,7 @@ import { TimeSlot } from "../../domain/entities/time-slot.entity";
 interface FilterParams {
 	slots: Date[];
 	duration: number;
-	staffsData: {
-		staffId: string;
-		unavailablePeriods: DateRange[];
-	}[];
+	staffsData: { staffId: string; unavailablePeriods: DateRange[] }[];
 	companyExceptions: DateRange[];
 	launchTime: TimeRange;
 }
@@ -25,7 +22,7 @@ export class AvailableSlotsService {
 		}
 
 		const availableSlotsOutput: Date[] = [];
-const now = new Date();
+		const now = new Date();
 		for (const potentialSlotStart of slots) {
 			const potentialSlotEnd = addMinutes(potentialSlotStart, duration);
 			const slotStartTime = format(potentialSlotStart, "HH:mm");

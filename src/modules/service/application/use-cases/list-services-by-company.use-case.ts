@@ -7,12 +7,7 @@ interface ListServicesByCompanyUseCaseRequest {
 	companyId: string;
 }
 
-type ListActiveServicesUseCaseResponse = Either<
-	null,
-	{
-		services: Service[];
-	}
->;
+type ListActiveServicesUseCaseResponse = Either<null, { services: Service[] }>;
 
 @Injectable()
 export class ListServicesByCompanyUseCase {

@@ -9,10 +9,7 @@ export abstract class StaffRepository {
 	abstract findByUserId(userId: string): Promise<Staff | null>;
 	abstract findByCompanyId(
 		companyId: string,
-		query: PaginationQuery & {
-			query?: string;
-			roles?: StaffRole[];
-		},
+		query: PaginationQuery & { query?: string; roles?: StaffRole[] },
 	): Promise<PaginationResult<Staff & { user: User }>>;
 	abstract fetchCompanyStaffWithAppointmentsInDateRange(
 		companyId: string,

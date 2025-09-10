@@ -18,15 +18,12 @@ interface InviteEmployeeUseCaseRequest {
 	email: string;
 	companyId: string;
 	inviterUserId: string;
-    role: StaffRole;
+	role: StaffRole;
 }
 
 type InviteEmployeeUseCaseResponse = Either<
 	UserAlreadyExistError | ResourceNotFoundError,
-	{
-		invite: Invite;
-		user: User;
-	}
+	{ invite: Invite; user: User }
 >;
 
 @Injectable()
@@ -46,7 +43,7 @@ export class InviteEmployeeUseCase {
 		email,
 		companyId,
 		inviterUserId,
-        role,
+		role,
 	}: InviteEmployeeUseCaseRequest): Promise<InviteEmployeeUseCaseResponse> {
 		this.logger.log(
 			`Executing invite employee use case for company ${companyId}`,
@@ -65,7 +62,9 @@ export class InviteEmployeeUseCase {
 			const inviter = await this.userRepository.findById(inviterUserId);
 			if (!inviter) {
 				this.logger.warn(`Inviter user not found with ID: ${inviterUserId}`);
-				return left(new ResourceNotFoundError("Usuário convidador não encontrado"));
+				return left(
+					new ResourceNotFoundError("Usuário convidador não encontrado"),
+				);
 			}
 
 			const existingUser = await this.userRepository.findByEmail(email);
@@ -78,7 +77,7 @@ export class InviteEmployeeUseCase {
 				name,
 				email,
 				password: randomUUIDv7().slice(0, 8),
-				type: "company", 
+				type: "company",
 			});
 
 			await this.userRepository.create(user);
@@ -100,10 +99,7 @@ export class InviteEmployeeUseCase {
 			const expiresAt = new Date();
 			expiresAt.setDate(expiresAt.getDate() + 7);
 
-			const invite = Invite.create({
-				userId: user.id,
-				expiresAt,
-			});
+			const invite = Invite.create({ userId: user.id, expiresAt });
 
 			await this.inviteRepository.create(invite);
 			this.logger.log(
@@ -111,7 +107,7 @@ export class InviteEmployeeUseCase {
 			);
 
 			const acceptInviteUrl = `${process.env.FRONTEND_URL}/invite/accept?token=${invite.token}`;
-			
+
 			try {
 				await this.queueEmailUseCase.executeHighPriority({
 					templateKey: "employee-invite",
@@ -133,10 +129,7 @@ export class InviteEmployeeUseCase {
 				);
 			}
 
-			return right({
-				invite,
-				user,
-			});
+			return right({ invite, user });
 		} catch (error) {
 			this.logger.error(
 				`Error inviting employee for company ${companyId}`,

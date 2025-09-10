@@ -47,7 +47,8 @@ const EmployeeInviteComponent = ({
 					<title>Convite para ser funcionário - PetSpot</title>
 				</Head>
 				<Preview>
-					Você foi convidado para fazer parte da equipe da {companyName} no PetSpot! 🎉
+					Você foi convidado para fazer parte da equipe da {companyName} no
+					PetSpot! 🎉
 				</Preview>
 				<Body className="bg-[#f6f9fc] font-sans py-[40px]">
 					<Container className="bg-white rounded-[8px] mx-auto p-[20px] max-w-[600px]">
@@ -67,10 +68,14 @@ const EmployeeInviteComponent = ({
 								Olá, {employeeName}!
 							</Text>
 							<Text className="text-[16px] text-gray-700 m-0 mb-[16px]">
-								Temos uma ótima notícia! <strong>{inviterName}</strong> convidou você para fazer parte da equipe da <strong>{companyName}</strong> no PetSpot.
+								Temos uma ótima notícia! <strong>{inviterName}</strong> convidou
+								você para fazer parte da equipe da{" "}
+								<strong>{companyName}</strong> no PetSpot.
 							</Text>
 							<Text className="text-[16px] text-gray-700 m-0 mb-[24px]">
-								Ao aceitar este convite, você terá acesso ao sistema de gestão da empresa e poderá ajudar a oferecer os melhores serviços para os pets da região.
+								Ao aceitar este convite, você terá acesso ao sistema de gestão
+								da empresa e poderá ajudar a oferecer os melhores serviços para
+								os pets da região.
 							</Text>
 
 							{/* Company Info Box */}
@@ -160,7 +165,10 @@ const EmployeeInviteComponent = ({
 								Aceitar Convite
 							</Button>
 							<Text className="text-[12px] text-gray-500 mt-[12px] m-0">
-								Token do convite: <code className="bg-gray-100 px-[4px] py-[2px] rounded text-[11px]">{token}</code>
+								Token do convite:{" "}
+								<code className="bg-gray-100 px-[4px] py-[2px] rounded text-[11px]">
+									{token}
+								</code>
 							</Text>
 						</Section>
 
@@ -170,10 +178,12 @@ const EmployeeInviteComponent = ({
 								⚠️ Importante
 							</Text>
 							<Text className="text-[14px] text-gray-700 m-0 mb-[8px]">
-								Este convite expira em <strong>{formatDate(expiresAt)}</strong>. Após esta data, será necessário solicitar um novo convite.
+								Este convite expira em <strong>{formatDate(expiresAt)}</strong>.
+								Após esta data, será necessário solicitar um novo convite.
 							</Text>
 							<Text className="text-[14px] text-gray-700 m-0">
-								Se você não reconhece este convite ou não deseja fazer parte da equipe, pode ignorar este email.
+								Se você não reconhece este convite ou não deseja fazer parte da
+								equipe, pode ignorar este email.
 							</Text>
 						</Section>
 
@@ -186,7 +196,8 @@ const EmployeeInviteComponent = ({
 								📧 suporte@petspot.com.br | 📞 (11) 9999-9999
 							</Text>
 							<Text className="text-[12px] text-center text-gray-400 m-0">
-								© {new Date().getFullYear()} PetSpot. Todos os direitos reservados.
+								© {new Date().getFullYear()} PetSpot. Todos os direitos
+								reservados.
 							</Text>
 							<Text className="text-[12px] text-center text-gray-400 m-0">
 								Av. Paulista, 1000 - São Paulo, SP

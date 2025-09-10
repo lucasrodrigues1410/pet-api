@@ -18,9 +18,7 @@ export class PrismaInviteRepository implements InviteRepository {
 	async findByToken(token: string) {
 		const invite = await this.prisma.invite.findUnique({
 			where: { token },
-			include: {
-				user: true,
-			},
+			include: { user: true },
 		});
 
 		if (!invite) {
@@ -42,9 +40,16 @@ export class PrismaInviteRepository implements InviteRepository {
 	async delete(id: string) {
 		await this.prisma.invite.update({
 			where: { id },
-			data: {
-				deletedAt: new Date(),
-			},
+			data: { deletedAt: new Date() },
 		});
+	}
+
+	async markAsUsedIfUnused(id: string, now: Date) {
+		const invite = await this.prisma.invite.updateMany({
+			where: { id, usedAt: null },
+			data: { usedAt: now },
+		});
+
+		return invite.count > 0;
 	}
 }

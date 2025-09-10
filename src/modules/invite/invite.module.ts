@@ -15,16 +15,8 @@ import { InviteController } from "./infra/http/controllers/invite.controller";
 	providers: [
 		InviteEmployeeUseCase,
 		ValidateInviteUseCase,
-		{
-			provide: InviteRepository,
-			useClass: PrismaInviteRepository,
-		},
+		{ provide: InviteRepository, useClass: PrismaInviteRepository },
 	],
-	exports: [
-		{
-			provide: InviteRepository,
-			useClass: PrismaInviteRepository,
-		},
-	],
+	exports: [{ provide: InviteRepository, useClass: PrismaInviteRepository }],
 })
 export class InviteModule {}

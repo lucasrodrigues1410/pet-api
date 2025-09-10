@@ -50,10 +50,7 @@ export class StaffController {
 		}
 		return {
 			items: result.value.items.map((s) => {
-				return {
-					...s.toObject(),
-					user: s.user.toObject(),
-				};
+				return { ...s.toObject(), user: s.user.toObject() };
 			}),
 			meta: result.value.meta,
 		};

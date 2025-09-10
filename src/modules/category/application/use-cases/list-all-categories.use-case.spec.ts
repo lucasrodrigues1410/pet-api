@@ -1,15 +1,25 @@
-import { beforeEach, describe, expect, it } from "bun:test";
+import { beforeEach, describe, expect, it, jest } from "bun:test";
+import { Test } from "@nestjs/testing";
 import { makeCategory } from "test/factories/make-category";
-import { InMemoryCategoryRepository } from "test/repositories/in-memory-category.repository";
+import { CategoryRepository } from "../../domain/repositories/category.repository";
 import { ListAllCategoriesUseCase } from "./list-all-categories.use-case";
 
-let inMemoryCategoryRepository: InMemoryCategoryRepository;
+let moduleRef: any;
 let sut: ListAllCategoriesUseCase;
+const mockCategoryRepository = { findAll: jest.fn() };
 
 describe("List All Categories Use Case", () => {
-	beforeEach(() => {
-		inMemoryCategoryRepository = new InMemoryCategoryRepository();
-		sut = new ListAllCategoriesUseCase(inMemoryCategoryRepository);
+	beforeEach(async () => {
+		mockCategoryRepository.findAll.mockReset();
+
+		moduleRef = await Test.createTestingModule({
+			providers: [
+				ListAllCategoriesUseCase,
+				{ provide: CategoryRepository, useValue: mockCategoryRepository },
+			],
+		}).compile();
+
+		sut = moduleRef.get(ListAllCategoriesUseCase);
 	});
 
 	it("should list all categories ordered by name", async () => {
@@ -17,8 +27,11 @@ describe("List All Categories Use Case", () => {
 		const category1 = makeCategory({ name: "Veterinária" });
 		const category2 = makeCategory({ name: "Banho e Tosa" });
 		const category3 = makeCategory({ name: "Adestramento" });
-
-		inMemoryCategoryRepository.items = [category1, category2, category3];
+		mockCategoryRepository.findAll.mockResolvedValueOnce([
+			category3,
+			category2,
+			category1,
+		]);
 
 		// Act
 		const result = await sut.execute();
@@ -32,7 +45,7 @@ describe("List All Categories Use Case", () => {
 
 	it("should return empty array when no categories exist", async () => {
 		// Arrange
-		inMemoryCategoryRepository.items = [];
+		mockCategoryRepository.findAll.mockResolvedValueOnce([]);
 
 		// Act
 		const result = await sut.execute();
@@ -48,7 +61,7 @@ describe("List All Categories Use Case", () => {
 			name: "Pet Shop",
 			description: "Categoria para produtos de pet shop",
 		});
-		inMemoryCategoryRepository.items = [category];
+		mockCategoryRepository.findAll.mockResolvedValueOnce([category]);
 
 		// Act
 		const result = await sut.execute();
@@ -67,7 +80,7 @@ describe("List All Categories Use Case", () => {
 			type: "petshop",
 			description: "Serviços veterinários e médicos",
 		});
-		inMemoryCategoryRepository.items = [category];
+		mockCategoryRepository.findAll.mockResolvedValueOnce([category]);
 
 		// Act
 		const result = await sut.execute();

@@ -56,15 +56,9 @@ import { UserModule } from "./modules/user/user.module";
 		HealthModule,
 	],
 	providers: [
-		{
-			provide: APP_PIPE,
-			useClass: ZodValidationPipe,
-		},
-		{
-			provide: APP_GUARD,
-			useClass: JwtGuard,
-		},
+		{ provide: APP_PIPE, useClass: ZodValidationPipe },
+		{ provide: APP_GUARD, useClass: JwtGuard },
 		{ provide: APP_INTERCEPTOR, useClass: ZodSerializerInterceptor },
 	],
 })
-export class AppModule { }
+export class AppModule {}

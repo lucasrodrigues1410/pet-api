@@ -38,10 +38,7 @@ export class AppointmentAvailabilityService {
 		]);
 
 		if (!companyAvailability || !staffMembers.length) {
-			return {
-				isValid: false,
-				staffChoiced: null,
-			};
+			return { isValid: false, staffChoiced: null };
 		}
 
 		const isValid = this.isValid(
@@ -52,10 +49,7 @@ export class AppointmentAvailabilityService {
 		);
 
 		const randomIndex = Math.floor(Math.random() * staffMembers.length);
-		return {
-			isValid,
-			staffChoiced: staffMembers[randomIndex],
-		};
+		return { isValid, staffChoiced: staffMembers[randomIndex] };
 	}
 
 	isValid(
@@ -75,21 +69,17 @@ export class AppointmentAvailabilityService {
 
 		const selectTimeWithDuration = addMinutes(selectedTime, serviceDuration);
 		const openingDate = startOfMinute(
-			set(selectedTime, {
-				hours: openingHour,
-				minutes: openingMinute,
-			}),
+			set(selectedTime, { hours: openingHour, minutes: openingMinute }),
 		);
 		const closingDate = startOfMinute(
-			set(selectedTime, {
-				hours: closingHour,
-				minutes: closingMinute,
-			}),
+			set(selectedTime, { hours: closingHour, minutes: closingMinute }),
 		);
-		
+
 		return (
-			(isAfter(selectedTime, openingDate) || isEqual(selectedTime, openingDate)) &&
-			(isBefore(selectTimeWithDuration, closingDate) || isEqual(selectTimeWithDuration, closingDate))
+			(isAfter(selectedTime, openingDate) ||
+				isEqual(selectedTime, openingDate)) &&
+			(isBefore(selectTimeWithDuration, closingDate) ||
+				isEqual(selectTimeWithDuration, closingDate))
 		);
 	}
 }

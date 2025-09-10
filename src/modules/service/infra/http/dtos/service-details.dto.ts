@@ -9,9 +9,7 @@ export const serviceDetailsDto = serviceDto.extend({
 	categories: z.array(categoryDto),
 });
 
-const listResponse = z.object({
-	items: z.array(serviceDetailsDto),
-});
+const listResponse = z.object({ items: z.array(serviceDetailsDto) });
 
 export class ServiceDetailsResponse extends createZodDto(serviceDetailsDto) {}
 export class ServiceDetailsListResponse extends createZodDto(listResponse) {}

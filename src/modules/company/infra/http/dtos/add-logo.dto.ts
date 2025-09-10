@@ -11,8 +11,6 @@ export class UploadImageDto {
 	file: any;
 }
 
-export const AddLogoResponseDto = z.object({
-	message: z.string(),
-});
+export const AddLogoResponseDto = z.object({ message: z.string() });
 
 export class AddLogoResponseDtoClass extends createZodDto(AddLogoResponseDto) {}

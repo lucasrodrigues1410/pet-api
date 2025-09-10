@@ -28,9 +28,6 @@ export class DashboardMetricsService {
 			this.getWeeklyPerformance(filters),
 		]);
 
-		return {
-			metrics,
-			performance,
-		};
+		return { metrics, performance };
 	}
 }

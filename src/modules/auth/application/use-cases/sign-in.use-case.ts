@@ -16,11 +16,7 @@ interface SignInUseCaseRequest {
 
 type SignInUseCaseResponse = Either<
 	InvalidCredentialsError,
-	User & {
-		accessToken: string;
-		staffRole?: StaffRole;
-		companyId?: string;
-	}
+	User & { accessToken: string; staffRole?: StaffRole; companyId?: string }
 >;
 
 @Injectable()

@@ -36,4 +36,14 @@ export class PrismaUserMapper {
 			avatarAssetId: user.avatarAssetId ?? undefined,
 		};
 	}
+
+	static toPrismaUpdate(user: Partial<User>): Prisma.UserUncheckedUpdateInput {
+		return {
+			name: user.name,
+			email: user.email,
+			password: user.password,
+			avatarAssetId: user.avatarAssetId ?? undefined,
+			updatedAt: new Date(),
+		};
+	}
 }

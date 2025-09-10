@@ -1,11 +1,7 @@
 import { faker } from "@faker-js/faker";
-import { Injectable } from "@nestjs/common";
-import { PrismaService } from "src/core/infra/prisma/prisma.service";
 import {
 	Service,
-	ServiceProps,
 } from "src/modules/service/domain/entities/service.entity";
-import { PrismaServiceMapper } from "src/modules/service/infra/database/mappers/prisma-service.mapper";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 
 export function makeService(
@@ -29,19 +25,4 @@ export function makeService(
 	);
 
 	return student;
-}
-
-@Injectable()
-export class ServiceFactory {
-	constructor(private prisma: PrismaService) {}
-
-	async makePrismaService(data: Partial<ServiceProps> = {}): Promise<Service> {
-		const service = makeService(data);
-
-		await this.prisma.service.create({
-			data: PrismaServiceMapper.toPrisma(service),
-		});
-
-		return service;
-	}
 }

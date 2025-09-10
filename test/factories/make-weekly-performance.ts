@@ -59,18 +59,18 @@ export function makeWeeklyPerformanceWithSpecificData(data: {
 	const weekEnd = data.weekEnd || new Date();
 
 	return makeWeeklyPerformance({
-		companyId: data.companyId || new UniqueEntityID(),
+		companyId: data.companyId ?? new UniqueEntityID(),
 		appointments: AppointmentPerformance.create(
-			data.completed || 78,
-			data.total || 85,
+			data.completed ?? 78,
+			data.total ?? 85,
 		),
 		conversionRate: ConversionRate.create(
-			data.conversionRate || 85,
-			data.conversionChange || 5.0,
+			data.conversionRate ?? 85,
+			data.conversionChange ?? 5.0,
 		),
 		satisfaction: SatisfactionMetric.create(
-			data.satisfactionRating || 4.8,
-			data.baseCount || 42,
+			data.satisfactionRating ?? 4.8,
+			data.baseCount ?? 42,
 		),
 		weekStart,
 		weekEnd,

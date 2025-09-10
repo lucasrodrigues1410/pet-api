@@ -13,17 +13,11 @@ import { AppointmentController } from "./infra/http/controllers/appointment.cont
 		GetAppointmentByUserIdUseCase,
 		GetAppointmentByCompanyIdUseCase,
 		UpdateAppointmentStatusUseCase,
-		{
-			provide: AppointmentRepository,
-			useClass: PrismaAppointmentRepository,
-		},
+		{ provide: AppointmentRepository, useClass: PrismaAppointmentRepository },
 	],
 	controllers: [AppointmentController],
 	exports: [
-		{
-			provide: AppointmentRepository,
-			useClass: PrismaAppointmentRepository,
-		},
+		{ provide: AppointmentRepository, useClass: PrismaAppointmentRepository },
 	],
 })
 export class AppointmentModule {}

@@ -18,17 +18,9 @@ export class PrismaCompanyRepository implements CompanyRepository {
 
 	async findById(id: string) {
 		const result = await this.prismaService.company.findUnique({
-			where: {
-				id,
-				deletedAt: null,
-			},
+			where: { id, deletedAt: null },
 			include: {
-				companyImage: {
-					include: {
-						asset: true,
-					},
-					take: 1,
-				},
+				companyImage: { include: { asset: true }, take: 1 },
 				logo: true,
 				companyAvailability: true,
 				services: true,
@@ -60,11 +52,7 @@ export class PrismaCompanyRepository implements CompanyRepository {
 			: null;
 
 		// Acumuladores de filtros
-		const andConditions: Prisma.CompanyWhereInput[] = [
-			{
-				deletedAt: null,
-			},
-		];
+		const andConditions: Prisma.CompanyWhereInput[] = [{ deletedAt: null }];
 
 		const orConditions: Prisma.CompanyWhereInput[] = [];
 
@@ -82,27 +70,18 @@ export class PrismaCompanyRepository implements CompanyRepository {
 				const serviceConditions = keywords.map((keyword) => ({
 					services: {
 						some: {
-							name: {
-								contains: keyword,
-								mode: "insensitive",
-							},
+							name: { contains: keyword, mode: "insensitive" },
 							isActive: true,
 						},
 					},
 				})) as Prisma.CompanyWhereInput[];
 
 				const nameConditions = keywords.map((keyword) => ({
-					name: {
-						contains: keyword,
-						mode: "insensitive",
-					},
+					name: { contains: keyword, mode: "insensitive" },
 				})) as Prisma.CompanyWhereInput[];
 
 				const descriptionConditions = keywords.map((keyword) => ({
-					description: {
-						contains: keyword,
-						mode: "insensitive",
-					},
+					description: { contains: keyword, mode: "insensitive" },
 				})) as Prisma.CompanyWhereInput[];
 
 				orConditions.push(
@@ -134,11 +113,7 @@ export class PrismaCompanyRepository implements CompanyRepository {
 				this.prismaService.company.findMany({
 					where: whereConditions,
 					include: {
-						companyImage: {
-							include: {
-								asset: true,
-							},
-						},
+						companyImage: { include: { asset: true } },
 						location: true,
 					},
 					orderBy: { createdAt: "desc" },
@@ -159,18 +134,13 @@ export class PrismaCompanyRepository implements CompanyRepository {
 			});
 		});
 
-		return {
-			items: companiesWithServices,
-			meta,
-		};
+		return { items: companiesWithServices, meta };
 	}
 
 	async update(id: string, data: Partial<Company>): Promise<void> {
 		await this.prismaService.company.update({
 			where: { id },
-			data: {
-				logoAssetId: data.logoAssetId?.toString(),
-			},
+			data: { logoAssetId: data.logoAssetId?.toString() },
 		});
 	}
 }

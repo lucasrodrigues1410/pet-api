@@ -21,20 +21,12 @@ import { GoogleAIRulesTranslatorRepository } from "./infra/repositories/google-a
 		DeactivateServiceUseCase,
 		TranslateRulesUseCase,
 		CreateServiceUseCase,
-		{
-			provide: ServiceRepository,
-			useClass: PrismaServiceRepository,
-		},
+		{ provide: ServiceRepository, useClass: PrismaServiceRepository },
 		{
 			provide: RulesTranslatorRepository,
 			useClass: GoogleAIRulesTranslatorRepository,
 		},
 	],
-	exports: [
-		{
-			provide: ServiceRepository,
-			useClass: PrismaServiceRepository,
-		},
-	],
+	exports: [{ provide: ServiceRepository, useClass: PrismaServiceRepository }],
 })
 export class ServiceModule {}

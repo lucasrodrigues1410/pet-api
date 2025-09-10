@@ -11,15 +11,16 @@ export class BreedController {
 	constructor(private readonly listBreedsUseCase: ListBreedsUseCase) {}
 
 	@Get()
-	@ApiOperation({ summary: "Listar todas as raças",operationId: "getAllBreeds" })
+	@ApiOperation({
+		summary: "Listar todas as raças",
+		operationId: "getAllBreeds",
+	})
 	@ZodResponse({ status: 200, type: BreedListResponse })
 	async getAll(@Query() query: ListBreedsQueryDto): Promise<BreedListResponse> {
 		const result = await this.listBreedsUseCase.execute(query);
 		if (result.isLeft()) {
 			throw new BadRequestException();
 		}
-		return {
-			items: result.value.items.map((i) => i.toObject()),
-		};
+		return { items: result.value.items.map((i) => i.toObject()) };
 	}
 }

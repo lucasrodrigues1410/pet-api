@@ -39,10 +39,7 @@ export class PrismaStaffRepository implements StaffRepository {
 
 	async findByCompanyId(
 		companyId: string,
-		query: PaginationQuery & {
-			query?: string;
-			roles?: StaffRole[];
-		},
+		query: PaginationQuery & { query?: string; roles?: StaffRole[] },
 	) {
 		const where: Prisma.UserCompanyWhereInput = {
 			companyId: companyId,
@@ -57,16 +54,11 @@ export class PrismaStaffRepository implements StaffRepository {
 			async ({ skip, take }) =>
 				this.prismaService.userCompany.findMany({
 					where,
-					include: {
-						user: true,
-					},
+					include: { user: true },
 					skip,
 					take,
 				}),
-			() =>
-				this.prismaService.userCompany.count({
-					where,
-				}),
+			() => this.prismaService.userCompany.count({ where }),
 			query,
 		);
 
@@ -123,9 +115,7 @@ export class PrismaStaffRepository implements StaffRepository {
 		range: DateRange,
 	) {
 		const staff = await this.prismaService.userCompany.findMany({
-			where: {
-				companyId: companyId,
-			},
+			where: { companyId: companyId },
 			include: {
 				appointment: {
 					where: {
@@ -142,9 +132,7 @@ export class PrismaStaffRepository implements StaffRepository {
 	async create(staff: Staff) {
 		const staffData = PrismaStaffMapper.toPersistence(staff);
 
-		await this.prismaService.userCompany.create({
-			data: staffData,
-		});
+		await this.prismaService.userCompany.create({ data: staffData });
 	}
 
 	async delete(id: string) {

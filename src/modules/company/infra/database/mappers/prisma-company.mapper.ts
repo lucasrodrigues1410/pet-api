@@ -9,9 +9,7 @@ import { PrismaAssetMapper } from "@/modules/asset/infra/database/mappers/prisma
 
 export class PrismaCompanyMapper {
 	static toDomain(
-		prismaCompany: PrismaCompany & {
-			logo?: PrismaAsset | null;
-		},
+		prismaCompany: PrismaCompany & { logo?: PrismaAsset | null },
 	): Company {
 		return Company.create(
 			{

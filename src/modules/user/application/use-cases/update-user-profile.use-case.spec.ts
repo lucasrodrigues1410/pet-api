@@ -1,45 +1,52 @@
-import { beforeEach, describe, expect, it } from "bun:test";
+import { beforeEach, describe, expect, it, jest } from "bun:test";
+import { Test } from "@nestjs/testing";
 import { makeUser } from "test/factories/make-user";
-import { InMemoryUserRepository } from "test/repositories/in-memory-user.repository";
 import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
+import { UserRepository } from "../../domain/repositories/user.repository";
 import { UpdateUserProfileUseCase } from "./update-user-profile.use-case";
 
-let userRepository: InMemoryUserRepository;
-
 let sut: UpdateUserProfileUseCase;
+let moduleRef: any;
+
+const mockUserRepository = {
+	findById: jest.fn(),
+	update: jest.fn(),
+	create: jest.fn(),
+	delete: jest.fn(),
+};
 
 describe("UpdateUserProfileUseCase", () => {
-	beforeEach(() => {
-		userRepository = new InMemoryUserRepository();
-		sut = new UpdateUserProfileUseCase(userRepository);
+	beforeEach(async () => {
+		mockUserRepository.findById.mockReset();
+		mockUserRepository.update.mockReset();
+		mockUserRepository.create.mockReset();
+		mockUserRepository.delete.mockReset();
+		moduleRef = await Test.createTestingModule({
+			providers: [
+				UpdateUserProfileUseCase,
+				{ provide: UserRepository, useValue: mockUserRepository },
+			],
+		}).compile();
+		sut = moduleRef.get(UpdateUserProfileUseCase);
 	});
 
 	it("should be able to update user profile", async () => {
 		const user = makeUser();
-		userRepository.items.push(user);
+		mockUserRepository.findById.mockResolvedValue(user);
 
-		const updatedUser = {
-			name: "Updated Name",
-			email: "updated@gmail.com",
-		};
+		const updatedUser = { name: "Updated Name", email: "updated@gmail.com" };
 
 		const result = await sut.execute({
 			userId: user.id.toString(),
-			profileData: {
-				name: updatedUser.name,
-				email: updatedUser.email,
-			},
+			profileData: { name: updatedUser.name, email: updatedUser.email },
 		});
 		expect(result.isRight()).toBeTruthy();
-		expect(userRepository.items[0].name).toEqual(updatedUser.name);
-		expect(userRepository.items[0].email).toEqual(updatedUser.email);
+		expect(mockUserRepository.update).toHaveBeenCalledTimes(1);
 	});
 
 	it("should not be able to update user profile with invalid id", async () => {
-		const result = await sut.execute({
-			userId: "invalid-id",
-			profileData: {},
-		});
+		mockUserRepository.findById.mockResolvedValue(null);
+		const result = await sut.execute({ userId: "invalid-id", profileData: {} });
 
 		expect(result.isLeft()).toBeTruthy();
 		expect(result.value).toBeInstanceOf(ResourceNotFoundError);
@@ -47,19 +54,15 @@ describe("UpdateUserProfileUseCase", () => {
 
 	it("should not update the profile if the user being edited is not the same as the one in the database", async () => {
 		const user = makeUser();
-		userRepository.items.push(user);
+		mockUserRepository.findById.mockResolvedValue(user);
 
 		const result = await sut.execute({
 			userId: "different-id",
-			profileData: {
-				name: "Another Name",
-				email: "another@gmail.com",
-			},
+			profileData: { name: "Another Name", email: "another@gmail.com" },
 		});
 
 		expect(result.isLeft()).toBeTruthy();
 		expect(result.value).toBeInstanceOf(ResourceNotFoundError);
-		expect(userRepository.items[0].name).not.toEqual("Another Name");
-		expect(userRepository.items[0].email).not.toEqual("another@gmail.com");
+		expect(mockUserRepository.update).not.toHaveBeenCalled();
 	});
 });

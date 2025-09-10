@@ -33,10 +33,6 @@ export class AppointmentPerformance extends ValueObject<AppointmentPerformancePr
 
 		const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
 
-		return new AppointmentPerformance({
-			completed,
-			total,
-			percentage,
-		});
+		return new AppointmentPerformance({ completed, total, percentage });
 	}
 }

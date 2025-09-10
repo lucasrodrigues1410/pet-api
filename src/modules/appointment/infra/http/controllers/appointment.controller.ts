@@ -43,10 +43,11 @@ export class AppointmentController {
 		private readonly updateAppointmentStatusUseCase: UpdateAppointmentStatusUseCase,
 	) {}
 
-	
-
 	@Get("/company/:companyId")
-	@ApiOperation({ summary: "Retorna todos os agendamentos da empresa",operationId: "getAllCompanyAppointments" })
+	@ApiOperation({
+		summary: "Retorna todos os agendamentos da empresa",
+		operationId: "getAllCompanyAppointments",
+	})
 	@ZodResponse({ status: 200, type: AppointmentsByCompanyResponseDto })
 	@UserTypeDecorator("company")
 	@UseGuards(CompanyGuard)
@@ -80,7 +81,10 @@ export class AppointmentController {
 	}
 
 	@Get("/user")
-	@ApiOperation({ summary: "Retorna todos os agendamentos do cliente",operationId: "getAllAppointments" })
+	@ApiOperation({
+		summary: "Retorna todos os agendamentos do cliente",
+		operationId: "getAllAppointments",
+	})
 	@ZodResponse({ status: 200, type: AppointmentsByClientResponseDto })
 	@UserTypeDecorator("customer")
 	async getAllAppointments(
@@ -110,7 +114,10 @@ export class AppointmentController {
 	}
 
 	@Patch(":id/status")
-	@ApiOperation({ summary: "Atualiza o status de um agendamento",operationId: "updateAppointmentStatus" })
+	@ApiOperation({
+		summary: "Atualiza o status de um agendamento",
+		operationId: "updateAppointmentStatus",
+	})
 	@ZodResponse({ status: 200, type: UpdateAppointmentStatusResponseDto })
 	@UserTypeDecorator("customer", "company")
 	async updateAppointmentStatus(
@@ -145,7 +152,10 @@ export class AppointmentController {
 	}
 
 	@Get(":id")
-	@ApiOperation({ summary: "Retorna um agendamento pelo ID",operationId: "getAppointmentById" })
+	@ApiOperation({
+		summary: "Retorna um agendamento pelo ID",
+		operationId: "getAppointmentById",
+	})
 	@ZodResponse({ status: 200, type: AppointmentByIdResponseDto })
 	@UserTypeDecorator("customer", "company")
 	async getAppointmentById(

@@ -38,10 +38,7 @@ export class PrismaNotificationRepository implements NotificationRepository {
 		const { page = 1, limit = 10, onlyUnread = false } = options;
 		const skip = (page - 1) * limit;
 
-		const where = {
-			userId,
-			...(onlyUnread && { read: false }),
-		};
+		const where = { userId, ...(onlyUnread && { read: false }) };
 
 		const [notifications, total] = await Promise.all([
 			this.prismaService.notification.findMany({

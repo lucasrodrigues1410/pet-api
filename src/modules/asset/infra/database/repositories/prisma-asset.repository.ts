@@ -10,40 +10,26 @@ export class PrismaAssetRepository implements AssetRepository {
 
 	async create(asset: Asset): Promise<void> {
 		await this.prismaService.asset.upsert({
-			where: {
-				name: asset.name,
-			},
+			where: { name: asset.name },
 			update: PrismaAssetMapper.toPrisma(asset),
 			create: PrismaAssetMapper.toPrisma(asset),
 		});
 	}
 
 	async delete(id: string): Promise<void> {
-		await this.prismaService.asset.delete({
-			where: {
-				id,
-			},
-		});
+		await this.prismaService.asset.delete({ where: { id } });
 	}
 
 	async existsByIds(ids: string[]): Promise<boolean> {
 		const assets = await this.prismaService.asset.count({
-			where: {
-				id: {
-					in: ids,
-				},
-			},
+			where: { id: { in: ids } },
 		});
 
 		return assets === ids.length;
 	}
 
 	async findById(id: string): Promise<Asset | null> {
-		const asset = await this.prismaService.asset.findUnique({
-			where: {
-				id,
-			},
-		});
+		const asset = await this.prismaService.asset.findUnique({ where: { id } });
 
 		if (!asset) {
 			return null;

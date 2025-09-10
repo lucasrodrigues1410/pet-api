@@ -51,9 +51,7 @@ export class BookingController {
 		}
 
 		return {
-			slots: result.value.slots.map((slot) => ({
-				label: slot.label || "",
-			})),
+			slots: result.value.slots.map((slot) => ({ label: slot.label || "" })),
 		};
 	}
 
@@ -83,8 +81,6 @@ export class BookingController {
 			throw new BadRequestException(`${response.value.message}`);
 		}
 
-		return {
-			appointmentId: response.value.appointmentId,
-		};
+		return { appointmentId: response.value.appointmentId };
 	}
 }

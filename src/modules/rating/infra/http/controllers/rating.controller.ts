@@ -33,21 +33,24 @@ export class RatingController {
 
 	@Post()
 	@UserTypeDecorator("customer")
-	@ApiOperation({ summary: "Cria uma avaliação para uma empresa",operationId: "createRating" })
+	@ApiOperation({
+		summary: "Cria uma avaliação para uma empresa",
+		operationId: "createRating",
+	})
 	@ApiResponse({ status: 201, description: "Avaliação criada com sucesso" })
 	async create(
 		@User("sub") userId: string,
 		@Body() body: CreateRatingRequestDto,
 	) {
-		return this.createRatingCompanyUseCase.execute({
-			...body,
-			userId,
-		});
+		return this.createRatingCompanyUseCase.execute({ ...body, userId });
 	}
 
 	@Get("company/:companyId")
 	@Public()
-	@ApiOperation({ summary: "Listar avaliações de uma empresa",operationId: "listCompanyRatings" })
+	@ApiOperation({
+		summary: "Listar avaliações de uma empresa",
+		operationId: "listCompanyRatings",
+	})
 	@ZodResponse({ status: 200, type: RatingListResponse })
 	async listByCompany(
 		@Param("companyId") companyId: string,
@@ -65,17 +68,17 @@ export class RatingController {
 			meta: result.value.meta,
 			items: result.value.items.map((item) => ({
 				...item.toObject(),
-				user: {
-					id: item.user.id.toString(),
-					name: item.user.name,
-				},
+				user: { id: item.user.id.toString(), name: item.user.name },
 			})),
 		};
 	}
 
 	@Get("company/:companyId/stats")
 	@Public()
-	@ApiOperation({ summary: "Obter estatísticas das avaliações de uma empresa",operationId: "getCompanyRatingStats" })
+	@ApiOperation({
+		summary: "Obter estatísticas das avaliações de uma empresa",
+		operationId: "getCompanyRatingStats",
+	})
 	@ZodResponse({ status: 200, type: CompanyRatingStatsResponse })
 	async getCompanyStats(
 		@Param("companyId") companyId: string,

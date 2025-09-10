@@ -19,10 +19,7 @@ export class BullEmailDispatcher implements EmailPublisher {
 				priority: this.getPriorityValue(event.priority),
 				delay: event.delay,
 				attempts: 3,
-				backoff: {
-					type: "exponential" as const,
-					delay: 2000,
-				},
+				backoff: { type: "exponential" as const, delay: 2000 },
 			};
 
 			await this.queue.add("send-email", event, jobOptions);

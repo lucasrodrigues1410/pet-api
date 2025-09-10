@@ -3,9 +3,7 @@ import { Either, right } from "@/shared/either";
 import { Breed } from "../../domain/entities/breed.entity";
 import { BreedRepository } from "../../domain/repositories/breed.repository";
 
-type GetAllBreedUseCaseRequest = {
-	query?: string;
-};
+type GetAllBreedUseCaseRequest = { query?: string };
 
 type GetAllBreedUseCaseResponse = Either<null, { items: Breed[] }>;
 

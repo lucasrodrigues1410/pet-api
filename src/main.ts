@@ -30,13 +30,16 @@ async function bootstrap() {
 				"API para gerenciar serviços e informações de cuidados com animais",
 			)
 			.setVersion("1.0")
-			.setOpenAPIVersion('3.1.0')
+			.setOpenAPIVersion("3.1.0")
 			.build(),
 	);
 
-	SwaggerModule.setup("docs", app, cleanupOpenApiDoc(openApiDoc,{version: "3.1"}), {
-		jsonDocumentUrl: "swagger/json",
-	});
+	SwaggerModule.setup(
+		"docs",
+		app,
+		cleanupOpenApiDoc(openApiDoc, { version: "3.1" }),
+		{ jsonDocumentUrl: "swagger/json" },
+	);
 
 	const configService = app.get(EnvService);
 	const port = configService.get("PORT");

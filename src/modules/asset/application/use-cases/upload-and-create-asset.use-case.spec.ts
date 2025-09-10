@@ -1,26 +1,55 @@
-import { beforeEach, describe, expect, it } from "bun:test";
-import { MockUploader } from "test/mocks/mock-uploader";
-import { InMemoryAssetRepository } from "test/repositories/in-memory-asset.repository";
+import { beforeEach, describe, expect, it, jest } from "bun:test";
+import { Test } from "@nestjs/testing";
+import { AssetRepository } from "../../domain/repositories/asset.repository";
+import { Uploader } from "../../domain/storage/uploader";
 import { InvalidAssetTypeError } from "../errors/invalid-asset-type.error";
 import { UploadAndCreateAssetUseCase } from "./upload-and-create-asset.use-case";
 
-let inMemoryAttachmentsRepository: InMemoryAssetRepository;
-let fakeUploader: MockUploader;
+describe("UploadAndCreateAssetUseCase", () => {
+	let moduleRef: any;
+	let sut: UploadAndCreateAssetUseCase;
 
-let sut: UploadAndCreateAssetUseCase;
+	const mockAssetRepo = {
+		create: jest.fn(),
+		delete: jest.fn(),
+		existsByIds: jest.fn(),
+		findById: jest.fn(),
+	};
 
-describe("Upload and create attachment", () => {
-	beforeEach(() => {
-		inMemoryAttachmentsRepository = new InMemoryAssetRepository();
-		fakeUploader = new MockUploader();
+	const mockUploader = { upload: jest.fn(), delete: jest.fn() };
 
-		sut = new UploadAndCreateAssetUseCase(
-			inMemoryAttachmentsRepository,
-			fakeUploader,
-		);
+	beforeEach(async () => {
+		mockAssetRepo.create.mockReset();
+		mockAssetRepo.delete.mockReset();
+		mockAssetRepo.existsByIds.mockReset();
+		mockAssetRepo.findById.mockReset();
+		mockUploader.upload.mockReset();
+		mockUploader.delete.mockReset();
+
+		moduleRef = await Test.createTestingModule({
+			providers: [
+				UploadAndCreateAssetUseCase,
+				{ provide: AssetRepository, useValue: mockAssetRepo },
+				{ provide: Uploader, useValue: mockUploader },
+			],
+		}).compile();
+
+		sut = moduleRef.get(UploadAndCreateAssetUseCase);
 	});
 
 	it("should be able to upload and create an attachment", async () => {
+		const mockUploadResponse = {
+			id: "file-id",
+			name: "profile.png",
+			url: "https://example.com/profile.png",
+			width: 100,
+			height: 100,
+			thumbnailUrl: "https://example.com/thumb-profile.png",
+		};
+
+		mockUploader.upload.mockResolvedValueOnce(mockUploadResponse);
+		mockAssetRepo.create.mockResolvedValueOnce(undefined);
+
 		const result = await sut.execute({
 			fileName: "profile.png",
 			file: {
@@ -33,12 +62,23 @@ describe("Upload and create attachment", () => {
 
 		expect(result.isRight()).toBe(true);
 		expect(result.value).toEqual({
-			asset: inMemoryAttachmentsRepository.items[0],
+			asset: expect.objectContaining({
+				name: "profile.png",
+				url: "https://example.com/profile.png",
+				fileType: "image/png",
+			}),
 		});
-		expect(fakeUploader.items).toHaveLength(1);
-		expect(fakeUploader.items[0]).toEqual(
+		expect(mockUploader.upload).toHaveBeenCalledWith({
+			fileName: "profile.png",
+			fileType: "image/png",
+			body: Buffer.from(""),
+			folder: "",
+		});
+		expect(mockAssetRepo.create).toHaveBeenCalledWith(
 			expect.objectContaining({
-				fileName: "profile.png",
+				name: "profile.png",
+				url: "https://example.com/profile.png",
+				fileType: "image/png",
 			}),
 		);
 	});
@@ -56,5 +96,7 @@ describe("Upload and create attachment", () => {
 
 		expect(result.isLeft()).toBe(true);
 		expect(result.value).toBeInstanceOf(InvalidAssetTypeError);
+		expect(mockUploader.upload).not.toHaveBeenCalled();
+		expect(mockAssetRepo.create).not.toHaveBeenCalled();
 	});
 });

@@ -14,16 +14,8 @@ import { CompanyController } from "./infra/http/controllers/company.controller";
 		GetCompanyByIdUseCase,
 		SearchCompaniesUseCase,
 		AddLogoToCompanyUseCase,
-		{
-			provide: CompanyRepository,
-			useClass: PrismaCompanyRepository,
-		},
+		{ provide: CompanyRepository, useClass: PrismaCompanyRepository },
 	],
-	exports: [
-		{
-			provide: CompanyRepository,
-			useClass: PrismaCompanyRepository,
-		},
-	],
+	exports: [{ provide: CompanyRepository, useClass: PrismaCompanyRepository }],
 })
 export class CompanyModule {}

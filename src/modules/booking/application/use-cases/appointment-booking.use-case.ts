@@ -24,9 +24,7 @@ interface AppointmentBookingUseCaseRequest {
 
 type AppointmentBookingUseCaseResponse = Either<
 	ResourceNotFoundError | TimeSlotUnavailableError,
-	{
-		appointmentId: string;
-	}
+	{ appointmentId: string }
 >;
 
 @Injectable()
@@ -76,7 +74,8 @@ export class AppointmentBookingUseCase {
 		const totalPrice = basePrice + priceAdjustment;
 
 		const baseDurationMinutes = service.duration;
-		const finalDurationMinutes = baseDurationMinutes + (ruleExecutionResult?.durationMinutes ?? 0);
+		const finalDurationMinutes =
+			baseDurationMinutes + (ruleExecutionResult?.durationMinutes ?? 0);
 
 		const endDate = addMinutes(startDate, finalDurationMinutes);
 		// Verifica se o horário está disponível
@@ -102,8 +101,6 @@ export class AppointmentBookingUseCase {
 		});
 
 		await this.appointmentRepository.create(appointmentIntent);
-		return right({
-			appointmentId: appointmentIntent.id.toString(),
-		});
+		return right({ appointmentId: appointmentIntent.id.toString() });
 	}
 }

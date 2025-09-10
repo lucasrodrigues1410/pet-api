@@ -18,25 +18,21 @@ export class BullEmailProcessor extends WorkerHost {
 		const { templateKey, target, variables } = job.data;
 
 		this.logger.log(
-			`Processing email job ${job.id} - Template: ${templateKey}, Target: ${target}`
+			`Processing email job ${job.id} - Template: ${templateKey}, Target: ${target}`,
 		);
 
 		try {
-			await this.sendEmailUseCase.execute({
-				templateKey,
-				target,
-				variables,
-			});
+			await this.sendEmailUseCase.execute({ templateKey, target, variables });
 
 			this.logger.log(
-				`Email sent successfully - Job: ${job.id}, Template: ${templateKey}, Target: ${target}`
+				`Email sent successfully - Job: ${job.id}, Template: ${templateKey}, Target: ${target}`,
 			);
 		} catch (error) {
 			this.logger.error(
 				`Failed to send email - Job: ${job.id}, Template: ${templateKey}, Target: ${target}`,
-				(error as Error).stack
+				(error as Error).stack,
 			);
-			
+
 			// Re-throw para que o Bull possa fazer retry
 			throw error;
 		}

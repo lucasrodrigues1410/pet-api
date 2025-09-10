@@ -14,10 +14,7 @@ import { DashboardController } from "./infra/http/controllers/dashboard.controll
 	imports: [AppointmentModule, UserModule, CompanyModule, ServiceModule],
 	controllers: [DashboardController],
 	providers: [
-		{
-			provide: DashboardRepository,
-			useClass: PrismaDashboardRepository,
-		},
+		{ provide: DashboardRepository, useClass: PrismaDashboardRepository },
 		DashboardMetricsService,
 		GetDashboardMetricsUseCase,
 		GetDashboardPerformanceUseCase,

@@ -10,20 +10,11 @@ import { ImageKitStorageProvider } from "./infra/storage/image-kit.storage";
 	providers: [
 		UploadAndCreateAssetUseCase,
 		DeleteAssetByIdUseCase,
-		{
-			provide: Uploader,
-			useClass: ImageKitStorageProvider,
-		},
-		{
-			provide: AssetRepository,
-			useClass: PrismaAssetRepository,
-		},
+		{ provide: Uploader, useClass: ImageKitStorageProvider },
+		{ provide: AssetRepository, useClass: PrismaAssetRepository },
 	],
 	exports: [
-		{
-			provide: AssetRepository,
-			useClass: PrismaAssetRepository,
-		},
+		{ provide: AssetRepository, useClass: PrismaAssetRepository },
 		UploadAndCreateAssetUseCase,
 	],
 })

@@ -1,29 +1,42 @@
-import { beforeEach, describe, expect, it } from "bun:test";
+import { beforeEach, describe, expect, it, jest } from "bun:test";
+import { Test } from "@nestjs/testing";
 import { makeStaff } from "test/factories/make-staff";
-import { InMemoryStaffRepository } from "test/repositories/in-memory-staff.repository";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
+import { StaffRepository } from "../../domain/repositories/staff.repository";
 import { ListStaffByCompanyUseCase } from "./list-staff-by-company.use-case";
 
 describe("ListStaffByCompanyUseCase", () => {
-	let inMemoryStaffRepository: InMemoryStaffRepository;
+	const mockRepo = { findByCompanyId: jest.fn() };
 	let sut: ListStaffByCompanyUseCase;
+	let moduleRef: any;
 
-	beforeEach(() => {
-		inMemoryStaffRepository = new InMemoryStaffRepository();
-		sut = new ListStaffByCompanyUseCase(inMemoryStaffRepository);
+	beforeEach(async () => {
+		mockRepo.findByCompanyId.mockReset();
+		moduleRef = await Test.createTestingModule({
+			providers: [
+				ListStaffByCompanyUseCase,
+				{ provide: StaffRepository, useValue: mockRepo },
+			],
+		}).compile();
+		sut = moduleRef.get(ListStaffByCompanyUseCase);
 	});
 
 	it("should list staff by company id", async () => {
 		const companyId = new UniqueEntityID();
 		const staffA = makeStaff({ companyId });
 		const staffB = makeStaff({ companyId });
-		const otherCompanyStaff = makeStaff({ companyId: new UniqueEntityID() });
 
-		await inMemoryStaffRepository.create(staffA);
-		await inMemoryStaffRepository.create(staffB);
-		await inMemoryStaffRepository.create(otherCompanyStaff);
+		mockRepo.findByCompanyId.mockResolvedValue({
+			items: [staffA, staffB],
+			total: 2,
+			page: 1,
+			limit: 10,
+		});
 
-		const result = await sut.execute({ companyId: companyId.toString(), query: { page: 1, limit: 10 } });
+		const result = await sut.execute({
+			companyId: companyId.toString(),
+			query: { page: 1, limit: 10 },
+		});
 
 		expect(result.isRight()).toBe(true);
 		if (result.isRight()) {

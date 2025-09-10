@@ -7,9 +7,7 @@ import { PaginationResult } from "@/shared/utils/pagination";
 import { PaginationQuery } from "@/shared/utils/pagination-query";
 import { Rating } from "../../domain/entities/rating.entity";
 
-type ListCompanyRatingsUseCaseRequest = PaginationQuery & {
-	companyId: string;
-};
+type ListCompanyRatingsUseCaseRequest = PaginationQuery & { companyId: string };
 
 type ListCompanyRatingsUseCaseResponse = Either<
 	ResourceNotFoundError,

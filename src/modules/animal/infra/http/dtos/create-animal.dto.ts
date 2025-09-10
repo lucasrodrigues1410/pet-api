@@ -8,9 +8,7 @@ const request = z.object({
 	age: z.number().optional(),
 });
 
-const response = z.object({
-	id: z.string(),
-});
+const response = z.object({ id: z.string() });
 
 export class CreateAnimalRequestDto extends createZodDto(request) {}
 export class CreateAnimalResponseDto extends createZodDto(response) {}

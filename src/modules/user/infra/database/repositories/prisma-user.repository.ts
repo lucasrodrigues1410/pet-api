@@ -11,12 +11,10 @@ import { PrismaUserMapper } from "../mappers/prisma-user.mapper";
 export class PrismaUserRepository implements UserRepository {
 	constructor(private readonly prisma: PrismaService) {}
 
-	async findByEmail(email) {
-		const response = await this.prisma.user.findFirst({
+	async findByEmail(email: string) {
+		const response = await this.prisma.user.findUnique({
 			where: { email },
-			include: {
-				avatar: true,
-			},
+			include: { avatar: true },
 		});
 
 		if (!response) {
@@ -27,9 +25,7 @@ export class PrismaUserRepository implements UserRepository {
 	}
 
 	async findById(id: string): Promise<User | null> {
-		const response = await this.prisma.user.findFirst({
-			where: { id },
-		});
+		const response = await this.prisma.user.findUnique({ where: { id } });
 
 		if (!response) {
 			return null;
@@ -40,33 +36,25 @@ export class PrismaUserRepository implements UserRepository {
 
 	async create(user: User): Promise<void> {
 		const data = PrismaUserMapper.toPrisma(user);
-		await this.prisma.user.create({
-			data: data,
-		});
+		await this.prisma.user.create({ data: data });
 	}
 
-	async update(user: User): Promise<void> {
-		const data = PrismaUserMapper.toPrisma(user);
+	async update(id: string, user: Partial<User>): Promise<void> {
+		const data = PrismaUserMapper.toPrismaUpdate(user);
 		await this.prisma.user.update({
-			where: { id: user.id.toString() },
+			where: { id },
 			data: data,
 		});
 	}
 
 	async findClientsByCompanyId(params: {
 		companyId: string;
-		query: PaginationQuery & {
-			search?: string;
-		};
+		query: PaginationQuery & { search?: string };
 	}) {
 		const { companyId, query } = params;
 
 		const whereClause = {
-			appointment: {
-				some: {
-					companyId,
-				},
-			},
+			appointment: { some: { companyId } },
 			type: "customer",
 			...(query.search && {
 				OR: [
@@ -82,21 +70,8 @@ export class PrismaUserRepository implements UserRepository {
 					where: whereClause,
 					include: {
 						avatar: true,
-						_count: {
-							select: {
-								appointment: {
-									where: {
-										companyId,
-									},
-								},
-							},
-						},
-						appointment: {
-							orderBy: {
-								createdAt: "desc",
-							},
-							take: 1,
-						},
+						_count: { select: { appointment: { where: { companyId } } } },
+						appointment: { orderBy: { createdAt: "desc" }, take: 1 },
 					},
 					skip,
 					take,

@@ -6,7 +6,7 @@ import EmployeeInviteComponent from "./employee-invite.component";
 
 export class EmployeeInviteTemplate extends BaseEmailTemplate<EmployeeInviteTemplateVariables> {
 	subject = "Convite para ser funcionário - PetSpot";
-	
+
 	protected schema = z.object({
 		employeeName: z.string().min(1, "Nome do funcionário é obrigatório"),
 		companyName: z.string().min(1, "Nome da empresa é obrigatório"),

@@ -14,7 +14,10 @@ type DeleteStaffUseCaseResponse = Either<ResourceNotFoundError, void>;
 export class DeleteStaffUseCase {
 	constructor(private readonly staffRepository: StaffRepository) {}
 
-	async execute({ id, companyId }: DeleteStaffUseCaseRequest): Promise<DeleteStaffUseCaseResponse> {
+	async execute({
+		id,
+		companyId,
+	}: DeleteStaffUseCaseRequest): Promise<DeleteStaffUseCaseResponse> {
 		const staff = await this.staffRepository.findById(id);
 		if (!staff || staff.companyId.toString() !== companyId) {
 			return left(new ResourceNotFoundError());
@@ -24,5 +27,3 @@ export class DeleteStaffUseCase {
 		return right(undefined);
 	}
 }
-
-

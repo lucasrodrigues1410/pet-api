@@ -29,10 +29,7 @@ export class Rules extends ValueObject<RulesProps> {
 	}
 
 	static empty(): Rules {
-		return new Rules({
-			characteristic: "size",
-			options: [],
-		});
+		return new Rules({ characteristic: "size", options: [] });
 	}
 
 	static create(props?: RulesProps): Rules {

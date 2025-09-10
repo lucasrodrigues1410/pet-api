@@ -9,18 +9,13 @@ export abstract class UserRepository {
 	): Promise<(User & { avatar?: Asset }) | null>;
 	abstract findById(id: string): Promise<User | null>;
 	abstract create(user: User): Promise<void>;
-	abstract update(user: User): Promise<void>;
+	abstract update(id: string, user: Partial<User>): Promise<void>;
 	abstract findClientsByCompanyId(params: {
 		companyId: string;
-		query: PaginationQuery & {
-			search?: string;
-		};
+		query: PaginationQuery & { search?: string };
 	}): Promise<
 		PaginationResult<
-			User & {
-				appointmentsCount: number;
-				lastAppointmentDate: Date | null;
-			}
+			User & { appointmentsCount: number; lastAppointmentDate: Date | null }
 		>
 	>;
 }

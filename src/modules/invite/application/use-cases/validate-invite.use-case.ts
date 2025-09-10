@@ -47,12 +47,7 @@ export class ValidateInviteUseCase {
 				`Invite validation result - Token: ${token}, Valid: ${isValid}, Expired: ${isExpired}, Used: ${isUsed}`,
 			);
 
-			return right({
-				invite,
-				isValid,
-				isExpired,
-				isUsed,
-			});
+			return right({ invite, isValid, isExpired, isUsed });
 		} catch (error) {
 			this.logger.error(
 				`Error validating invite token: ${token}`,

@@ -23,9 +23,6 @@ export class RevenueMetric extends ValueObject<RevenueMetricProps> {
 			throw new Error("Amount must be non-negative");
 		}
 
-		return new RevenueMetric({
-			amount,
-			changePercentage,
-		});
+		return new RevenueMetric({ amount, changePercentage });
 	}
 }

@@ -7,12 +7,7 @@ export const ratingDto = z.object({
 	rating: z.number().min(1).max(5),
 	comment: z.string().optional(),
 	createdAt: z.iso.datetime(),
-	user: z
-		.object({
-			id: z.string(),
-			name: z.string(),
-		})
-		.optional(),
+	user: z.object({ id: z.string(), name: z.string() }).optional(),
 });
 
 export const ratingDistributionDto = z.object({

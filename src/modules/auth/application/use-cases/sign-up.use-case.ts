@@ -12,12 +12,7 @@ interface SignUpUseCaseRequest {
 	email: string;
 	password: string;
 }
-type SignUpUseCaseResponse = Either<
-	UserAlreadyExistError,
-	{
-		user: User;
-	}
->;
+type SignUpUseCaseResponse = Either<UserAlreadyExistError, { user: User }>;
 
 @Injectable()
 export class SignUpUseCase {
@@ -55,8 +50,6 @@ export class SignUpUseCase {
 				user.name,
 			),
 		);
-		return right({
-			user,
-		});
+		return right({ user });
 	}
 }

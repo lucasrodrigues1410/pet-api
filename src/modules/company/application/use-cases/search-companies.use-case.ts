@@ -9,24 +9,13 @@ import { CompanyRepository } from "../../domain/repositories/company.repository"
 
 interface SearchCompaniesUseCaseRequest {
 	query?: string;
-	location?: {
-		latitude: number;
-		longitude: number;
-		radiusInKm?: number;
-	};
+	location?: { latitude: number; longitude: number; radiusInKm?: number };
 	pagination: PaginationQuery;
 }
 
 type SearchCompaniesUseCaseResponse = Either<
 	null,
-	{
-		companies: PaginationResult<
-			Company & {
-				address: Location;
-				image: Asset;
-			}
-		>;
-	}
+	{ companies: PaginationResult<Company & { address: Location; image: Asset }> }
 >;
 
 @Injectable()
@@ -44,8 +33,6 @@ export class SearchCompaniesUseCase {
 			...pagination,
 		});
 
-		return right({
-			companies,
-		});
+		return right({ companies });
 	}
 }

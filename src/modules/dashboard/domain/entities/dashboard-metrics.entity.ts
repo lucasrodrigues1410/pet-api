@@ -39,16 +39,11 @@ export class DashboardMetrics extends Entity<DashboardMetricsProps> {
 	}
 
 	static create(
-		props: Omit<DashboardMetricsProps, "generatedAt"> & {
-			generatedAt?: Date;
-		},
+		props: Omit<DashboardMetricsProps, "generatedAt"> & { generatedAt?: Date },
 		id?: UniqueEntityID,
 	): DashboardMetrics {
 		return new DashboardMetrics(
-			{
-				...props,
-				generatedAt: props.generatedAt ?? new Date(),
-			},
+			{ ...props, generatedAt: props.generatedAt ?? new Date() },
 			id,
 		);
 	}

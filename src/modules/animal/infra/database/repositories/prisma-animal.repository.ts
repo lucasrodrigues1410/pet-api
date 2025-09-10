@@ -14,9 +14,7 @@ export class AnimalPrismaRepository implements AnimalRepository {
 
 	async create(animal: Animal) {
 		const data = PrismaAnimalMapper.toPrisma(animal);
-		const response = await this.prismaService.animal.create({
-			data,
-		});
+		const response = await this.prismaService.animal.create({ data });
 
 		return PrismaAnimalMapper.toDomain(response);
 	}
@@ -54,10 +52,7 @@ export class AnimalPrismaRepository implements AnimalRepository {
 					take,
 					orderBy: { createdAt: "desc" },
 					where: { userId: params.userId, deletedAt: null },
-					include: {
-						breed: true,
-						asset: true,
-					},
+					include: { breed: true, asset: true },
 				}),
 			() =>
 				this.prismaService.animal.count({

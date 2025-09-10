@@ -15,12 +15,8 @@ export class PrismaCompanyAvailabilityExceptionRepository
 			await this.prismaService.companyAvailabilityException.findMany({
 				where: {
 					companyId: companyId,
-					startDate: {
-						gte: period.startDate,
-					},
-					endDate: {
-						lte: period.endDate,
-					},
+					startDate: { gte: period.startDate },
+					endDate: { lte: period.endDate },
 				},
 			});
 

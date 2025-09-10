@@ -12,15 +12,13 @@ export class CategoryController {
 	) {}
 
 	@Get()
-	@ApiOperation({ summary: "Listar todas as categorias",operationId: "listAllCategories" })
-	@ZodResponse({
-		status: 200,
-		type: CategoryResponse,
+	@ApiOperation({
+		summary: "Listar todas as categorias",
+		operationId: "listAllCategories",
 	})
+	@ZodResponse({ status: 200, type: CategoryResponse })
 	async listAll() {
 		const categories = await this.listAllCategoriesUseCase.execute();
-		return {
-			items: categories.map((category) => category.toObject()),
-		};
+		return { items: categories.map((category) => category.toObject()) };
 	}
 }

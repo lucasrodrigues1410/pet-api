@@ -22,7 +22,10 @@ import { UserAlreadyExistError } from "../../../domain/errors/user-already-exist
 import type { UserPayload } from "../../strategies/jwt.strategy";
 import { Public } from "../decorators/public.decorator";
 import { User } from "../decorators/user.decorator";
-import { AcceptInviteRequestDto, AcceptInviteResponseDto } from "../dtos/accept-invite.dto";
+import {
+	AcceptInviteRequestDto,
+	AcceptInviteResponseDto,
+} from "../dtos/accept-invite.dto";
 import { SessionResponseDto } from "../dtos/session.dto";
 import { SignInRequestDto, SignInResponseDto } from "../dtos/sign-in.dto";
 import { SignUpRequestDto } from "../dtos/sign-up.dto";
@@ -45,11 +48,7 @@ export class AuthController {
 	async signIn(@Body() body: SignInRequestDto) {
 		const { email, password, type } = body;
 
-		const result = await this.signInUseCase.execute({
-			email,
-			password,
-			type,
-		});
+		const result = await this.signInUseCase.execute({ email, password, type });
 
 		if (result.isLeft()) {
 			const error = result.value;
@@ -68,7 +67,7 @@ export class AuthController {
 			email: result.value.email,
 			type: result.value.type,
 			accessToken: result.value.accessToken,
-			avatar: result.value.avatar?.url,	
+			avatar: result.value.avatar?.url,
 			staffRole: result.value.staffRole,
 			companyId: result.value.companyId,
 		};
@@ -82,11 +81,7 @@ export class AuthController {
 	async signUp(@Body() body: SignUpRequestDto) {
 		const { name, email, password } = body;
 
-		const result = await this.signUpUseCase.execute({
-			name,
-			email,
-			password,
-		});
+		const result = await this.signUpUseCase.execute({ name, email, password });
 
 		if (result.isLeft()) {
 			const error = result.value;
@@ -122,19 +117,19 @@ export class AuthController {
 	@Post("accept-invite")
 	@ApiOperation({
 		summary: "Aceitar convite de funcionário",
-		description: "Finaliza o cadastro do funcionário convidado definindo uma nova senha",
+		description:
+			"Finaliza o cadastro do funcionário convidado definindo uma nova senha",
 		operationId: "acceptInvite",
 	})
 	@ZodResponse({ status: 201, type: AcceptInviteResponseDto })
 	@Public()
 	@HttpCode(HttpStatus.CREATED)
-	async acceptInvite(@Body() body: AcceptInviteRequestDto): Promise<AcceptInviteResponseDto> {
+	async acceptInvite(
+		@Body() body: AcceptInviteRequestDto,
+	): Promise<AcceptInviteResponseDto> {
 		const { token, password } = body;
 
-		const result = await this.acceptInviteUseCase.execute({
-			token,
-			password,
-		});
+		const result = await this.acceptInviteUseCase.execute({ token, password });
 
 		if (result.isLeft()) {
 			const error = result.value;
@@ -148,14 +143,14 @@ export class AuthController {
 		}
 
 		return {
-			id: result.value.id.toString(),
-			name: result.value.name,
-			email: result.value.email,
+			id: result.value.user.id.toString(),
+			name: result.value.user.name,
+			email: result.value.user.email,
 			accessToken: result.value.accessToken,
 			staffRole: result.value.staffRole,
 			companyId: result.value.companyId,
-			avatar: result.value.avatar?.url,
-			type: result.value.type,
+			avatar: result.value.user.avatar?.url,
+			type: result.value.user.type,
 		};
 	}
 }

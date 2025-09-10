@@ -16,9 +16,7 @@ interface CreateAnimalCaseRequest {
 
 type CreateAnimalCaseResponse = Either<
 	ResourceNotFoundError,
-	{
-		animal: Animal;
-	}
+	{ animal: Animal }
 >;
 
 @Injectable()
@@ -31,7 +29,7 @@ export class CreateAnimalUseCase {
 		data: CreateAnimalCaseRequest,
 	): Promise<CreateAnimalCaseResponse> {
 		this.logger.log(`Executing create animal use case for user ${data.userId}`);
-		
+
 		try {
 			const animal = Animal.create({
 				name: data.name,
@@ -51,9 +49,7 @@ export class CreateAnimalUseCase {
 				`Animal created successfully in repository. ID: ${result.id.toString()}, Name: ${result.name}`,
 			);
 
-			return right({
-				animal: result,
-			});
+			return right({ animal: result });
 		} catch (error) {
 			this.logger.error(
 				`Error creating animal for user ${data.userId}`,

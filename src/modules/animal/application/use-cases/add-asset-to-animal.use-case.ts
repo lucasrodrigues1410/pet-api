@@ -1,4 +1,4 @@
-import { Injectable} from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { UploadAndCreateAssetUseCase } from "@/modules/asset/application/use-cases/upload-and-create-asset.use-case";
 import { Either, left, right } from "@/shared/either";
 import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
