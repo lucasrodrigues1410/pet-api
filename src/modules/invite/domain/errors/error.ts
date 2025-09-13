@@ -1,6 +1,5 @@
 import { DomainError } from "@/core/domain/errors/domain-error";
 
-
 export class InviteNotFoundError extends DomainError {
 	constructor(message = "Convite não encontrado") {
 		super(message);

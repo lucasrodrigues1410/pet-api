@@ -47,15 +47,4 @@ export class User extends Entity<UserProps> {
 		const user = new User(props, id);
 		return user;
 	}
-
-	public toObject() {
-		return {
-			id: this.id.toString(),
-			email: this.email,
-			name: this.name,
-			type: this.type,
-			avatar: this.avatar?.toObject(),
-			avatarAssetId: this.avatarAssetId,
-		};
-	}
 }

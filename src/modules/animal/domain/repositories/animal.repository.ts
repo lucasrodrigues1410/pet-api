@@ -11,6 +11,9 @@ export abstract class AnimalRepository {
 		data: Partial<Omit<Animal, "id">>,
 	): Promise<Animal>;
 	abstract findById(animalId: string): Promise<Animal | null>;
+	abstract findByIdWithRelations(
+		animalId: string,
+	): Promise<(Animal & { breed: Breed; asset?: Asset }) | null>;
 	abstract delete(animalId: string): Promise<void>;
 	abstract fetchAllAnimalsByUser(
 		params: { userId: string } & PaginationQuery,

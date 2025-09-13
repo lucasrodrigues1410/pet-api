@@ -11,6 +11,8 @@ import {
 	DashboardMetricsResponse,
 	WeeklyPerformanceResponse,
 } from "../dtos/dashboard.response.dto";
+import { DashboardMetricsPresenter } from "../presenters/dashboard-metrics.presenter";
+import { WeeklyPerformancePresenter } from "../presenters/weekly-performance.presenter";
 
 @ApiTags("Dashboard")
 @Controller("dashboard")
@@ -40,25 +42,7 @@ export class DashboardController {
 			endDate: query.endDate ? new Date(query.endDate) : undefined,
 		});
 
-		return {
-			appointmentsToday: {
-				count: metrics.appointmentsToday.count,
-				changePercentage: metrics.appointmentsToday.changePercentage,
-			},
-			monthlyRevenue: {
-				amount: metrics.monthlyRevenue.amount,
-				changePercentage: metrics.monthlyRevenue.changePercentage,
-			},
-			activeClients: {
-				count: metrics.activeClients.count,
-				changePercentage: metrics.activeClients.changePercentage,
-			},
-			averageRating: {
-				rating: metrics.averageRating.rating,
-				changePercentage: metrics.averageRating.changePercentage,
-				baseCount: metrics.averageRating.baseCount,
-			},
-		};
+		return DashboardMetricsPresenter.present(metrics);
 	}
 
 	@Get("performance")
@@ -79,20 +63,6 @@ export class DashboardController {
 			endDate: query.endDate ? new Date(query.endDate) : undefined,
 		});
 
-		return {
-			appointments: {
-				completed: performance.appointments.completed,
-				total: performance.appointments.total,
-				percentage: performance.appointments.percentage,
-			},
-			conversionRate: {
-				rate: performance.conversionRate.rate,
-				changePercentage: performance.conversionRate.changePercentage,
-			},
-			satisfaction: {
-				rating: performance.satisfaction.rating,
-				baseCount: performance.satisfaction.baseCount,
-			},
-		};
+		return WeeklyPerformancePresenter.present(performance);
 	}
 }

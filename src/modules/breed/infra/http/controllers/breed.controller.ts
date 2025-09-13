@@ -4,6 +4,7 @@ import { ZodResponse } from "nestjs-zod";
 import { ListBreedsUseCase } from "src/modules/breed/application/use-cases/list-breeds.use-case";
 import { BreedListResponse } from "../dtos/breed.response.dto";
 import { ListBreedsQueryDto } from "../dtos/list-breeds.dto";
+import { ListBreedsPresenter } from "../presenters/list-breeds.presenter";
 
 @ApiTags("Raças")
 @Controller("breeds")
@@ -21,6 +22,6 @@ export class BreedController {
 		if (result.isLeft()) {
 			throw new BadRequestException();
 		}
-		return { items: result.value.items.map((i) => i.toObject()) };
+		return ListBreedsPresenter.present(result.value.items);
 	}
 }

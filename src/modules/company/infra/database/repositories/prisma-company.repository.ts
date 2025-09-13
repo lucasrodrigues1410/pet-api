@@ -7,7 +7,6 @@ import { CompanyRepository } from "@/modules/company/domain/repositories/company
 import { PrismaCompanyAvailabilityMapper as AvlbyMapper } from "@/modules/company-availability/infra/database/mappers/company-availability.mapper";
 import { PrismaLocationMapper } from "@/modules/location/infra/database/mappers/prisma-location.mapper";
 import { PrismaServiceMapper } from "@/modules/service/infra/database/mappers/prisma-service.mapper";
-import { calculateLocationBounds } from "@/shared/utils/geo-location.util";
 import { normalizeText } from "@/shared/utils/normalize-text";
 import { paginate } from "@/shared/utils/paginator";
 import { PrismaCompanyMapper } from "../mappers/prisma-company.mapper";
@@ -41,23 +40,17 @@ export class PrismaCompanyRepository implements CompanyRepository {
 	async searchCompanies(
 		params: Parameters<CompanyRepository["searchCompanies"]>[0],
 	) {
-		const { query, location, ...paginationParams } = params;
-
-		const bounds = location
-			? calculateLocationBounds({
-					latitude: location.latitude,
-					longitude: location.longitude,
-					radiusInKm: location.radiusInKm,
-				})
-			: null;
+		const { search, location, categories, ...paginationParams } = params;
 
 		// Acumuladores de filtros
 		const andConditions: Prisma.CompanyWhereInput[] = [{ deletedAt: null }];
 
 		const orConditions: Prisma.CompanyWhereInput[] = [];
 
-		if (query) {
-			const normalizedQuery = normalizeText(query);
+		if (search) {
+			const normalizedQuery = normalizeText(
+				`${search} ${categories?.join(" ")}`,
+			);
 			const keywords = normalizedQuery
 				.split(" ")
 				.filter(
@@ -93,11 +86,17 @@ export class PrismaCompanyRepository implements CompanyRepository {
 		}
 
 		// Geolocalização (caixa) aplicada via companyLocations
-		if (bounds) {
+		if (location) {
 			andConditions.push({
 				location: {
-					latitude: { gte: bounds.minLat, lte: bounds.maxLat },
-					longitude: { gte: bounds.minLon, lte: bounds.maxLon },
+					OR: [
+						{
+							city: { contains: location, mode: "insensitive" },
+							state: { contains: location, mode: "insensitive" },
+							country: { contains: location, mode: "insensitive" },
+							neighborhood: { contains: location, mode: "insensitive" },
+						},
+					],
 				},
 			});
 		}

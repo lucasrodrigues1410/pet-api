@@ -23,7 +23,6 @@ import { Public } from "@/modules/auth/infra/http/decorators/public.decorator";
 import { User } from "@/modules/auth/infra/http/decorators/user.decorator";
 import { UserTypeDecorator } from "@/modules/auth/infra/http/decorators/user-type.decorator";
 import type { UserPayload } from "@/modules/auth/infra/strategies/jwt.strategy";
-import { PaginationQueryDto } from "@/shared/utils/pagination-query";
 import { AddLogoResponseDtoClass, UploadImageDto } from "../dtos/add-logo.dto";
 import { CompanyByIdResponseDto } from "../dtos/company-by-id.dto";
 import {
@@ -31,6 +30,8 @@ import {
 	SearchCompaniesResponseDto,
 } from "../dtos/search-companies.dto";
 import { CompanyGuard } from "../guards/company.guard";
+import { CompanyByIdPresenter } from "../presenters/company-by-id.presenter";
+import { SearchCompaniesPresenter } from "../presenters/search-companies.presenter";
 
 @ApiTags("Empresas")
 @Controller("companies")
@@ -48,28 +49,14 @@ export class CompanyController {
 	})
 	@ZodResponse({ status: 200, type: SearchCompaniesResponseDto })
 	@Public()
-	async searchCompanies(
-		@Query() searchParams: SearchCompaniesRequestDto,
-		@Query() pagination: PaginationQueryDto,
-	) {
-		const result = await this.searchCompaniesUseCase.execute({
-			query: searchParams.query,
-			location: searchParams.location ?? undefined,
-			pagination,
-		});
+	async searchCompanies(@Query() searchParams: SearchCompaniesRequestDto) {
+		const result = await this.searchCompaniesUseCase.execute(searchParams);
 
 		if (result.isLeft()) {
 			throw new InternalServerErrorException();
 		}
 
-		return {
-			items: result.value.companies.items.map((company) => ({
-				...company.toObject(),
-				address: company.address.toObject(),
-				image: company.image?.toObject() ?? null,
-			})),
-			meta: result.value.companies.meta,
-		};
+		return SearchCompaniesPresenter.present(result.value.companies);
 	}
 
 	@Get(":id")
@@ -85,14 +72,7 @@ export class CompanyController {
 			throw new NotFoundException();
 		}
 
-		return {
-			...result.value.company.toObject(),
-			address: result.value.company.address.toObject(),
-			images: result.value.company.images?.map((i) => i.toObject()) ?? [],
-			services: result.value.company.services?.map((s) => s.toObject()) ?? [],
-			availabilities:
-				result.value.company.availabilities?.map((a) => a.toObject()) ?? [],
-		};
+		return CompanyByIdPresenter.present(result.value.company);
 	}
 
 	@Post(":id/logo")

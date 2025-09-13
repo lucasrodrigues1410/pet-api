@@ -5,7 +5,6 @@ import {
 	FileTypeValidator,
 	Get,
 	HttpCode,
-	HttpStatus,
 	MaxFileSizeValidator,
 	Param,
 	ParseFilePipe,
@@ -17,7 +16,13 @@ import {
 	UseInterceptors,
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
-import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import {
+	ApiBody,
+	ApiConsumes,
+	ApiOperation,
+	ApiResponse,
+	ApiTags,
+} from "@nestjs/swagger";
 import { ZodResponse } from "nestjs-zod";
 import { User } from "src/modules/auth/infra/http/decorators/user.decorator";
 import { UserTypeDecorator } from "@/modules/auth/infra/http/decorators/user-type.decorator";
@@ -30,6 +35,8 @@ import {
 	ListCompanyClientsResponseDto,
 } from "../dtos/list-company-clients.dto";
 import { UpdateUserRequestDto } from "../dtos/update-user.dto";
+import { UploadAvatarDto } from "../dtos/upload-avatar.dto";
+import { ClientListPresenter } from "../presenters/client-list.presenter";
 
 @ApiTags("Usuários")
 @Controller("users")
@@ -41,15 +48,9 @@ export class UserController {
 	) {}
 
 	@Put("edit")
-	@ApiOperation({
-		summary: "Editar usuário autenticado",
-		operationId: "editUser",
-	})
-	@HttpCode(HttpStatus.NO_CONTENT)
-	@ApiResponse({
-		status: HttpStatus.NO_CONTENT,
-		description: "Usuário autenticado editado com sucesso",
-	})
+	@ApiOperation({ summary: "Editar usuário", operationId: "editUser" })
+	@HttpCode(204)
+	@ApiResponse({ status: 204, description: "Usuário editado com sucesso" })
 	async editUser(
 		@User("sub") userId: string,
 		@Body() params: UpdateUserRequestDto,
@@ -71,6 +72,8 @@ export class UserController {
 	})
 	@HttpCode(201)
 	@UseInterceptors(FileInterceptor("file"))
+	@ApiConsumes("multipart/form-data")
+	@ApiBody({ description: "Envio de imagem", type: UploadAvatarDto })
 	async addAvatar(
 		@User("sub") userId: string,
 		@UploadedFile(
@@ -114,13 +117,6 @@ export class UserController {
 			throw new BadRequestException();
 		}
 
-		return {
-			items: result.value.clients.items.map((client) => ({
-				...client.toObject(),
-				appointmentsCount: client.appointmentsCount,
-				lastAppointmentDate: client.lastAppointmentDate?.toISOString() ?? null,
-			})),
-			meta: result.value.clients.meta,
-		};
+		return ClientListPresenter.present(result.value.clients);
 	}
 }

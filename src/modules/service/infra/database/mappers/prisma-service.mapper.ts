@@ -36,9 +36,19 @@ export class PrismaServiceMapper {
 			companyId: service.companyId.toString(),
 			details: (service.details ?? null) as Prisma.JsonObject,
 			rulesPrompt: service.rulesPrompt,
-			rules: service.rules?.map((rule) =>
-				rule.toObject(),
-			) as Prisma.InputJsonValue,
+			rules: service.rules?.map((rule) => {
+				return {
+					characteristic: rule.characteristic,
+					options: rule.options.map((option) => {
+						return {
+							value: option.value,
+							operator: option.operator,
+							price: option.price,
+							time: option.time,
+						};
+					}),
+				};
+			}) as Prisma.InputJsonValue,
 		};
 	}
 
@@ -53,9 +63,19 @@ export class PrismaServiceMapper {
 			name: service.name,
 			details: service.details as Prisma.JsonObject,
 			rulesPrompt: service.rulesPrompt,
-			rules: service.rules?.map((rule) =>
-				rule.toObject(),
-			) as Prisma.InputJsonValue,
+			rules: service.rules?.map((rule) => {
+				return {
+					characteristic: rule.characteristic,
+					options: rule.options.map((option) => {
+						return {
+							value: option.value,
+							operator: option.operator,
+							price: option.price,
+							time: option.time,
+						};
+					}),
+				};
+			}) as Prisma.InputJsonValue,
 		};
 	}
 }

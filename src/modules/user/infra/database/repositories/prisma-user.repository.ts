@@ -41,10 +41,7 @@ export class PrismaUserRepository implements UserRepository {
 
 	async update(id: string, user: Partial<User>): Promise<void> {
 		const data = PrismaUserMapper.toPrismaUpdate(user);
-		await this.prisma.user.update({
-			where: { id },
-			data: data,
-		});
+		await this.prisma.user.update({ where: { id }, data: data });
 	}
 
 	async findClientsByCompanyId(params: {

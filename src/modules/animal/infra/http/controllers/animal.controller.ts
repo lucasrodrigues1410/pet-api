@@ -20,6 +20,7 @@ import { User } from "src/modules/auth/infra/http/decorators/user.decorator";
 import { UserTypeDecorator } from "src/modules/auth/infra/http/decorators/user-type.decorator";
 import { AddAssetToAnimalUseCase } from "@/modules/animal/application/use-cases/add-asset-to-animal.use-case";
 import { DeleteAnimalUseCase } from "@/modules/animal/application/use-cases/delete-animal.use-case";
+import { GetAnimalByIdUseCase } from "@/modules/animal/application/use-cases/get-animal-by-id.use-case";
 import { UpdateAnimalUseCase } from "@/modules/animal/application/use-cases/update-animal.use-case";
 import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
 import { PaginationQueryDto } from "@/shared/utils/pagination-query";
@@ -29,16 +30,20 @@ import {
 	CreateAnimalRequestDto,
 	CreateAnimalResponseDto,
 } from "../dtos/create-animal.dto";
+import { GetAnimalByIdResponseDto } from "../dtos/get-animal-by-id.dto";
 import { ListAnimalFromUserResponseDto } from "../dtos/list-animal-from-user.dto";
 import { UpdateAnimalRequestDto } from "../dtos/update-animal.dto";
 import { UploadAnimalImageDto } from "../dtos/upload-animal-image.dto";
+import { GetAnimalByIdPresenter } from "../presenters/get-animal-by-id.presenter";
+import { ListAnimalsFromUserPresenter } from "../presenters/list-animals-from-user.presenter";
 
 @ApiTags("Animais")
-@Controller("animal")
+@Controller("animals")
 export class AnimalController {
 	constructor(
 		private readonly createAnimalUseCase: CreateAnimalUseCase,
 		private readonly deleteAnimalUseCase: DeleteAnimalUseCase,
+		private readonly getAnimalByIdUseCase: GetAnimalByIdUseCase,
 		private readonly updateAnimalUseCase: UpdateAnimalUseCase,
 		private readonly listAnimalsFromUserUseCase: ListAnimalsFromUserUserUseCase,
 		private readonly addAssetToAnimalUseCase: AddAssetToAnimalUseCase,
@@ -53,10 +58,7 @@ export class AnimalController {
 		@User("sub") userId: string,
 		@Body() data: CreateAnimalRequestDto,
 	) {
-		const result = await this.createAnimalUseCase.execute({
-			...data,
-			userId,
-		});
+		const result = await this.createAnimalUseCase.execute({ ...data, userId });
 
 		if (result.isLeft()) {
 			if (result.value instanceof ResourceNotFoundError) {
@@ -88,16 +90,30 @@ export class AnimalController {
 			throw new BadRequestException();
 		}
 
-		return {
-			items: result.value.items.map((i) => {
-				return {
-					...i.toObject(),
-					breed: i.breed.toObject(),
-					asset: i.asset?.toObject(),
-				};
-			}),
-			meta: result.value.meta,
-		};
+		return ListAnimalsFromUserPresenter.present(result.value);
+	}
+
+	@Get(":id")
+	@ApiOperation({
+		summary: "Buscar animal por ID",
+		operationId: "getAnimalById",
+	})
+	@ZodResponse({ status: 200, type: GetAnimalByIdResponseDto })
+	@UserTypeDecorator("customer")
+	async getById(@User("sub") userId: string, @Param("id") animalId: string) {
+		const result = await this.getAnimalByIdUseCase.execute({
+			userId,
+			animalId,
+		});
+
+		if (result.isLeft()) {
+			if (result.value instanceof ResourceNotFoundError) {
+				throw new NotFoundException();
+			}
+			throw new BadRequestException();
+		}
+
+		return GetAnimalByIdPresenter.present(result.value.animal as any);
 	}
 
 	@Post(":id/asset")

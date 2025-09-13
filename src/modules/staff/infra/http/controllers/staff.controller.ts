@@ -20,6 +20,7 @@ import {
 	ListStaffByCompanyQueryDto,
 	ListStaffByCompanyResponseDto,
 } from "../dtos/list-staff-by-company.dto";
+import { StaffListPresenter } from "../presenters/staff-list.presenter";
 
 @ApiTags("Colaboradores")
 @Controller("staffs")
@@ -48,12 +49,7 @@ export class StaffController {
 		if (result.isLeft()) {
 			throw new BadRequestException();
 		}
-		return {
-			items: result.value.items.map((s) => {
-				return { ...s.toObject(), user: s.user.toObject() };
-			}),
-			meta: result.value.meta,
-		};
+		return StaffListPresenter.present(result.value);
 	}
 
 	@Delete(":id/company/:companyId")

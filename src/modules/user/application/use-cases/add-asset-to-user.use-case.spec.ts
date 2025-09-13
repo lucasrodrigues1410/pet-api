@@ -171,7 +171,7 @@ describe("Add Asset to User", () => {
 		});
 
 		expect(firstResult.isRight()).toBe(true);
-		
+
 		// Add second avatar
 		const secondAssetId = new UniqueEntityID();
 		mockUploadAndCreateAssetUseCase.execute.mockResolvedValueOnce({

@@ -29,6 +29,9 @@ import {
 import { SessionResponseDto } from "../dtos/session.dto";
 import { SignInRequestDto, SignInResponseDto } from "../dtos/sign-in.dto";
 import { SignUpRequestDto } from "../dtos/sign-up.dto";
+import { AcceptInvitePresenter } from "../presenters/accept-invite.presenter";
+import { SessionPresenter } from "../presenters/session.presenter";
+import { SignInPresenter } from "../presenters/sign-in.presenter";
 
 @ApiTags("Autenticação")
 @Controller("auth")
@@ -61,16 +64,7 @@ export class AuthController {
 			}
 		}
 
-		return {
-			id: result.value.id.toString(),
-			name: result.value.name,
-			email: result.value.email,
-			type: result.value.type,
-			accessToken: result.value.accessToken,
-			avatar: result.value.avatar?.url,
-			staffRole: result.value.staffRole,
-			companyId: result.value.companyId,
-		};
+		return SignInPresenter.present(result.value);
 	}
 
 	@Post("sign-up")
@@ -105,13 +99,7 @@ export class AuthController {
 	async getSession(@User() payload: UserPayload) {
 		const result = await this.getSessionUseCase.execute(payload);
 
-		return {
-			id: result.value.sub.toString(),
-			name: result.value.name,
-			email: result.value.email,
-			type: result.value.type,
-			companyId: result.value.companyId,
-		};
+		return SessionPresenter.present(result.value);
 	}
 
 	@Post("accept-invite")
@@ -142,15 +130,6 @@ export class AuthController {
 			}
 		}
 
-		return {
-			id: result.value.user.id.toString(),
-			name: result.value.user.name,
-			email: result.value.user.email,
-			accessToken: result.value.accessToken,
-			staffRole: result.value.staffRole,
-			companyId: result.value.companyId,
-			avatar: result.value.user.avatar?.url,
-			type: result.value.user.type,
-		};
+		return AcceptInvitePresenter.present(result.value);
 	}
 }

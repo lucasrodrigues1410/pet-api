@@ -3,6 +3,7 @@ import { AssetModule } from "../asset/asset.module";
 import { AddAssetToAnimalUseCase } from "./application/use-cases/add-asset-to-animal.use-case";
 import { CreateAnimalUseCase } from "./application/use-cases/create-animal.use-case";
 import { DeleteAnimalUseCase } from "./application/use-cases/delete-animal.use-case";
+import { GetAnimalByIdUseCase } from "./application/use-cases/get-animal-by-id.use-case";
 import { ListAnimalsFromUserUserUseCase } from "./application/use-cases/list-animals-from-user.use-case";
 import { UpdateAnimalUseCase } from "./application/use-cases/update-animal.use-case";
 import { AnimalRepository } from "./domain/repositories/animal.repository";
@@ -14,6 +15,7 @@ import { AnimalController } from "./infra/http/controllers/animal.controller";
 	controllers: [AnimalController],
 	providers: [
 		CreateAnimalUseCase,
+		GetAnimalByIdUseCase,
 		ListAnimalsFromUserUserUseCase,
 		UpdateAnimalUseCase,
 		DeleteAnimalUseCase,

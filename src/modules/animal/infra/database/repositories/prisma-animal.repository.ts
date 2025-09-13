@@ -37,6 +37,24 @@ export class AnimalPrismaRepository implements AnimalRepository {
 		return PrismaAnimalMapper.toDomain(response);
 	}
 
+	async findByIdWithRelations(
+		animalId: string,
+	): Promise<(Animal & { breed: Breed; asset?: Asset }) | null> {
+		const response = await this.prismaService.animal.findUnique({
+			where: { id: animalId.toString(), deletedAt: null },
+			include: { breed: true, asset: true },
+		});
+		if (!response) {
+			return null;
+		}
+		return Object.assign(PrismaAnimalMapper.toDomain(response), {
+			breed: PrismaBreedMapper.toDomain(response.breed),
+			asset: response.asset
+				? PrismaAssetMapper.toDomain(response.asset)
+				: undefined,
+		});
+	}
+
 	async delete(petId: string) {
 		await this.prismaService.animal.update({
 			where: { id: petId },

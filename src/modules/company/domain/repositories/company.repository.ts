@@ -19,8 +19,9 @@ export abstract class CompanyRepository {
 	abstract findById(id: string): Promise<FindCompanyResult | null>;
 	abstract searchCompanies(
 		params: {
-			query?: string;
-			location?: { latitude: number; longitude: number; radiusInKm?: number };
+			search?: string;
+			location?: string;
+			categories?: string[];
 		} & PaginationQuery,
 	): Promise<PaginationResult<SearchCompanyResult>>;
 	abstract update(id: string, data: Partial<Company>): Promise<void>;

@@ -32,6 +32,9 @@ import {
 	UpdateAppointmentStatusDto,
 	UpdateAppointmentStatusResponseDto,
 } from "../dtos/update-appointment-status.dto";
+import { AppointmentByIdPresenter } from "../presenters/appointment-by-id.presenter";
+import { CompanyAppointmentsPresenter } from "../presenters/company-appointments.presenter";
+import { UserAppointmentsPresenter } from "../presenters/user-appointments.presenter";
 
 @ApiTags("Agendamentos")
 @Controller("appointments")
@@ -64,20 +67,7 @@ export class AppointmentController {
 			throw new NotFoundException(response.value.message);
 		}
 
-		return {
-			meta: response.value.meta,
-			items: response.value.items.map((item) => {
-				return {
-					...item.toObject(),
-					animal: {
-						...item.animal.toObject(),
-						breed: item.animal.breed?.toObject(),
-					},
-					client: item.client.toObject(),
-					service: item.service.toObject(),
-				};
-			}),
-		};
+		return CompanyAppointmentsPresenter.present(response.value);
 	}
 
 	@Get("/user")
@@ -100,17 +90,7 @@ export class AppointmentController {
 			throw new NotFoundException();
 		}
 
-		return {
-			meta: response.value.meta,
-			items: response.value.items.map((item) => {
-				return {
-					...item.toObject(),
-					animal: item.animal.toObject(),
-					service: item.service.toObject(),
-					company: item.company.toObject(),
-				};
-			}),
-		};
+		return UserAppointmentsPresenter.present(response.value);
 	}
 
 	@Patch(":id/status")
@@ -174,16 +154,6 @@ export class AppointmentController {
 		if (response.isLeft()) {
 			throw new NotFoundException(response.value.message);
 		}
-		return {
-			...response.value.toObject(),
-			animal: {
-				...response.value.animal.toObject(),
-				breed: response.value.animal.breed.toObject(),
-				asset: response.value.animal.asset?.toObject(),
-			},
-			client: response.value.client.toObject(),
-			service: response.value.service.toObject(),
-			company: response.value.company.toObject(),
-		};
+		return AppointmentByIdPresenter.present(response.value);
 	}
 }

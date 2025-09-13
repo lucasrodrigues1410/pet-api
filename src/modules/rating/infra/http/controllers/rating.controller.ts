@@ -21,6 +21,7 @@ import {
 	CompanyRatingStatsResponse,
 	RatingListResponse,
 } from "../dtos/rating.response.dto";
+import { RatingListPresenter } from "../presenters/rating-list.presenter";
 
 @ApiTags("Avaliações")
 @Controller("ratings")
@@ -64,13 +65,7 @@ export class RatingController {
 		if (result.isLeft()) {
 			throw new NotFoundException("Empresa não encontrada");
 		}
-		return {
-			meta: result.value.meta,
-			items: result.value.items.map((item) => ({
-				...item.toObject(),
-				user: { id: item.user.id.toString(), name: item.user.name },
-			})),
-		};
+		return RatingListPresenter.present(result.value);
 	}
 
 	@Get("company/:companyId/stats")

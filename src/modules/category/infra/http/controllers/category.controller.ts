@@ -3,6 +3,7 @@ import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { ZodResponse } from "nestjs-zod";
 import { ListAllCategoriesUseCase } from "@/modules/category/application/use-cases/list-all-categories.use-case";
 import { CategoryResponse } from "../dtos/category.response.dto";
+import { ListCategoriesPresenter } from "../presenters/list-categories.presenter";
 
 @ApiTags("categories")
 @Controller("categories")
@@ -19,6 +20,6 @@ export class CategoryController {
 	@ZodResponse({ status: 200, type: CategoryResponse })
 	async listAll() {
 		const categories = await this.listAllCategoriesUseCase.execute();
-		return { items: categories.map((category) => category.toObject()) };
+		return ListCategoriesPresenter.present(categories);
 	}
 }

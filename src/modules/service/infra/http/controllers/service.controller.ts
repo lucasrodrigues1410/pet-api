@@ -24,6 +24,8 @@ import { ListServicesByCompanyUseCase } from "../../../application/use-cases/lis
 import { CreateServiceRequestDto } from "../dtos/create-service.dto";
 import { ServiceResponseList } from "../dtos/service.dto";
 import { ServiceDetailsResponse } from "../dtos/service-details.dto";
+import { ServiceDetailsPresenter } from "../presenters/service-details.presenter";
+import { ServiceListPresenter } from "../presenters/service-list.presenter";
 
 @ApiTags("Serviços")
 @Controller("services")
@@ -50,7 +52,7 @@ export class ServiceController {
 			throw new BadRequestException();
 		}
 
-		return { items: result.value.services.map((i) => i.toObject()) };
+		return ServiceListPresenter.present(result.value.services);
 	}
 
 	@Patch("/:id/company/:companyId/deactivate")
@@ -112,12 +114,6 @@ export class ServiceController {
 			throw new NotFoundException(result.value.message);
 		}
 
-		const service = result.value.service.toObject();
-
-		return {
-			...service,
-			company: result.value.service.company.toObject(),
-			categories: result.value.service.categories.map((c) => c.toObject()),
-		};
+		return ServiceDetailsPresenter.present(result.value.service);
 	}
 }

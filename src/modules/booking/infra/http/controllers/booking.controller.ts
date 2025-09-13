@@ -20,6 +20,8 @@ import {
 	ListAvailableDatesRequestDto,
 	ListAvailableDatesResponseDto,
 } from "../dtos/list-available-dates.dto";
+import { AvailableDatesPresenter } from "../presenters/available-dates.presenter";
+import { CreateAppointmentPresenter } from "../presenters/create-appointment.presenter";
 
 @ApiTags("Reservas")
 @Controller("booking")
@@ -50,9 +52,7 @@ export class BookingController {
 			throw new NotFoundException();
 		}
 
-		return {
-			slots: result.value.slots.map((slot) => ({ label: slot.label || "" })),
-		};
+		return AvailableDatesPresenter.present(result.value.slots);
 	}
 
 	@Post("create")
@@ -60,8 +60,6 @@ export class BookingController {
 	@ApiOperation({
 		summary: "Cria um agendamento, iniciando o processo de pagamento",
 		operationId: "createAppointment",
-		description:
-			"Inicia o processo de criação de um agendamento, verificando a disponibilidade do horário e criando uma intenção de agendamento.",
 	})
 	@UserTypeDecorator("customer")
 	async createAppointment(
@@ -81,6 +79,6 @@ export class BookingController {
 			throw new BadRequestException(`${response.value.message}`);
 		}
 
-		return { appointmentId: response.value.appointmentId };
+		return CreateAppointmentPresenter.present(response.value.appointmentId);
 	}
 }

@@ -27,6 +27,8 @@ import {
 	InviteEmployeeResponseDto,
 } from "../dtos/invite-employee.dto";
 import { ValidateInviteResponseDto } from "../dtos/validate-invite.dto";
+import { InviteEmployeeResponsePresenter } from "../presenters/invite-employee-response.presenter";
+import { ValidateInviteResponsePresenter } from "../presenters/validate-invite-response.presenter";
 
 @ApiTags("Convites")
 @Controller("invites")
@@ -77,11 +79,7 @@ export class InviteController {
 
 		const { invite, user } = result.value;
 
-		return {
-			inviteId: invite.id.toString(),
-			token: invite.token,
-			message: `Convite enviado para ${user.name} (${user.email}). O convite expira em 7 dias.`,
-		};
+		return InviteEmployeeResponsePresenter.present(invite, user);
 	}
 
 	@Get("validate/:token")
@@ -112,30 +110,11 @@ export class InviteController {
 
 		const { invite, isValid, isExpired, isUsed } = result.value;
 
-		let message = "";
-		if (isValid) {
-			message = "Convite válido";
-		} else if (isExpired) {
-			message = "Convite expirado";
-		} else if (isUsed) {
-			message = "Convite já foi usado";
-		}
-
-		return {
+		return ValidateInviteResponsePresenter.present({
+			invite,
 			isValid,
 			isExpired,
 			isUsed,
-			invite: isValid
-				? {
-						id: invite.id.toString(),
-						token: invite.token,
-						expiresAt: invite.expiresAt.toISOString(),
-						usedAt: invite.usedAt?.toISOString(),
-						userId: invite.userId.toString(),
-						user: invite.user.toObject(),
-					}
-				: undefined,
-			message,
-		};
+		});
 	}
 }
