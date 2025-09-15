@@ -157,6 +157,9 @@ CREATE TABLE "public"."user_companies" (
     "userId" TEXT NOT NULL,
     "companyId" TEXT NOT NULL,
     "role" "public"."Role" NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
+    "deleted_at" TIMESTAMP(3),
 
     CONSTRAINT "user_companies_pkey" PRIMARY KEY ("id")
 );
@@ -168,6 +171,20 @@ CREATE TABLE "public"."company_images" (
     "assetId" TEXT NOT NULL,
 
     CONSTRAINT "company_images_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "public"."invites" (
+    "id" TEXT NOT NULL,
+    "user_id" TEXT NOT NULL,
+    "token" TEXT NOT NULL,
+    "expires_at" TIMESTAMP(3) NOT NULL,
+    "used_at" TIMESTAMP(3),
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
+    "deleted_at" TIMESTAMP(3),
+
+    CONSTRAINT "invites_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -372,6 +389,9 @@ CREATE INDEX "user_companies_companyId_role_idx" ON "public"."user_companies"("c
 CREATE UNIQUE INDEX "user_companies_userId_companyId_key" ON "public"."user_companies"("userId", "companyId");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "invites_token_key" ON "public"."invites"("token");
+
+-- CreateIndex
 CREATE INDEX "locations_city_state_idx" ON "public"."locations"("city", "state");
 
 -- CreateIndex
@@ -472,6 +492,9 @@ ALTER TABLE "public"."company_images" ADD CONSTRAINT "company_images_companyId_f
 
 -- AddForeignKey
 ALTER TABLE "public"."company_images" ADD CONSTRAINT "company_images_assetId_fkey" FOREIGN KEY ("assetId") REFERENCES "public"."assets"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "public"."invites" ADD CONSTRAINT "invites_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "public"."notifications" ADD CONSTRAINT "notifications_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

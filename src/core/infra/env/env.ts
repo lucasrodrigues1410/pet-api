@@ -2,7 +2,6 @@ import { z } from "zod";
 
 export const envSchema = z.object({
 	DATABASE_URL: z.string(),
-	DIRECT_URL: z.string(),
 	JWT_SECRET: z.string(),
 	IMAGE_KIT_PUBLIC_KEY: z.string(),
 	IMAGE_KIT_PRIVATE_KEY: z.string(),
