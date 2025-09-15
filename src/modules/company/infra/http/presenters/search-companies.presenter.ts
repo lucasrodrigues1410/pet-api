@@ -2,20 +2,21 @@ import { Asset } from "@/modules/asset/domain/entities/asset";
 import { Company } from "@/modules/company/domain/entities/company.entity";
 import { Location } from "@/modules/location/domain/entities/location";
 import { PaginationResult } from "@/shared/utils/pagination";
+import { SearchCompaniesResponseDto } from "../dtos/search-companies.dto";
 import { CompanyPresenter } from "./company.presenter";
 
 type CompanyWithRelations = Company & { address: Location; image?: Asset };
 
 export class SearchCompaniesPresenter {
-	static present(result: PaginationResult<CompanyWithRelations>) {
+	static present(
+		result: PaginationResult<CompanyWithRelations>,
+	): SearchCompaniesResponseDto {
 		return {
-			items: result.items.map((company) =>
-				CompanyPresenter.presentWithAddressAndImage(
-					company,
-					company.address,
-					company.image,
-				),
-			),
+			items: result.items.map((company) => CompanyPresenter.presentWithAddressAndImage(
+				company,
+				company.address,
+				company.image,
+			)),
 			meta: result.meta,
 		};
 	}
