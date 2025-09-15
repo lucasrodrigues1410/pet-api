@@ -4,6 +4,7 @@ import { ZodResponse } from "nestjs-zod";
 import { Public } from "@/modules/auth/infra/http/decorators/public.decorator";
 import { GetCompanyAvailabilityUseCase } from "@/modules/company-availability/application/use-cases/get-company-availability.use-case";
 import { CompanyAvailabilityListResponseDto } from "../dtos/company-availability.response.dto";
+import { CompanyAvailabilityListPresenter } from "../presenters/company-availability-list.presenter";
 
 @ApiTags("Disponibilidade da Empresa")
 @Controller("availabilities")
@@ -11,7 +12,10 @@ export class CompanyAvailabilityController {
 	constructor(private readonly getUseCase: GetCompanyAvailabilityUseCase) {}
 
 	@Get("company/:companyId")
-	@ApiOperation({ summary: "Listar disponibilidade da empresa" })
+	@ApiOperation({
+		summary: "Listar disponibilidade da empresa",
+		operationId: "listCompanyAvailability",
+	})
 	@ZodResponse({ status: 200, type: CompanyAvailabilityListResponseDto })
 	@Public()
 	async list(@Param("companyId") companyId: string) {
@@ -20,8 +24,6 @@ export class CompanyAvailabilityController {
 			throw new NotFoundException();
 		}
 
-		return {
-			items: result.value.items.map((a) => a.toObject()),
-		};
+		return CompanyAvailabilityListPresenter.present(result.value.items);
 	}
 }

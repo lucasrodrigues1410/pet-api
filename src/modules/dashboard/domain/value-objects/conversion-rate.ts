@@ -23,9 +23,6 @@ export class ConversionRate extends ValueObject<ConversionRateProps> {
 			throw new Error("Rate must be between 0 and 100");
 		}
 
-		return new ConversionRate({
-			rate,
-			changePercentage,
-		});
+		return new ConversionRate({ rate, changePercentage });
 	}
 }

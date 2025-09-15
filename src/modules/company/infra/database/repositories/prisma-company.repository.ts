@@ -2,11 +2,11 @@ import { Injectable } from "@nestjs/common";
 import { Prisma } from "prisma/generated/client";
 import { PrismaService } from "src/core/infra/prisma/prisma.service";
 import { PrismaAssetMapper as AssetMapper } from "@/modules/asset/infra/database/mappers/prisma-asset.mapper";
+import { Company } from "@/modules/company/domain/entities/company.entity";
 import { CompanyRepository } from "@/modules/company/domain/repositories/company.repository";
 import { PrismaCompanyAvailabilityMapper as AvlbyMapper } from "@/modules/company-availability/infra/database/mappers/company-availability.mapper";
 import { PrismaLocationMapper } from "@/modules/location/infra/database/mappers/prisma-location.mapper";
 import { PrismaServiceMapper } from "@/modules/service/infra/database/mappers/prisma-service.mapper";
-import { calculateLocationBounds } from "@/shared/utils/geo-location.util";
 import { normalizeText } from "@/shared/utils/normalize-text";
 import { paginate } from "@/shared/utils/paginator";
 import { PrismaCompanyMapper } from "../mappers/prisma-company.mapper";
@@ -16,17 +16,10 @@ export class PrismaCompanyRepository implements CompanyRepository {
 	constructor(private prismaService: PrismaService) {}
 
 	async findById(id: string) {
-		const result = await this.prismaService.company.findFirst({
-			where: {
-				id,
-				deletedAt: null,
-			},
+		const result = await this.prismaService.company.findUnique({
+			where: { id, deletedAt: null },
 			include: {
-				companyImage: {
-					include: {
-						asset: true,
-					},
-				},
+				companyImage: { include: { asset: true }, take: 1 },
 				logo: true,
 				companyAvailability: true,
 				services: true,
@@ -47,27 +40,17 @@ export class PrismaCompanyRepository implements CompanyRepository {
 	async searchCompanies(
 		params: Parameters<CompanyRepository["searchCompanies"]>[0],
 	) {
-		const { query, location, ...paginationParams } = params;
-
-		const bounds = location
-			? calculateLocationBounds({
-					latitude: location.latitude,
-					longitude: location.longitude,
-					radiusInKm: location.radiusInKm,
-				})
-			: null;
+		const { search, location, categories, ...paginationParams } = params;
 
 		// Acumuladores de filtros
-		const andConditions: Prisma.CompanyWhereInput[] = [
-			{
-				deletedAt: null,
-			},
-		];
+		const andConditions: Prisma.CompanyWhereInput[] = [{ deletedAt: null }];
 
 		const orConditions: Prisma.CompanyWhereInput[] = [];
 
-		if (query) {
-			const normalizedQuery = normalizeText(query);
+		if (search) {
+			const normalizedQuery = normalizeText(
+				`${search} ${categories?.join(" ")}`,
+			);
 			const keywords = normalizedQuery
 				.split(" ")
 				.filter(
@@ -80,27 +63,18 @@ export class PrismaCompanyRepository implements CompanyRepository {
 				const serviceConditions = keywords.map((keyword) => ({
 					services: {
 						some: {
-							name: {
-								contains: keyword,
-								mode: "insensitive",
-							},
+							name: { contains: keyword, mode: "insensitive" },
 							isActive: true,
 						},
 					},
 				})) as Prisma.CompanyWhereInput[];
 
 				const nameConditions = keywords.map((keyword) => ({
-					name: {
-						contains: keyword,
-						mode: "insensitive",
-					},
+					name: { contains: keyword, mode: "insensitive" },
 				})) as Prisma.CompanyWhereInput[];
 
 				const descriptionConditions = keywords.map((keyword) => ({
-					description: {
-						contains: keyword,
-						mode: "insensitive",
-					},
+					description: { contains: keyword, mode: "insensitive" },
 				})) as Prisma.CompanyWhereInput[];
 
 				orConditions.push(
@@ -112,11 +86,17 @@ export class PrismaCompanyRepository implements CompanyRepository {
 		}
 
 		// Geolocalização (caixa) aplicada via companyLocations
-		if (bounds) {
+		if (location) {
 			andConditions.push({
 				location: {
-					latitude: { gte: bounds.minLat, lte: bounds.maxLat },
-					longitude: { gte: bounds.minLon, lte: bounds.maxLon },
+					OR: [
+						{
+							city: { contains: location, mode: "insensitive" },
+							state: { contains: location, mode: "insensitive" },
+							country: { contains: location, mode: "insensitive" },
+							neighborhood: { contains: location, mode: "insensitive" },
+						},
+					],
 				},
 			});
 		}
@@ -132,11 +112,7 @@ export class PrismaCompanyRepository implements CompanyRepository {
 				this.prismaService.company.findMany({
 					where: whereConditions,
 					include: {
-						companyImage: {
-							include: {
-								asset: true,
-							},
-						},
+						companyImage: { include: { asset: true } },
 						location: true,
 					},
 					orderBy: { createdAt: "desc" },
@@ -157,9 +133,13 @@ export class PrismaCompanyRepository implements CompanyRepository {
 			});
 		});
 
-		return {
-			items: companiesWithServices,
-			meta,
-		};
+		return { items: companiesWithServices, meta };
+	}
+
+	async update(id: string, data: Partial<Company>): Promise<void> {
+		await this.prismaService.company.update({
+			where: { id },
+			data: { logoAssetId: data.logoAssetId?.toString() },
+		});
 	}
 }

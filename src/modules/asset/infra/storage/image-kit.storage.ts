@@ -15,11 +15,7 @@ export class ImageKitStorageProvider implements Uploader {
 		const publicKey = this.envService.get("IMAGE_KIT_PUBLIC_KEY");
 		const privateKey = this.envService.get("IMAGE_KIT_PRIVATE_KEY");
 		const urlEndpoint = this.envService.get("IMAGE_KIT_URL_ENDPOINT");
-		this.client = new ImageKit({
-			publicKey,
-			privateKey,
-			urlEndpoint,
-		});
+		this.client = new ImageKit({ publicKey, privateKey, urlEndpoint });
 	}
 
 	async upload({

@@ -1,12 +1,9 @@
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
-import { PrismaService } from "@/core/infra/prisma/prisma.service";
 import {
 	CompanyAvailabilityException,
 	CompanyAvailabilityExceptionProps,
 } from "@/modules/company-availability/domain/entities/company-availability-exception.entity";
-import { PrismaCompanyAvailabilityExceptionMapper } from "@/modules/company-availability/infra/database/mappers/company-availability-exception.mapper";
 import { faker } from "@faker-js/faker";
-import { Injectable } from "@nestjs/common";
 
 export function makeCompanyAvailabilityException(
 	override: Partial<CompanyAvailabilityExceptionProps> = {},
@@ -24,21 +21,4 @@ export function makeCompanyAvailabilityException(
 	);
 
 	return companyAvailability;
-}
-
-@Injectable()
-export class CompanyAvailabilityExceptionFactory {
-	constructor(private prisma: PrismaService) {}
-
-	async makePrismaBreed(
-		data: Partial<CompanyAvailabilityExceptionProps> = {},
-	): Promise<CompanyAvailabilityException> {
-		const exception = makeCompanyAvailabilityException(data);
-
-		await this.prisma.companyAvailabilityException.create({
-			data: PrismaCompanyAvailabilityExceptionMapper.toPrisma(exception),
-		});
-
-		return exception;
-	}
 }

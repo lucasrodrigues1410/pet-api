@@ -5,10 +5,7 @@ import { UserRepository } from "../../domain/repositories/user.repository";
 
 type UpdateUserProfileInput = {
 	userId: string;
-	profileData: Partial<{
-		email: string;
-		name: string;
-	}>;
+	profileData: Partial<{ email: string; name: string }>;
 };
 
 type UpdateUserProfileOutput = Either<ResourceNotFoundError, void>;
@@ -25,9 +22,7 @@ export class UpdateUserProfileUseCase {
 			return left(new ResourceNotFoundError("Usuário não encontrado"));
 		}
 
-		user.update(params.profileData);
-
-		await this.userRepository.update(user);
+		await this.userRepository.update(user.id.toString(), params.profileData);
 		return right(undefined);
 	}
 }

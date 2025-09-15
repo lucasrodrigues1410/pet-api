@@ -24,6 +24,8 @@ import { ListServicesByCompanyUseCase } from "../../../application/use-cases/lis
 import { CreateServiceRequestDto } from "../dtos/create-service.dto";
 import { ServiceResponseList } from "../dtos/service.dto";
 import { ServiceDetailsResponse } from "../dtos/service-details.dto";
+import { ServiceDetailsPresenter } from "../presenters/service-details.presenter";
+import { ServiceListPresenter } from "../presenters/service-list.presenter";
 
 @ApiTags("Serviços")
 @Controller("services")
@@ -36,7 +38,10 @@ export class ServiceController {
 	) {}
 
 	@Get("/company/:companyId")
-	@ApiOperation({ summary: "Listar serviços por empresa" })
+	@ApiOperation({
+		summary: "Listar serviços por empresa",
+		operationId: "listServicesByCompany",
+	})
 	@ZodResponse({ status: 200, type: ServiceResponseList })
 	async listServicesByCompany(@Param("companyId") companyId: string) {
 		const result = await this.listServicesByCompanyUseCase.execute({
@@ -47,14 +52,15 @@ export class ServiceController {
 			throw new BadRequestException();
 		}
 
-		return {
-			items: result.value.services.map((i) => i.toObject()),
-		};
+		return ServiceListPresenter.present(result.value.services);
 	}
 
 	@Patch("/:id/company/:companyId/deactivate")
 	@HttpCode(204)
-	@ApiOperation({ summary: "Inativar serviço da empresa" })
+	@ApiOperation({
+		summary: "Inativar serviço da empresa",
+		operationId: "deactivateService",
+	})
 	@UserTypeDecorator("company")
 	@StaffRoles("admin", "manager")
 	@UseGuards(CompanyGuard)
@@ -73,7 +79,7 @@ export class ServiceController {
 	}
 
 	@Post()
-	@ApiOperation({ summary: "Criar serviço" })
+	@ApiOperation({ summary: "Criar serviço", operationId: "createService" })
 	@HttpCode(201)
 	@UserTypeDecorator("company")
 	@UseGuards(CompanyGuard)
@@ -96,7 +102,10 @@ export class ServiceController {
 	}
 
 	@Get("/:id")
-	@ApiOperation({ summary: "Buscar serviço por ID" })
+	@ApiOperation({
+		summary: "Buscar serviço por ID",
+		operationId: "getServiceById",
+	})
 	@ZodResponse({ status: 200, type: ServiceDetailsResponse })
 	async getServiceById(@Param("id") id: string) {
 		const result = await this.getServiceByIdUseCase.execute({ id });
@@ -105,12 +114,6 @@ export class ServiceController {
 			throw new NotFoundException(result.value.message);
 		}
 
-		const service = result.value.service.toObject();
-
-		return {
-			...service,
-			company: result.value.service.company.toObject(),
-			categories: result.value.service.categories.map((c) => c.toObject()),
-		};
+		return ServiceDetailsPresenter.present(result.value.service);
 	}
 }

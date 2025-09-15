@@ -44,16 +44,11 @@ export class WeeklyPerformance extends Entity<WeeklyPerformanceProps> {
 	}
 
 	static create(
-		props: Omit<WeeklyPerformanceProps, "generatedAt"> & {
-			generatedAt?: Date;
-		},
+		props: Omit<WeeklyPerformanceProps, "generatedAt"> & { generatedAt?: Date },
 		id?: UniqueEntityID,
 	): WeeklyPerformance {
 		return new WeeklyPerformance(
-			{
-				...props,
-				generatedAt: props.generatedAt ?? new Date(),
-			},
+			{ ...props, generatedAt: props.generatedAt ?? new Date() },
 			id,
 		);
 	}

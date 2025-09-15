@@ -19,6 +19,7 @@ interface Request {
 		startDate?: Date;
 		endDate?: Date;
 		status?: AppointmentStatus[];
+		query?: string;
 	};
 }
 

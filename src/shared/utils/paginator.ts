@@ -1,10 +1,7 @@
 import { PaginationMeta } from "@/shared/utils/pagination";
 import { PaginationQuery } from "@/shared/utils/pagination-query";
 
-type Result<T> = {
-	items: T[];
-	meta: PaginationMeta;
-};
+type Result<T> = { items: T[]; meta: PaginationMeta };
 
 export async function paginate<T>(
 	repoFn: (args: { skip: number; take: number }) => Promise<T[]>,

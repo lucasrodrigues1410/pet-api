@@ -32,6 +32,9 @@ import {
 	UpdateAppointmentStatusDto,
 	UpdateAppointmentStatusResponseDto,
 } from "../dtos/update-appointment-status.dto";
+import { AppointmentByIdPresenter } from "../presenters/appointment-by-id.presenter";
+import { CompanyAppointmentsPresenter } from "../presenters/company-appointments.presenter";
+import { UserAppointmentsPresenter } from "../presenters/user-appointments.presenter";
 
 @ApiTags("Agendamentos")
 @Controller("appointments")
@@ -43,40 +46,11 @@ export class AppointmentController {
 		private readonly updateAppointmentStatusUseCase: UpdateAppointmentStatusUseCase,
 	) {}
 
-	@Get(":id")
-	@ApiOperation({ summary: "Retorna um agendamento pelo ID" })
-	@ZodResponse({ type: AppointmentByIdResponseDto })
-	@UserTypeDecorator("customer", "company")
-	async getAppointmentById(
-		@Param("id") id: string,
-		@User("sub") userId: string,
-		@User("type") userType: UserType,
-		@User("companyId") companyId?: string,
-	) {
-		const response = await this.getAppointmentByIdUseCase.execute({
-			id,
-			userId,
-			userType,
-			companyId,
-		});
-
-		if (response.isLeft()) {
-			throw new NotFoundException(response.value.message);
-		}
-		return {
-			...response.value.toObject(),
-			animal: {
-				...response.value.animal.toObject(),
-				breed: response.value.animal.breed.toObject(),
-			},
-			client: response.value.client.toObject(),
-			service: response.value.service.toObject(),
-			company: response.value.company.toObject(),
-		};
-	}
-
 	@Get("/company/:companyId")
-	@ApiOperation({ summary: "Retorna todos os agendamentos da empresa" })
+	@ApiOperation({
+		summary: "Retorna todos os agendamentos da empresa",
+		operationId: "getAllCompanyAppointments",
+	})
 	@ZodResponse({ status: 200, type: AppointmentsByCompanyResponseDto })
 	@UserTypeDecorator("company")
 	@UseGuards(CompanyGuard)
@@ -93,24 +67,14 @@ export class AppointmentController {
 			throw new NotFoundException(response.value.message);
 		}
 
-		return {
-			meta: response.value.meta,
-			items: response.value.items.map((item) => {
-				return {
-					...item.toObject(),
-					animal: {
-						...item.animal.toObject(),
-						breed: item.animal.breed?.toObject(),
-					},
-					client: item.client.toObject(),
-					service: item.service.toObject(),
-				};
-			}),
-		};
+		return CompanyAppointmentsPresenter.present(response.value);
 	}
 
 	@Get("/user")
-	@ApiOperation({ summary: "Retorna todos os agendamentos do cliente" })
+	@ApiOperation({
+		summary: "Retorna todos os agendamentos do cliente",
+		operationId: "getAllAppointments",
+	})
 	@ZodResponse({ status: 200, type: AppointmentsByClientResponseDto })
 	@UserTypeDecorator("customer")
 	async getAllAppointments(
@@ -126,20 +90,14 @@ export class AppointmentController {
 			throw new NotFoundException();
 		}
 
-		return {
-			meta: response.value.meta,
-			items: response.value.items.map((item) => {
-				return {
-					...item.toObject(),
-					animal: item.animal.toObject(),
-					service: item.service.toObject(),
-				};
-			}),
-		};
+		return UserAppointmentsPresenter.present(response.value);
 	}
 
 	@Patch(":id/status")
-	@ApiOperation({ summary: "Atualiza o status de um agendamento" })
+	@ApiOperation({
+		summary: "Atualiza o status de um agendamento",
+		operationId: "updateAppointmentStatus",
+	})
 	@ZodResponse({ status: 200, type: UpdateAppointmentStatusResponseDto })
 	@UserTypeDecorator("customer", "company")
 	async updateAppointmentStatus(
@@ -171,5 +129,31 @@ export class AppointmentController {
 			status: appointment.status,
 			updatedAt: new Date().toISOString(),
 		};
+	}
+
+	@Get(":id")
+	@ApiOperation({
+		summary: "Retorna um agendamento pelo ID",
+		operationId: "getAppointmentById",
+	})
+	@ZodResponse({ status: 200, type: AppointmentByIdResponseDto })
+	@UserTypeDecorator("customer", "company")
+	async getAppointmentById(
+		@Param("id") id: string,
+		@User("sub") userId: string,
+		@User("type") userType: UserType,
+		@User("companyId") companyId?: string,
+	) {
+		const response = await this.getAppointmentByIdUseCase.execute({
+			id,
+			userId,
+			userType,
+			companyId,
+		});
+
+		if (response.isLeft()) {
+			throw new NotFoundException(response.value.message);
+		}
+		return AppointmentByIdPresenter.present(response.value);
 	}
 }

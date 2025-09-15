@@ -7,6 +7,7 @@ export interface CompanyProps {
 	contact?: string;
 	description?: string;
 	logo?: Asset;
+	logoAssetId?: UniqueEntityID;
 	averageRating?: number;
 	ratingCount?: number;
 	locationId: UniqueEntityID;
@@ -41,18 +42,11 @@ export class Company extends Entity<CompanyProps> {
 		return this.props.locationId;
 	}
 
-	public static create(props: CompanyProps, id?: UniqueEntityID): Company {
-		return new Company(props, id);
+	get logoAssetId() {
+		return this.props.logoAssetId;
 	}
 
-	public toObject() {
-		return {
-			id: this.id.toString(),
-			name: this.name,
-			contact: this.contact,
-			description: this.description,
-			logo: this.logo?.toObject(),
-			locationId: this.locationId.toString(),
-		};
+	public static create(props: CompanyProps, id?: UniqueEntityID): Company {
+		return new Company(props, id);
 	}
 }

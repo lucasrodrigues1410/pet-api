@@ -11,6 +11,8 @@ import {
 	DashboardMetricsResponse,
 	WeeklyPerformanceResponse,
 } from "../dtos/dashboard.response.dto";
+import { DashboardMetricsPresenter } from "../presenters/dashboard-metrics.presenter";
+import { WeeklyPerformancePresenter } from "../presenters/weekly-performance.presenter";
 
 @ApiTags("Dashboard")
 @Controller("dashboard")
@@ -25,10 +27,11 @@ export class DashboardController {
 	@Get("metrics")
 	@ApiOperation({
 		summary: "Obter métricas do dashboard",
+		operationId: "getDashboardMetrics",
 		description:
 			"Retorna as principais métricas do dashboard: agendamentos hoje, faturamento mensal, clientes ativos e avaliação média",
 	})
-	@ZodResponse({ type: DashboardMetricsResponse })
+	@ZodResponse({ status: 200, type: DashboardMetricsResponse })
 	async getDashboardMetrics(
 		@Query() query: DashboardQueryDto,
 		@User("companyId") companyId: string,
@@ -39,34 +42,17 @@ export class DashboardController {
 			endDate: query.endDate ? new Date(query.endDate) : undefined,
 		});
 
-		return {
-			appointmentsToday: {
-				count: metrics.appointmentsToday.count,
-				changePercentage: metrics.appointmentsToday.changePercentage,
-			},
-			monthlyRevenue: {
-				amount: metrics.monthlyRevenue.amount,
-				changePercentage: metrics.monthlyRevenue.changePercentage,
-			},
-			activeClients: {
-				count: metrics.activeClients.count,
-				changePercentage: metrics.activeClients.changePercentage,
-			},
-			averageRating: {
-				rating: metrics.averageRating.rating,
-				changePercentage: metrics.averageRating.changePercentage,
-				baseCount: metrics.averageRating.baseCount,
-			},
-		};
+		return DashboardMetricsPresenter.present(metrics);
 	}
 
 	@Get("performance")
 	@ApiOperation({
 		summary: "Obter performance semanal",
+		operationId: "getWeeklyPerformance",
 		description:
 			"Retorna métricas de performance da semana: agendamentos, taxa de conversão e satisfação",
 	})
-	@ZodResponse({ type: WeeklyPerformanceResponse })
+	@ZodResponse({ status: 200, type: WeeklyPerformanceResponse })
 	async getWeeklyPerformance(
 		@User("companyId") companyId: string,
 		@Query() query: DashboardQueryDto,
@@ -77,20 +63,6 @@ export class DashboardController {
 			endDate: query.endDate ? new Date(query.endDate) : undefined,
 		});
 
-		return {
-			appointments: {
-				completed: performance.appointments.completed,
-				total: performance.appointments.total,
-				percentage: performance.appointments.percentage,
-			},
-			conversionRate: {
-				rate: performance.conversionRate.rate,
-				changePercentage: performance.conversionRate.changePercentage,
-			},
-			satisfaction: {
-				rating: performance.satisfaction.rating,
-				baseCount: performance.satisfaction.baseCount,
-			},
-		};
+		return WeeklyPerformancePresenter.present(performance);
 	}
 }

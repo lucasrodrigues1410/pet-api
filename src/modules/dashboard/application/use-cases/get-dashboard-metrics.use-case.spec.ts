@@ -1,41 +1,53 @@
-import { beforeEach, describe, expect, it } from "bun:test";
+import { beforeEach, describe, expect, it, jest } from "bun:test";
+import { Test } from "@nestjs/testing";
 import { makeDashboardMetricsWithSpecificData } from "test/factories/make-dashboard-metrics";
-import { InMemoryDashboardRepository } from "test/repositories/in-memory-dashboard.repository";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
+import { DashboardRepository } from "@/modules/dashboard/domain/interfaces/dashboard.repository.interface";
 import { DashboardMetricsService } from "../services/dashboard-metrics.service";
 import { GetDashboardMetricsUseCase } from "./get-dashboard-metrics.use-case";
 
-let inMemoryDashboardRepository: InMemoryDashboardRepository;
-let dashboardMetricsService: DashboardMetricsService;
+let moduleRef: any;
 let sut: GetDashboardMetricsUseCase;
+const mockDashboardRepository = {
+	getDashboardMetrics: jest.fn(),
+	getWeeklyPerformance: jest.fn(),
+};
 
 describe("GetDashboardMetricsUseCase", () => {
-	beforeEach(() => {
-		inMemoryDashboardRepository = new InMemoryDashboardRepository();
-		dashboardMetricsService = new DashboardMetricsService(
-			inMemoryDashboardRepository,
-		);
-		sut = new GetDashboardMetricsUseCase(dashboardMetricsService);
+	beforeEach(async () => {
+		mockDashboardRepository.getDashboardMetrics.mockReset();
+		mockDashboardRepository.getWeeklyPerformance.mockReset();
+
+		moduleRef = await Test.createTestingModule({
+			providers: [
+				DashboardMetricsService,
+				GetDashboardMetricsUseCase,
+				{ provide: DashboardRepository, useValue: mockDashboardRepository },
+			],
+		}).compile();
+
+		sut = moduleRef.get(GetDashboardMetricsUseCase);
 	});
 
 	it("should get dashboard metrics for a company using string companyId", async () => {
 		const companyId = new UniqueEntityID();
 
 		// Configure mock data
-		inMemoryDashboardRepository.setMockMetricsData({
-			appointmentsToday: 12,
-			appointmentsYesterday: 10,
-			monthlyRevenue: 4850,
-			previousMonthRevenue: 4200,
-			activeClientsThisMonth: 186,
-			activeClientsPreviousMonth: 165,
-			averageRating: 4.8,
-			baseCount: 42,
-		});
+		mockDashboardRepository.getDashboardMetrics.mockResolvedValueOnce(
+			makeDashboardMetricsWithSpecificData({
+				companyId,
+				appointmentsToday: 12,
+				appointmentsChange: 20,
+				monthlyRevenue: 4850,
+				revenueChange: 15.5,
+				activeClients: 186,
+				clientsChange: 12.7,
+				averageRating: 4.8,
+				baseCount: 42,
+			}),
+		);
 
-		const result = await sut.execute({
-			companyId: companyId.toString(),
-		});
+		const result = await sut.execute({ companyId: companyId.toString() });
 
 		expect(result).toBeDefined();
 		expect(result.companyId.toString()).toBe(companyId.toString());
@@ -52,6 +64,10 @@ describe("GetDashboardMetricsUseCase", () => {
 		const companyId = new UniqueEntityID();
 		const startDate = new Date("2024-01-01");
 		const endDate = new Date("2024-01-31");
+
+		mockDashboardRepository.getDashboardMetrics.mockResolvedValueOnce(
+			makeDashboardMetricsWithSpecificData({ companyId }),
+		);
 
 		const result = await sut.execute({
 			companyId: companyId.toString(),
@@ -79,11 +95,11 @@ describe("GetDashboardMetricsUseCase", () => {
 			baseCount: 60,
 		});
 
-		inMemoryDashboardRepository.addDashboardMetrics(predefinedMetrics);
+		mockDashboardRepository.getDashboardMetrics.mockResolvedValueOnce(
+			predefinedMetrics,
+		);
 
-		const result = await sut.execute({
-			companyId: companyId.toString(),
-		});
+		const result = await sut.execute({ companyId: companyId.toString() });
 
 		expect(result.appointmentsToday.count).toBe(25);
 		expect(result.appointmentsToday.changePercentage).toBe(15.5);
@@ -99,6 +115,10 @@ describe("GetDashboardMetricsUseCase", () => {
 	it("should handle empty or undefined date filters", async () => {
 		const companyId = new UniqueEntityID();
 
+		mockDashboardRepository.getDashboardMetrics.mockResolvedValueOnce(
+			makeDashboardMetricsWithSpecificData({ companyId }),
+		);
+
 		const result = await sut.execute({
 			companyId: companyId.toString(),
 			startDate: undefined,
@@ -112,13 +132,14 @@ describe("GetDashboardMetricsUseCase", () => {
 	it("should convert string companyId to UniqueEntityID correctly", async () => {
 		const companyIdString = "123e4567-e89b-12d3-a456-426614174000";
 
-		inMemoryDashboardRepository.setMockMetricsData({
-			appointmentsToday: 5,
-		});
+		mockDashboardRepository.getDashboardMetrics.mockResolvedValueOnce(
+			makeDashboardMetricsWithSpecificData({
+				companyId: new UniqueEntityID(companyIdString),
+				appointmentsToday: 5,
+			}),
+		);
 
-		const result = await sut.execute({
-			companyId: companyIdString,
-		});
+		const result = await sut.execute({ companyId: companyIdString });
 
 		expect(result.companyId.toString()).toBe(companyIdString);
 		expect(result.appointmentsToday.count).toBe(5);
@@ -127,6 +148,9 @@ describe("GetDashboardMetricsUseCase", () => {
 	it("should handle different combinations of optional parameters", async () => {
 		const companyId = new UniqueEntityID();
 
+		mockDashboardRepository.getDashboardMetrics.mockResolvedValue(
+			makeDashboardMetricsWithSpecificData({ companyId }),
+		);
 		// Test with only startDate
 		const resultWithStartDate = await sut.execute({
 			companyId: companyId.toString(),
@@ -156,9 +180,11 @@ describe("GetDashboardMetricsUseCase", () => {
 	it("should return metrics with proper data types", async () => {
 		const companyId = new UniqueEntityID();
 
-		const result = await sut.execute({
-			companyId: companyId.toString(),
-		});
+		mockDashboardRepository.getDashboardMetrics.mockResolvedValueOnce(
+			makeDashboardMetricsWithSpecificData({ companyId }),
+		);
+
+		const result = await sut.execute({ companyId: companyId.toString() });
 
 		// Verify types
 		expect(typeof result.appointmentsToday.count).toBe("number");

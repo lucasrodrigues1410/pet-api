@@ -35,10 +35,6 @@ export class RatingMetric extends ValueObject<RatingMetricProps> {
 			throw new Error("Base count must be non-negative");
 		}
 
-		return new RatingMetric({
-			rating,
-			changePercentage,
-			baseCount,
-		});
+		return new RatingMetric({ rating, changePercentage, baseCount });
 	}
 }

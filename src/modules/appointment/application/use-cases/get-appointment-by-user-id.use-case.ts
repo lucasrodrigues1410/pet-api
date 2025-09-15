@@ -1,4 +1,6 @@
+import { Injectable } from "@nestjs/common";
 import { Animal } from "@/modules/animal/domain/entities/animal.entity";
+import { Company } from "@/modules/company/domain/entities/company.entity";
 import { Service } from "@/modules/service/domain/entities/service.entity";
 import { Either, right } from "@/shared/either";
 import { PaginationResult } from "@/shared/utils/pagination";
@@ -21,13 +23,11 @@ type GetAppointmentByUserIdUseCaseInput = {
 type GetAppointmentByUserIdUseCaseOutput = Either<
 	null,
 	PaginationResult<
-		Appointment & {
-			animal: Animal;
-			service: Service;
-		}
+		Appointment & { animal: Animal; service: Service; company: Company }
 	>
 >;
 
+@Injectable()
 export class GetAppointmentByUserIdUseCase {
 	constructor(private readonly appointmentRepository: AppointmentRepository) {}
 

@@ -1,9 +1,6 @@
 import { PaginationMeta, paginationMetaDto } from "@/shared/utils/pagination";
 
-type Params<T> = {
-	items: T[];
-	meta: PaginationMeta;
-};
+type Params<T> = { items: T[]; meta: PaginationMeta };
 
 export class PaginationPresenter {
 	static toHTTP<T>(result: Params<T>): Params<T> {

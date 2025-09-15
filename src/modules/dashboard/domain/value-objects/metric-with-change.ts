@@ -23,9 +23,6 @@ export class MetricWithChange extends ValueObject<MetricWithChangeProps> {
 			throw new Error("Count must be non-negative");
 		}
 
-		return new MetricWithChange({
-			count,
-			changePercentage,
-		});
+		return new MetricWithChange({ count, changePercentage });
 	}
 }

@@ -9,6 +9,7 @@ export const sessionDto = z.object({
 	type: z.enum(userType),
 	companyId: z.string().optional(),
 	role: z.string().optional(),
+	avatar: z.string().optional(),
 });
 
 export class SessionResponseDto extends createZodDto(sessionDto) {}

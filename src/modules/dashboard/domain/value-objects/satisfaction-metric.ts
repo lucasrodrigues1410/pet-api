@@ -26,9 +26,6 @@ export class SatisfactionMetric extends ValueObject<SatisfactionMetricProps> {
 			throw new Error("Base count must be non-negative");
 		}
 
-		return new SatisfactionMetric({
-			rating,
-			baseCount,
-		});
+		return new SatisfactionMetric({ rating, baseCount });
 	}
 }

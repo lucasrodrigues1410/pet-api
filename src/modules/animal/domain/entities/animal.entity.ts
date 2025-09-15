@@ -72,27 +72,7 @@ export class Animal extends Entity<AnimalProps> {
 					: "senior"
 			: "puppy";
 
-		return new Animal(
-			{
-				...props,
-				age,
-				size,
-				ageStage,
-			},
-			id,
-		);
-	}
-
-	public update(props: Partial<AnimalProps>) {
-		this.props = {
-			userId: this.userId,
-			breedId: this.breedId,
-			name: props.name ?? this.name,
-			age: props.age ?? this.age,
-			weight: props.weight ?? this.weight,
-			assetId: props.assetId ?? this.assetId,
-		};
-		return this;
+		return new Animal({ ...props, age, size, ageStage }, id);
 	}
 
 	public toObject() {

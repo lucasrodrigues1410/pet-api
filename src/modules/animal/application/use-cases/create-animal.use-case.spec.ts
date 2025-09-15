@@ -1,36 +1,58 @@
-import { beforeEach, describe, expect, it } from "bun:test";
-import { faker } from "@faker-js/faker";
-import { InMemoryAnimalRepository } from "test/repositories/in-memory-animal.repository";
-import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
+import { beforeEach, describe, expect, it, jest } from "bun:test";
+import { Test } from "@nestjs/testing";
+import { subYears } from "date-fns";
+import { makeAnimal } from "test/factories/make-animal";
+import { AnimalRepository } from "../../domain/repositories/animal.repository";
 import { CreateAnimalUseCase } from "./create-animal.use-case";
 
-let inMemoryAnimalRepository: InMemoryAnimalRepository;
-
-let sut: CreateAnimalUseCase;
-
 describe("Create Animal", () => {
-	beforeEach(() => {
-		inMemoryAnimalRepository = new InMemoryAnimalRepository();
+	let moduleRef: any;
+	let sut: CreateAnimalUseCase;
 
-		sut = new CreateAnimalUseCase(inMemoryAnimalRepository);
+	const mockAnimalRepo = {
+		create: jest.fn(),
+		fetchAllAnimalsByUser: jest.fn(),
+	};
+
+	beforeEach(async () => {
+		mockAnimalRepo.create.mockReset();
+		mockAnimalRepo.fetchAllAnimalsByUser.mockReset();
+
+		moduleRef = await Test.createTestingModule({
+			providers: [
+				CreateAnimalUseCase,
+				{ provide: AnimalRepository, useValue: mockAnimalRepo },
+			],
+		}).compile();
+
+		sut = moduleRef.get(CreateAnimalUseCase);
 	});
 
 	it("should create an animal", async () => {
+		const createdAnimal = makeAnimal();
 		const params = {
-			birthdate: faker.date.past(),
-			name: faker.animal.dog(),
-			weight: faker.number.float({ min: 1, max: 100 }),
-			userId: new UniqueEntityID().toString(),
-			breedId: new UniqueEntityID().toString(),
+			birthdate: subYears(new Date(), createdAnimal.age ?? 0),
+			name: createdAnimal.name,
+			weight: createdAnimal.weight ?? 0,
+			userId: createdAnimal.userId.toString(),
+			breedId: createdAnimal.breedId.toString(),
 		};
 
-		await sut.execute(params);
-
-		const animals = await inMemoryAnimalRepository.fetchAllAnimalsByUser({
-			limit: 10,
-			page: 1,
-			userId: params.userId,
+		mockAnimalRepo.create.mockResolvedValueOnce(createdAnimal);
+		mockAnimalRepo.fetchAllAnimalsByUser.mockResolvedValueOnce({
+			items: [createdAnimal],
 		});
-		expect(animals.items).toHaveLength(1);
+
+		await sut.execute(params);
+		const calledWith = mockAnimalRepo.create.mock.calls[0][0];
+		expect(calledWith).toMatchObject(
+			expect.objectContaining({
+				birthdate: params.birthdate,
+				name: params.name,
+				weight: params.weight,
+				userId: params.userId,
+				breedId: params.breedId,
+			}),
+		);
 	});
 });

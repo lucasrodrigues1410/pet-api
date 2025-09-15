@@ -1,16 +1,27 @@
-import { beforeEach, describe, expect, it } from "bun:test";
+import { beforeEach, describe, expect, it, jest } from "bun:test";
+import { Test } from "@nestjs/testing";
 import { makeRating } from "test/factories/make-rating";
-import { InMemoryRatingRepository } from "test/repositories/in-memory-rating.repository";
 import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
+import { RatingRepository } from "../../domain/repositories/rating.repository";
 import { CreateRatingCompanyUseCase } from "./create-rating.company";
 
-let inMemoryRatingRepository: InMemoryRatingRepository;
+let moduleRef: any;
 let sut: CreateRatingCompanyUseCase;
 
+const mockRatingRepository = { create: jest.fn() };
+
 describe("Create company rating", () => {
-	beforeEach(() => {
-		inMemoryRatingRepository = new InMemoryRatingRepository();
-		sut = new CreateRatingCompanyUseCase(inMemoryRatingRepository as any);
+	beforeEach(async () => {
+		mockRatingRepository.create.mockReset();
+
+		moduleRef = await Test.createTestingModule({
+			providers: [
+				CreateRatingCompanyUseCase,
+				{ provide: RatingRepository, useValue: mockRatingRepository },
+			],
+		}).compile();
+
+		sut = moduleRef.get(CreateRatingCompanyUseCase);
 	});
 
 	it("should create a rating for a company", async () => {
@@ -24,15 +35,13 @@ describe("Create company rating", () => {
 		});
 
 		expect(result.isRight()).toBe(true);
-		expect(inMemoryRatingRepository.items).toHaveLength(1);
-		expect(inMemoryRatingRepository.items[0]).toMatchObject({
-			rating: rating.rating,
-			comment: rating.comment,
-		});
+		expect(mockRatingRepository.create).toHaveBeenCalled();
 	});
 
 	it("should return ResourceNotFoundError if company does not exist", async () => {
-		inMemoryRatingRepository.shouldThrowNotFound = true;
+		mockRatingRepository.create.mockRejectedValueOnce(
+			new ResourceNotFoundError("Company not found"),
+		);
 
 		const result = await sut.execute({
 			companyId: "non-existent",

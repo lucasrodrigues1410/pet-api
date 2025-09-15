@@ -1,12 +1,11 @@
 import { Injectable } from "@nestjs/common";
 import {
 	addMinutes,
-	differenceInMinutes,
 	isAfter,
 	isBefore,
-	setHours,
-	setMinutes,
-	startOfDay,
+	isEqual,
+	set,
+	startOfMinute,
 } from "date-fns";
 import { daysOfWeek } from "@/modules/company-availability/domain/entities/company-availability.entity";
 import { CompanyAvailabilityRepository } from "@/modules/company-availability/domain/repositories/company-availability.repository";
@@ -39,10 +38,7 @@ export class AppointmentAvailabilityService {
 		]);
 
 		if (!companyAvailability || !staffMembers.length) {
-			return {
-				isValid: false,
-				staffChoiced: null,
-			};
+			return { isValid: false, staffChoiced: null };
 		}
 
 		const isValid = this.isValid(
@@ -53,10 +49,7 @@ export class AppointmentAvailabilityService {
 		);
 
 		const randomIndex = Math.floor(Math.random() * staffMembers.length);
-		return {
-			isValid,
-			staffChoiced: staffMembers[randomIndex],
-		};
+		return { isValid, staffChoiced: staffMembers[randomIndex] };
 	}
 
 	isValid(
@@ -65,32 +58,28 @@ export class AppointmentAvailabilityService {
 		openingTime: string,
 		closingTime: string,
 	): boolean {
-		const [openingHour, openingMinute] = openingTime.split(":").map(Number);
-		const [closingHour, closingMinute] = closingTime.split(":").map(Number);
-
-		const dayStart = startOfDay(selectedTime);
-		const openingDate = setMinutes(
-			setHours(dayStart, openingHour),
-			openingMinute,
-		);
-		const closingDate = setMinutes(
-			setHours(dayStart, closingHour),
-			closingMinute,
-		);
-
-		if (
-			isBefore(selectedTime, openingDate) ||
-			isAfter(selectedTime, closingDate)
-		) {
-			return false;
+		const matchTime = openingTime.split(":");
+		const matchClosingTime = closingTime.split(":");
+		if (matchTime.length !== 2 || matchClosingTime.length !== 2) {
+			throw new Error("Invalid opening time format");
 		}
 
-		const appointmentEnd = addMinutes(selectedTime, serviceDuration);
-		if (isAfter(appointmentEnd, closingDate)) {
-			return false;
-		}
+		const [openingHour, openingMinute] = matchTime.map(Number);
+		const [closingHour, closingMinute] = matchClosingTime.map(Number);
 
-		const minutesSinceOpening = differenceInMinutes(selectedTime, openingDate);
-		return minutesSinceOpening % serviceDuration === 0;
+		const selectTimeWithDuration = addMinutes(selectedTime, serviceDuration);
+		const openingDate = startOfMinute(
+			set(selectedTime, { hours: openingHour, minutes: openingMinute }),
+		);
+		const closingDate = startOfMinute(
+			set(selectedTime, { hours: closingHour, minutes: closingMinute }),
+		);
+
+		return (
+			(isAfter(selectedTime, openingDate) ||
+				isEqual(selectedTime, openingDate)) &&
+			(isBefore(selectTimeWithDuration, closingDate) ||
+				isEqual(selectTimeWithDuration, closingDate))
+		);
 	}
 }

@@ -7,45 +7,25 @@ import { PaginationQuery } from "@/shared/utils/pagination-query";
 import { Company } from "../../domain/entities/company.entity";
 import { CompanyRepository } from "../../domain/repositories/company.repository";
 
-interface SearchCompaniesUseCaseRequest {
-	query?: string;
-	location?: {
-		latitude: number;
-		longitude: number;
-		radiusInKm?: number;
-	};
-	pagination: PaginationQuery;
-}
+type SearchCompaniesUseCaseRequest = {
+	search?: string;
+	location?: string;
+	categories?: string[];
+} & PaginationQuery;
 
 type SearchCompaniesUseCaseResponse = Either<
 	null,
-	{
-		companies: PaginationResult<
-			Company & {
-				address: Location;
-				image: Asset;
-			}
-		>;
-	}
+	{ companies: PaginationResult<Company & { address: Location; image: Asset }> }
 >;
 
 @Injectable()
 export class SearchCompaniesUseCase {
 	constructor(private companyRepository: CompanyRepository) {}
 
-	async execute({
-		query,
-		location,
-		pagination,
-	}: SearchCompaniesUseCaseRequest): Promise<SearchCompaniesUseCaseResponse> {
-		const companies = await this.companyRepository.searchCompanies({
-			query,
-			location,
-			...pagination,
-		});
-
-		return right({
-			companies,
-		});
+	async execute(
+		query: SearchCompaniesUseCaseRequest,
+	): Promise<SearchCompaniesUseCaseResponse> {
+		const companies = await this.companyRepository.searchCompanies(query);
+		return right({ companies });
 	}
 }

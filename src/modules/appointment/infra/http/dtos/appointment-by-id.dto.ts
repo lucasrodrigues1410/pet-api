@@ -15,42 +15,21 @@ const responseDto = appointmentDto
 		animal: z.object({
 			id: z.string(),
 			name: z.string(),
-			asset: z
-				.object({
-					id: z.string(),
-					url: z.string(),
-				})
-				.optional(),
-			breed: z.object({
-				id: z.string(),
-				name: z.string(),
-			}),
+			asset: z.object({ id: z.string(), url: z.string() }).optional(),
+			breed: z.object({ id: z.string(), name: z.string() }),
 			age: z.number().nullish(),
 		}),
 		client: z.object({
 			id: z.string(),
 			name: z.string(),
 			email: z.string(),
-			avatar: z
-				.object({
-					id: z.string(),
-					url: z.string(),
-				})
-				.optional(),
+			avatar: z.object({ id: z.string(), url: z.string() }).optional(),
 		}),
-		service: z.object({
-			id: z.string(),
-			name: z.string(),
-		}),
+		service: z.object({ id: z.string(), name: z.string() }),
 		company: z.object({
 			id: z.string(),
 			name: z.string(),
-			logo: z
-				.object({
-					id: z.string(),
-					url: z.string(),
-				})
-				.optional(),
+			logo: z.object({ id: z.string(), url: z.string() }).optional(),
 		}),
 	});
 

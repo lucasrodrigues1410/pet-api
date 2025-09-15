@@ -37,9 +37,7 @@ export class CreateServiceUseCase {
 
 		let rules: Rules[] | undefined;
 		if (data.rules) {
-			rules = await this.translateRulesUseCase.execute({
-				rules: data.rules,
-			});
+			rules = await this.translateRulesUseCase.execute({ rules: data.rules });
 		}
 
 		const service = Service.create({

@@ -1,27 +1,38 @@
-import { beforeEach, describe, expect, it } from "bun:test";
+import { beforeEach, describe, expect, it, jest } from "bun:test";
+import { Test } from "@nestjs/testing";
 import { makeCompany } from "test/factories/make-company";
-import { InMemoryCompanyRepository } from "test/repositories/in-memory-company.repository";
-import { InMemoryServiceRepository } from "test/repositories/in-memory-service.repository";
+import { CompanyRepository } from "@/modules/company/domain/repositories/company.repository";
+import { ServiceRepository } from "../../domain/repositories/service.repository";
 import { CreateServiceUseCase } from "./create-service.use-case";
+import { TranslateRulesUseCase } from "./translate-rules.use-case";
 
-let inMemoryServiceRepository: InMemoryServiceRepository;
-let inMemoryCompanyRepository: InMemoryCompanyRepository;
+let mockServiceRepository: { create: ReturnType<typeof jest.fn> };
+let mockCompanyRepository: { findById: ReturnType<typeof jest.fn> };
+let mockTranslateRulesUseCase: { execute: ReturnType<typeof jest.fn> };
 let sut: CreateServiceUseCase;
+let moduleRef: any;
 
 describe("Create Service Use Case", () => {
-	beforeEach(() => {
-		inMemoryServiceRepository = new InMemoryServiceRepository();
-		inMemoryCompanyRepository = new InMemoryCompanyRepository();
-		sut = new CreateServiceUseCase(
-			inMemoryServiceRepository,
-			inMemoryCompanyRepository,
-			{} as any, // Mock do TranslateRulesUseCase
-		);
+	beforeEach(async () => {
+		mockServiceRepository = { create: jest.fn(async () => undefined) };
+		mockCompanyRepository = { findById: jest.fn(async () => null) };
+		mockTranslateRulesUseCase = { execute: jest.fn(async () => []) };
+
+		moduleRef = await Test.createTestingModule({
+			providers: [
+				CreateServiceUseCase,
+				{ provide: ServiceRepository, useValue: mockServiceRepository },
+				{ provide: CompanyRepository, useValue: mockCompanyRepository },
+				{ provide: TranslateRulesUseCase, useValue: mockTranslateRulesUseCase },
+			],
+		}).compile();
+
+		sut = moduleRef.get(CreateServiceUseCase);
 	});
 
 	it("should create a service without categories", async () => {
 		const company = makeCompany();
-		inMemoryCompanyRepository.items = [company];
+		mockCompanyRepository.findById.mockResolvedValueOnce(company);
 
 		const result = await sut.execute({
 			name: "Banho e Tosa",
@@ -32,13 +43,18 @@ describe("Create Service Use Case", () => {
 		});
 
 		expect(result.isRight()).toBe(true);
-		expect(inMemoryServiceRepository.items).toHaveLength(1);
-		expect(inMemoryServiceRepository.items[0].name).toBe("Banho e Tosa");
+		expect(mockCompanyRepository.findById).toHaveBeenCalledWith(
+			company.id.toString(),
+		);
+		expect(mockServiceRepository.create).toHaveBeenCalled();
+		// Categories not provided
+		const [, passedCategories] = mockServiceRepository.create.mock.calls[0];
+		expect(passedCategories).toBeUndefined();
 	});
 
 	it("should create a service with one category", async () => {
 		const company = makeCompany();
-		inMemoryCompanyRepository.items = [company];
+		mockCompanyRepository.findById.mockResolvedValueOnce(company);
 
 		const result = await sut.execute({
 			name: "Consulta Veterinária",
@@ -50,15 +66,14 @@ describe("Create Service Use Case", () => {
 		});
 
 		expect(result.isRight()).toBe(true);
-		expect(inMemoryServiceRepository.items).toHaveLength(1);
-		expect(inMemoryServiceRepository.items[0].name).toBe(
-			"Consulta Veterinária",
-		);
+		expect(mockServiceRepository.create).toHaveBeenCalled();
+		const [, passedCategories] = mockServiceRepository.create.mock.calls[0];
+		expect(passedCategories).toEqual(["category-123"]);
 	});
 
 	it("should create a service with multiple categories", async () => {
 		const company = makeCompany();
-		inMemoryCompanyRepository.items = [company];
+		mockCompanyRepository.findById.mockResolvedValueOnce(company);
 
 		const result = await sut.execute({
 			name: "Pacote Completo",
@@ -70,11 +85,18 @@ describe("Create Service Use Case", () => {
 		});
 
 		expect(result.isRight()).toBe(true);
-		expect(inMemoryServiceRepository.items).toHaveLength(1);
-		expect(inMemoryServiceRepository.items[0].name).toBe("Pacote Completo");
+		expect(mockServiceRepository.create).toHaveBeenCalled();
+		const [, passedCategories] = mockServiceRepository.create.mock.calls[0];
+		expect(passedCategories).toEqual([
+			"category-123",
+			"category-456",
+			"category-789",
+		]);
 	});
 
 	it("should return error when company not found", async () => {
+		mockCompanyRepository.findById.mockResolvedValueOnce(null);
+
 		const result = await sut.execute({
 			name: "Serviço Teste",
 			description: "Descrição do serviço",

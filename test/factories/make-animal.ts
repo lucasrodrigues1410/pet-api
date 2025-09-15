@@ -1,11 +1,7 @@
 import { faker } from "@faker-js/faker";
-import { Injectable } from "@nestjs/common";
-import { PrismaService } from "src/core/infra/prisma/prisma.service";
 import {
 	Animal,
-	AnimalProps,
 } from "src/modules/animal/domain/entities/animal.entity";
-import { PrismaAnimalMapper } from "src/modules/animal/infra/database/mappers/prisma-animal.mapper";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 
 export function makeAnimal(
@@ -25,19 +21,4 @@ export function makeAnimal(
 	);
 
 	return animal;
-}
-
-@Injectable()
-export class AnimalFactory {
-	constructor(private prisma: PrismaService) {}
-
-	async makePrismaAnimal(data: Partial<AnimalProps> = {}): Promise<Animal> {
-		const animal = makeAnimal(data);
-
-		await this.prisma.animal.create({
-			data: PrismaAnimalMapper.toPrisma(animal),
-		});
-
-		return animal;
-	}
 }

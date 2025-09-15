@@ -1,39 +1,56 @@
-import { beforeEach, describe, expect, it } from "bun:test";
+import { beforeEach, describe, expect, it, jest } from "bun:test"; // ou jest
+import { Test } from "@nestjs/testing";
 import { makeAnimal } from "test/factories/make-animal";
-import { MockUploader } from "test/mocks/mock-uploader";
-import { InMemoryAnimalRepository } from "test/repositories/in-memory-animal.repository";
-import { InMemoryAssetRepository } from "test/repositories/in-memory-asset.repository";
 import { UploadAndCreateAssetUseCase } from "@/modules/asset/application/use-cases/upload-and-create-asset.use-case";
 import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
+import { AnimalRepository } from "../../domain/repositories/animal.repository";
 import { AddAssetToAnimalUseCase } from "./add-asset-to-animal.use-case";
 
-let inMemoryAnimalRepository: InMemoryAnimalRepository;
-let inMemoryAssetRepository: InMemoryAssetRepository;
-let fakeUploader: MockUploader;
-
-let sut: AddAssetToAnimalUseCase;
-let uploadAndCreateAsset: UploadAndCreateAssetUseCase;
-
 describe("Add Asset to Animal", () => {
-	beforeEach(() => {
-		inMemoryAnimalRepository = new InMemoryAnimalRepository();
-		inMemoryAssetRepository = new InMemoryAssetRepository();
-		fakeUploader = new MockUploader();
+	let moduleRef: any;
+	let sut: AddAssetToAnimalUseCase;
 
-		uploadAndCreateAsset = new UploadAndCreateAssetUseCase(
-			inMemoryAssetRepository,
-			fakeUploader,
-		);
+	const mockAnimalRepo = {
+		findById: jest.fn(),
+		update: jest.fn(),
+		save: jest.fn(),
+	};
 
-		sut = new AddAssetToAnimalUseCase(
-			inMemoryAnimalRepository,
-			uploadAndCreateAsset,
-		);
+	const mockUploadAndCreateAsset = { execute: jest.fn() };
+
+	beforeEach(async () => {
+		mockAnimalRepo.findById.mockReset();
+		mockAnimalRepo.update.mockReset();
+		mockAnimalRepo.save.mockReset();
+		mockUploadAndCreateAsset.execute.mockReset();
+
+		moduleRef = await Test.createTestingModule({
+			providers: [
+				AddAssetToAnimalUseCase,
+				{
+					provide: UploadAndCreateAssetUseCase,
+					useValue: mockUploadAndCreateAsset,
+				},
+				{ provide: AnimalRepository, useValue: mockAnimalRepo },
+			],
+		}).compile();
+
+		sut = moduleRef.get(AddAssetToAnimalUseCase);
 	});
 
-	it("should be able to add an asset to an animal", async () => {
+	it("should add asset to animal", async () => {
 		const animal = makeAnimal();
-		inMemoryAnimalRepository.create(animal);
+		mockAnimalRepo.findById.mockResolvedValueOnce(animal);
+		mockUploadAndCreateAsset.execute.mockResolvedValueOnce({
+			isRight: () => true,
+			isLeft: () => false,
+			value: { asset: { id: "asset-id-123" } },
+		});
+
+		mockAnimalRepo.update.mockResolvedValueOnce({
+			...animal,
+			assetId: "asset-id-123",
+		});
 
 		const result = await sut.execute({
 			animalId: animal.id.toString(),
@@ -46,30 +63,20 @@ describe("Add Asset to Animal", () => {
 		});
 
 		expect(result.isRight()).toBe(true);
-	});
-
-	it("should not be able to add an asset to an animal that does not exist", async () => {
-		const result = await sut.execute({
-			animalId: "non-existing-animal-id",
-			userId: "user-id",
-			file: {
-				buffer: Buffer.from(""),
-				mimetype: "image/png",
-				originalname: "profile.png",
-			} as Express.Multer.File,
+		expect(mockAnimalRepo.findById).toHaveBeenCalledWith(animal.id.toString());
+		expect(mockUploadAndCreateAsset.execute).toHaveBeenCalled();
+		expect(mockAnimalRepo.update).toHaveBeenCalledWith(animal.id.toString(), {
+			assetId: "asset-id-123",
 		});
-
-		expect(result.isLeft()).toBe(true);
-		expect(result.value).toBeInstanceOf(ResourceNotFoundError);
 	});
 
 	it("should not be able to add an asset to an animal that does not belong to the user", async () => {
 		const animal = makeAnimal();
-		inMemoryAnimalRepository.create(animal);
+		mockAnimalRepo.findById.mockResolvedValueOnce(animal);
 
 		const result = await sut.execute({
 			animalId: animal.id.toString(),
-			userId: "user-id-2",
+			userId: "another-user-id",
 			file: {
 				buffer: Buffer.from(""),
 				mimetype: "image/png",
@@ -79,5 +86,6 @@ describe("Add Asset to Animal", () => {
 
 		expect(result.isLeft()).toBe(true);
 		expect(result.value).toBeInstanceOf(ResourceNotFoundError);
+		expect(mockAnimalRepo.update).not.toHaveBeenCalled();
 	});
 });

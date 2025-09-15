@@ -21,6 +21,7 @@ import {
 	CompanyRatingStatsResponse,
 	RatingListResponse,
 } from "../dtos/rating.response.dto";
+import { RatingListPresenter } from "../presenters/rating-list.presenter";
 
 @ApiTags("Avaliações")
 @Controller("ratings")
@@ -33,21 +34,24 @@ export class RatingController {
 
 	@Post()
 	@UserTypeDecorator("customer")
-	@ApiOperation({ summary: "Cria uma avaliação para uma empresa" })
+	@ApiOperation({
+		summary: "Cria uma avaliação para uma empresa",
+		operationId: "createRating",
+	})
 	@ApiResponse({ status: 201, description: "Avaliação criada com sucesso" })
 	async create(
 		@User("sub") userId: string,
 		@Body() body: CreateRatingRequestDto,
 	) {
-		return this.createRatingCompanyUseCase.execute({
-			...body,
-			userId,
-		});
+		return this.createRatingCompanyUseCase.execute({ ...body, userId });
 	}
 
 	@Get("company/:companyId")
 	@Public()
-	@ApiOperation({ summary: "Listar avaliações de uma empresa" })
+	@ApiOperation({
+		summary: "Listar avaliações de uma empresa",
+		operationId: "listCompanyRatings",
+	})
 	@ZodResponse({ status: 200, type: RatingListResponse })
 	async listByCompany(
 		@Param("companyId") companyId: string,
@@ -61,21 +65,15 @@ export class RatingController {
 		if (result.isLeft()) {
 			throw new NotFoundException("Empresa não encontrada");
 		}
-		return {
-			meta: result.value.meta,
-			items: result.value.items.map((item) => ({
-				...item.toObject(),
-				user: {
-					id: item.user.id.toString(),
-					name: item.user.name,
-				},
-			})),
-		};
+		return RatingListPresenter.present(result.value);
 	}
 
 	@Get("company/:companyId/stats")
 	@Public()
-	@ApiOperation({ summary: "Obter estatísticas das avaliações de uma empresa" })
+	@ApiOperation({
+		summary: "Obter estatísticas das avaliações de uma empresa",
+		operationId: "getCompanyRatingStats",
+	})
 	@ZodResponse({ status: 200, type: CompanyRatingStatsResponse })
 	async getCompanyStats(
 		@Param("companyId") companyId: string,

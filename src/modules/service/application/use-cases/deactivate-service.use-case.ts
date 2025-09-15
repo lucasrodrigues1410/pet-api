@@ -27,9 +27,7 @@ export class DeactivateServiceUseCase {
 			return left(new ResourceNotFoundError());
 		}
 
-		await this.serviceRepository.update(id, {
-			isActive: false,
-		});
+		await this.serviceRepository.update(id, { isActive: false });
 
 		return right(null);
 	}

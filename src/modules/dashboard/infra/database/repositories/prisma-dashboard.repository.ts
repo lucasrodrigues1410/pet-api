@@ -180,10 +180,7 @@ export class PrismaDashboardRepository implements DashboardRepository {
 		return this.prisma.appointment.count({
 			where: {
 				companyId,
-				startDate: {
-					gte: startDate,
-					lte: endDate,
-				},
+				startDate: { gte: startDate, lte: endDate },
 				deletedAt: null,
 			},
 		});
@@ -197,16 +194,11 @@ export class PrismaDashboardRepository implements DashboardRepository {
 		const result = await this.prisma.appointment.aggregate({
 			where: {
 				companyId,
-				startDate: {
-					gte: startDate,
-					lte: endDate,
-				},
+				startDate: { gte: startDate, lte: endDate },
 				status: "completed",
 				deletedAt: null,
 			},
-			_sum: {
-				price: true,
-			},
+			_sum: { price: true },
 		});
 
 		return Number(result._sum.price) || 0;
@@ -220,15 +212,10 @@ export class PrismaDashboardRepository implements DashboardRepository {
 		const result = await this.prisma.appointment.findMany({
 			where: {
 				companyId,
-				startDate: {
-					gte: startDate,
-					lte: endDate,
-				},
+				startDate: { gte: startDate, lte: endDate },
 				deletedAt: null,
 			},
-			select: {
-				clientId: true,
-			},
+			select: { clientId: true },
 			distinct: ["clientId"],
 		});
 
@@ -244,10 +231,7 @@ export class PrismaDashboardRepository implements DashboardRepository {
 		return this.prisma.appointment.count({
 			where: {
 				companyId,
-				startDate: {
-					gte: startDate,
-					lte: endDate,
-				},
+				startDate: { gte: startDate, lte: endDate },
 				...(status && { status }),
 				deletedAt: null,
 			},
@@ -263,44 +247,24 @@ export class PrismaDashboardRepository implements DashboardRepository {
 		// Busca os dados reais da empresa
 		const company = await this.prisma.company.findUnique({
 			where: { id: companyId },
-			select: {
-				averageRating: true,
-				ratingCount: true,
-			},
+			select: { averageRating: true, ratingCount: true },
 		});
 		if (!company) {
-			return {
-				rating: 0,
-				changePercentage: 0,
-				baseCount: 0,
-			};
+			return { rating: 0, changePercentage: 0, baseCount: 0 };
 		}
 
 		// Busca ratings dos últimos 30 dias para calcular a mudança
 		const [ratingsLast30Days, ratingsPrevious30Days] = await Promise.all([
 			this.prisma.rating.findMany({
-				where: {
-					companyId,
-					createdAt: {
-						gte: last30Days,
-						lte: new Date(),
-					},
-				},
-				select: {
-					rating: true,
-				},
+				where: { companyId, createdAt: { gte: last30Days, lte: new Date() } },
+				select: { rating: true },
 			}),
 			this.prisma.rating.findMany({
 				where: {
 					companyId,
-					createdAt: {
-						gte: previous30Days,
-						lt: last30Days,
-					},
+					createdAt: { gte: previous30Days, lt: last30Days },
 				},
-				select: {
-					rating: true,
-				},
+				select: { rating: true },
 			}),
 		]);
 
@@ -335,26 +299,15 @@ export class PrismaDashboardRepository implements DashboardRepository {
 	): Promise<{ rating: number; baseCount: number }> {
 		// Busca ratings no período especificado
 		const ratings = await this.prisma.rating.findMany({
-			where: {
-				companyId,
-				createdAt: {
-					gte: startDate,
-					lte: endDate,
-				},
-			},
-			select: {
-				rating: true,
-			},
+			where: { companyId, createdAt: { gte: startDate, lte: endDate } },
+			select: { rating: true },
 		});
 
 		// Se não há ratings no período, usa a média geral da empresa
 		if (ratings.length === 0) {
 			const company = await this.prisma.company.findUnique({
 				where: { id: companyId },
-				select: {
-					averageRating: true,
-					ratingCount: true,
-				},
+				select: { averageRating: true, ratingCount: true },
 			});
 
 			return {

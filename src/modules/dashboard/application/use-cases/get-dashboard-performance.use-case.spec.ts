@@ -1,39 +1,51 @@
-import { beforeEach, describe, expect, it } from "bun:test";
+import { beforeEach, describe, expect, it, jest } from "bun:test";
+import { Test } from "@nestjs/testing";
 import { makeWeeklyPerformanceWithSpecificData } from "test/factories/make-weekly-performance";
-import { InMemoryDashboardRepository } from "test/repositories/in-memory-dashboard.repository";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
+import { DashboardRepository } from "@/modules/dashboard/domain/interfaces/dashboard.repository.interface";
 import { DashboardMetricsService } from "../services/dashboard-metrics.service";
 import { GetDashboardPerformanceUseCase } from "./get-dashboard-performance.use-case";
 
-let inMemoryDashboardRepository: InMemoryDashboardRepository;
-let dashboardMetricsService: DashboardMetricsService;
+let moduleRef: any;
 let sut: GetDashboardPerformanceUseCase;
+const mockDashboardRepository = {
+	getDashboardMetrics: jest.fn(),
+	getWeeklyPerformance: jest.fn(),
+};
 
 describe("GetDashboardPerformanceUseCase", () => {
-	beforeEach(() => {
-		inMemoryDashboardRepository = new InMemoryDashboardRepository();
-		dashboardMetricsService = new DashboardMetricsService(
-			inMemoryDashboardRepository,
-		);
-		sut = new GetDashboardPerformanceUseCase(dashboardMetricsService);
+	beforeEach(async () => {
+		mockDashboardRepository.getDashboardMetrics.mockReset();
+		mockDashboardRepository.getWeeklyPerformance.mockReset();
+
+		moduleRef = await Test.createTestingModule({
+			providers: [
+				DashboardMetricsService,
+				GetDashboardPerformanceUseCase,
+				{ provide: DashboardRepository, useValue: mockDashboardRepository },
+			],
+		}).compile();
+
+		sut = moduleRef.get(GetDashboardPerformanceUseCase);
 	});
 
 	it("should get weekly performance for a company using string companyId", async () => {
 		const companyId = new UniqueEntityID();
 
 		// Configure mock data
-		inMemoryDashboardRepository.setMockPerformanceData({
-			completedAppointments: 78,
-			totalAppointments: 85,
-			conversionRate: 85,
-			previousConversionRate: 80,
-			satisfactionRating: 4.8,
-			satisfactionBaseCount: 42,
-		});
+		mockDashboardRepository.getWeeklyPerformance.mockResolvedValueOnce(
+			makeWeeklyPerformanceWithSpecificData({
+				companyId,
+				completed: 78,
+				total: 85,
+				conversionRate: 85,
+				conversionChange: 6.3,
+				satisfactionRating: 4.8,
+				baseCount: 42,
+			}),
+		);
 
-		const result = await sut.execute({
-			companyId: companyId.toString(),
-		});
+		const result = await sut.execute({ companyId: companyId.toString() });
 
 		expect(result).toBeDefined();
 		expect(result.companyId.toString()).toBe(companyId.toString());
@@ -50,6 +62,10 @@ describe("GetDashboardPerformanceUseCase", () => {
 		const companyId = new UniqueEntityID();
 		const startDate = new Date("2024-01-01");
 		const endDate = new Date("2024-01-07");
+
+		mockDashboardRepository.getWeeklyPerformance.mockResolvedValueOnce(
+			makeWeeklyPerformanceWithSpecificData({ companyId }),
+		);
 
 		const result = await sut.execute({
 			companyId: companyId.toString(),
@@ -81,11 +97,11 @@ describe("GetDashboardPerformanceUseCase", () => {
 			weekEnd,
 		});
 
-		inMemoryDashboardRepository.addWeeklyPerformance(predefinedPerformance);
+		mockDashboardRepository.getWeeklyPerformance.mockResolvedValueOnce(
+			predefinedPerformance,
+		);
 
-		const result = await sut.execute({
-			companyId: companyId.toString(),
-		});
+		const result = await sut.execute({ companyId: companyId.toString() });
 
 		expect(result.appointments.completed).toBe(95);
 		expect(result.appointments.total).toBe(100);
@@ -101,6 +117,10 @@ describe("GetDashboardPerformanceUseCase", () => {
 	it("should handle empty or undefined date filters", async () => {
 		const companyId = new UniqueEntityID();
 
+		mockDashboardRepository.getWeeklyPerformance.mockResolvedValueOnce(
+			makeWeeklyPerformanceWithSpecificData({ companyId }),
+		);
+
 		const result = await sut.execute({
 			companyId: companyId.toString(),
 			startDate: undefined,
@@ -114,14 +134,15 @@ describe("GetDashboardPerformanceUseCase", () => {
 	it("should convert string companyId to UniqueEntityID correctly", async () => {
 		const companyIdString = "123e4567-e89b-12d3-a456-426614174000";
 
-		inMemoryDashboardRepository.setMockPerformanceData({
-			completedAppointments: 50,
-			totalAppointments: 60,
-		});
+		mockDashboardRepository.getWeeklyPerformance.mockResolvedValueOnce(
+			makeWeeklyPerformanceWithSpecificData({
+				companyId: new UniqueEntityID(companyIdString),
+				completed: 50,
+				total: 60,
+			}),
+		);
 
-		const result = await sut.execute({
-			companyId: companyIdString,
-		});
+		const result = await sut.execute({ companyId: companyIdString });
 
 		expect(result.companyId.toString()).toBe(companyIdString);
 		expect(result.appointments.completed).toBe(50);
@@ -131,15 +152,16 @@ describe("GetDashboardPerformanceUseCase", () => {
 	it("should handle perfect appointment completion rate", async () => {
 		const companyId = new UniqueEntityID();
 
-		inMemoryDashboardRepository.setMockPerformanceData({
-			completedAppointments: 100,
-			totalAppointments: 100,
-			conversionRate: 100,
-		});
+		mockDashboardRepository.getWeeklyPerformance.mockResolvedValueOnce(
+			makeWeeklyPerformanceWithSpecificData({
+				companyId,
+				completed: 100,
+				total: 100,
+				conversionRate: 100,
+			}),
+		);
 
-		const result = await sut.execute({
-			companyId: companyId.toString(),
-		});
+		const result = await sut.execute({ companyId: companyId.toString() });
 
 		expect(result.appointments.completed).toBe(100);
 		expect(result.appointments.total).toBe(100);
@@ -150,15 +172,16 @@ describe("GetDashboardPerformanceUseCase", () => {
 	it("should handle zero appointments case", async () => {
 		const companyId = new UniqueEntityID();
 
-		inMemoryDashboardRepository.setMockPerformanceData({
-			completedAppointments: 0,
-			totalAppointments: 0,
-			conversionRate: 0,
-		});
+		mockDashboardRepository.getWeeklyPerformance.mockResolvedValueOnce(
+			makeWeeklyPerformanceWithSpecificData({
+				companyId,
+				completed: 0,
+				total: 0,
+				conversionRate: 0,
+			}),
+		);
 
-		const result = await sut.execute({
-			companyId: companyId.toString(),
-		});
+		const result = await sut.execute({ companyId: companyId.toString() });
 
 		expect(result.appointments.completed).toBe(0);
 		expect(result.appointments.total).toBe(0);
@@ -169,6 +192,13 @@ describe("GetDashboardPerformanceUseCase", () => {
 	it("should handle different combinations of optional parameters", async () => {
 		const companyId = new UniqueEntityID();
 
+		mockDashboardRepository.getWeeklyPerformance.mockResolvedValueOnce(
+			makeWeeklyPerformanceWithSpecificData({
+				companyId,
+				completed: 10,
+				total: 20,
+			}),
+		);
 		// Test with only startDate
 		const resultWithStartDate = await sut.execute({
 			companyId: companyId.toString(),
@@ -177,6 +207,13 @@ describe("GetDashboardPerformanceUseCase", () => {
 
 		expect(resultWithStartDate).toBeDefined();
 
+		mockDashboardRepository.getWeeklyPerformance.mockResolvedValueOnce(
+			makeWeeklyPerformanceWithSpecificData({
+				companyId,
+				completed: 11,
+				total: 22,
+			}),
+		);
 		// Test with only endDate
 		const resultWithEndDate = await sut.execute({
 			companyId: companyId.toString(),
@@ -185,6 +222,13 @@ describe("GetDashboardPerformanceUseCase", () => {
 
 		expect(resultWithEndDate).toBeDefined();
 
+		mockDashboardRepository.getWeeklyPerformance.mockResolvedValueOnce(
+			makeWeeklyPerformanceWithSpecificData({
+				companyId,
+				completed: 12,
+				total: 24,
+			}),
+		);
 		// Test with both dates
 		const resultWithBothDates = await sut.execute({
 			companyId: companyId.toString(),
@@ -198,9 +242,15 @@ describe("GetDashboardPerformanceUseCase", () => {
 	it("should return performance data with proper data types", async () => {
 		const companyId = new UniqueEntityID();
 
-		const result = await sut.execute({
-			companyId: companyId.toString(),
-		});
+		mockDashboardRepository.getWeeklyPerformance.mockResolvedValueOnce(
+			makeWeeklyPerformanceWithSpecificData({
+				companyId,
+				completed: 5,
+				total: 10,
+			}),
+		);
+
+		const result = await sut.execute({ companyId: companyId.toString() });
 
 		// Verify appointment performance types
 		expect(typeof result.appointments.completed).toBe("number");
@@ -224,9 +274,15 @@ describe("GetDashboardPerformanceUseCase", () => {
 	it("should ensure week end is after week start", async () => {
 		const companyId = new UniqueEntityID();
 
-		const result = await sut.execute({
-			companyId: companyId.toString(),
-		});
+		mockDashboardRepository.getWeeklyPerformance.mockResolvedValueOnce(
+			makeWeeklyPerformanceWithSpecificData({
+				companyId,
+				completed: 7,
+				total: 14,
+			}),
+		);
+
+		const result = await sut.execute({ companyId: companyId.toString() });
 
 		expect(result.weekEnd.getTime()).toBeGreaterThanOrEqual(
 			result.weekStart.getTime(),

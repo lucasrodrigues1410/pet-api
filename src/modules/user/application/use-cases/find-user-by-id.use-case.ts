@@ -10,9 +10,7 @@ interface FindUserByIdUseCaseRequest {
 
 type FindUserByIdUseCaseResponse = Either<
 	ResourceNotFoundError,
-	{
-		user: User;
-	}
+	{ user: User }
 >;
 
 @Injectable()
@@ -27,8 +25,6 @@ export class FindUserByIdUseCase {
 			return left(new ResourceNotFoundError());
 		}
 
-		return right({
-			user,
-		});
+		return right({ user });
 	}
 }

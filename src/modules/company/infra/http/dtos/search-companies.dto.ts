@@ -3,23 +3,21 @@ import { z } from "zod";
 import { assetDto } from "@/modules/asset/infra/http/dtos/asset.dto";
 import { locationDto } from "@/modules/location/infra/http/dtos/location.dto";
 import { makePaginatedDto } from "@/shared/utils/pagination";
+import { paginationQuerySchema } from "@/shared/utils/pagination-query";
 import { companyDto } from "./company.dto";
 
-const request = z.object({
-	query: z.string().optional(),
-	location: z
-		.object({
-			latitude: z.number().min(-90).max(90),
-			longitude: z.number().min(-180).max(180),
-			radiusInKm: z.number().min(0.1).max(100).default(10),
-		})
-		.optional(),
+const request = paginationQuerySchema.extend({
+	search: z.string().optional(),
+	categories: z.array(z.string()).optional(),
+	location: z.string().optional(),
 });
 
-const response = companyDto.omit({ logo: true }).extend({
-	address: locationDto,
-	image: assetDto.pick({ id: true, url: true }).optional(),
-});
+const response = companyDto
+	.omit({ logo: true })
+	.extend({
+		address: locationDto,
+		image: assetDto.pick({ id: true, url: true }).optional(),
+	});
 
 export class SearchCompaniesRequestDto extends createZodDto(request) {}
 export class SearchCompaniesResponseDto extends createZodDto(

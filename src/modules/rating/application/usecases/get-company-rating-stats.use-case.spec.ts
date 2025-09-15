@@ -1,16 +1,27 @@
-import { beforeEach, describe, expect, it } from "bun:test";
+import { beforeEach, describe, expect, it, jest } from "bun:test";
+import { Test } from "@nestjs/testing";
 import { makeRating } from "test/factories/make-rating";
-import { InMemoryRatingRepository } from "test/repositories/in-memory-rating.repository";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
+import { RatingRepository } from "../../domain/repositories/rating.repository";
 import { GetCompanyRatingStatsUseCase } from "./get-company-rating-stats.use-case";
 
-let inMemoryRatingRepository: InMemoryRatingRepository;
+let moduleRef: any;
 let sut: GetCompanyRatingStatsUseCase;
 
+const mockRatingRepository = { getCompanyRatingStats: jest.fn() };
+
 describe("Get Company Rating Stats", () => {
-	beforeEach(() => {
-		inMemoryRatingRepository = new InMemoryRatingRepository();
-		sut = new GetCompanyRatingStatsUseCase(inMemoryRatingRepository);
+	beforeEach(async () => {
+		mockRatingRepository.getCompanyRatingStats.mockReset();
+
+		moduleRef = await Test.createTestingModule({
+			providers: [
+				GetCompanyRatingStatsUseCase,
+				{ provide: RatingRepository, useValue: mockRatingRepository },
+			],
+		}).compile();
+
+		sut = moduleRef.get(GetCompanyRatingStatsUseCase);
 	});
 
 	it("should get company rating statistics", async () => {
@@ -26,13 +37,26 @@ describe("Get Company Rating Stats", () => {
 			makeRating({ companyId, rating: 3 }), // 3 estrelas
 		];
 
-		for (const rating of ratings) {
-			inMemoryRatingRepository.items.push(rating);
-		}
+		// compute expected stats from ratings
+		const fiveStars = ratings.filter((r) => r.rating === 5).length;
+		const fourStars = ratings.filter((r) => r.rating === 4).length;
+		const threeStars = ratings.filter((r) => r.rating === 3).length;
+		const total = ratings.length;
+		const avg = (5 * fiveStars + 4 * fourStars + 3 * threeStars) / total;
 
-		const result = await sut.execute({
-			companyId: companyId.toString(),
+		mockRatingRepository.getCompanyRatingStats.mockResolvedValueOnce({
+			totalRatings: total,
+			averageRating: avg,
+			distribution: [
+				{ rating: 5, count: fiveStars },
+				{ rating: 4, count: fourStars },
+				{ rating: 3, count: threeStars },
+				{ rating: 2, count: 0 },
+				{ rating: 1, count: 0 },
+			],
 		});
+
+		const result = await sut.execute({ companyId: companyId.toString() });
 
 		expect(result.isRight()).toBe(true);
 
@@ -55,9 +79,19 @@ describe("Get Company Rating Stats", () => {
 	it("should return zero stats for company with no ratings", async () => {
 		const companyId = new UniqueEntityID();
 
-		const result = await sut.execute({
-			companyId: companyId.toString(),
+		mockRatingRepository.getCompanyRatingStats.mockResolvedValueOnce({
+			totalRatings: 0,
+			averageRating: 0,
+			distribution: [
+				{ rating: 5, count: 0 },
+				{ rating: 4, count: 0 },
+				{ rating: 3, count: 0 },
+				{ rating: 2, count: 0 },
+				{ rating: 1, count: 0 },
+			],
 		});
+
+		const result = await sut.execute({ companyId: companyId.toString() });
 
 		expect(result.isRight()).toBe(true);
 
@@ -79,18 +113,21 @@ describe("Get Company Rating Stats", () => {
 	it("should calculate correct stats for all 5-star ratings", async () => {
 		const companyId = new UniqueEntityID();
 
-		// Todas as avaliações são 5 estrelas
-		const ratings = Array.from({ length: 10 }, () =>
-			makeRating({ companyId, rating: 5 }),
-		);
+		// Todas as avaliações são 5 estrelas (mocked via repository)
 
-		for (const rating of ratings) {
-			inMemoryRatingRepository.items.push(rating);
-		}
-
-		const result = await sut.execute({
-			companyId: companyId.toString(),
+		mockRatingRepository.getCompanyRatingStats.mockResolvedValueOnce({
+			totalRatings: 10,
+			averageRating: 5,
+			distribution: [
+				{ rating: 5, count: 10 },
+				{ rating: 4, count: 0 },
+				{ rating: 3, count: 0 },
+				{ rating: 2, count: 0 },
+				{ rating: 1, count: 0 },
+			],
 		});
+
+		const result = await sut.execute({ companyId: companyId.toString() });
 
 		expect(result.isRight()).toBe(true);
 
@@ -112,23 +149,21 @@ describe("Get Company Rating Stats", () => {
 	it("should calculate correct stats for mixed ratings", async () => {
 		const companyId = new UniqueEntityID();
 
-		// Mix de avaliações como no exemplo da imagem
-		const ratings = [
-			makeRating({ companyId, rating: 5 }),
-			makeRating({ companyId, rating: 5 }),
-			makeRating({ companyId, rating: 5 }),
-			makeRating({ companyId, rating: 4 }),
-			makeRating({ companyId, rating: 4 }),
-			makeRating({ companyId, rating: 3 }),
-		];
+		// Mix de avaliações como no exemplo
 
-		for (const rating of ratings) {
-			inMemoryRatingRepository.items.push(rating);
-		}
-
-		const result = await sut.execute({
-			companyId: companyId.toString(),
+		mockRatingRepository.getCompanyRatingStats.mockResolvedValueOnce({
+			totalRatings: 6,
+			averageRating: 4.333333333333333,
+			distribution: [
+				{ rating: 5, count: 3 },
+				{ rating: 4, count: 2 },
+				{ rating: 3, count: 1 },
+				{ rating: 2, count: 0 },
+				{ rating: 1, count: 0 },
+			],
 		});
+
+		const result = await sut.execute({ companyId: companyId.toString() });
 
 		expect(result.isRight()).toBe(true);
 
@@ -149,28 +184,23 @@ describe("Get Company Rating Stats", () => {
 
 	it("should only count ratings for the specified company", async () => {
 		const companyId = new UniqueEntityID();
-		const otherCompanyId = new UniqueEntityID();
+		// context variable removed as repository is mocked
 
-		// Ratings para a empresa alvo
-		const targetCompanyRatings = [
-			makeRating({ companyId, rating: 5 }),
-			makeRating({ companyId, rating: 4 }),
-		];
+		// Ratings para a empresa alvo / outra empresa (não usados diretamente aqui)
 
-		// Ratings para outra empresa (não devem ser contados)
-		const otherCompanyRatings = [
-			makeRating({ companyId: otherCompanyId, rating: 1 }),
-			makeRating({ companyId: otherCompanyId, rating: 2 }),
-			makeRating({ companyId: otherCompanyId, rating: 3 }),
-		];
-
-		for (const rating of [...targetCompanyRatings, ...otherCompanyRatings]) {
-			inMemoryRatingRepository.items.push(rating);
-		}
-
-		const result = await sut.execute({
-			companyId: companyId.toString(),
+		mockRatingRepository.getCompanyRatingStats.mockResolvedValueOnce({
+			totalRatings: 2,
+			averageRating: 4.5,
+			distribution: [
+				{ rating: 5, count: 1 },
+				{ rating: 4, count: 1 },
+				{ rating: 3, count: 0 },
+				{ rating: 2, count: 0 },
+				{ rating: 1, count: 0 },
+			],
 		});
+
+		const result = await sut.execute({ companyId: companyId.toString() });
 
 		expect(result.isRight()).toBe(true);
 
@@ -192,12 +222,20 @@ describe("Get Company Rating Stats", () => {
 	it("should handle single rating correctly", async () => {
 		const companyId = new UniqueEntityID();
 
-		const rating = makeRating({ companyId, rating: 3 });
-		inMemoryRatingRepository.items.push(rating);
-
-		const result = await sut.execute({
-			companyId: companyId.toString(),
+		// Single rating case
+		mockRatingRepository.getCompanyRatingStats.mockResolvedValueOnce({
+			totalRatings: 1,
+			averageRating: 3,
+			distribution: [
+				{ rating: 5, count: 0 },
+				{ rating: 4, count: 0 },
+				{ rating: 3, count: 1 },
+				{ rating: 2, count: 0 },
+				{ rating: 1, count: 0 },
+			],
 		});
+
+		const result = await sut.execute({ companyId: companyId.toString() });
 
 		expect(result.isRight()).toBe(true);
 

@@ -35,10 +35,7 @@ export class Rating extends Entity<RatingProps> {
 		id?: UniqueEntityID,
 	): Rating {
 		return new Rating(
-			{
-				...props,
-				createdAt: props.createdAt ?? new Date(),
-			},
+			{ ...props, createdAt: props.createdAt ?? new Date() },
 			id,
 		);
 	}

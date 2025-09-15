@@ -5,19 +5,23 @@ import { makePaginatedDto } from "@/shared/utils/pagination";
 import { paginationQuerySchema } from "@/shared/utils/pagination-query";
 import { appointmentDto } from "./appointment.dto";
 
-const queryDto = paginationQuerySchema.extend({
+export const queryDto = paginationQuerySchema.extend({
 	startDate: z.iso
-		.date()
+		.datetime()
 		.optional()
 		.transform((date) => (date ? new Date(date) : undefined)),
 	endDate: z.iso
-		.date()
+		.datetime()
 		.optional()
 		.transform((date) => (date ? new Date(date) : undefined)),
-	status: z.array(z.enum(appointmentStatus)).optional(),
+	query: z.string().optional(),
+	status: z.preprocess((val) => {
+		if (typeof val === "string") return val.split(",");
+		return undefined;
+	}, z.array(z.enum(appointmentStatus)).optional()),
 });
 
-const responseDto = appointmentDto
+export const responseDto = appointmentDto
 	.pick({
 		id: true,
 		startDate: true,
@@ -30,27 +34,16 @@ const responseDto = appointmentDto
 		animal: z.object({
 			id: z.string(),
 			name: z.string(),
-			breed: z.object({
-				id: z.string(),
-				name: z.string(),
-			}),
+			breed: z.object({ id: z.string(), name: z.string() }),
 			age: z.number().nullish(),
 			weight: z.number().nullish(),
 		}),
 		client: z.object({
 			id: z.string(),
 			name: z.string(),
-			avatar: z
-				.object({
-					id: z.string(),
-					url: z.string(),
-				})
-				.optional(),
+			avatar: z.object({ id: z.string(), url: z.string() }).optional(),
 		}),
-		service: z.object({
-			id: z.string(),
-			name: z.string(),
-		}),
+		service: z.object({ id: z.string(), name: z.string() }),
 	});
 
 export class AppointmentsByCompanyQueryDto extends createZodDto(queryDto) {}

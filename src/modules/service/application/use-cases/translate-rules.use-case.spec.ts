@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, it, jest } from "bun:test";
 import { Test, TestingModule } from "@nestjs/testing";
 import { Rules } from "../../domain/entities/value-objects/rules.value-object";
 import { RulesTranslatorRepository } from "../../domain/repositories/rules-translator.repository";
@@ -5,25 +6,22 @@ import { TranslateRulesUseCase } from "./translate-rules.use-case";
 
 describe("TranslateRulesUseCase", () => {
 	let useCase: TranslateRulesUseCase;
-	let mockRulesTranslatorRepository: jest.Mocked<RulesTranslatorRepository>;
+	let mockRulesTranslatorRepository: { translate: ReturnType<typeof jest.fn> };
 
 	beforeEach(async () => {
-		const mockRepository = {
-			translate: jest.fn(),
-		};
+		const mockRepository = { translate: jest.fn() };
 
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
 				TranslateRulesUseCase,
-				{
-					provide: RulesTranslatorRepository,
-					useValue: mockRepository,
-				},
+				{ provide: RulesTranslatorRepository, useValue: mockRepository },
 			],
 		}).compile();
 
 		useCase = module.get<TranslateRulesUseCase>(TranslateRulesUseCase);
-		mockRulesTranslatorRepository = module.get(RulesTranslatorRepository);
+		mockRulesTranslatorRepository = module.get(
+			RulesTranslatorRepository,
+		) as unknown as { translate: ReturnType<typeof jest.fn> };
 	});
 
 	it("should be defined", () => {
@@ -35,14 +33,7 @@ describe("TranslateRulesUseCase", () => {
 		const expectedResult = [
 			Rules.create({
 				characteristic: "size",
-				options: [
-					{
-						value: "medium",
-						operator: "eq",
-						price: 15,
-						action: "charge",
-					},
-				],
+				options: [{ value: "medium", operator: "eq", price: 15 }],
 			}),
 		];
 

@@ -1,5 +1,5 @@
 import { NestFactory } from "@nestjs/core";
-import { NestExpressApplication } from "@nestjs/platform-express";
+import type { NestExpressApplication } from "@nestjs/platform-express";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import compression from "compression";
 import express from "express";
@@ -30,12 +30,16 @@ async function bootstrap() {
 				"API para gerenciar serviços e informações de cuidados com animais",
 			)
 			.setVersion("1.0")
+			.setOpenAPIVersion("3.1.0")
 			.build(),
 	);
 
-	SwaggerModule.setup("docs", app, cleanupOpenApiDoc(openApiDoc), {
-		jsonDocumentUrl: "swagger/json",
-	});
+	SwaggerModule.setup(
+		"docs",
+		app,
+		cleanupOpenApiDoc(openApiDoc, { version: "3.1" }),
+		{ jsonDocumentUrl: "swagger/json" },
+	);
 
 	const configService = app.get(EnvService);
 	const port = configService.get("PORT");

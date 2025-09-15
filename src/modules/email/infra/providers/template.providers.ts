@@ -2,6 +2,7 @@ import { Provider } from "@nestjs/common";
 import { EmailTemplate } from "../../domain/interfaces/email-template";
 import { TemplateVariablesMap } from "../../domain/templates/template-variables-map";
 import { AppointmentChangeStatusTemplate } from "../templates/components/appointment-change-status/change-status";
+import { EmployeeInviteTemplate } from "../templates/components/employee-invite/employee-invite";
 import { WelcomeTemplate } from "../templates/components/welcome/welcome";
 import { TemplateFactory } from "../templates/template.factory";
 
@@ -13,6 +14,7 @@ const TEMPLATE_REGISTRY: {
 } = {
 	welcome: () => new WelcomeTemplate(),
 	"appointment-status-changed": () => new AppointmentChangeStatusTemplate(),
+	"employee-invite": () => new EmployeeInviteTemplate(),
 } as const;
 
 export const TemplateProviders: Provider[] = [

@@ -26,6 +26,9 @@ export class PrismaStaffMapper {
 				userId: new UniqueEntityID(prismaUserCompany.userId),
 				role: prismaUserCompany.role as StaffRole,
 				appointments,
+				createdAt: prismaUserCompany.createdAt,
+				updatedAt: prismaUserCompany.updatedAt,
+				deletedAt: prismaUserCompany.deletedAt ?? undefined,
 			},
 			new UniqueEntityID(prismaUserCompany.id),
 		);
@@ -37,6 +40,9 @@ export class PrismaStaffMapper {
 			companyId: staff.companyId.toString(),
 			userId: staff.userId.toString(),
 			role: staff.role,
+			createdAt: staff.createdAt,
+			updatedAt: staff.updatedAt,
+			deletedAt: staff.deletedAt,
 		};
 	}
 }

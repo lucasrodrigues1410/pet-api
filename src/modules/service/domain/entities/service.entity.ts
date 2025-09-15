@@ -57,27 +57,6 @@ export class Service extends Entity<ServiceProps> {
 		const service = new Service(props, id);
 		return service;
 	}
-
-	public update(data: Partial<ServiceProps>): void {
-		this.props = {
-			...this.props,
-			...data,
-		};
-	}
-
-	public toObject() {
-		return {
-			id: this.id.toString(),
-			name: this.name,
-			description: this.description,
-			price: this.price,
-			isActive: this.isActive,
-			duration: this.duration,
-			companyId: this.companyId.toString(),
-			details: this.details,
-			rules: this.rules?.map((rule) => rule.toObject()),
-		};
-	}
 }
 
 export type ServiceWithRelations = Service & {

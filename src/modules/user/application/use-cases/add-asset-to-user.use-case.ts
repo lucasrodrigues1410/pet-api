@@ -37,11 +37,9 @@ export class AddAssetToUserUseCase {
 			return left(result.value);
 		}
 
-		user.update({
+		await this.userRepository.update(user.id.toString(), {
 			avatarAssetId: result.value.asset.id.toString(),
 		});
-
-		await this.userRepository.update(user);
 
 		return right(undefined);
 	}

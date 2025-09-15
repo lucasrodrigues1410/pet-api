@@ -6,10 +6,7 @@ import { Rating } from "../entities/rating.entity";
 export type CompanyRatingStats = {
 	averageRating: number;
 	totalRatings: number;
-	distribution: {
-		rating: number;
-		count: number;
-	}[];
+	distribution: { rating: number; count: number }[];
 };
 
 export abstract class RatingRepository {

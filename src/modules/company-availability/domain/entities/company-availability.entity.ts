@@ -67,14 +67,4 @@ export class CompanyAvailability extends Entity<CompanyAvailabilityProps> {
 		);
 		return companyAvailability;
 	}
-
-	public toObject() {
-		return {
-			id: this.id.toString(),
-			companyId: this.companyId.toString(),
-			day: this.day,
-			timeRange: this.timeRange.toObject(),
-			launchTime: this.launchTime.toObject(),
-		};
-	}
 }

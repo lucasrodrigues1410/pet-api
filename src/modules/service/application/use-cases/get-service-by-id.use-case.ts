@@ -10,9 +10,7 @@ interface GetServiceByIdUseCaseRequest {
 
 type GetServiceByIdUseCaseResponse = Either<
 	ResourceNotFoundError,
-	{
-		service: ServiceWithRelations;
-	}
+	{ service: ServiceWithRelations }
 >;
 
 @Injectable()
@@ -28,8 +26,6 @@ export class GetServiceByIdUseCase {
 			return left(new ResourceNotFoundError());
 		}
 
-		return right({
-			service,
-		});
+		return right({ service });
 	}
 }

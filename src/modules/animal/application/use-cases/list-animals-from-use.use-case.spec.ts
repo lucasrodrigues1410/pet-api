@@ -1,34 +1,41 @@
-import { beforeEach, describe, expect, it } from "bun:test";
+import { beforeEach, describe, expect, it, jest } from "bun:test";
+import { Test } from "@nestjs/testing";
 import { makeAnimal } from "test/factories/make-animal";
-import { InMemoryAnimalRepository } from "test/repositories/in-memory-animal.repository";
-import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
+import { AnimalRepository } from "../../domain/repositories/animal.repository";
 import { ListAnimalsFromUserUserUseCase } from "./list-animals-from-user.use-case";
 
-let inMemoryAnimalsRepository: InMemoryAnimalRepository;
-let sut: ListAnimalsFromUserUserUseCase;
-
 describe("List Animals from User", () => {
-	beforeEach(() => {
-		inMemoryAnimalsRepository = new InMemoryAnimalRepository();
-		sut = new ListAnimalsFromUserUserUseCase(inMemoryAnimalsRepository);
+	let moduleRef: any;
+	let sut: ListAnimalsFromUserUserUseCase;
+
+	const mockAnimalRepo = { fetchAllAnimalsByUser: jest.fn() };
+
+	beforeEach(async () => {
+		mockAnimalRepo.fetchAllAnimalsByUser.mockReset();
+
+		moduleRef = await Test.createTestingModule({
+			providers: [
+				ListAnimalsFromUserUserUseCase,
+				{ provide: AnimalRepository, useValue: mockAnimalRepo },
+			],
+		}).compile();
+
+		sut = moduleRef.get(ListAnimalsFromUserUserUseCase);
 	});
 
 	it("should get animals", async () => {
-		const uniqueId = new UniqueEntityID();
-		const animals = Array.from({ length: 5 }, () =>
-			makeAnimal({ userId: uniqueId }),
-		);
+		const uniqueId = "user-id-123";
+		const animals = Array.from({ length: 5 }, () => makeAnimal());
+		const mockResult = { items: animals, total: 5, page: 1, limit: 5 };
 
-		for (const animal of animals) {
-			inMemoryAnimalsRepository.items.push(animal);
-		}
-		const result = await sut.execute({
-			userId: uniqueId.toString(),
-			page: 1,
-			limit: 5,
-		});
+		const params = { userId: uniqueId, page: 1, limit: 5 };
+
+		mockAnimalRepo.fetchAllAnimalsByUser.mockResolvedValueOnce(mockResult);
+
+		const result = await sut.execute(params);
 
 		expect(result.isRight()).toBe(true);
 		expect(result.value?.items).toHaveLength(5);
+		expect(mockAnimalRepo.fetchAllAnimalsByUser).toHaveBeenCalledWith(params);
 	});
 });

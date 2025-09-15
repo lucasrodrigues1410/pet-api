@@ -20,6 +20,8 @@ import {
 	ListAvailableDatesRequestDto,
 	ListAvailableDatesResponseDto,
 } from "../dtos/list-available-dates.dto";
+import { AvailableDatesPresenter } from "../presenters/available-dates.presenter";
+import { CreateAppointmentPresenter } from "../presenters/create-appointment.presenter";
 
 @ApiTags("Reservas")
 @Controller("booking")
@@ -31,6 +33,7 @@ export class BookingController {
 
 	@ApiOperation({
 		summary: "Lista as datas disponíveis para um serviço e empresa específicos",
+		operationId: "listAvailableDates",
 	})
 	@ZodResponse({ status: 200, type: ListAvailableDatesResponseDto })
 	@Get("available-dates/:companyId/:serviceId/:date")
@@ -49,19 +52,14 @@ export class BookingController {
 			throw new NotFoundException();
 		}
 
-		return {
-			slots: result.value.slots.map((slot) => ({
-				label: slot.label || "",
-			})),
-		};
+		return AvailableDatesPresenter.present(result.value.slots);
 	}
 
 	@Post("create")
 	@HttpCode(201)
 	@ApiOperation({
 		summary: "Cria um agendamento, iniciando o processo de pagamento",
-		description:
-			"Inicia o processo de criação de um agendamento, verificando a disponibilidade do horário e criando uma intenção de agendamento.",
+		operationId: "createAppointment",
 	})
 	@UserTypeDecorator("customer")
 	async createAppointment(
@@ -81,8 +79,6 @@ export class BookingController {
 			throw new BadRequestException(`${response.value.message}`);
 		}
 
-		return {
-			appointmentId: response.value.appointmentId,
-		};
+		return CreateAppointmentPresenter.present(response.value.appointmentId);
 	}
 }

@@ -10,6 +10,9 @@ export interface StaffProps {
 	companyId: UniqueEntityID;
 	role: StaffRole;
 	appointments?: Appointment[];
+	createdAt: Date;
+	updatedAt?: Date;
+	deletedAt?: Date;
 }
 
 export class Staff extends Entity<StaffProps> {
@@ -29,6 +32,18 @@ export class Staff extends Entity<StaffProps> {
 		return this.props.appointments;
 	}
 
+	get createdAt() {
+		return this.props.createdAt;
+	}
+
+	get updatedAt() {
+		return this.props.updatedAt;
+	}
+
+	get deletedAt() {
+		return this.props.deletedAt;
+	}
+
 	set appointments(appointments: Appointment[] | undefined) {
 		this.props.appointments = appointments;
 	}
@@ -36,5 +51,17 @@ export class Staff extends Entity<StaffProps> {
 	static create(props: StaffProps, id?: UniqueEntityID): Staff {
 		const staff = new Staff(props, id);
 		return staff;
+	}
+
+	toObject() {
+		return {
+			id: this.id.toString(),
+			userId: this.userId.toString(),
+			companyId: this.companyId.toString(),
+			role: this.role,
+			createdAt: this.createdAt.toISOString(),
+			updatedAt: this.updatedAt?.toISOString(),
+			deletedAt: this.deletedAt?.toISOString(),
+		};
 	}
 }

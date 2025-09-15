@@ -19,10 +19,7 @@ import { BullNotificationProcessor } from "./infra/queue/event-processor.service
 @Module({
 	imports: [BullModule.registerQueue({ name: "notifications" }), EmailModule],
 	providers: [
-		{
-			provide: NotificationRepository,
-			useClass: PrismaNotificationRepository,
-		},
+		{ provide: NotificationRepository, useClass: PrismaNotificationRepository },
 		// Command Handlers
 		SendUserCreatedNotification,
 		SendClientAppointmentChangeStatusNotification,

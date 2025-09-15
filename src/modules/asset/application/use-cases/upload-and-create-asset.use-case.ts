@@ -15,9 +15,7 @@ interface UploadAndCreateAssetRequest {
 
 type UploadAndCreateAssetResponse = Either<
 	InvalidAssetTypeError,
-	{
-		asset: Asset;
-	}
+	{ asset: Asset }
 >;
 
 @Injectable()
@@ -63,8 +61,6 @@ export class UploadAndCreateAssetUseCase {
 
 		await this.assetRepository.create(asset);
 
-		return right({
-			asset,
-		});
+		return right({ asset });
 	}
 }

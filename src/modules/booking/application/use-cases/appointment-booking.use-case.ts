@@ -24,9 +24,7 @@ interface AppointmentBookingUseCaseRequest {
 
 type AppointmentBookingUseCaseResponse = Either<
 	ResourceNotFoundError | TimeSlotUnavailableError,
-	{
-		appointmentId: string;
-	}
+	{ appointmentId: string }
 >;
 
 @Injectable()
@@ -50,11 +48,8 @@ export class AppointmentBookingUseCase {
 			this.serviceRepository.findById(serviceId),
 			this.animalRepository.findById(animalId),
 		]);
-		if (!service) {
-			return left(new ResourceNotFoundError("Serviço não encontrado"));
-		}
-		if (!animal) {
-			return left(new ResourceNotFoundError("Animal não encontrado"));
+		if (!service || !animal) {
+			return left(new ResourceNotFoundError());
 		}
 
 		// Validações de negócio básicas
@@ -68,13 +63,6 @@ export class AppointmentBookingUseCase {
 			return left(new TimeSlotUnavailableError("Data passada não permitida"));
 		}
 
-		// Alinhação simples do slot: múltiplos de 5 minutos
-		if (startDate.getMinutes() % 5 !== 0) {
-			return left(
-				new TimeSlotUnavailableError("Horário inválido (não alinhado ao slot)"),
-			);
-		}
-
 		// Calcula variação de preço
 		const ruleExecutionResult = await this.rulesExecution.execute(
 			animal,
@@ -86,10 +74,10 @@ export class AppointmentBookingUseCase {
 		const totalPrice = basePrice + priceAdjustment;
 
 		const baseDurationMinutes = service.duration;
-		const finalDurationMinutes = baseDurationMinutes + (ruleExecutionResult?.durationMinutes ?? 0);
+		const finalDurationMinutes =
+			baseDurationMinutes + (ruleExecutionResult?.durationMinutes ?? 0);
 
 		const endDate = addMinutes(startDate, finalDurationMinutes);
-
 		// Verifica se o horário está disponível
 		const available = await this.appointmentAvailabilityService.getAvailability(
 			service.companyId.toString(),
@@ -113,8 +101,6 @@ export class AppointmentBookingUseCase {
 		});
 
 		await this.appointmentRepository.create(appointmentIntent);
-		return right({
-			appointmentId: appointmentIntent.id.toString(),
-		});
+		return right({ appointmentId: appointmentIntent.id.toString() });
 	}
 }

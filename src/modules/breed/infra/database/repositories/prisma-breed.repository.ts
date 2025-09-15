@@ -11,10 +11,7 @@ export class PrismaBreedRepository implements BreedRepository {
 
 	async getAll(params: Parameters<BreedRepository["getAll"]>[0]) {
 		const options = {
-			name: {
-				contains: params.query,
-				mode: "insensitive",
-			},
+			name: { contains: params.query, mode: "insensitive" },
 		} as Prisma.BreedWhereInput;
 
 		const response = await this.prismaService.breed.findMany({
@@ -24,9 +21,7 @@ export class PrismaBreedRepository implements BreedRepository {
 	}
 
 	async findById(id: string) {
-		const breed = await this.prismaService.breed.findUnique({
-			where: { id },
-		});
+		const breed = await this.prismaService.breed.findUnique({ where: { id } });
 
 		if (!breed) {
 			return null;

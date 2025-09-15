@@ -15,10 +15,7 @@ export class PriceRange extends ValueObject<PriceRangeProps> {
 	}
 
 	static empty(): PriceRange {
-		return new PriceRange({
-			min: 0,
-			max: 0,
-		});
+		return new PriceRange({ min: 0, max: 0 });
 	}
 
 	static create(props?: PriceRangeProps): PriceRange {
@@ -29,9 +26,6 @@ export class PriceRange extends ValueObject<PriceRangeProps> {
 	}
 
 	public toObject() {
-		return {
-			min: this.min,
-			max: this.max,
-		};
+		return { min: this.min, max: this.max };
 	}
 }

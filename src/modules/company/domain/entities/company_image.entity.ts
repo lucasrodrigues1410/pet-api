@@ -22,11 +22,4 @@ export class CompanyImage extends Entity<CompanyImageProps> {
 	): CompanyImage {
 		return new CompanyImage(props, id);
 	}
-
-	public toObject() {
-		return {
-			id: this.id.toString(),
-			asset: this.asset.toObject(),
-		};
-	}
 }

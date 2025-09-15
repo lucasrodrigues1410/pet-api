@@ -6,12 +6,14 @@ import {
 	Get,
 	HttpCode,
 	HttpStatus,
+	NotFoundException,
 	Post,
 	UnauthorizedException,
 } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { ZodResponse } from "nestjs-zod";
-import { SignInCompanyUseCase } from "@/modules/auth/application/use-cases/sign-in-company.use-case";
+import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
+import { AcceptInviteUseCase } from "../../../application/use-cases/accept-invite.use-case";
 import { GetSessionUseCase } from "../../../application/use-cases/get-session.use-case";
 import { SignInUseCase } from "../../../application/use-cases/sign-in.use-case";
 import { SignUpUseCase } from "../../../application/use-cases/sign-up.use-case";
@@ -20,10 +22,16 @@ import { UserAlreadyExistError } from "../../../domain/errors/user-already-exist
 import type { UserPayload } from "../../strategies/jwt.strategy";
 import { Public } from "../decorators/public.decorator";
 import { User } from "../decorators/user.decorator";
+import {
+	AcceptInviteRequestDto,
+	AcceptInviteResponseDto,
+} from "../dtos/accept-invite.dto";
 import { SessionResponseDto } from "../dtos/session.dto";
 import { SignInRequestDto, SignInResponseDto } from "../dtos/sign-in.dto";
-import { SignInCompanyResponseDto } from "../dtos/sign-in-company.dto";
 import { SignUpRequestDto } from "../dtos/sign-up.dto";
+import { AcceptInvitePresenter } from "../presenters/accept-invite.presenter";
+import { SessionPresenter } from "../presenters/session.presenter";
+import { SignInPresenter } from "../presenters/sign-in.presenter";
 
 @ApiTags("Autenticação")
 @Controller("auth")
@@ -31,22 +39,19 @@ export class AuthController {
 	constructor(
 		private signInUseCase: SignInUseCase,
 		private signUpUseCase: SignUpUseCase,
-		private signInCompanyUseCase: SignInCompanyUseCase,
 		private getSessionUseCase: GetSessionUseCase,
+		private acceptInviteUseCase: AcceptInviteUseCase,
 	) {}
 
 	@Post("sign-in")
-	@ApiOperation({ summary: "Login de usuário" })
-	@ZodResponse({ type: SignInResponseDto })
+	@ApiOperation({ summary: "Login de usuário", operationId: "signIn" })
+	@ZodResponse({ status: 200, type: SignInResponseDto })
 	@Public()
 	@HttpCode(HttpStatus.OK)
 	async signIn(@Body() body: SignInRequestDto) {
-		const { email, password } = body;
+		const { email, password, type } = body;
 
-		const result = await this.signInUseCase.execute({
-			email,
-			password,
-		});
+		const result = await this.signInUseCase.execute({ email, password, type });
 
 		if (result.isLeft()) {
 			const error = result.value;
@@ -59,28 +64,18 @@ export class AuthController {
 			}
 		}
 
-		return {
-			id: result.value.id.toString(),
-			name: result.value.name,
-			email: result.value.email,
-			accessToken: result.value.accessToken,
-			avatar: result.value.avatar?.url,
-		};
+		return SignInPresenter.present(result.value);
 	}
 
 	@Post("sign-up")
-	@ApiOperation({ summary: "Registro de usuário" })
+	@ApiOperation({ summary: "Registro de usuário", operationId: "signUp" })
 	@ApiResponse({ status: 201 })
 	@Public()
 	@HttpCode(HttpStatus.CREATED)
 	async signUp(@Body() body: SignUpRequestDto) {
 		const { name, email, password } = body;
 
-		const result = await this.signUpUseCase.execute({
-			name,
-			email,
-			password,
-		});
+		const result = await this.signUpUseCase.execute({ name, email, password });
 
 		if (result.isLeft()) {
 			const error = result.value;
@@ -94,54 +89,47 @@ export class AuthController {
 		}
 	}
 
-	@Post("sign-in/company")
-	@ApiOperation({ summary: "Login empresarial" })
-	@ZodResponse({ status: 200, type: SignInCompanyResponseDto })
-	@Public()
-	@HttpCode(HttpStatus.OK)
-	async signInCompany(@Body() body: SignInRequestDto) {
-		const { email, password } = body;
-
-		const result = await this.signInCompanyUseCase.execute({
-			email,
-			password,
-		});
-
-		if (result.isLeft()) {
-			const error = result.value;
-
-			switch (error.constructor) {
-				case InvalidCredentialsError:
-					throw new UnauthorizedException(error.message);
-				default:
-					throw new BadRequestException(error.message);
-			}
-		}
-
-		return {
-			id: result.value.id.toString(),
-			name: result.value.name,
-			email: result.value.email,
-			accessToken: result.value.accessToken,
-			staffRole: result.value.staffRole,
-			companyId: result.value.companyId,
-			avatar: result.value.avatar?.url,
-		};
-	}
-
 	@Get("session")
-	@ApiOperation({ summary: "Obter informações da sessão do usuário" })
+	@ApiOperation({
+		summary: "Obter informações da sessão do usuário",
+		operationId: "getSession",
+	})
 	@ZodResponse({ status: 200, type: SessionResponseDto })
 	@HttpCode(HttpStatus.OK)
 	async getSession(@User() payload: UserPayload) {
 		const result = await this.getSessionUseCase.execute(payload);
 
-		return {
-			id: result.value.sub.toString(),
-			name: result.value.name,
-			email: result.value.email,
-			type: result.value.type,
-			companyId: result.value.companyId,
-		};
+		return SessionPresenter.present(result.value);
+	}
+
+	@Post("accept-invite")
+	@ApiOperation({
+		summary: "Aceitar convite de funcionário",
+		description:
+			"Finaliza o cadastro do funcionário convidado definindo uma nova senha",
+		operationId: "acceptInvite",
+	})
+	@ZodResponse({ status: 201, type: AcceptInviteResponseDto })
+	@Public()
+	@HttpCode(HttpStatus.CREATED)
+	async acceptInvite(
+		@Body() body: AcceptInviteRequestDto,
+	): Promise<AcceptInviteResponseDto> {
+		const { token, password } = body;
+
+		const result = await this.acceptInviteUseCase.execute({ token, password });
+
+		if (result.isLeft()) {
+			const error = result.value;
+
+			switch (error.constructor) {
+				case ResourceNotFoundError:
+					throw new NotFoundException(error.message);
+				default:
+					throw new BadRequestException(error.message);
+			}
+		}
+
+		return AcceptInvitePresenter.present(result.value);
 	}
 }

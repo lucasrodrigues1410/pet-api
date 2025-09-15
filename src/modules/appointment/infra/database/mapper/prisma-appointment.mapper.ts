@@ -45,8 +45,6 @@ export class PrismaAppointmentMapper {
 	static toPersistenceUpdate(
 		appointment: Partial<Appointment>,
 	): Prisma.AppointmentUncheckedUpdateInput {
-		return {
-			status: appointment.status,
-		};
+		return { status: appointment.status };
 	}
 }

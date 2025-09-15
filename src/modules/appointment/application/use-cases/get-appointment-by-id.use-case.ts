@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { Animal } from "@/modules/animal/domain/entities/animal.entity";
+import { Asset } from "@/modules/asset/domain/entities/asset";
 import { Breed } from "@/modules/breed/domain/entities/breed.entity";
 import { Company } from "@/modules/company/domain/entities/company.entity";
 import { Service } from "@/modules/service/domain/entities/service.entity";
@@ -19,7 +20,7 @@ type GetAppointmentByIdUseCaseInput = {
 type GetAppointmentByIdUseCaseOutput = Either<
 	ResourceNotFoundError,
 	Appointment & {
-		animal: Animal & { breed: Breed };
+		animal: Animal & { breed: Breed; asset?: Asset };
 		client: User;
 		service: Service;
 		company: Company;

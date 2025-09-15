@@ -6,10 +6,7 @@ import { TimeSlot } from "../../domain/entities/time-slot.entity";
 interface FilterParams {
 	slots: Date[];
 	duration: number;
-	staffsData: {
-		staffId: string;
-		unavailablePeriods: DateRange[];
-	}[];
+	staffsData: { staffId: string; unavailablePeriods: DateRange[] }[];
 	companyExceptions: DateRange[];
 	launchTime: TimeRange;
 }
@@ -25,11 +22,16 @@ export class AvailableSlotsService {
 		}
 
 		const availableSlotsOutput: Date[] = [];
-
+		const now = new Date();
 		for (const potentialSlotStart of slots) {
 			const potentialSlotEnd = addMinutes(potentialSlotStart, duration);
 			const slotStartTime = format(potentialSlotStart, "HH:mm");
 			const slotEndTime = format(potentialSlotEnd, "HH:mm");
+
+			// Se a data solicitada for hoje, verificar se o horário não passou
+			if (isBefore(potentialSlotStart, now)) {
+				continue;
+			}
 
 			// Verificar se o slot está dentro do horário de almoço
 			if (

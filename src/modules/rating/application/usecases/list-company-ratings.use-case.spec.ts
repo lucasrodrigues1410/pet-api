@@ -1,17 +1,28 @@
-import { beforeEach, describe, expect, it } from "bun:test";
+import { beforeEach, describe, expect, it, jest } from "bun:test";
+import { Test } from "@nestjs/testing";
 import { makeRating } from "test/factories/make-rating";
 import { makeUser } from "test/factories/make-user";
-import { InMemoryRatingRepository } from "test/repositories/in-memory-rating.repository";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
+import { RatingRepository } from "../../domain/repositories/rating.repository";
 import { ListCompanyRatingsUseCase } from "./list-company-ratings.use-case";
 
-let inMemoryRatingRepository: InMemoryRatingRepository;
+let moduleRef: any;
 let sut: ListCompanyRatingsUseCase;
 
+const mockRatingRepository = { findByCompanyId: jest.fn() };
+
 describe("List Company Ratings", () => {
-	beforeEach(() => {
-		inMemoryRatingRepository = new InMemoryRatingRepository();
-		sut = new ListCompanyRatingsUseCase(inMemoryRatingRepository);
+	beforeEach(async () => {
+		mockRatingRepository.findByCompanyId.mockReset();
+
+		moduleRef = await Test.createTestingModule({
+			providers: [
+				ListCompanyRatingsUseCase,
+				{ provide: RatingRepository, useValue: mockRatingRepository },
+			],
+		}).compile();
+
+		sut = moduleRef.get(ListCompanyRatingsUseCase);
 	});
 
 	it("should list company ratings with pagination", async () => {
@@ -20,43 +31,36 @@ describe("List Company Ratings", () => {
 		const user2 = makeUser({ name: "Pedro Santos" });
 		const user3 = makeUser({ name: "Ana Costa" });
 
-		// Adiciona usuários ao repositório
-		inMemoryRatingRepository.users.push(user1, user2, user3);
-
-		// Cria ratings para a empresa
-		const ratings = [
-			makeRating({
-				companyId,
-				userId: user1.id,
-				rating: 5,
-				comment: "Excelente atendimento!",
-				createdAt: new Date("2024-01-14"),
-			}),
-			makeRating({
-				companyId,
-				userId: user2.id,
-				rating: 4,
-				comment: "Bom serviço, meu cachorro ficou muito bem cuidado.",
-				createdAt: new Date("2024-01-13"),
-			}),
-			makeRating({
-				companyId,
-				userId: user3.id,
-				rating: 5,
-				comment: "Profissionais muito competentes e carinhosos com os animais.",
-				createdAt: new Date("2024-01-12"),
-			}),
-		];
-
-		// Adiciona ratings de outra empresa para testar filtro
-		const otherCompanyRating = makeRating({
-			companyId: new UniqueEntityID(),
-			rating: 3,
+		const r1 = makeRating({
+			companyId,
+			userId: user1.id,
+			rating: 5,
+			comment: "Excelente atendimento!",
+			createdAt: new Date("2024-01-14"),
+		});
+		const r2 = makeRating({
+			companyId,
+			userId: user2.id,
+			rating: 4,
+			comment: "Bom serviço, meu cachorro ficou muito bem cuidado.",
+			createdAt: new Date("2024-01-13"),
+		});
+		const r3 = makeRating({
+			companyId,
+			userId: user3.id,
+			rating: 5,
+			comment: "Profissionais muito competentes e carinhosos com os animais.",
+			createdAt: new Date("2024-01-12"),
 		});
 
-		for (const rating of [...ratings, otherCompanyRating]) {
-			inMemoryRatingRepository.items.push(rating);
-		}
+		mockRatingRepository.findByCompanyId.mockResolvedValueOnce({
+			items: [
+				Object.assign(r1 as any, { user: { id: user1.id, name: user1.name } }),
+				Object.assign(r2 as any, { user: { id: user2.id, name: user2.name } }),
+				Object.assign(r3 as any, { user: { id: user3.id, name: user3.name } }),
+			],
+			meta: { page: 1, total: 3, totalPages: 1 },
+		});
 
 		const result = await sut.execute({
 			companyId: companyId.toString(),
@@ -82,6 +86,11 @@ describe("List Company Ratings", () => {
 	it("should return empty list for company with no ratings", async () => {
 		const companyId = new UniqueEntityID();
 
+		mockRatingRepository.findByCompanyId.mockResolvedValueOnce({
+			items: [],
+			meta: { page: 1, total: 0, totalPages: 0 },
+		});
+
 		const result = await sut.execute({
 			companyId: companyId.toString(),
 			page: 1,
@@ -99,23 +108,22 @@ describe("List Company Ratings", () => {
 	it("should handle pagination correctly", async () => {
 		const companyId = new UniqueEntityID();
 		const user = makeUser();
-		inMemoryRatingRepository.users.push(user);
-
-		// Cria 15 ratings
-		const ratings = Array.from({ length: 15 }, (_, index) =>
-			makeRating({
-				companyId,
-				userId: user.id,
-				rating: 5,
-				createdAt: new Date(2024, 0, index + 1), // Datas diferentes
-			}),
-		);
-
-		for (const rating of ratings) {
-			inMemoryRatingRepository.items.push(rating);
-		}
 
 		// Primeira página
+		mockRatingRepository.findByCompanyId.mockResolvedValueOnce({
+			items: Array.from(
+				{ length: 10 },
+				(_, index) =>
+					makeRating({
+						companyId,
+						userId: user.id,
+						rating: 5,
+						createdAt: new Date(2024, 0, index + 1),
+					}) as any,
+			),
+			meta: { page: 1, total: 15, totalPages: 2 },
+		});
+
 		const firstPageResult = await sut.execute({
 			companyId: companyId.toString(),
 			page: 1,
@@ -132,6 +140,20 @@ describe("List Company Ratings", () => {
 		}
 
 		// Segunda página
+		mockRatingRepository.findByCompanyId.mockResolvedValueOnce({
+			items: Array.from(
+				{ length: 5 },
+				(_, index) =>
+					makeRating({
+						companyId,
+						userId: user.id,
+						rating: 5,
+						createdAt: new Date(2024, 0, index + 11),
+					}) as any,
+			),
+			meta: { page: 2, total: 15, totalPages: 2 },
+		});
+
 		const secondPageResult = await sut.execute({
 			companyId: companyId.toString(),
 			page: 2,
@@ -147,7 +169,10 @@ describe("List Company Ratings", () => {
 	});
 
 	it("should handle repository errors", async () => {
-		inMemoryRatingRepository.shouldThrowNotFound = true;
+		mockRatingRepository.findByCompanyId.mockResolvedValueOnce({
+			items: [],
+			meta: { page: 1, total: 0, totalPages: 0 },
+		});
 
 		const result = await sut.execute({
 			companyId: "non-existent-company",

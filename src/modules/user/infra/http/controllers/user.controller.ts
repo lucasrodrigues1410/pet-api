@@ -3,21 +3,40 @@ import {
 	Body,
 	Controller,
 	FileTypeValidator,
+	Get,
 	HttpCode,
-	HttpStatus,
 	MaxFileSizeValidator,
+	Param,
 	ParseFilePipe,
 	Post,
 	Put,
+	Query,
 	UploadedFile,
+	UseGuards,
 	UseInterceptors,
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
-import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import {
+	ApiBody,
+	ApiConsumes,
+	ApiOperation,
+	ApiResponse,
+	ApiTags,
+} from "@nestjs/swagger";
+import { ZodResponse } from "nestjs-zod";
 import { User } from "src/modules/auth/infra/http/decorators/user.decorator";
+import { UserTypeDecorator } from "@/modules/auth/infra/http/decorators/user-type.decorator";
+import { CompanyGuard } from "@/modules/company/infra/http/guards/company.guard";
 import { AddAssetToUserUseCase } from "@/modules/user/application/use-cases/add-asset-to-user.use-case";
+import { ListCompanyClientsUseCase } from "@/modules/user/application/use-cases/list-company-clients.use-case";
 import { UpdateUserProfileUseCase } from "@/modules/user/application/use-cases/update-user-profile.use-case";
+import {
+	ListCompanyClientsQueryDto,
+	ListCompanyClientsResponseDto,
+} from "../dtos/list-company-clients.dto";
 import { UpdateUserRequestDto } from "../dtos/update-user.dto";
+import { UploadAvatarDto } from "../dtos/upload-avatar.dto";
+import { ClientListPresenter } from "../presenters/client-list.presenter";
 
 @ApiTags("Usuários")
 @Controller("users")
@@ -25,15 +44,13 @@ export class UserController {
 	constructor(
 		private readonly updateUserProfileUseCase: UpdateUserProfileUseCase,
 		private readonly addAssetToUserUseCase: AddAssetToUserUseCase,
+		private readonly listCompanyClientsUseCase: ListCompanyClientsUseCase,
 	) {}
 
 	@Put("edit")
-	@ApiOperation({ summary: "Editar usuário autenticado" })
-	@HttpCode(HttpStatus.NO_CONTENT)
-	@ApiResponse({
-		status: HttpStatus.NO_CONTENT,
-		description: "Usuário autenticado editado com sucesso",
-	})
+	@ApiOperation({ summary: "Editar usuário", operationId: "editUser" })
+	@HttpCode(204)
+	@ApiResponse({ status: 204, description: "Usuário editado com sucesso" })
 	async editUser(
 		@User("sub") userId: string,
 		@Body() params: UpdateUserRequestDto,
@@ -49,20 +66,21 @@ export class UserController {
 	}
 
 	@Post("avatar")
-	@ApiOperation({ summary: "Adicionar avatar do usuário" })
+	@ApiOperation({
+		summary: "Adicionar avatar do usuário",
+		operationId: "addAvatar",
+	})
 	@HttpCode(201)
 	@UseInterceptors(FileInterceptor("file"))
+	@ApiConsumes("multipart/form-data")
+	@ApiBody({ description: "Envio de imagem", type: UploadAvatarDto })
 	async addAvatar(
 		@User("sub") userId: string,
 		@UploadedFile(
 			new ParseFilePipe({
 				validators: [
-					new MaxFileSizeValidator({
-						maxSize: 1024 * 1024 * 2,
-					}),
-					new FileTypeValidator({
-						fileType: ".(png|jpg|jpeg)",
-					}),
+					new MaxFileSizeValidator({ maxSize: 1024 * 1024 * 2 }),
+					new FileTypeValidator({ fileType: ".(png|jpg|jpeg)" }),
 				],
 			}),
 		)
@@ -76,5 +94,29 @@ export class UserController {
 		if (result.isLeft()) {
 			throw new BadRequestException();
 		}
+	}
+
+	@Get("company/:companyId/clients")
+	@ApiOperation({
+		summary: "Listar clientes que fizeram agendamentos na empresa",
+		operationId: "listCompanyClients",
+	})
+	@ZodResponse({ status: 200, type: ListCompanyClientsResponseDto })
+	@UserTypeDecorator("company")
+	@UseGuards(CompanyGuard)
+	async listCompanyClients(
+		@Param("companyId") companyId: string,
+		@Query() query: ListCompanyClientsQueryDto,
+	) {
+		const result = await this.listCompanyClientsUseCase.execute({
+			companyId,
+			query,
+		});
+
+		if (result.isLeft()) {
+			throw new BadRequestException();
+		}
+
+		return ClientListPresenter.present(result.value.clients);
 	}
 }

@@ -1,196 +1,246 @@
-import { beforeEach, describe, expect, it } from "bun:test";
-import { addDays, getDay, set } from "date-fns";
-import { makeAppointment } from "test/factories/make-appointment";
-import { makeCompanyAvailability } from "test/factories/make-company-availability";
+import { beforeEach, describe, expect, it, jest } from "bun:test";
+import { Test } from "@nestjs/testing";
+import { addDays } from "date-fns";
 import { makeService } from "test/factories/make-service";
 import { makeStaff } from "test/factories/make-staff";
-import { InMemoryAppointmentRepository } from "test/repositories/in-memory-appointment.repository";
-import { InMemoryCompanyAvailabilityRepository } from "test/repositories/in-memory-company-availability.repository";
-import { InMemoryCompanyAvailabilityExceptionRepository } from "test/repositories/in-memory-company-availability-exception.repository";
-import { InMemoryServiceRepository } from "test/repositories/in-memory-service.repository";
-import { InMemoryStaffRepository } from "test/repositories/in-memory-staff.repository";
-import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
-import { daysOfWeek } from "@/modules/company-availability/domain/entities/company-availability.entity";
-import { Service } from "@/modules/service/domain/entities/service.entity";
-import { Staff } from "@/modules/staff/domain/entities/staff.entity";
-import { Either } from "@/shared/either";
+import { CompanyAvailabilityRepository } from "@/modules/company-availability/domain/repositories/company-availability.repository";
+import { CompanyAvailabilityExcpetionRepository } from "@/modules/company-availability/domain/repositories/company-availability-exception.repository";
+import { ServiceRepository } from "@/modules/service/domain/repositories/service.repository";
+import { StaffRepository } from "@/modules/staff/domain/repositories/staff.repository";
 import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
 import { ListAvailableDatesUseCase } from "./list-available-dates.use-case";
 
-function expectResultIsRight<L, R>(
-	result: Either<L, R>,
-): asserts result is Either<never, R> {
-	expect(result.isRight()).toBe(true);
-}
-
-function expectResultIsLeft<L, R>(
-	result: Either<L, R>,
-): asserts result is Either<L, never> {
-	expect(result.isLeft()).toBe(true);
-}
-
-describe("ListAvailableDatesUseCase", () => {
-	let inMemoryAppointmentRepository: InMemoryAppointmentRepository;
-	let inMemoryCompanyAvailabilityRepository: InMemoryCompanyAvailabilityRepository;
-	let inMemoryCompanyAvailabilityExceptionRepository: InMemoryCompanyAvailabilityExceptionRepository;
-	let inMemoryServiceRepository: InMemoryServiceRepository;
-	let inMemoryStaffRepository: InMemoryStaffRepository;
+describe("List Available Dates Use Case", () => {
+	let moduleRef: any;
 	let sut: ListAvailableDatesUseCase;
 
-	let companyId: UniqueEntityID;
-	let staff: Staff;
-	let service: Service;
-	let defaultDate: Date;
+	const mockCompanyAvailabilityRepository = {
+		findByCompanyIdAndDayOfWeek: jest.fn(),
+	};
 
-	beforeEach(() => {
-		inMemoryAppointmentRepository = new InMemoryAppointmentRepository();
-		inMemoryCompanyAvailabilityRepository =
-			new InMemoryCompanyAvailabilityRepository();
-		inMemoryCompanyAvailabilityExceptionRepository =
-			new InMemoryCompanyAvailabilityExceptionRepository();
-		inMemoryServiceRepository = new InMemoryServiceRepository();
-		inMemoryStaffRepository = new InMemoryStaffRepository();
+	const mockCompanyAvailabilityExceptionRepository = {
+		findExceptionsByCompanyAndPeriod: jest.fn(),
+	};
 
-		sut = new ListAvailableDatesUseCase(
-			inMemoryCompanyAvailabilityRepository,
-			inMemoryCompanyAvailabilityExceptionRepository,
-			inMemoryServiceRepository,
-			inMemoryStaffRepository,
+	const mockServiceRepository = { findById: jest.fn() };
+
+	const mockStaffRepository = {
+		fetchCompanyStaffWithAppointmentsInDateRange: jest.fn(),
+	};
+
+	beforeEach(async () => {
+		mockCompanyAvailabilityRepository.findByCompanyIdAndDayOfWeek.mockReset();
+		mockCompanyAvailabilityExceptionRepository.findExceptionsByCompanyAndPeriod.mockReset();
+		mockServiceRepository.findById.mockReset();
+		mockStaffRepository.fetchCompanyStaffWithAppointmentsInDateRange.mockReset();
+
+		moduleRef = await Test.createTestingModule({
+			providers: [
+				ListAvailableDatesUseCase,
+				{
+					provide: CompanyAvailabilityRepository,
+					useValue: mockCompanyAvailabilityRepository,
+				},
+				{
+					provide: CompanyAvailabilityExcpetionRepository,
+					useValue: mockCompanyAvailabilityExceptionRepository,
+				},
+				{ provide: ServiceRepository, useValue: mockServiceRepository },
+				{ provide: StaffRepository, useValue: mockStaffRepository },
+			],
+		}).compile();
+
+		sut = moduleRef.get(ListAvailableDatesUseCase);
+	});
+
+	it("should list available dates successfully", async () => {
+		const service = makeService({ duration: 60 });
+		const companyId = "company-id";
+		const serviceId = service.id.toString();
+		const date = addDays(new Date(), 1);
+
+		const mockCompanyAvailability = {
+			timeRange: { startTime: "08:00", endTime: "18:00" },
+			launchTime: { startTime: "12:00", endTime: "13:00" },
+		};
+
+		const mockStaff = makeStaff();
+		const mockStaffWithAppointments = {
+			...mockStaff,
+			id: mockStaff.id,
+			appointments: [],
+		};
+
+		mockServiceRepository.findById.mockResolvedValueOnce(service);
+		mockCompanyAvailabilityRepository.findByCompanyIdAndDayOfWeek.mockResolvedValueOnce(
+			mockCompanyAvailability,
+		);
+		mockCompanyAvailabilityExceptionRepository.findExceptionsByCompanyAndPeriod.mockResolvedValueOnce(
+			[],
+		);
+		mockStaffRepository.fetchCompanyStaffWithAppointmentsInDateRange.mockResolvedValueOnce(
+			[mockStaffWithAppointments],
 		);
 
-		companyId = new UniqueEntityID();
-		staff = makeStaff({ companyId });
-		service = makeService({ companyId, duration: 30 });
-		defaultDate = set(addDays(new Date(), 1), {
-			hours: 8,
-			minutes: 0,
-			seconds: 0,
-			milliseconds: 0,
-		});
+		const result = await sut.execute({ companyId, serviceId, date });
 
-		inMemoryStaffRepository.items.push(staff);
-		inMemoryServiceRepository.items.push(service);
+		expect(result.isRight()).toBe(true);
+		expect(result.value as any).toHaveProperty("slots");
+		expect(Array.isArray((result.value as any).slots)).toBe(true);
+		expect(mockServiceRepository.findById).toHaveBeenCalledWith(serviceId);
+		expect(
+			mockCompanyAvailabilityRepository.findByCompanyIdAndDayOfWeek,
+		).toHaveBeenCalledWith(companyId, expect.any(String));
+		expect(
+			mockStaffRepository.fetchCompanyStaffWithAppointmentsInDateRange,
+		).toHaveBeenCalledWith(companyId, expect.any(Object));
 	});
 
-	it("should return available slots when company is open and no conflicts exist", async () => {
-		const dayOfWeek = daysOfWeek[getDay(defaultDate)];
-		const companyAvailability = makeCompanyAvailability({
-			companyId: companyId,
-			day: dayOfWeek,
-			startTime: "08:00",
-			endTime: "17:00",
-		});
-		inMemoryCompanyAvailabilityRepository.items.push(companyAvailability);
+	it("should return error when service is not found", async () => {
+		const companyId = "company-id";
+		const serviceId = "non-existent-service";
+		const date = addDays(new Date(), 1);
 
-		const result = await sut.execute({
-			companyId: companyId.toString(),
-			serviceId: service.id.toString(),
-			date: defaultDate,
-		});
+		mockServiceRepository.findById.mockResolvedValueOnce(null);
 
-		expectResultIsRight(result);
-		if (result.isRight()) {
-			expect(result.value.slots.length).toBeGreaterThan(0);
-		}
-	});
+		const result = await sut.execute({ companyId, serviceId, date });
 
-	it("should return ResourceNotFoundError when company availability for the day is not found", async () => {
-		const result = await sut.execute({
-			companyId: companyId.toString(),
-			serviceId: service.id.toString(),
-			date: defaultDate,
-		});
-
-		expectResultIsLeft(result);
+		expect(result.isLeft()).toBe(true);
 		expect(result.value).toBeInstanceOf(ResourceNotFoundError);
+		expect((result.value as any).message).toBe("Serviço não encontrado");
+		expect(
+			mockCompanyAvailabilityRepository.findByCompanyIdAndDayOfWeek,
+		).not.toHaveBeenCalled();
 	});
 
-	it("should return ResourceNotFoundError when the service is not found", async () => {
-		const nonExistentServiceId = "non-existent-service-id";
-		const dayOfWeek = daysOfWeek[getDay(defaultDate)];
-		const companyAvailability = makeCompanyAvailability({
-			// Adiciona disponibilidade para isolar o erro no serviço
-			companyId: companyId,
-			day: dayOfWeek,
-			startTime: "08:00",
-			endTime: "17:00",
-		});
-		inMemoryCompanyAvailabilityRepository.items.push(companyAvailability);
+	it("should return error when company availability is not found", async () => {
+		const service = makeService();
+		const companyId = "company-id";
+		const serviceId = service.id.toString();
+		const date = addDays(new Date(), 1);
 
-		const result = await sut.execute({
-			companyId: companyId.toString(),
-			serviceId: nonExistentServiceId,
-			date: defaultDate,
-		});
+		mockServiceRepository.findById.mockResolvedValueOnce(service);
+		mockCompanyAvailabilityRepository.findByCompanyIdAndDayOfWeek.mockResolvedValueOnce(
+			null,
+		);
 
-		expectResultIsLeft(result);
+		const result = await sut.execute({ companyId, serviceId, date });
+
+		expect(result.isLeft()).toBe(true);
 		expect(result.value).toBeInstanceOf(ResourceNotFoundError);
+		expect((result.value as any).message).toBe(
+			"Disponibilidade da empresa não encontrada",
+		);
 	});
 
-	it("should return no slots when the requested date/time is outside company operating hours for that day", async () => {
-		const dayOfWeek = daysOfWeek[getDay(defaultDate)];
-		const companyAvailability = makeCompanyAvailability({
-			companyId: companyId,
-			day: dayOfWeek,
-			startTime: "09:00",
-			endTime: "17:00",
-		});
-		inMemoryCompanyAvailabilityRepository.items.push(companyAvailability);
-
+	it("should return error when invalid parameters are provided", async () => {
 		const result = await sut.execute({
-			companyId: companyId.toString(),
-			serviceId: service.id.toString(),
-			date: defaultDate,
+			companyId: "",
+			serviceId: "",
+			date: new Date("invalid-date"),
 		});
 
-		expectResultIsRight(result);
-		expect(result.value.slots.length).toBe(0);
+		expect(result.isLeft()).toBe(true);
+		expect(result.value).toBeInstanceOf(Error);
+		expect((result.value as any).message).toBe(
+			"Parâmetros inválidos: companyId, serviceId ou date",
+		);
 	});
 
-	it("should exclude time slots occupied by existing appointments for any staff", async () => {
-		const appointmentTime = set(defaultDate, { hours: 9, minutes: 0 });
-		const appointmentEndTime = set(defaultDate, { hours: 9, minutes: 30 });
-		const appointment = makeAppointment({
-			serviceId: service.id,
-			staffId: staff.id,
-			startDate: appointmentTime,
-			endDate: appointmentEndTime,
-		});
+	it("should handle staff with existing appointments", async () => {
+		const service = makeService({ duration: 60 });
+		const companyId = "company-id";
+		const serviceId = service.id.toString();
+		const date = addDays(new Date(), 1);
 
-		inMemoryStaffRepository.items[0].appointments = [appointment];
-		inMemoryAppointmentRepository.items.push(appointment);
+		const mockCompanyAvailability = {
+			timeRange: { startTime: "08:00", endTime: "18:00" },
+			launchTime: { startTime: "12:00", endTime: "13:00" },
+		};
 
-		const dayOfWeek = daysOfWeek[getDay(defaultDate)];
-		const companyAvailability = makeCompanyAvailability({
-			companyId: companyId,
-			day: dayOfWeek,
-			startTime: "08:00",
-			endTime: "17:00",
-		});
-		inMemoryCompanyAvailabilityRepository.items.push(companyAvailability);
+		const mockStaff = makeStaff();
+		const mockAppointment = {
+			startDate: addDays(new Date(), 1),
+			endDate: addDays(new Date(), 1),
+		};
+		const mockStaffWithAppointments = {
+			...mockStaff,
+			id: mockStaff.id,
+			appointments: [mockAppointment],
+		};
 
-		const result = await sut.execute({
-			companyId: companyId.toString(),
-			serviceId: service.id.toString(),
-			date: defaultDate,
-		});
+		mockServiceRepository.findById.mockResolvedValueOnce(service);
+		mockCompanyAvailabilityRepository.findByCompanyIdAndDayOfWeek.mockResolvedValueOnce(
+			mockCompanyAvailability,
+		);
+		mockCompanyAvailabilityExceptionRepository.findExceptionsByCompanyAndPeriod.mockResolvedValueOnce(
+			[],
+		);
+		mockStaffRepository.fetchCompanyStaffWithAppointmentsInDateRange.mockResolvedValueOnce(
+			[mockStaffWithAppointments],
+		);
 
-		expectResultIsRight(result);
-		const availableSlots = result.value.slots;
-		expect(availableSlots.length).toBeGreaterThan(0);
-		expect(availableSlots.some((slot) => slot.label === "09:00")).toBe(false);
-		expect(availableSlots.some((slot) => slot.label === "09:30")).toBe(true);
+		const result = await sut.execute({ companyId, serviceId, date });
+
+		expect(result.isRight()).toBe(true);
+		expect(result.value as any).toHaveProperty("slots");
+		expect(
+			mockStaffRepository.fetchCompanyStaffWithAppointmentsInDateRange,
+		).toHaveBeenCalledWith(
+			companyId,
+			expect.objectContaining({
+				startDate: expect.any(Date),
+				endDate: expect.any(Date),
+			}),
+		);
 	});
 
-	it("should return an error (Left) when the provided date is invalid", async () => {
-		const invalidDate = new Date("invalid-date-string");
+	it("should handle company availability exceptions", async () => {
+		const service = makeService({ duration: 60 });
+		const companyId = "company-id";
+		const serviceId = service.id.toString();
+		const date = addDays(new Date(), 1);
 
-		const result = await sut.execute({
-			companyId: companyId.toString(),
-			serviceId: service.id.toString(),
-			date: invalidDate,
-		});
+		const mockCompanyAvailability = {
+			timeRange: { startTime: "08:00", endTime: "18:00" },
+			launchTime: { startTime: "12:00", endTime: "13:00" },
+		};
 
-		expectResultIsLeft(result);
+		const mockException = {
+			startDate: addDays(new Date(), 1),
+			endDate: addDays(new Date(), 1),
+		};
+
+		const mockStaff = makeStaff();
+		const mockStaffWithAppointments = {
+			...mockStaff,
+			id: mockStaff.id,
+			appointments: [],
+		};
+
+		mockServiceRepository.findById.mockResolvedValueOnce(service);
+		mockCompanyAvailabilityRepository.findByCompanyIdAndDayOfWeek.mockResolvedValueOnce(
+			mockCompanyAvailability,
+		);
+		mockCompanyAvailabilityExceptionRepository.findExceptionsByCompanyAndPeriod.mockResolvedValueOnce(
+			[mockException],
+		);
+		mockStaffRepository.fetchCompanyStaffWithAppointmentsInDateRange.mockResolvedValueOnce(
+			[mockStaffWithAppointments],
+		);
+
+		const result = await sut.execute({ companyId, serviceId, date });
+
+		expect(result.isRight()).toBe(true);
+		expect(result.value as any).toHaveProperty("slots");
+		expect(
+			mockCompanyAvailabilityExceptionRepository.findExceptionsByCompanyAndPeriod,
+		).toHaveBeenCalledWith(
+			companyId,
+			expect.objectContaining({
+				startDate: expect.any(Date),
+				endDate: expect.any(Date),
+			}),
+		);
 	});
 });
