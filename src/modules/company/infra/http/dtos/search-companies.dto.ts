@@ -16,7 +16,7 @@ const response = companyDto
 	.omit({ logo: true })
 	.extend({
 		address: locationDto,
-		image: assetDto.pick({ id: true, url: true }).optional(),
+		image: assetDto.pick({ id: true, url: true }).nullish(),
 	});
 
 export class SearchCompaniesRequestDto extends createZodDto(request) {}
