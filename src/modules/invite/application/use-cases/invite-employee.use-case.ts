@@ -89,6 +89,7 @@ export class InviteEmployeeUseCase {
 				userId: user.id,
 				companyId: new UniqueEntityID(companyId),
 				role,
+				createdAt: new Date(),
 			});
 
 			await this.staffRepository.create(staff);
