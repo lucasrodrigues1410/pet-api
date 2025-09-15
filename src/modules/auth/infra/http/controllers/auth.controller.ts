@@ -14,7 +14,6 @@ import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { ZodResponse } from "nestjs-zod";
 import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
 import { AcceptInviteUseCase } from "../../../application/use-cases/accept-invite.use-case";
-import { GetSessionUseCase } from "../../../application/use-cases/get-session.use-case";
 import { SignInUseCase } from "../../../application/use-cases/sign-in.use-case";
 import { SignUpUseCase } from "../../../application/use-cases/sign-up.use-case";
 import { InvalidCredentialsError } from "../../../domain/errors/invalid-credentials.error";
@@ -39,7 +38,6 @@ export class AuthController {
 	constructor(
 		private signInUseCase: SignInUseCase,
 		private signUpUseCase: SignUpUseCase,
-		private getSessionUseCase: GetSessionUseCase,
 		private acceptInviteUseCase: AcceptInviteUseCase,
 	) {}
 
@@ -97,9 +95,7 @@ export class AuthController {
 	@ZodResponse({ status: 200, type: SessionResponseDto })
 	@HttpCode(HttpStatus.OK)
 	async getSession(@User() payload: UserPayload) {
-		const result = await this.getSessionUseCase.execute(payload);
-
-		return SessionPresenter.present(result.value);
+		return SessionPresenter.present(payload);
 	}
 
 	@Post("accept-invite")

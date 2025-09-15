@@ -1,5 +1,5 @@
 import { StaffRole } from "@/modules/staff/domain/entities/staff.entity";
-import { User } from "@/modules/user/domain/entities/user.entity";
+import { User, UserType } from "@/modules/user/domain/entities/user.entity";
 
 export class AuthPresenter {
 	static presentSignIn(
@@ -25,9 +25,9 @@ export class AuthPresenter {
 		sub: string;
 		name: string;
 		email: string;
-		type: string;
+		type: UserType;
 		companyId?: string;
-		role?: string;
+		role?: StaffRole;
 	}) {
 		return {
 			id: payload.sub,
