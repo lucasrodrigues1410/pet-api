@@ -19,9 +19,6 @@ COPY . .
 # Gera Prisma Client (se você usa Prisma)
 RUN bun prisma generate
 
-# Roda o build do projeto (ajuste se o script for outro)
-RUN bun run build
-
 # Expõe porta e start
 EXPOSE 3000
-CMD ["bun", "start:prod"]
+CMD ["bun", "start"]
