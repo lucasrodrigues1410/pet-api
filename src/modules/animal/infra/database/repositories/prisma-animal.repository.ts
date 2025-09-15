@@ -1,6 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "@/core/infra/prisma/prisma.service";
+import { Asset } from "@/modules/asset/domain/entities/asset";
 import { PrismaAssetMapper } from "@/modules/asset/infra/database/mappers/prisma-asset.mapper";
+import { Breed } from "@/modules/breed/domain/entities/breed.entity";
 import { PrismaBreedMapper } from "@/modules/breed/infra/database/mappers/prisma-breed.mapper";
 import type { PaginationQuery } from "@/shared/utils/pagination-query";
 import { paginate } from "@/shared/utils/paginator";
