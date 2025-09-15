@@ -3,6 +3,7 @@ import { PassportStrategy } from "@nestjs/passport";
 import { ExtractJwt, Strategy } from "passport-jwt";
 import { z } from "zod";
 import { EnvService } from "@/core/infra/env/env.service";
+import { staffRole } from "@/modules/staff/domain/entities/staff.entity";
 import { userType } from "@/modules/user/domain/entities/user.entity";
 
 const tokenPayloadSchema = z.object({
@@ -11,7 +12,7 @@ const tokenPayloadSchema = z.object({
 	email: z.email(),
 	type: z.enum(userType),
 	companyId: z.string().optional(),
-	role: z.string().optional(),
+	role: z.enum(staffRole).optional(),
 	avatar: z.string().optional(),
 });
 
