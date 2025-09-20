@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, jest } from "bun:test";
-import { CommandBus } from "@nestjs/cqrs";
 import { Test } from "@nestjs/testing";
+import { NotificationPublisher } from "@/modules/notification/domain/interfaces/notification-publisher.interface";
 import { UserRepository } from "@/modules/user/domain/repositories/user.repository";
 import { HashGenerator } from "../../domain/interfaces/hash-generator.interface";
 import { SignUpUseCase } from "./sign-up.use-case";
@@ -18,8 +18,7 @@ describe("SignUpUseCase", () => {
 	};
 
 	const mockHashGenerator = { hash: jest.fn() };
-
-	const mockCommandBus = { execute: jest.fn() };
+	const mockNotificationPublisher = { dispatch: jest.fn() };
 
 	beforeEach(async () => {
 		mockUserRepo.findByEmail.mockReset();
@@ -28,14 +27,14 @@ describe("SignUpUseCase", () => {
 		mockUserRepo.update.mockReset();
 		mockUserRepo.delete.mockReset();
 		mockHashGenerator.hash.mockReset();
-		mockCommandBus.execute.mockReset();
+		mockNotificationPublisher.dispatch.mockReset();
 
 		moduleRef = await Test.createTestingModule({
 			providers: [
 				SignUpUseCase,
 				{ provide: UserRepository, useValue: mockUserRepo },
 				{ provide: HashGenerator, useValue: mockHashGenerator },
-				{ provide: CommandBus, useValue: mockCommandBus },
+				{ provide: NotificationPublisher, useValue: mockNotificationPublisher },
 			],
 		}).compile();
 
@@ -48,7 +47,7 @@ describe("SignUpUseCase", () => {
 		mockUserRepo.findByEmail.mockResolvedValueOnce(null); // No existing user
 		mockHashGenerator.hash.mockResolvedValueOnce(hashedPassword);
 		mockUserRepo.create.mockResolvedValueOnce(undefined);
-		mockCommandBus.execute.mockResolvedValueOnce(undefined);
+		mockNotificationPublisher.dispatch.mockResolvedValueOnce(undefined);
 
 		const result = await sut.execute({
 			name: "John Doe",
@@ -75,6 +74,6 @@ describe("SignUpUseCase", () => {
 				type: "customer",
 			}),
 		);
-		expect(mockCommandBus.execute).toHaveBeenCalled();
+		expect(mockNotificationPublisher.dispatch).toHaveBeenCalled();
 	});
 });

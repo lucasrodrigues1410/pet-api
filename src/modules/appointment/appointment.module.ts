@@ -1,4 +1,5 @@
 import { Module } from "@nestjs/common";
+import { NotificationModule } from "../notification/notification.module";
 import { GetAppointmentByCompanyIdUseCase } from "./application/use-cases/get-appointment-by-company-id.use-case";
 import { GetAppointmentByIdUseCase } from "./application/use-cases/get-appointment-by-id.use-case";
 import { GetAppointmentByUserIdUseCase } from "./application/use-cases/get-appointment-by-user-id.use-case";
@@ -8,6 +9,7 @@ import { PrismaAppointmentRepository } from "./infra/database/repositories/prism
 import { AppointmentController } from "./infra/http/controllers/appointment.controller";
 
 @Module({
+	imports: [NotificationModule],
 	providers: [
 		GetAppointmentByIdUseCase,
 		GetAppointmentByUserIdUseCase,

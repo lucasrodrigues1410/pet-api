@@ -9,6 +9,6 @@ export class BullNotificationDispatcher implements NotificationPublisher {
 	constructor(@InjectQueue("notifications") private readonly queue: Queue) {}
 
 	async dispatch(event: NotificationEvent): Promise<void> {
-		await this.queue.add("notification", event);
+		await this.queue.add(event.name, event);
 	}
 }

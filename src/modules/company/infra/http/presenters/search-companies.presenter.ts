@@ -12,11 +12,13 @@ export class SearchCompaniesPresenter {
 		result: PaginationResult<CompanyWithRelations>,
 	): SearchCompaniesResponseDto {
 		return {
-			items: result.items.map((company) => CompanyPresenter.presentWithAddressAndImage(
-				company,
-				company.address,
-				company.image,
-			)),
+			items: result.items.map((company) =>
+				CompanyPresenter.presentWithAddressAndImage(
+					company,
+					company.address,
+					company.image,
+				),
+			),
 			meta: result.meta,
 		};
 	}

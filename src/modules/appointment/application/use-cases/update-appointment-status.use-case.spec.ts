@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, jest } from "bun:test";
-import { CommandBus } from "@nestjs/cqrs";
 import { Test } from "@nestjs/testing";
 import { makeAppointment } from "test/factories/make-appointment";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
+import { NotificationPublisher } from "@/modules/notification/domain/interfaces/notification-publisher.interface";
 import { NotAllowedError } from "@/shared/errors/errors/not-allowed.error";
 import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
 import { AppointmentRepository } from "../../domain/repositories/appointment.repository";
@@ -33,7 +33,7 @@ describe("UpdateAppointmentStatusUseCase", () => {
 		delete: jest.fn(),
 	};
 
-	const mockCommandBus = { execute: jest.fn() };
+	const mockCommandBus = { dispatch: jest.fn() };
 
 	beforeEach(async () => {
 		mockAppointmentRepo.findById.mockReset();
@@ -43,13 +43,13 @@ describe("UpdateAppointmentStatusUseCase", () => {
 		mockAppointmentRepo.update.mockReset();
 		mockAppointmentRepo.updateStatus.mockReset();
 		mockAppointmentRepo.delete.mockReset();
-		mockCommandBus.execute.mockReset();
+		mockCommandBus.dispatch.mockReset();
 
 		moduleRef = await Test.createTestingModule({
 			providers: [
 				UpdateAppointmentStatusUseCase,
 				{ provide: AppointmentRepository, useValue: mockAppointmentRepo },
-				{ provide: CommandBus, useValue: mockCommandBus },
+				{ provide: NotificationPublisher, useValue: mockCommandBus },
 			],
 		}).compile();
 
@@ -70,7 +70,11 @@ describe("UpdateAppointmentStatusUseCase", () => {
 			);
 
 			const appointmentWithRelations = Object.assign(appointment, {
-				client: { name: "Client Name", email: "client@email.com" },
+				client: {
+					name: "Client Name",
+					email: "client@email.com",
+					id: new UniqueEntityID("client-1"),
+				},
 				animal: { name: "Pet Name" },
 				service: { name: "Service Name" },
 				company: { name: "Company Name" },
@@ -143,7 +147,11 @@ describe("UpdateAppointmentStatusUseCase", () => {
 			);
 
 			const appointmentWithRelations = Object.assign(companyAppointment, {
-				client: { name: "Client Name", email: "client@email.com" },
+				client: {
+					name: "Client Name",
+					email: "client@email.com",
+					id: new UniqueEntityID("client-1"),
+				},
 				animal: { name: "Pet Name" },
 				service: { name: "Service Name" },
 				company: { name: "Company Name" },

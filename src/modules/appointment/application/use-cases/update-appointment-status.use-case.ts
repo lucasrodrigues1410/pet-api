@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
-import { CommandBus } from "@nestjs/cqrs";
 import { DomainError } from "@/core/domain/errors/domain-error";
-import { SendClientAppointmentChangeStatusNotificationCommand } from "@/modules/notification/application/commands/send-appointment-change-status.handler";
+import { AppointmentChangeStatusEvent } from "@/modules/notification/domain/events/appointment-change-status.event";
+import { NotificationPublisher } from "@/modules/notification/domain/interfaces/notification-publisher.interface";
 import { UserType } from "@/modules/user/domain/entities/user.entity";
 import { Either, left, right } from "@/shared/either";
 import { NotAllowedError } from "@/shared/errors/errors/not-allowed.error";
@@ -29,7 +29,7 @@ type UpdateAppointmentStatusUseCaseOutput = Either<
 export class UpdateAppointmentStatusUseCase {
 	constructor(
 		private readonly appointmentRepository: AppointmentRepository,
-		private readonly commandBus: CommandBus,
+		private readonly notifyPublisher: NotificationPublisher,
 	) {}
 
 	async execute({
@@ -39,7 +39,6 @@ export class UpdateAppointmentStatusUseCase {
 		userType,
 		companyId,
 	}: UpdateAppointmentStatusUseCaseInput): Promise<UpdateAppointmentStatusUseCaseOutput> {
-		// Buscar o agendamento
 		const appointment =
 			await this.appointmentRepository.findById(appointmentId);
 		if (!appointment) {
@@ -50,7 +49,6 @@ export class UpdateAppointmentStatusUseCase {
 			);
 		}
 
-		// Verificar permissões de acesso
 		const hasPermission = this.checkPermissions(
 			appointment,
 			userId,
@@ -66,22 +64,18 @@ export class UpdateAppointmentStatusUseCase {
 		}
 
 		try {
-			// Atualizar status usando as regras de domínio
 			appointment.updateStatus(newStatus, userType === "company");
 
-			// Persistir alteração
 			await this.appointmentRepository.updateStatus(appointmentId, newStatus);
-
-			this.commandBus.execute(
-				new SendClientAppointmentChangeStatusNotificationCommand({
-					appointmentStatus: appointment.status,
+			await this.notifyPublisher.dispatch(
+				new AppointmentChangeStatusEvent(appointment.client.id.toString(), {
 					userName: appointment.client.name,
 					userEmail: appointment.client.email,
-					petName: appointment.animal.name,
-					serviceName: appointment.service.name,
-					providerName: appointment.company.name,
 					appointmentId: appointmentId,
-					clientId: appointment.clientId.toString(),
+					appointmentStatus: appointment.status,
+					petName: appointment.animal.name,
+					providerName: appointment.service.name,
+					serviceName: appointment.service.name,
 					updatedOn: new Date(),
 				}),
 			);
@@ -100,6 +94,7 @@ export class UpdateAppointmentStatusUseCase {
 		userType: UserType,
 		companyId?: string,
 	): boolean {
+		console.log(appointment.clientId.toString(), userId);
 		if (userType === "customer") {
 			return appointment.clientId.toString() === userId;
 		}

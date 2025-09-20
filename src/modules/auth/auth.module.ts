@@ -2,6 +2,7 @@ import { Module } from "@nestjs/common";
 import { JwtModule } from "@nestjs/jwt";
 import { EnvService } from "@/core/infra/env/env.service";
 import { InviteModule } from "../invite/invite.module";
+import { NotificationModule } from "../notification/notification.module";
 import { StaffModule } from "../staff/staff.module";
 import { UserModule } from "../user/user.module";
 import { AcceptInviteUseCase } from "./application/use-cases/accept-invite.use-case";
@@ -26,6 +27,7 @@ import { JwtStrategy } from "./infra/strategies/jwt.strategy";
 		UserModule,
 		StaffModule,
 		InviteModule,
+		NotificationModule,
 	],
 	controllers: [AuthController],
 	providers: [

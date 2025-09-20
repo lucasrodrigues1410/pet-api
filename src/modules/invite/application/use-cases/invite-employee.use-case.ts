@@ -3,7 +3,8 @@ import { randomUUIDv7 } from "bun";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { UserAlreadyExistError } from "@/modules/auth/domain/errors/user-already-exists.error";
 import { CompanyRepository } from "@/modules/company/domain/repositories/company.repository";
-import { QueueEmailUseCase } from "@/modules/email/application/use-cases/queue-email.use-case";
+import { EmployeeInviteEvent } from "@/modules/notification/domain/events/employee-invite.event";
+import { NotificationPublisher } from "@/modules/notification/domain/interfaces/notification-publisher.interface";
 import { Staff, StaffRole } from "@/modules/staff/domain/entities/staff.entity";
 import { StaffRepository } from "@/modules/staff/domain/repositories/staff.repository";
 import { User } from "@/modules/user/domain/entities/user.entity";
@@ -35,7 +36,7 @@ export class InviteEmployeeUseCase {
 		private readonly companyRepository: CompanyRepository,
 		private readonly staffRepository: StaffRepository,
 		private readonly inviteRepository: InviteRepository,
-		private readonly queueEmailUseCase: QueueEmailUseCase,
+		private readonly notifyPublisher: NotificationPublisher,
 	) {}
 
 	async execute({
@@ -109,27 +110,14 @@ export class InviteEmployeeUseCase {
 
 			const acceptInviteUrl = `${process.env.FRONTEND_URL}/invite/accept?token=${invite.token}`;
 
-			try {
-				await this.queueEmailUseCase.executeHighPriority({
-					templateKey: "employee-invite",
-					target: email,
-					variables: {
-						employeeName: name,
-						companyName: company.name,
-						inviterName: inviter.name,
-						token: invite.token,
-						expiresAt: invite.expiresAt,
-						acceptInviteUrl,
-					},
-				});
-				this.logger.log(`Invite email queued successfully for: ${email}`);
-			} catch (emailError) {
-				this.logger.warn(
-					`Failed to queue invite email for ${email}`,
-					(emailError as Error).stack,
-				);
-			}
-
+			await this.notifyPublisher.dispatch(
+				new EmployeeInviteEvent(user.id.toString(), {
+					email: user.email,
+					name: user.name,
+					expiresAt: invite.expiresAt,
+					acceptInviteUrl,
+				}),
+			);
 			return right({ invite, user });
 		} catch (error) {
 			this.logger.error(
