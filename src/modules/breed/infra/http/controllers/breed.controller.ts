@@ -2,6 +2,7 @@ import { BadRequestException, Controller, Get, Query } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { ZodResponse } from "nestjs-zod";
 import { ListBreedsUseCase } from "src/modules/breed/application/use-cases/list-breeds.use-case";
+import { Public } from "@/modules/auth/infra/http/decorators/public.decorator";
 import { BreedListResponse } from "../dtos/breed.response.dto";
 import { ListBreedsQueryDto } from "../dtos/list-breeds.dto";
 import { ListBreedsPresenter } from "../presenters/list-breeds.presenter";
@@ -12,6 +13,7 @@ export class BreedController {
 	constructor(private readonly listBreedsUseCase: ListBreedsUseCase) {}
 
 	@Get()
+	@Public()
 	@ApiOperation({
 		summary: "Listar todas as raças",
 		operationId: "getAllBreeds",
