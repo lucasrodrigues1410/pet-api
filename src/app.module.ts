@@ -1,7 +1,6 @@
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from "@nestjs/core";
-import { CqrsModule } from "@nestjs/cqrs";
 import { ZodSerializerInterceptor, ZodValidationPipe } from "nestjs-zod";
 import { BullEventDispatcherModule } from "./core/infra/bull/bull-event-dispatcher.module";
 import { envSchema } from "./core/infra/env/env";
@@ -17,7 +16,6 @@ import { BreedModule } from "./modules/breed/breed.module";
 import { CategoryModule } from "./modules/category/category.module";
 import { CompanyModule } from "./modules/company/company.module";
 import { DashboardModule } from "./modules/dashboard/dashboard.module";
-import { EmailModule } from "./modules/email/email.module";
 import { HealthModule } from "./modules/health/health.module";
 import { InviteModule } from "./modules/invite/invite.module";
 import { NotificationModule } from "./modules/notification/notification.module";
@@ -33,10 +31,9 @@ import { UserModule } from "./modules/user/user.module";
 			validate: (env) => envSchema.parse(env),
 			cache: true,
 		}),
-		CqrsModule.forRoot(),
 		EnvModule,
-		EmailModule,
 		BullEventDispatcherModule,
+		NotificationModule,
 		PrismaModule,
 		AuthModule,
 		UserModule,
@@ -50,7 +47,6 @@ import { UserModule } from "./modules/user/user.module";
 		BookingModule,
 		StaffModule,
 		InviteModule,
-		NotificationModule,
 		DashboardModule,
 		RatingModule,
 		HealthModule,

@@ -6,7 +6,7 @@ import { makeUser } from "test/factories/make-user";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { UserAlreadyExistError } from "@/modules/auth/domain/errors/user-already-exists.error";
 import { CompanyRepository } from "@/modules/company/domain/repositories/company.repository";
-import { QueueEmailUseCase } from "@/modules/email/application/use-cases/queue-email.use-case";
+import { NotificationPublisher } from "@/modules/notification/domain/interfaces/notification-publisher.interface";
 import { StaffRole } from "@/modules/staff/domain/entities/staff.entity";
 import { StaffRepository } from "@/modules/staff/domain/repositories/staff.repository";
 import { UserRepository } from "@/modules/user/domain/repositories/user.repository";
@@ -29,11 +29,7 @@ const mockStaffRepository = { create: jest.fn() };
 
 const mockInviteRepository = { create: jest.fn() };
 
-const mockQueueEmailUseCase: Partial<QueueEmailUseCase> = {
-	execute: jest.fn(),
-	executeHighPriority: jest.fn(),
-	executeWithDelay: jest.fn(),
-};
+const mockNotificationPublisher = { dispatch: jest.fn() };
 
 describe("Invite Employee", () => {
 	beforeEach(async () => {
@@ -43,9 +39,7 @@ describe("Invite Employee", () => {
 		mockCompanyRepository.findById.mockReset();
 		mockStaffRepository.create.mockReset();
 		mockInviteRepository.create.mockReset();
-		(mockQueueEmailUseCase.execute as any).mockReset?.();
-		(mockQueueEmailUseCase.executeHighPriority as any).mockReset?.();
-		(mockQueueEmailUseCase.executeWithDelay as any).mockReset?.();
+		(mockNotificationPublisher.dispatch as any).mockReset?.();
 
 		moduleRef = await Test.createTestingModule({
 			providers: [
@@ -54,7 +48,7 @@ describe("Invite Employee", () => {
 				{ provide: CompanyRepository, useValue: mockCompanyRepository },
 				{ provide: StaffRepository, useValue: mockStaffRepository },
 				{ provide: InviteRepository, useValue: mockInviteRepository },
-				{ provide: QueueEmailUseCase, useValue: mockQueueEmailUseCase },
+				{ provide: NotificationPublisher, useValue: mockNotificationPublisher },
 			],
 		}).compile();
 
@@ -94,10 +88,8 @@ describe("Invite Employee", () => {
 			expect(mockUserRepository.create).toHaveBeenCalled();
 			expect(mockStaffRepository.create).toHaveBeenCalled();
 			expect(mockInviteRepository.create).toHaveBeenCalled();
-			// Email queued (non-throwing)
 			expect(
-				(mockQueueEmailUseCase.executeHighPriority as any).mock.calls.length >=
-					0,
+				(mockNotificationPublisher.dispatch as any).mock.calls.length >= 0,
 			).toBe(true);
 		}
 	});

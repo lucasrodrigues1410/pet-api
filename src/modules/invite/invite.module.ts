@@ -1,6 +1,7 @@
 import { Module } from "@nestjs/common";
 import { CompanyModule } from "../company/company.module";
 import { EmailModule } from "../email/email.module";
+import { NotificationModule } from "../notification/notification.module";
 import { StaffModule } from "../staff/staff.module";
 import { UserModule } from "../user/user.module";
 import { InviteEmployeeUseCase } from "./application/use-cases/invite-employee.use-case";
@@ -10,7 +11,13 @@ import { PrismaInviteRepository } from "./infra/database/repositories/prisma-inv
 import { InviteController } from "./infra/http/controllers/invite.controller";
 
 @Module({
-	imports: [CompanyModule, EmailModule, StaffModule, UserModule],
+	imports: [
+		CompanyModule,
+		EmailModule,
+		StaffModule,
+		UserModule,
+		NotificationModule,
+	],
 	controllers: [InviteController],
 	providers: [
 		InviteEmployeeUseCase,

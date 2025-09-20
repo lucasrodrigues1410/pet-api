@@ -1,51 +1,26 @@
 import { BullModule } from "@nestjs/bullmq";
 import { Module } from "@nestjs/common";
-import { EmailModule } from "../email/email.module";
-import { SendClientAppointmentChangeStatusNotification } from "./application/commands/send-appointment-change-status.handler";
-import { SendUserCreatedNotification } from "./application/commands/send-user-created.handler";
-import { SendClientAppointmentChangeStatusEmailHandler } from "./application/events/appointment-change-status.event";
-import { SendUserCreatedEmailHandler } from "./application/events/user-created.event";
-import { GetUnreadNotificationsCountUseCase } from "./application/use-cases/get-unread-notifications-count.use-case";
-import { GetUserNotificationsUseCase } from "./application/use-cases/get-user-notifications.use-case";
-import { MarkAllNotificationsAsReadUseCase } from "./application/use-cases/mark-all-notifications-as-read.use-case";
-import { MarkNotificationAsReadUseCase } from "./application/use-cases/mark-notification-as-read.use-case";
-import { ProcessNotificationUseCase } from "./application/use-cases/process-notification.use-case";
-import { NotificationRepository } from "./domain/interfaces/notification.repository.interface";
+import { ConfigService } from "@nestjs/config";
+import { Novu } from "@novu/api";
 import { NotificationPublisher } from "./domain/interfaces/notification-publisher.interface";
-import { PrismaNotificationRepository } from "./infra/database/repositories/prisma-notification.repository";
-import { BullNotificationDispatcher } from "./infra/queue/event-dispatcher.service";
-import { BullNotificationProcessor } from "./infra/queue/event-processor.service";
+import { BullNotificationDispatcher } from "./infra/queue/notification-dispatcher.service";
+import { BullNotificationProcessor } from "./infra/queue/notification-processor.service";
 
 @Module({
-	imports: [BullModule.registerQueue({ name: "notifications" }), EmailModule],
+	imports: [BullModule.registerQueue({ name: "notifications" })],
 	providers: [
-		{ provide: NotificationRepository, useClass: PrismaNotificationRepository },
-		// Command Handlers
-		SendUserCreatedNotification,
-		SendClientAppointmentChangeStatusNotification,
-
-		// Event Handlers
-		SendUserCreatedEmailHandler,
-		SendClientAppointmentChangeStatusEmailHandler,
-
-		// Use Cases
-		ProcessNotificationUseCase,
-		GetUserNotificationsUseCase,
-		MarkNotificationAsReadUseCase,
-		MarkAllNotificationsAsReadUseCase,
-		GetUnreadNotificationsCountUseCase,
-
-		// Infrastructure
+		BullNotificationDispatcher,
 		{ provide: NotificationPublisher, useClass: BullNotificationDispatcher },
-		BullNotificationProcessor,
+		{
+			provide: BullNotificationProcessor,
+			useFactory: (config: ConfigService) => {
+				const apiKey = config.get<string>("NOVU_SECRET_KEY");
+				const novuInstance = new Novu({ secretKey: apiKey });
+				return new BullNotificationProcessor(novuInstance);
+			},
+			inject: [ConfigService],
+		},
 	],
-	exports: [
-		// Export use cases so they can be used by controllers
-		GetUserNotificationsUseCase,
-		MarkNotificationAsReadUseCase,
-		MarkAllNotificationsAsReadUseCase,
-		GetUnreadNotificationsCountUseCase,
-		NotificationRepository,
-	],
+	exports: [NotificationPublisher],
 })
 export class NotificationModule {}
