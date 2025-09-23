@@ -1,3 +1,4 @@
+import { FileInterceptor } from "@nest-lab/fastify-multer";
 import {
 	BadRequestException,
 	Body,
@@ -7,13 +8,13 @@ import {
 	HttpCode,
 	NotFoundException,
 	Param,
+	Patch,
 	Post,
 	Put,
 	Query,
 	UploadedFile,
 	UseInterceptors,
 } from "@nestjs/common";
-import { FileInterceptor } from "@nestjs/platform-express";
 import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { ZodResponse } from "nestjs-zod";
 import { User } from "src/modules/auth/infra/http/decorators/user.decorator";
@@ -116,15 +117,15 @@ export class AnimalController {
 		return GetAnimalByIdPresenter.present(result.value.animal as any);
 	}
 
-	@Post(":id/asset")
+	@Patch(":id/asset")
+	@HttpCode(201)
+	@UserTypeDecorator("customer")
+	@UseInterceptors(FileInterceptor("file"))
+	@ApiConsumes("multipart/form-data")
 	@ApiOperation({
 		summary: "Adicionar um asset a um animal",
 		operationId: "addAssetToAnimal",
 	})
-	@UserTypeDecorator("customer")
-	@HttpCode(201)
-	@UseInterceptors(FileInterceptor("file"))
-	@ApiConsumes("multipart/form-data")
 	@ApiBody({ description: "Envio de imagem", type: UploadAnimalImageDto })
 	async addAsset(
 		@User("sub") userId: string,
@@ -134,7 +135,7 @@ export class AnimalController {
 		const result = await this.addAssetToAnimalUseCase.execute({
 			userId,
 			animalId,
-			file: file as Express.Multer.File,
+			file,
 		});
 
 		if (result.isLeft()) {

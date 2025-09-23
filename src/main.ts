@@ -1,3 +1,4 @@
+import multipart from "@fastify/multipart";
 import { NestFactory } from "@nestjs/core";
 import {
 	FastifyAdapter,
@@ -14,6 +15,7 @@ async function bootstrap() {
 		new FastifyAdapter(),
 		{ rawBody: true, cors: true },
 	);
+	app.register(multipart);
 
 	const openApiDoc = SwaggerModule.createDocument(
 		app,

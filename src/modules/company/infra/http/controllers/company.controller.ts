@@ -1,3 +1,4 @@
+import { FileInterceptor } from "@nest-lab/fastify-multer";
 import {
 	BadRequestException,
 	Controller,
@@ -7,13 +8,12 @@ import {
 	InternalServerErrorException,
 	NotFoundException,
 	Param,
-	Post,
+	Patch,
 	Query,
 	UploadedFile,
 	UseGuards,
 	UseInterceptors,
 } from "@nestjs/common";
-import { FileInterceptor } from "@nestjs/platform-express";
 import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { ZodResponse } from "nestjs-zod";
 import { AddLogoToCompanyUseCase } from "src/modules/company/application/use-cases/add-logo-to-company.use-case";
@@ -75,7 +75,7 @@ export class CompanyController {
 		return CompanyByIdPresenter.present(result.value.company);
 	}
 
-	@Post(":id/logo")
+	@Patch(":id/logo")
 	@ApiOperation({
 		summary: "Adicionar logo à empresa",
 		operationId: "addLogoToCompany",
