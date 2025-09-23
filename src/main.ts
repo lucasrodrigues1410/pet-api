@@ -1,26 +1,19 @@
 import { NestFactory } from "@nestjs/core";
-import type { NestExpressApplication } from "@nestjs/platform-express";
+import {
+	FastifyAdapter,
+	NestFastifyApplication,
+} from "@nestjs/platform-fastify";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
-import compression from "compression";
-import express from "express";
-import helmet from "helmet";
 import { cleanupOpenApiDoc } from "nestjs-zod";
 import { AppModule } from "./app.module";
 import { EnvService } from "./core/infra/env/env.service";
 
 async function bootstrap() {
-	const app = await NestFactory.create<NestExpressApplication>(AppModule, {
-		rawBody: true,
-		cors: true,
-		bodyParser: true,
-		//logger: ["error", "warn","log"],
-	});
-
-	app.use(compression());
-	app.use(helmet());
-
-	app.use(express.json({ limit: "10mb" }));
-	app.use(express.urlencoded({ extended: true, limit: "10mb" }));
+	const app = await NestFactory.create<NestFastifyApplication>(
+		AppModule,
+		new FastifyAdapter(),
+		{ rawBody: true, cors: true },
+	);
 
 	const openApiDoc = SwaggerModule.createDocument(
 		app,
