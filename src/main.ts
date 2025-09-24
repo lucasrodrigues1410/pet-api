@@ -10,24 +10,25 @@ import { AppModule } from "./app.module";
 import { EnvService } from "./core/infra/env/env.service";
 
 async function bootstrap() {
+	//Fastify adapter
+	const adapter = new FastifyAdapter();
 	const app = await NestFactory.create<NestFastifyApplication>(
 		AppModule,
-		new FastifyAdapter(),
+		adapter,
 		{ rawBody: true, cors: true },
 	);
 	app.register(multipart);
 
-	const openApiDoc = SwaggerModule.createDocument(
-		app,
-		new DocumentBuilder()
-			.setTitle("API de Cuidados com Animais")
-			.setDescription(
-				"API para gerenciar serviços e informações de cuidados com animais",
-			)
-			.setVersion("1.0")
-			.setOpenAPIVersion("3.1.0")
-			.build(),
-	);
+	//Swagger configuration
+	const config = new DocumentBuilder()
+		.setTitle("API de Cuidados com Animais")
+		.setDescription(
+			"API para gerenciar serviços e informações de cuidados com animais",
+		)
+		.setVersion("1.0")
+		.setOpenAPIVersion("3.1.0")
+		.build();
+	const openApiDoc = SwaggerModule.createDocument(app, config);
 
 	SwaggerModule.setup(
 		"docs",
