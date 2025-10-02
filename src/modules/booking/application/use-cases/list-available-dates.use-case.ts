@@ -1,8 +1,8 @@
 import { Injectable } from "@nestjs/common";
-import { endOfDay, getDay, isValid, startOfDay } from "date-fns";
+import { endOfDay, getDay, startOfDay } from "date-fns";
+import { AppointmentRepository } from "@/modules/appointment/domain/repositories/appointment.repository";
 import { daysOfWeek } from "@/modules/company-availability/domain/entities/company-availability.entity";
 import { CompanyAvailabilityRepository } from "@/modules/company-availability/domain/repositories/company-availability.repository";
-import { CompanyAvailabilityExcpetionRepository } from "@/modules/company-availability/domain/repositories/company-availability-exception.repository";
 import { ServiceRepository } from "@/modules/service/domain/repositories/service.repository";
 import { StaffRepository } from "@/modules/staff/domain/repositories/staff.repository";
 import { Either, left, right } from "@/shared/either";
@@ -24,13 +24,10 @@ type ListAvailableDatesUseCaseResponse = Either<
 
 @Injectable()
 export class ListAvailableDatesUseCase {
-	private readonly timeSlotGenerator = new TimeSlotGeneratorService();
-	private readonly availableSlotsService = new AvailableSlotsService();
-
 	constructor(
 		private readonly companyAvailability: CompanyAvailabilityRepository,
-		private readonly companyAvailabilityException: CompanyAvailabilityExcpetionRepository,
 		private readonly serviceRepository: ServiceRepository,
+		private readonly appointmentRepository: AppointmentRepository,
 		private readonly staffRepo: StaffRepository,
 	) {}
 
@@ -39,35 +36,26 @@ export class ListAvailableDatesUseCase {
 		serviceId,
 		date,
 	}: ListAvailableDatesUseCaseRequest): Promise<ListAvailableDatesUseCaseResponse> {
-		if (!companyId || !serviceId || !date || !isValid(date)) {
-			return left(
-				new Error("Parâmetros inválidos: companyId, serviceId ou date"),
-			);
-		}
-
 		const dayOfWeek = daysOfWeek[getDay(date)];
 		const startDate = startOfDay(date);
 		const endDate = endOfDay(date);
 
 		const service = await this.serviceRepository.findById(serviceId);
-		if (!service) {
+		if (!service || !service.isActive) {
 			return left(new ResourceNotFoundError("Serviço não encontrado"));
 		}
 
-		const [companyAvailability, companyAvailabilityExceptions, staffMembers] =
+		const [companyAvailability, appointments, totalStaff] =
 			await Promise.all([
 				this.companyAvailability.findByCompanyIdAndDayOfWeek(
 					companyId,
 					dayOfWeek,
 				),
-				this.companyAvailabilityException.findExceptionsByCompanyAndPeriod(
+				this.appointmentRepository.getByPeriodAndCompanyId({
 					companyId,
-					{ startDate, endDate },
-				),
-				this.staffRepo.fetchCompanyStaffWithAppointmentsInDateRange(companyId, {
-					startDate,
-					endDate,
+					range: { startDate, endDate },
 				}),
+				this.staffRepo.totalStaffByCompanyId(companyId),
 			]);
 
 		if (!companyAvailability) {
@@ -77,22 +65,19 @@ export class ListAvailableDatesUseCase {
 		}
 
 		// Gera os time slots possíveis
-		const timeSlots = this.timeSlotGenerator.generateTimeSlots(
+		const timeSlots = TimeSlotGeneratorService.generateTimeSlots(
 			companyAvailability.timeRange,
+			companyAvailability.launchTime,
 			service.duration || 0,
 			date,
 		);
 
 		// Filtra os slots disponíveis
-		const availableSlots = this.availableSlotsService.filterAvailableSlots({
+		const availableSlots = AvailableSlotsService.getAvailableSlots({
 			slots: timeSlots,
 			duration: service.duration || 0,
-			staffsData: staffMembers.map((staff) => ({
-				staffId: staff.id.toString(),
-				unavailablePeriods: staff.appointments ?? [],
-			})),
-			companyExceptions: companyAvailabilityExceptions ?? [],
-			launchTime: companyAvailability.launchTime,
+			appointments,
+			totalStaff,
 		});
 		return right({ slots: availableSlots });
 	}

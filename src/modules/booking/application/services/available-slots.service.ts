@@ -1,80 +1,46 @@
-import { addMinutes, format, isAfter, isBefore } from "date-fns";
-import { TimeRange } from "@/modules/company-availability/domain/entities/value-objects/time-range";
-import type { DateRange } from "@/shared/types/date-range";
+import { differenceInMinutes, format, startOfDay } from "date-fns";
+import { Appointment } from "@/modules/appointment/domain/entities/appointment.entity";
 import { TimeSlot } from "../../domain/entities/time-slot.entity";
 
 interface FilterParams {
 	slots: Date[];
 	duration: number;
-	staffsData: { staffId: string; unavailablePeriods: DateRange[] }[];
-	companyExceptions: DateRange[];
-	launchTime: TimeRange;
+	appointments: Appointment[];
+	totalStaff: number;
 }
 
 export class AvailableSlotsService {
-	filterAvailableSlots(params: FilterParams): TimeSlot[] {
-		const { slots, duration, staffsData, companyExceptions } = params;
-		const totalStaffCount = staffsData.length;
+	static getAvailableSlots({
+		slots,
+		duration,
+		appointments,
+		totalStaff,
+	}: FilterParams): TimeSlot[] {
+		const slotCounts: { [key: string]: number } = {};
+		slots.forEach((slot) => {
+			slotCounts[slot.toISOString()] = 0;
+		});
 
-		// Validação inicial
-		if (totalStaffCount === 0 || duration <= 0 || !slots.length) {
-			return [];
-		}
+		appointments.forEach((appointment) => {
+			const apptStart = this.timeToMinutes(appointment.startDate);
+			const apptEnd = this.timeToMinutes(appointment.endDate);
 
-		const availableSlotsOutput: Date[] = [];
-		const now = new Date();
-		for (const potentialSlotStart of slots) {
-			const potentialSlotEnd = addMinutes(potentialSlotStart, duration);
-			const slotStartTime = format(potentialSlotStart, "HH:mm");
-			const slotEndTime = format(potentialSlotEnd, "HH:mm");
+			slots.forEach((slot) => {
+				const slotStart = this.timeToMinutes(slot);
+				const slotEnd = slotStart + duration;
 
-			// Se a data solicitada for hoje, verificar se o horário não passou
-			if (isBefore(potentialSlotStart, now)) {
-				continue;
-			}
-
-			// Verificar se o slot está dentro do horário de almoço
-			if (
-				slotStartTime < params.launchTime.endTime &&
-				slotEndTime > params.launchTime.startTime
-			) {
-				continue;
-			}
-
-			// Verificar sobreposição com exceções da empresa
-			const overlapsWithCompanyException = companyExceptions.some(
-				(exception) =>
-					isBefore(potentialSlotStart, exception.endDate) &&
-					isAfter(potentialSlotEnd, exception.startDate),
-			);
-
-			if (overlapsWithCompanyException) {
-				continue;
-			}
-
-			// Verificar se pelo menos um funcionário está disponível
-			const isAnyStaffAvailable = staffsData.some((staffInfo) => {
-				const isStaffBusy = staffInfo.unavailablePeriods.some(
-					(period) =>
-						isBefore(potentialSlotStart, period.endDate) &&
-						isAfter(potentialSlotEnd, period.startDate),
-				);
-				return !isStaffBusy;
+				if (Math.max(apptStart, slotStart) < Math.min(apptEnd, slotEnd)) {
+					slotCounts[slot.toISOString()]++;
+				}
 			});
+		});
 
-			if (isAnyStaffAvailable) {
-				availableSlotsOutput.push(potentialSlotStart);
-			}
-		}
+		return slots
+			.filter((slot) => slotCounts[slot.toISOString()] < totalStaff)
+			.map((slot) => TimeSlot.create({ label: format(slot, "HH:mm") }));
+	}
 
-		// Mapear os slots disponíveis para o formato TimeSlot
-		return availableSlotsOutput.map((slot) =>
-			TimeSlot.create({
-				label: slot.toLocaleTimeString("pt-BR", {
-					hour: "2-digit",
-					minute: "2-digit",
-				}),
-			}),
-		);
+	private static timeToMinutes(time: Date): number {
+		return differenceInMinutes(time, startOfDay(time));
 	}
 }

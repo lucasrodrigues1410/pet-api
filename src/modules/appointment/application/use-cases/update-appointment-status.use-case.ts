@@ -94,7 +94,6 @@ export class UpdateAppointmentStatusUseCase {
 		userType: UserType,
 		companyId?: string,
 	): boolean {
-		console.log(appointment.clientId.toString(), userId);
 		if (userType === "customer") {
 			return appointment.clientId.toString() === userId;
 		}

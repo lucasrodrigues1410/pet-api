@@ -1,3 +1,4 @@
+import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { User } from "@/modules/user/domain/entities/user.entity";
 import type { DateRange } from "@/shared/types/date-range";
 import { PaginationResult } from "@/shared/utils/pagination";
@@ -18,7 +19,8 @@ export abstract class StaffRepository {
 	abstract findAvailableForSlot(
 		companyId: string,
 		range: DateRange,
-	): Promise<Staff[]>;
+	): Promise<UniqueEntityID | null>;
 	abstract create(staff: Staff): Promise<void>;
 	abstract delete(id: string): Promise<void>;
+	abstract totalStaffByCompanyId(companyId: string): Promise<number>;
 }
