@@ -1,6 +1,9 @@
 import { createZodDto } from "nestjs-zod";
 import { z } from "zod";
-import { appointmentStatus } from "@/modules/appointment/domain/entities/appointment.entity";
+import {
+	AppointmentStatus,
+	appointmentStatus,
+} from "@/modules/appointment/domain/entities/appointment.entity";
 import { makePaginatedDto } from "@/shared/utils/pagination";
 import { paginationQuerySchema } from "@/shared/utils/pagination-query";
 import { appointmentDto } from "./appointment.dto";
@@ -15,10 +18,16 @@ export const queryDto = paginationQuerySchema.extend({
 		.optional()
 		.transform((date) => (date ? new Date(date) : undefined)),
 	query: z.string().optional(),
-	status: z.preprocess((val) => {
-		if (typeof val === "string") return val.split(",");
-		return undefined;
-	}, z.array(z.enum(appointmentStatus)).optional()),
+	status: z
+		.string()
+		.optional()
+		.transform(
+			(status) => status?.split(",") as AppointmentStatus[] | undefined,
+		)
+		.refine((status) => {
+			if (!status) return true;
+			return status.every((s) => appointmentStatus.includes(s));
+		}, "Status inválido"),
 });
 
 export const responseDto = appointmentDto
