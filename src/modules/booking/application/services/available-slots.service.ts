@@ -9,6 +9,11 @@ interface FilterParams {
 	totalStaff: number;
 }
 
+interface AppointmentMinutes {
+	start: number;
+	end: number;
+}
+
 export class AvailableSlotsService {
 	static getAvailableSlots({
 		slots,
@@ -16,28 +21,66 @@ export class AvailableSlotsService {
 		appointments,
 		totalStaff,
 	}: FilterParams): TimeSlot[] {
-		const slotCounts: { [key: string]: number } = {};
-		slots.forEach((slot) => {
-			slotCounts[slot.toISOString()] = 0;
-		});
+		if (slots.length === 0) return [];
+		const appointmentsInMinutes = this.preprocessAppointments(appointments);
+		const slotCounts = this.calculateSlotOccupancy(
+			slots,
+			duration,
+			appointmentsInMinutes
+		);
+		return this.buildAvailableTimeSlots(slots, slotCounts, totalStaff);
+	}
 
-		appointments.forEach((appointment) => {
-			const apptStart = this.timeToMinutes(appointment.startDate);
-			const apptEnd = this.timeToMinutes(appointment.endDate);
+	private static preprocessAppointments(
+		appointments: Appointment[]
+	): AppointmentMinutes[] {
+		return appointments.map((apt) => ({
+			start: this.timeToMinutes(apt.startDate),
+			end: this.timeToMinutes(apt.endDate),
+		}));
+	}
 
-			slots.forEach((slot) => {
-				const slotStart = this.timeToMinutes(slot);
-				const slotEnd = slotStart + duration;
+	private static calculateSlotOccupancy(
+		slots: Date[],
+		duration: number,
+		appointments: AppointmentMinutes[]
+	): Map<string, number> {
+		const slotCounts = new Map<string, number>();
 
-				if (Math.max(apptStart, slotStart) < Math.min(apptEnd, slotEnd)) {
-					slotCounts[slot.toISOString()]++;
-				}
-			});
-		});
+		for (const slot of slots) {
+			const slotKey = slot.toISOString();
+			const slotStart = this.timeToMinutes(slot);
+			const slotEnd = slotStart + duration;
 
-		return slots
-			.filter((slot) => slotCounts[slot.toISOString()] < totalStaff)
-			.map((slot) => TimeSlot.create({ label: format(slot, "HH:mm") }));
+			// Conta quantos appointments ocupam este slot
+			const overlaps = appointments.filter(
+				(apt) => Math.max(apt.start, slotStart) < Math.min(apt.end, slotEnd)
+			).length;
+
+			slotCounts.set(slotKey, overlaps);
+		}
+
+		return slotCounts;
+	}
+
+	private static buildAvailableTimeSlots(
+		slots: Date[],
+		slotCounts: Map<string, number>,
+		totalStaff: number
+	): TimeSlot[] {
+		const availableSlots: TimeSlot[] = [];
+
+		for (const slot of slots) {
+			const count = slotCounts.get(slot.toISOString()) ?? 0;
+			
+			if (count < totalStaff) {
+				availableSlots.push(
+					TimeSlot.create({ label: format(slot, "HH:mm") })
+				);
+			}
+		}
+
+		return availableSlots;
 	}
 
 	private static timeToMinutes(time: Date): number {

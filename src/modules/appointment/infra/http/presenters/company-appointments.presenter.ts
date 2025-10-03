@@ -17,12 +17,11 @@ export class CompanyAppointmentsPresenter {
 		return {
 			meta: result.meta,
 			items: result.items.map((appointment) =>
-				AppointmentPresenter.presentComplete(
+				AppointmentPresenter.presentCompleteWithoutCompany(
 					appointment,
 					appointment.animal,
 					appointment.client,
 					appointment.service,
-					appointment as any,
 				),
 			),
 		};
