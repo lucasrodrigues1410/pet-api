@@ -22,11 +22,9 @@ async function bootstrap() {
 	//Swagger configuration
 	const config = new DocumentBuilder()
 		.setTitle("API de Cuidados com Animais")
-		.setDescription(
-			"API para gerenciar serviços e informações de cuidados com animais",
-		)
 		.setVersion("1.0")
 		.setOpenAPIVersion("3.1.0")
+		.addBearerAuth()
 		.build();
 	const openApiDoc = SwaggerModule.createDocument(app, config);
 
