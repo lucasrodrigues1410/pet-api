@@ -1,16 +1,15 @@
+import { stringToDate } from "@/shared/schemas/string-to-date";
 import { endOfMonth, startOfMonth } from "date-fns";
 import { createZodDto } from "nestjs-zod";
 import { z } from "zod";
 
 export const queryDto = z.object({
-	startDate: z.iso
-		.datetime()
+	startDate: stringToDate
 		.optional()
-		.default(startOfMonth(new Date()).toISOString()),
-	endDate: z.iso
-		.datetime()
+		.default(startOfMonth(new Date())),
+	endDate: stringToDate
 		.optional()
-		.default(endOfMonth(new Date()).toISOString()),
+		.default(endOfMonth(new Date())),
 });
 
-export class DashboardQueryDto extends createZodDto(queryDto) {}
+export class DashboardQueryDto extends createZodDto(queryDto) { }

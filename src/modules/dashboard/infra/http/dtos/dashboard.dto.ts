@@ -1,3 +1,4 @@
+import { stringToDate } from "@/shared/schemas/string-to-date";
 import { z } from "zod";
 
 export const metricWithChangeDto = z.object({
@@ -52,6 +53,6 @@ export const FullDashboardDto = z.object({
 
 export const DashboardFiltersDto = z.object({
 	companyId: z.string(),
-	startDate: z.iso.datetime().optional(),
-	endDate: z.iso.datetime().optional(),
+	startDate: stringToDate.optional(),
+	endDate: stringToDate.optional(),
 });

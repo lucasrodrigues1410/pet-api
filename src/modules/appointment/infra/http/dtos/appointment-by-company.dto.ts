@@ -7,16 +7,11 @@ import {
 import { makePaginatedDto } from "@/shared/utils/pagination";
 import { paginationQuerySchema } from "@/shared/utils/pagination-query";
 import { appointmentDto } from "./appointment.dto";
+import { stringToDate } from "@/shared/schemas/string-to-date";
 
 export const queryDto = paginationQuerySchema.extend({
-	startDate: z.iso
-		.datetime()
-		.optional()
-		.transform((date) => (date ? new Date(date) : undefined)),
-	endDate: z.iso
-		.datetime()
-		.optional()
-		.transform((date) => (date ? new Date(date) : undefined)),
+	startDate: stringToDate.optional(),
+	endDate: stringToDate.optional(),
 	query: z.string().optional(),
 	status: z
 		.string()
