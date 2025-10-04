@@ -23,7 +23,7 @@ export class RulesExecutionService {
 			if (!actualValues || actualValues.length === 0) continue;
 
 			const matchedOption = this.findMatchingOption(rule.options, actualValues);
-			
+
 			if (matchedOption) {
 				return {
 					price: matchedOption.price,
@@ -36,7 +36,7 @@ export class RulesExecutionService {
 	}
 
 	private buildCharacteristicsMap(
-		animal: Animal
+		animal: Animal,
 	): Map<string, AnimalCharacteristic[]> {
 		return new Map([
 			["size", [animal.size]],
@@ -46,22 +46,20 @@ export class RulesExecutionService {
 
 	private findMatchingOption(
 		options: Rules["options"],
-		actualValues: AnimalCharacteristic[]
+		actualValues: AnimalCharacteristic[],
 	): Rules["options"][number] | undefined {
-		return options.find((option) => 
-			this.evaluateOption(option, actualValues)
-		);
+		return options.find((option) => this.evaluateOption(option, actualValues));
 	}
 
 	private evaluateOption(
 		option: Rules["options"][number],
-		actualValues: AnimalCharacteristic[]
+		actualValues: AnimalCharacteristic[],
 	): boolean {
 		const { value, operator } = option;
 
 		// Garante que temos valores válidos para comparar
 		const cleanValues = actualValues.filter(
-			(v): v is string => v !== null && v !== undefined
+			(v): v is string => v !== null && v !== undefined,
 		);
 
 		if (cleanValues.length === 0) return false;
@@ -75,7 +73,7 @@ export class RulesExecutionService {
 	private matchesOperator(
 		optionValues: CharacteristicValue[],
 		actualValues: string[],
-		operator: string
+		operator: string,
 	): boolean {
 		const isEquals = operator === Operator.EQUALS;
 

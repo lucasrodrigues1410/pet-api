@@ -1,6 +1,6 @@
-import { stringToDate } from "@/shared/schemas/string-to-date";
 import { createZodDto } from "nestjs-zod";
 import { z } from "zod";
+import { stringToDate } from "@/shared/schemas/string-to-date";
 
 const request = z.object({
 	companyId: z.string(),

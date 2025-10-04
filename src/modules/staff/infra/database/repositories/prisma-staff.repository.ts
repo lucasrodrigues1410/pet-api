@@ -84,9 +84,7 @@ export class PrismaStaffRepository implements StaffRepository {
 								{
 									startDate: { gte: range.startDate },
 									endDate: { lte: range.endDate },
-									status: {
-										not: 'canceled'
-									}
+									status: { not: "canceled" },
 								},
 							],
 						},
@@ -95,7 +93,7 @@ export class PrismaStaffRepository implements StaffRepository {
 			},
 		});
 
-		if(!staff.length) return null;
+		if (!staff.length) return null;
 
 		const chosen = staff[Math.floor(Math.random() * staff.length)];
 		return new UniqueEntityID(chosen.id);

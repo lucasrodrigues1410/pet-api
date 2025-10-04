@@ -45,18 +45,17 @@ export class ListAvailableDatesUseCase {
 			return left(new ResourceNotFoundError("Serviço não encontrado"));
 		}
 
-		const [companyAvailability, appointments, totalStaff] =
-			await Promise.all([
-				this.companyAvailability.findByCompanyIdAndDayOfWeek(
-					companyId,
-					dayOfWeek,
-				),
-				this.appointmentRepository.getByPeriodAndCompanyId({
-					companyId,
-					range: { startDate, endDate },
-				}),
-				this.staffRepo.totalStaffByCompanyId(companyId),
-			]);
+		const [companyAvailability, appointments, totalStaff] = await Promise.all([
+			this.companyAvailability.findByCompanyIdAndDayOfWeek(
+				companyId,
+				dayOfWeek,
+			),
+			this.appointmentRepository.getByPeriodAndCompanyId({
+				companyId,
+				range: { startDate, endDate },
+			}),
+			this.staffRepo.totalStaffByCompanyId(companyId),
+		]);
 
 		if (!companyAvailability) {
 			return left(

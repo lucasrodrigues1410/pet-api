@@ -165,8 +165,14 @@ export class PrismaAppointmentRepository implements AppointmentRepository {
 		});
 	}
 
-	async getByPeriodAndCompanyId(params: { companyId: string; range: DateRange }) {
-		const { companyId, range: { startDate: start, endDate: end } } = params;
+	async getByPeriodAndCompanyId(params: {
+		companyId: string;
+		range: DateRange;
+	}) {
+		const {
+			companyId,
+			range: { startDate: start, endDate: end },
+		} = params;
 		const appointments = await this.prismaService.appointment.findMany({
 			where: { companyId, startDate: { gte: start }, endDate: { lte: end } },
 		});

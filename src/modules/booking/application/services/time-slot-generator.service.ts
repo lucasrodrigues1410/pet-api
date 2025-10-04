@@ -21,7 +21,7 @@ export class TimeSlotGeneratorService {
 		timeRange: TimeRange,
 		lunchTime: TimeRange,
 		duration: number,
-		requestedDate: Date
+		requestedDate: Date,
 	): Date[] {
 		this.validateDuration(duration);
 
@@ -41,9 +41,7 @@ export class TimeSlotGeneratorService {
 		}
 	}
 
-	private static calculateBoundaries(
-		config: TimeSlotConfig
-	): DateBoundaries {
+	private static calculateBoundaries(config: TimeSlotConfig): DateBoundaries {
 		const { timeRange, lunchTime, requestedDate } = config;
 
 		return {
@@ -57,7 +55,7 @@ export class TimeSlotGeneratorService {
 
 	private static buildTimeSlots(
 		boundaries: DateBoundaries,
-		duration: number
+		duration: number,
 	): Date[] {
 		const slots: Date[] = [];
 		let currentSlot = boundaries.rangeStart;
@@ -98,7 +96,7 @@ export class TimeSlotGeneratorService {
 	private static overlapsLunch(
 		slotStart: Date,
 		slotEnd: Date,
-		boundaries: DateBoundaries
+		boundaries: DateBoundaries,
 	): boolean {
 		return (
 			isBefore(slotStart, boundaries.lunchEnd) &&

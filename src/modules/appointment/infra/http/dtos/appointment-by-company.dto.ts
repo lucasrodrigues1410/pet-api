@@ -4,10 +4,10 @@ import {
 	AppointmentStatus,
 	appointmentStatus,
 } from "@/modules/appointment/domain/entities/appointment.entity";
+import { stringToDate } from "@/shared/schemas/string-to-date";
 import { makePaginatedDto } from "@/shared/utils/pagination";
 import { paginationQuerySchema } from "@/shared/utils/pagination-query";
 import { appointmentDto } from "./appointment.dto";
-import { stringToDate } from "@/shared/schemas/string-to-date";
 
 export const queryDto = paginationQuerySchema.extend({
 	startDate: stringToDate.optional(),

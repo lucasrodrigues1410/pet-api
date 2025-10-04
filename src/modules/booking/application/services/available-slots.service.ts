@@ -26,13 +26,13 @@ export class AvailableSlotsService {
 		const slotCounts = this.calculateSlotOccupancy(
 			slots,
 			duration,
-			appointmentsInMinutes
+			appointmentsInMinutes,
 		);
 		return this.buildAvailableTimeSlots(slots, slotCounts, totalStaff);
 	}
 
 	private static preprocessAppointments(
-		appointments: Appointment[]
+		appointments: Appointment[],
 	): AppointmentMinutes[] {
 		return appointments.map((apt) => ({
 			start: this.timeToMinutes(apt.startDate),
@@ -43,7 +43,7 @@ export class AvailableSlotsService {
 	private static calculateSlotOccupancy(
 		slots: Date[],
 		duration: number,
-		appointments: AppointmentMinutes[]
+		appointments: AppointmentMinutes[],
 	): Map<string, number> {
 		const slotCounts = new Map<string, number>();
 
@@ -54,7 +54,7 @@ export class AvailableSlotsService {
 
 			// Conta quantos appointments ocupam este slot
 			const overlaps = appointments.filter(
-				(apt) => Math.max(apt.start, slotStart) < Math.min(apt.end, slotEnd)
+				(apt) => Math.max(apt.start, slotStart) < Math.min(apt.end, slotEnd),
 			).length;
 
 			slotCounts.set(slotKey, overlaps);
@@ -66,17 +66,15 @@ export class AvailableSlotsService {
 	private static buildAvailableTimeSlots(
 		slots: Date[],
 		slotCounts: Map<string, number>,
-		totalStaff: number
+		totalStaff: number,
 	): TimeSlot[] {
 		const availableSlots: TimeSlot[] = [];
 
 		for (const slot of slots) {
 			const count = slotCounts.get(slot.toISOString()) ?? 0;
-			
+
 			if (count < totalStaff) {
-				availableSlots.push(
-					TimeSlot.create({ label: format(slot, "HH:mm") })
-				);
+				availableSlots.push(TimeSlot.create({ label: format(slot, "HH:mm") }));
 			}
 		}
 
