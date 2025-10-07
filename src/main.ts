@@ -15,8 +15,16 @@ async function bootstrap() {
 	const app = await NestFactory.create<NestFastifyApplication>(
 		AppModule,
 		adapter,
-		{ rawBody: true, cors: true },
+		{ rawBody: true },
 	);
+
+	//App configuration
+	const origins = process.env.ALLOWED_ORIGINS?.split(',') ?? [];
+	app.enableCors({
+		origin: origins.length ? origins : true,
+		methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+		allowedHeaders: ['Content-Type', 'Authorization'],
+	});
 	app.register(multipart);
 
 	//Swagger configuration
