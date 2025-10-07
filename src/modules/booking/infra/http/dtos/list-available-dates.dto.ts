@@ -1,10 +1,11 @@
 import { createZodDto } from "nestjs-zod";
 import { z } from "zod";
+import { stringToDate } from "@/shared/schemas/string-to-date";
 
 const request = z.object({
 	companyId: z.string(),
 	serviceId: z.string(),
-	date: z.iso.datetime(),
+	date: stringToDate,
 });
 
 const response = z.object({ slots: z.array(z.object({ label: z.string() })) });

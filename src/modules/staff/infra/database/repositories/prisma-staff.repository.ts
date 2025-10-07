@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { Prisma } from "prisma/generated/client";
+import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { PrismaService } from "@/core/infra/prisma/prisma.service";
 import { Staff, StaffRole } from "@/modules/staff/domain/entities/staff.entity";
 import { StaffRepository } from "@/modules/staff/domain/repositories/staff.repository";
@@ -83,31 +84,19 @@ export class PrismaStaffRepository implements StaffRepository {
 								{
 									startDate: { gte: range.startDate },
 									endDate: { lte: range.endDate },
+									status: { not: "canceled" },
 								},
 							],
-						},
-					},
-					company: {
-						companyAvailabilityException: {
-							none: {
-								OR: [
-									{
-										startDate: { gte: range.startDate },
-										endDate: { lte: range.endDate },
-									},
-								],
-							},
 						},
 					},
 				},
 			},
 		});
 
-		if (!staff) {
-			return [];
-		}
+		if (!staff.length) return null;
 
-		return staff.map(PrismaStaffMapper.toDomain);
+		const chosen = staff[Math.floor(Math.random() * staff.length)];
+		return new UniqueEntityID(chosen.id);
 	}
 
 	async fetchCompanyStaffWithAppointmentsInDateRange(
@@ -139,6 +128,12 @@ export class PrismaStaffRepository implements StaffRepository {
 		await this.prismaService.userCompany.update({
 			where: { id },
 			data: { deletedAt: new Date() },
+		});
+	}
+
+	async totalStaffByCompanyId(companyId: string) {
+		return await this.prismaService.userCompany.count({
+			where: { companyId: companyId },
 		});
 	}
 }

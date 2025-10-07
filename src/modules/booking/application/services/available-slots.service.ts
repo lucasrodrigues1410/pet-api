@@ -1,80 +1,87 @@
-import { addMinutes, format, isAfter, isBefore } from "date-fns";
-import { TimeRange } from "@/modules/company-availability/domain/entities/value-objects/time-range";
-import type { DateRange } from "@/shared/types/date-range";
+import { differenceInMinutes, format, startOfDay } from "date-fns";
+import { Appointment } from "@/modules/appointment/domain/entities/appointment.entity";
 import { TimeSlot } from "../../domain/entities/time-slot.entity";
 
 interface FilterParams {
 	slots: Date[];
 	duration: number;
-	staffsData: { staffId: string; unavailablePeriods: DateRange[] }[];
-	companyExceptions: DateRange[];
-	launchTime: TimeRange;
+	appointments: Appointment[];
+	totalStaff: number;
+}
+
+interface AppointmentMinutes {
+	start: number;
+	end: number;
 }
 
 export class AvailableSlotsService {
-	filterAvailableSlots(params: FilterParams): TimeSlot[] {
-		const { slots, duration, staffsData, companyExceptions } = params;
-		const totalStaffCount = staffsData.length;
-
-		// Validação inicial
-		if (totalStaffCount === 0 || duration <= 0 || !slots.length) {
-			return [];
-		}
-
-		const availableSlotsOutput: Date[] = [];
-		const now = new Date();
-		for (const potentialSlotStart of slots) {
-			const potentialSlotEnd = addMinutes(potentialSlotStart, duration);
-			const slotStartTime = format(potentialSlotStart, "HH:mm");
-			const slotEndTime = format(potentialSlotEnd, "HH:mm");
-
-			// Se a data solicitada for hoje, verificar se o horário não passou
-			if (isBefore(potentialSlotStart, now)) {
-				continue;
-			}
-
-			// Verificar se o slot está dentro do horário de almoço
-			if (
-				slotStartTime < params.launchTime.endTime &&
-				slotEndTime > params.launchTime.startTime
-			) {
-				continue;
-			}
-
-			// Verificar sobreposição com exceções da empresa
-			const overlapsWithCompanyException = companyExceptions.some(
-				(exception) =>
-					isBefore(potentialSlotStart, exception.endDate) &&
-					isAfter(potentialSlotEnd, exception.startDate),
-			);
-
-			if (overlapsWithCompanyException) {
-				continue;
-			}
-
-			// Verificar se pelo menos um funcionário está disponível
-			const isAnyStaffAvailable = staffsData.some((staffInfo) => {
-				const isStaffBusy = staffInfo.unavailablePeriods.some(
-					(period) =>
-						isBefore(potentialSlotStart, period.endDate) &&
-						isAfter(potentialSlotEnd, period.startDate),
-				);
-				return !isStaffBusy;
-			});
-
-			if (isAnyStaffAvailable) {
-				availableSlotsOutput.push(potentialSlotStart);
-			}
-		}
-
-		// Mapear os slots disponíveis para o formato TimeSlot
-		return availableSlotsOutput.map((slot) =>
-			TimeSlot.create({
-				label: slot.toLocaleTimeString("pt-BR", {
-					hour: "2-digit",
-					minute: "2-digit",
-				}),
-			}),
+	static getAvailableSlots({
+		slots,
+		duration,
+		appointments,
+		totalStaff,
+	}: FilterParams): TimeSlot[] {
+		if (slots.length === 0) return [];
+		const appointmentsInMinutes = this.preprocessAppointments(appointments);
+		const slotCounts = this.calculateSlotOccupancy(
+			slots,
+			duration,
+			appointmentsInMinutes,
 		);
+		return this.buildAvailableTimeSlots(slots, slotCounts, totalStaff);
+	}
+
+	private static preprocessAppointments(
+		appointments: Appointment[],
+	): AppointmentMinutes[] {
+		return appointments.map((apt) => ({
+			start: this.timeToMinutes(apt.startDate),
+			end: this.timeToMinutes(apt.endDate),
+		}));
+	}
+
+	private static calculateSlotOccupancy(
+		slots: Date[],
+		duration: number,
+		appointments: AppointmentMinutes[],
+	): Map<string, number> {
+		const slotCounts = new Map<string, number>();
+
+		for (const slot of slots) {
+			const slotKey = slot.toISOString();
+			const slotStart = this.timeToMinutes(slot);
+			const slotEnd = slotStart + duration;
+
+			// Conta quantos appointments ocupam este slot
+			const overlaps = appointments.filter(
+				(apt) => Math.max(apt.start, slotStart) < Math.min(apt.end, slotEnd),
+			).length;
+
+			slotCounts.set(slotKey, overlaps);
+		}
+
+		return slotCounts;
+	}
+
+	private static buildAvailableTimeSlots(
+		slots: Date[],
+		slotCounts: Map<string, number>,
+		totalStaff: number,
+	): TimeSlot[] {
+		const availableSlots: TimeSlot[] = [];
+
+		for (const slot of slots) {
+			const count = slotCounts.get(slot.toISOString()) ?? 0;
+
+			if (count < totalStaff) {
+				availableSlots.push(TimeSlot.create({ label: format(slot, "HH:mm") }));
+			}
+		}
+
+		return availableSlots;
+	}
+
+	private static timeToMinutes(time: Date): number {
+		return differenceInMinutes(time, startOfDay(time));
 	}
 }

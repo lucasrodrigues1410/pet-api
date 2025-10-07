@@ -1,8 +1,9 @@
 import { Injectable } from "@nestjs/common";
-import { addMinutes } from "date-fns";
+import { addMinutes, isBefore } from "date-fns";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { AnimalRepository } from "@/modules/animal/domain/repositories/animal.repository";
 import { ServiceRepository } from "@/modules/service/domain/repositories/service.repository";
+import { StaffRepository } from "@/modules/staff/domain/repositories/staff.repository";
 import { Either, left, right } from "@/shared/either";
 import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
 import {
@@ -11,7 +12,6 @@ import {
 } from "../../../appointment/domain/entities/appointment.entity";
 import { AppointmentRepository } from "../../../appointment/domain/repositories/appointment.repository";
 import { TimeSlotUnavailableError } from "../errors/time-slot-unavailable.error";
-import { AppointmentAvailabilityService } from "../services/appointment-availability.service";
 import { RulesExecutionService } from "../services/rules-execution.service";
 
 interface AppointmentBookingUseCaseRequest {
@@ -30,7 +30,7 @@ type AppointmentBookingUseCaseResponse = Either<
 @Injectable()
 export class AppointmentBookingUseCase {
 	constructor(
-		private readonly appointmentAvailabilityService: AppointmentAvailabilityService,
+		private readonly staffRespository: StaffRepository,
 		private readonly serviceRepository: ServiceRepository,
 		private readonly rulesExecution: RulesExecutionService,
 		private readonly animalRepository: AnimalRepository,
@@ -44,59 +44,48 @@ export class AppointmentBookingUseCase {
 		date,
 		coatType,
 	}: AppointmentBookingUseCaseRequest): Promise<AppointmentBookingUseCaseResponse> {
+		const startDate = new Date(date);
+		const now = new Date();
+		if (isBefore(startDate, now)) {
+			return left(new TimeSlotUnavailableError("Data passada não permitida"));
+		}
+
 		const [service, animal] = await Promise.all([
 			this.serviceRepository.findById(serviceId),
 			this.animalRepository.findById(animalId),
 		]);
-		if (!service || !animal) {
+
+		if (!service || !animal || !service.isActive) {
 			return left(new ResourceNotFoundError());
 		}
 
-		// Validações de negócio básicas
-		if (!service.isActive) {
-			return left(new TimeSlotUnavailableError("Serviço inativo"));
-		}
-
-		const startDate = new Date(date);
-		const now = new Date();
-		if (startDate <= now) {
-			return left(new TimeSlotUnavailableError("Data passada não permitida"));
-		}
-
-		// Calcula variação de preço
 		const ruleExecutionResult = await this.rulesExecution.execute(
 			animal,
 			service.rules || [],
 		);
 
-		const basePrice = service.price;
 		const priceAdjustment = ruleExecutionResult?.price ?? 0;
-		const totalPrice = basePrice + priceAdjustment;
-
-		const baseDurationMinutes = service.duration;
 		const finalDurationMinutes =
-			baseDurationMinutes + (ruleExecutionResult?.durationMinutes ?? 0);
+			service.duration + (ruleExecutionResult?.durationMinutes ?? 0);
 
 		const endDate = addMinutes(startDate, finalDurationMinutes);
-		// Verifica se o horário está disponível
-		const available = await this.appointmentAvailabilityService.getAvailability(
+		const staffAvailable = await this.staffRespository.findAvailableForSlot(
 			service.companyId.toString(),
-			startDate,
-			finalDurationMinutes,
+			{ startDate: startDate, endDate: endDate },
 		);
-		if (!available.isValid || !available.staffChoiced) {
+		if (!staffAvailable) {
 			return left(new TimeSlotUnavailableError("Horário indisponível"));
 		}
 
 		const appointmentIntent = Appointment.create({
 			serviceId: new UniqueEntityID(serviceId),
-			staffId: available.staffChoiced.id,
+			staffId: staffAvailable,
 			animalId: new UniqueEntityID(animalId),
 			clientId: new UniqueEntityID(clientId),
 			companyId: service.companyId,
 			startDate,
 			endDate,
-			price: totalPrice,
+			price: service.price + priceAdjustment,
 			coatType,
 		});
 

@@ -1,3 +1,4 @@
+import { FileInterceptor } from "@nest-lab/fastify-multer";
 import {
 	BadRequestException,
 	Body,
@@ -8,14 +9,13 @@ import {
 	MaxFileSizeValidator,
 	Param,
 	ParseFilePipe,
-	Post,
+	Patch,
 	Put,
 	Query,
 	UploadedFile,
 	UseGuards,
 	UseInterceptors,
 } from "@nestjs/common";
-import { FileInterceptor } from "@nestjs/platform-express";
 import {
 	ApiBody,
 	ApiConsumes,
@@ -65,7 +65,7 @@ export class UserController {
 		}
 	}
 
-	@Post("avatar")
+	@Patch("avatar")
 	@ApiOperation({
 		summary: "Adicionar avatar do usuário",
 		operationId: "addAvatar",

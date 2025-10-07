@@ -1,38 +1,32 @@
+import multipart from "@fastify/multipart";
 import { NestFactory } from "@nestjs/core";
-import type { NestExpressApplication } from "@nestjs/platform-express";
+import {
+	FastifyAdapter,
+	NestFastifyApplication,
+} from "@nestjs/platform-fastify";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
-import compression from "compression";
-import express from "express";
-import helmet from "helmet";
 import { cleanupOpenApiDoc } from "nestjs-zod";
 import { AppModule } from "./app.module";
 import { EnvService } from "./core/infra/env/env.service";
 
 async function bootstrap() {
-	const app = await NestFactory.create<NestExpressApplication>(AppModule, {
-		rawBody: true,
-		cors: true,
-		bodyParser: true,
-		//logger: ["error", "warn","log"],
-	});
-
-	app.use(compression());
-	app.use(helmet());
-
-	app.use(express.json({ limit: "10mb" }));
-	app.use(express.urlencoded({ extended: true, limit: "10mb" }));
-
-	const openApiDoc = SwaggerModule.createDocument(
-		app,
-		new DocumentBuilder()
-			.setTitle("API de Cuidados com Animais")
-			.setDescription(
-				"API para gerenciar serviços e informações de cuidados com animais",
-			)
-			.setVersion("1.0")
-			.setOpenAPIVersion("3.1.0")
-			.build(),
+	//Fastify adapter
+	const adapter = new FastifyAdapter();
+	const app = await NestFactory.create<NestFastifyApplication>(
+		AppModule,
+		adapter,
+		{ rawBody: true, cors: true },
 	);
+	app.register(multipart);
+
+	//Swagger configuration
+	const config = new DocumentBuilder()
+		.setTitle("API de Cuidados com Animais")
+		.setVersion("1.0")
+		.setOpenAPIVersion("3.1.0")
+		.addBearerAuth()
+		.build();
+	const openApiDoc = SwaggerModule.createDocument(app, config);
 
 	SwaggerModule.setup(
 		"docs",

@@ -10,12 +10,7 @@ import { PrismaInviteRepository } from "./infra/database/repositories/prisma-inv
 import { InviteController } from "./infra/http/controllers/invite.controller";
 
 @Module({
-	imports: [
-		CompanyModule,
-		StaffModule,
-		UserModule,
-		NotificationModule,
-	],
+	imports: [CompanyModule, StaffModule, UserModule, NotificationModule],
 	controllers: [InviteController],
 	providers: [
 		InviteEmployeeUseCase,

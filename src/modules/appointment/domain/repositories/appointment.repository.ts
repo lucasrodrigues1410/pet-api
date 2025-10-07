@@ -56,4 +56,8 @@ export abstract class AppointmentRepository {
 		range: DateRange;
 	}): Promise<Appointment[]>;
 	abstract updateStatus(id: string, status: AppointmentStatus): Promise<void>;
+	abstract getByPeriodAndCompanyId(params: {
+		companyId: string;
+		range: DateRange;
+	}): Promise<Appointment[]>;
 }
