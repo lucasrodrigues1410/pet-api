@@ -7,7 +7,6 @@
 	"license": "UNLICENSED",
 	"scripts": {
 		"build": "nest build",
-		"start:prod": "bun run dist/src/main.js",
 		"dev": "bun --watch ./src/main.ts",
 		"start": "bun run src/main.ts",
 		"test": "bun test",
