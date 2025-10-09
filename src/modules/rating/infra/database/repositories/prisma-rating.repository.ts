@@ -99,4 +99,24 @@ export class PrismaRatingRepository implements RatingRepository {
 			distribution: fullDistribution,
 		};
 	}
+
+	async findByUserAndCompany(params: {
+		userId: string;
+		companyId: string;
+	}) {
+		const rating = await this.prisma.rating.findUnique({
+			where: {
+				userId_companyId: {
+					userId: params.userId,
+					companyId: params.companyId,
+				},
+			},
+		});
+
+		if (!rating) {
+			return null;
+		}
+
+		return PrismaRatingMapper.toDomain(rating);
+	}
 }

@@ -9,11 +9,19 @@ import { ListCompanyRatingsUseCase } from "./list-company-ratings.use-case";
 let moduleRef: any;
 let sut: ListCompanyRatingsUseCase;
 
-const mockRatingRepository = { findByCompanyId: jest.fn() };
+const mockRatingRepository = {
+	findByCompanyId: jest.fn(),
+	findByUserAndCompany: jest.fn(),
+	create: jest.fn(),
+	getCompanyRatingStats: jest.fn(),
+};
 
 describe("List Company Ratings", () => {
 	beforeEach(async () => {
 		mockRatingRepository.findByCompanyId.mockReset();
+		mockRatingRepository.findByUserAndCompany.mockReset();
+		mockRatingRepository.create.mockReset();
+		mockRatingRepository.getCompanyRatingStats.mockReset();
 
 		moduleRef = await Test.createTestingModule({
 			providers: [

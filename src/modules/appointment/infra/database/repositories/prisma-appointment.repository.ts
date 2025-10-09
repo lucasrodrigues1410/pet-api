@@ -178,4 +178,20 @@ export class PrismaAppointmentRepository implements AppointmentRepository {
 		});
 		return appointments.map(PrismaAppointmentMapper.toDomain);
 	}
+
+	async userHasCompletedAppointmentForCompany(params: {
+		userId: string;
+		companyId: string;
+	}) {
+		const appointment = await this.prismaService.appointment.findFirst({
+			where: {
+				clientId: params.userId,
+				companyId: params.companyId,
+				status: "completed",
+			},
+			select: { id: true },
+		});
+
+		return Boolean(appointment);
+	}
 }

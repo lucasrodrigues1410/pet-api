@@ -17,4 +17,8 @@ export abstract class RatingRepository {
 	abstract getCompanyRatingStats(
 		companyId: string,
 	): Promise<CompanyRatingStats>;
+	abstract findByUserAndCompany(params: {
+		userId: string;
+		companyId: string;
+	}): Promise<Rating | null>;
 }

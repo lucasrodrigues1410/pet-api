@@ -12,6 +12,7 @@ import { ZodResponse } from "nestjs-zod";
 import { Public } from "@/modules/auth/infra/http/decorators/public.decorator";
 import { User } from "@/modules/auth/infra/http/decorators/user.decorator";
 import { UserTypeDecorator } from "@/modules/auth/infra/http/decorators/user-type.decorator";
+import { CheckRatingEligibilityUseCase } from "@/modules/rating/application/usecases/check-rating-eligibility.use-case";
 import { CreateRatingCompanyUseCase } from "@/modules/rating/application/usecases/create-rating.company";
 import { GetCompanyRatingStatsUseCase } from "@/modules/rating/application/usecases/get-company-rating-stats.use-case";
 import { ListCompanyRatingsUseCase } from "@/modules/rating/application/usecases/list-company-ratings.use-case";
@@ -19,6 +20,7 @@ import { PaginationQueryDto } from "@/shared/utils/pagination-query";
 import { CreateRatingRequestDto } from "../dtos/create-rating.dto";
 import {
 	CompanyRatingStatsResponse,
+	RatingEligibilityResponse,
 	RatingListResponse,
 } from "../dtos/rating.response.dto";
 import { RatingListPresenter } from "../presenters/rating-list.presenter";
@@ -30,6 +32,7 @@ export class RatingController {
 		private readonly createRatingCompanyUseCase: CreateRatingCompanyUseCase,
 		private readonly listCompanyRatingsUseCase: ListCompanyRatingsUseCase,
 		private readonly getCompanyRatingStatsUseCase: GetCompanyRatingStatsUseCase,
+		private readonly checkRatingEligibilityUseCase: CheckRatingEligibilityUseCase,
 	) {}
 
 	@Post()
@@ -85,6 +88,25 @@ export class RatingController {
 		if (result.isLeft()) {
 			throw new NotFoundException("Empresa não encontrada");
 		}
+
+		return result.value;
+	}
+
+	@Get("company/:companyId/eligibility")
+	@UserTypeDecorator("customer")
+	@ApiOperation({
+		summary: "Verificar se um usuário pode criar avaliação para uma empresa",
+		operationId: "checkRatingEligibility",
+	})
+	@ZodResponse({ status: 200, type: RatingEligibilityResponse })
+	async checkEligibility(
+		@User("sub") userId: string,
+		@Param("companyId") companyId: string,
+	): Promise<RatingEligibilityResponse> {
+		const result = await this.checkRatingEligibilityUseCase.execute({
+			userId,
+			companyId,
+		});
 
 		return result.value;
 	}

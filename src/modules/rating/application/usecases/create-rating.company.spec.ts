@@ -8,11 +8,15 @@ import { CreateRatingCompanyUseCase } from "./create-rating.company";
 let moduleRef: any;
 let sut: CreateRatingCompanyUseCase;
 
-const mockRatingRepository = { create: jest.fn() };
+const mockRatingRepository = {
+	create: jest.fn(),
+	findByUserAndCompany: jest.fn(),
+};
 
 describe("Create company rating", () => {
 	beforeEach(async () => {
 		mockRatingRepository.create.mockReset();
+		mockRatingRepository.findByUserAndCompany.mockReset();
 
 		moduleRef = await Test.createTestingModule({
 			providers: [

@@ -26,11 +26,11 @@
 		"@nestjs/platform-fastify": "^11.1.6",
 		"@nestjs/swagger": "^11.2.0",
 		"@nestjs/terminus": "^11.0.0",
-		"@novu/api": "^1.7.0",
-		"@prisma/adapter-pg": "^6.16.3",
-		"@prisma/client": "^6.16.3",
-		"ai": "^5.0.60",
-		"bullmq": "^5.60.0",
+		"@novu/api": "^1.7.1",
+		"@prisma/adapter-pg": "^6.17.0",
+		"@prisma/client": "^6.17.0",
+		"ai": "^5.0.61",
+		"bullmq": "^5.61.0",
 		"class-transformer": "^0.5.1",
 		"class-validator": "^0.14.2",
 		"date-fns": "^4.1.0",
@@ -38,7 +38,7 @@
 		"nestjs-zod": "^5.0.1",
 		"passport-jwt": "^4.0.1",
 		"reflect-metadata": "^0.2.2",
-		"zod": "^4.1.11"
+		"zod": "^4.1.12"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.2.5",
@@ -50,7 +50,7 @@
 		"@types/multer": "^2.0.0",
 		"@types/passport-jwt": "^4.0.1",
 		"bun-types": "^1.2.23",
-		"prisma": "^6.16.3",
+		"prisma": "^6.17.0",
 		"typescript": "^5.9.3"
 	},
 	"trustedDependencies": [

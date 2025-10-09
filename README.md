@@ -134,5 +134,18 @@ Once the application is running (e.g., in development mode using `bun run dev`),
 
 The Swagger UI provides a user-friendly interface to explore and interact with the API endpoints, view request/response models, and test the API.
 
+### Rating endpoints
+
+- `GET /ratings/company/{companyId}/eligibility`
+    - **Autenticação:** requerida (usuários com perfil de cliente)
+    - **Descrição:** informa se o cliente pode criar uma nova avaliação para a empresa especificada.
+    - **Resposta 200:**
+        ```json
+        {
+            "canRate": true,
+            "reason": "ALREADY_RATED" | "NO_COMPLETED_APPOINTMENT" // opcional, presente apenas quando canRate = false
+        }
+        ```
+
 ## License
 This project is currently unlicensed as per the `package.json`.

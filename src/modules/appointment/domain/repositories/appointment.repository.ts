@@ -60,4 +60,8 @@ export abstract class AppointmentRepository {
 		companyId: string;
 		range: DateRange;
 	}): Promise<Appointment[]>;
+	abstract userHasCompletedAppointmentForCompany(params: {
+		userId: string;
+		companyId: string;
+	}): Promise<boolean>;
 }

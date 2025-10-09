@@ -20,3 +20,8 @@ export const companyRatingStatsDto = z.object({
 	totalRatings: z.number(),
 	distribution: z.array(ratingDistributionDto),
 });
+
+export const ratingEligibilityDto = z.object({
+	canRate: z.boolean(),
+	reason: z.enum(["ALREADY_RATED", "NO_COMPLETED_APPOINTMENT"]).optional(),
+});
