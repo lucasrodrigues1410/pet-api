@@ -15,7 +15,7 @@ const generateAppointments = () => {
 			startDate: setMinutes(setHours(date, 9), 0),
 			endDate: setMinutes(setHours(date, 10), 0),
 			status: "completed" as const,
-			price: 35.0,
+			price: 3500,
 			coatType: "short" as const,
 			animalId: "animal-1", // Bella (Labrador da Maria)
 			serviceId: "service-1", // Banho Completo
@@ -30,7 +30,7 @@ const generateAppointments = () => {
 				startDate: setMinutes(setHours(date, 14), 30),
 				endDate: setMinutes(setHours(date, 16), 0),
 				status: "completed" as const,
-				price: 55.0,
+				price: 5500,
 				coatType: "long" as const,
 				animalId: "animal-13", // Princesa (Maine Coon da Patrícia)
 				serviceId: "service-3", // Tosa Completa
@@ -52,7 +52,7 @@ const generateAppointments = () => {
 				startDate: setMinutes(setHours(date, 10), 0),
 				endDate: setMinutes(setHours(date, 11), 15),
 				status: "scheduled" as const,
-				price: 50.0,
+				price: 5000,
 				coatType: "medium" as const,
 				animalId: "animal-6", // Max (Golden Retriever do Carlos)
 				serviceId: "service-5", // Banho Premium
@@ -68,7 +68,7 @@ const generateAppointments = () => {
 				startDate: setMinutes(setHours(date, 15), 0),
 				endDate: setMinutes(setHours(date, 17), 0),
 				status: "confirmed" as const,
-				price: 120.0,
+				price: 12000,
 				coatType: "curly" as const,
 				animalId: "animal-7", // Chocolate (Poodle do Carlos)
 				serviceId: "service-8", // Spa Relaxante
@@ -84,7 +84,7 @@ const generateAppointments = () => {
 				startDate: setMinutes(setHours(date, 8), 0),
 				endDate: setMinutes(setHours(date, 8), 0), // Hotel - data de fim será no dia seguinte
 				status: "scheduled" as const,
-				price: 80.0,
+				price: 8000,
 				coatType: "short" as const,
 				animalId: "animal-15", // Hades (Husky do Bruno)
 				serviceId: "service-11", // Hotel Pet
@@ -102,7 +102,7 @@ const generateAppointments = () => {
 			startDate: setMinutes(setHours(today, 9), 0),
 			endDate: setMinutes(setHours(today, 9), 30),
 			status: "confirmed" as const,
-			price: 25.0,
+			price: 2500,
 			coatType: "short" as const,
 			animalId: "animal-8", // Nina (Yorkshire da Fernanda)
 			serviceId: "service-2", // Tosa Higiênica
@@ -115,7 +115,7 @@ const generateAppointments = () => {
 			startDate: setMinutes(setHours(today, 11), 0),
 			endDate: setMinutes(setHours(today, 11), 45),
 			status: "in_progress" as const,
-			price: 80.0,
+			price: 8000,
 			coatType: "medium" as const,
 			animalId: "animal-10", // Buddy (Beagle do Ricardo)
 			serviceId: "service-4", // Consulta Veterinária
@@ -128,7 +128,7 @@ const generateAppointments = () => {
 			startDate: setMinutes(setHours(today, 14), 0),
 			endDate: setMinutes(setHours(today, 15), 0),
 			status: "scheduled" as const,
-			price: 40.0,
+			price: 4000,
 			coatType: "short" as const,
 			animalId: "animal-16", // Pequeno (Chihuahua do Bruno)
 			serviceId: "service-6", // Tosa para Pets Pequenos
@@ -144,7 +144,7 @@ const generateAppointments = () => {
 			startDate: setMinutes(setHours(addDays(today, 1), 10), 0),
 			endDate: setMinutes(setHours(addDays(today, 1), 12), 30),
 			status: "scheduled" as const,
-			price: 150.0,
+			price: 15000,
 			coatType: "medium" as const,
 			animalId: "animal-12", // Zeus (Border Collie da Patrícia)
 			serviceId: "service-10", // Adestramento Básico
@@ -157,7 +157,7 @@ const generateAppointments = () => {
 			startDate: setMinutes(setHours(addDays(today, 1), 16), 0),
 			endDate: setMinutes(setHours(addDays(today, 1), 18), 30),
 			status: "confirmed" as const,
-			price: 140.0,
+			price: 14000,
 			coatType: "long" as const,
 			animalId: "animal-3", // Thor (Pastor Alemão do João)
 			serviceId: "service-13", // Pacote Completo
@@ -174,7 +174,7 @@ const generateAppointments = () => {
 			startDate: setMinutes(setHours(addDays(today, -5), 14), 0),
 			endDate: setMinutes(setHours(addDays(today, -5), 15), 30),
 			status: "canceled" as const,
-			price: 85.0,
+			price: 8500,
 			coatType: "curly" as const,
 			animalId: "animal-5", // Simba (Siamês da Ana)
 			serviceId: "service-9", // Tosa Artística Premium
@@ -187,7 +187,7 @@ const generateAppointments = () => {
 			startDate: setMinutes(setHours(addDays(today, -2), 9), 0),
 			endDate: setMinutes(setHours(addDays(today, -2), 10), 0),
 			status: "no_show" as const,
-			price: 60.0,
+			price: 6000,
 			coatType: "short" as const,
 			animalId: "animal-11", // Mel (Shih Tzu do Ricardo)
 			serviceId: "service-7", // Day Care

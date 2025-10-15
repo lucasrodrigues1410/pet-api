@@ -2,7 +2,7 @@ model Service {
   id          String   @id @default(cuid())
   name        String
   description String?
-  price       Decimal  @db.Decimal(10, 2)
+  price       Int
   duration    Int?
   companyId   String   @map("company_id")
   isActive    Boolean  @default(true) @map("is_active")

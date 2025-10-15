@@ -10,8 +10,11 @@ import { createNotification } from "./notification";
 import { createRating } from "./rating";
 import { createService } from "./service";
 import { createUser } from "./user";
+import { PrismaPg } from "@prisma/adapter-pg";
 
-const prisma = new PrismaClient();
+const connectionString = `${process.env.DATABASE_URL}`
+const adapter = new PrismaPg({ connectionString });
+const prisma = new PrismaClient({ adapter });
 
 async function main() {
 	console.log("🌱 Iniciando seeding do banco de dados...");

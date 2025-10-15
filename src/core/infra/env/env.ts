@@ -16,6 +16,9 @@ export const envSchema = z.object({
 	SMTP_USER: z.string(),
 	SMTP_PASS: z.string(),
 	GOOGLE_GENERATIVE_AI_API_KEY: z.string(),
+	STRIPE_API_KEY: z.string(),
+	STRIPE_WEBHOOK_SECRET: z.string(),
+	APP_URL_FRONTEND: z.string(),
 });
 
 export type Env = z.infer<typeof envSchema>;

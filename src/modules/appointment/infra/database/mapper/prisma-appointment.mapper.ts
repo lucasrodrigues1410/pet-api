@@ -16,7 +16,7 @@ export class PrismaAppointmentMapper {
 				companyId: new UniqueEntityID(prismaAppointment.companyId),
 				startDate: prismaAppointment.startDate,
 				endDate: prismaAppointment.endDate,
-				price: prismaAppointment.price.toNumber(),
+				price: prismaAppointment.price,
 				status: prismaAppointment.status,
 				coatType: prismaAppointment.coatType,
 			},
@@ -36,7 +36,7 @@ export class PrismaAppointmentMapper {
 			startDate: appointment.startDate,
 			endDate: appointment.endDate,
 			status: appointment.status,
-			price: Prisma.Decimal(appointment.price),
+			price: appointment.price,
 			staffId: appointment.staffId.toString(),
 			coatType: appointment.coatType,
 		};

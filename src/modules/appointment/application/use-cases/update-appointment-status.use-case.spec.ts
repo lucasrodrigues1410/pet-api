@@ -87,7 +87,7 @@ describe("UpdateAppointmentStatusUseCase", () => {
 
 			const result = await sut.execute({
 				appointmentId: "appointment-1",
-				newStatus: "canceled",
+				status: "canceled",
 				userId: "client-1",
 				userType: "customer",
 			});
@@ -107,7 +107,7 @@ describe("UpdateAppointmentStatusUseCase", () => {
 
 			const result = await sut.execute({
 				appointmentId: "appointment-1",
-				newStatus: "no_show",
+				status: "no_show",
 				userId: "client-1",
 				userType: "customer",
 			});
@@ -122,7 +122,7 @@ describe("UpdateAppointmentStatusUseCase", () => {
 
 			const result = await sut.execute({
 				appointmentId: "appointment-1",
-				newStatus: "canceled",
+				status: "canceled",
 				userId: "other-client",
 				userType: "customer",
 			});
@@ -164,7 +164,7 @@ describe("UpdateAppointmentStatusUseCase", () => {
 
 			const result = await sut.execute({
 				appointmentId: "appointment-1",
-				newStatus: "no_show",
+				status: "no_show",
 				userId: "staff-1",
 				userType: "company",
 				companyId: "company-1",
@@ -185,7 +185,7 @@ describe("UpdateAppointmentStatusUseCase", () => {
 
 			const result = await sut.execute({
 				appointmentId: "appointment-1",
-				newStatus: "completed",
+				status: "completed",
 				userId: "staff-1",
 				userType: "company",
 				companyId: "other-company",
@@ -203,7 +203,7 @@ describe("UpdateAppointmentStatusUseCase", () => {
 
 			const result = await sut.execute({
 				appointmentId: "non-existent",
-				newStatus: "canceled",
+				status: "canceled",
 				userId: "client-1",
 				userType: "customer",
 			});
@@ -224,7 +224,7 @@ describe("UpdateAppointmentStatusUseCase", () => {
 
 			const result = await sut.execute({
 				appointmentId: "appointment-1",
-				newStatus: "scheduled",
+				status: "scheduled",
 				userId: "client-1",
 				userType: "customer",
 			});

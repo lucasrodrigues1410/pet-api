@@ -14,10 +14,8 @@ import { AppointmentRepository } from "../../domain/repositories/appointment.rep
 
 type UpdateAppointmentStatusUseCaseInput = {
 	appointmentId: string;
-	newStatus: AppointmentStatus;
-	userId: string;
-	userType: UserType;
-	companyId?: string;
+	status: AppointmentStatus;
+	user?: { id: string; type: UserType; companyId?: string };
 };
 
 type UpdateAppointmentStatusUseCaseOutput = Either<
@@ -34,10 +32,8 @@ export class UpdateAppointmentStatusUseCase {
 
 	async execute({
 		appointmentId,
-		newStatus,
-		userId,
-		userType,
-		companyId,
+		status: newStatus,
+		user,
 	}: UpdateAppointmentStatusUseCaseInput): Promise<UpdateAppointmentStatusUseCaseOutput> {
 		const appointment =
 			await this.appointmentRepository.findById(appointmentId);
@@ -49,12 +45,7 @@ export class UpdateAppointmentStatusUseCase {
 			);
 		}
 
-		const hasPermission = this.checkPermissions(
-			appointment,
-			userId,
-			userType,
-			companyId,
-		);
+		const hasPermission = this.checkPermissions(appointment, user);
 		if (!hasPermission) {
 			return left(
 				new NotAllowedError(
@@ -64,8 +55,7 @@ export class UpdateAppointmentStatusUseCase {
 		}
 
 		try {
-			appointment.updateStatus(newStatus, userType === "company");
-
+			appointment.updateStatus(newStatus, user?.type === "company");
 			await this.appointmentRepository.updateStatus(appointmentId, newStatus);
 			await this.notifyPublisher.dispatch(
 				new AppointmentChangeStatusEvent(appointment.client.id.toString(), {
@@ -90,10 +80,11 @@ export class UpdateAppointmentStatusUseCase {
 
 	private checkPermissions(
 		appointment: Appointment,
-		userId: string,
-		userType: UserType,
-		companyId?: string,
+		user?: { id: string; type: UserType; companyId?: string },
 	): boolean {
+		if (!user) return true; // system user
+
+		const { id: userId, type: userType, companyId } = user;
 		if (userType === "customer") {
 			return appointment.clientId.toString() === userId;
 		}

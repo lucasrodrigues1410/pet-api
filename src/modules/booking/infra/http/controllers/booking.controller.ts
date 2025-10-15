@@ -79,6 +79,9 @@ export class BookingController {
 			throw new BadRequestException(`${response.value.message}`);
 		}
 
-		return CreateAppointmentPresenter.present(response.value.appointmentId);
+		return CreateAppointmentPresenter.present({
+			appointmentId: response.value.appointmentId,
+			checkoutUrl: response.value.checkoutUrl,
+		});
 	}
 }

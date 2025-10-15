@@ -1,14 +1,13 @@
 import { Global, Module } from "@nestjs/common";
-import { UnitOfWork } from "@/core/domain/interfaces/unit-of-work.interface";
+import { TransactionManager } from "@/core/domain/interfaces/transaction-manager";
 import { PrismaService } from "./prisma.service";
-import { PrismaUnitOfWork } from "./prisma-unit-of-work.service";
 
 @Global()
 @Module({
 	providers: [
 		PrismaService,
-		{ provide: UnitOfWork, useClass: PrismaUnitOfWork },
+		{ provide: TransactionManager, useExisting: PrismaService },
 	],
-	exports: [PrismaService, { provide: UnitOfWork, useClass: PrismaUnitOfWork }],
+	exports: [PrismaService],
 })
 export class PrismaModule {}

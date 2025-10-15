@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { addMinutes, isBefore } from "date-fns";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { AnimalRepository } from "@/modules/animal/domain/repositories/animal.repository";
+import { CreatePaymentUseCase } from "@/modules/payment/application/use-cases/create-payment.use-case";
 import { ServiceRepository } from "@/modules/service/domain/repositories/service.repository";
 import { StaffRepository } from "@/modules/staff/domain/repositories/staff.repository";
 import { Either, left, right } from "@/shared/either";
@@ -24,7 +25,7 @@ interface AppointmentBookingUseCaseRequest {
 
 type AppointmentBookingUseCaseResponse = Either<
 	ResourceNotFoundError | TimeSlotUnavailableError,
-	{ appointmentId: string }
+	{ appointmentId: string; clientSecret?: string; checkoutUrl?: string }
 >;
 
 @Injectable()
@@ -35,6 +36,7 @@ export class AppointmentBookingUseCase {
 		private readonly rulesExecution: RulesExecutionService,
 		private readonly animalRepository: AnimalRepository,
 		private readonly appointmentRepository: AppointmentRepository,
+		private readonly createPaymentUseCase: CreatePaymentUseCase,
 	) {}
 
 	async execute({
@@ -90,6 +92,22 @@ export class AppointmentBookingUseCase {
 		});
 
 		await this.appointmentRepository.create(appointmentIntent);
-		return right({ appointmentId: appointmentIntent.id.toString() });
+		const paymentResult = await this.createPaymentUseCase.execute({
+			appointmentId: appointmentIntent.id.toString(),
+			amountCents: appointmentIntent.price,
+			serviceName: service.name,
+			serviceDescription: `Agendamento para ${animal.name} às ${startDate.toLocaleString()}`,
+			companyImage: service.company.logo?.url,
+		});
+
+		if (paymentResult.isLeft()) {
+			// TODO: rollback appointment
+			return left(paymentResult.value);
+		}
+
+		return right({
+			appointmentId: appointmentIntent.id.toString(),
+			checkoutUrl: paymentResult.value.url,
+		});
 	}
 }
