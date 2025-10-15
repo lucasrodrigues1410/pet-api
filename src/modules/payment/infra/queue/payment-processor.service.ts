@@ -38,8 +38,12 @@ export class BullPaymentWebhookProcessor extends WorkerHost {
 			switch (data.type) {
 				case "checkout.session.completed": {
 					const { metadata, payment_intent } = data.data.object;
+					if (typeof payment_intent !== 'string') {
+						this.logger.warn(`No payment_intent found in checkout session`);
+						return;
+					}
 					await this.changeStatusUseCase.execute({
-						externalPaymentId: payment_intent as string,
+						externalPaymentId: payment_intent,
 						status: "succeeded",
 					});
 					if (!metadata?.appointmentId) {
