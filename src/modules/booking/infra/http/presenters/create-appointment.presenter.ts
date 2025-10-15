@@ -8,6 +8,6 @@ export class CreateAppointmentPresenter {
 		clientSecret?: string;
 		checkoutUrl?: string;
 	}) {
-		return { appointmentId, clientSecret, checkoutUrl};
+		return { appointmentId, clientSecret, checkoutUrl };
 	}
 }

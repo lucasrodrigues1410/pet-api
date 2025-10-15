@@ -32,7 +32,6 @@ export class PrismaServiceRepository implements ServiceRepository {
 			where: { id, isActive: true },
 			include: { company: true, categories: { include: { category: true } } },
 		});
-
 		if (!result) {
 			return undefined;
 		}

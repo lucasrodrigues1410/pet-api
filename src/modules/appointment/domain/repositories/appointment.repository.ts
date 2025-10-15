@@ -50,7 +50,7 @@ export abstract class AppointmentRepository {
 			}
 		>
 	>;
-	abstract create(appointment: Appointment,tx?: any): Promise<void>;
+	abstract create(appointment: Appointment, tx?: any): Promise<void>;
 	abstract getByPeriod(params: {
 		serviceId: string;
 		range: DateRange;

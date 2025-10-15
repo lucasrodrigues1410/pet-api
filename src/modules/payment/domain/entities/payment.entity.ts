@@ -4,10 +4,9 @@ import { DomainError } from "@/core/domain/errors/domain-error";
 
 export const paymentStatus = [
 	"pending",
-	"processing",
 	"succeeded",
+	"expired",
 	"failed",
-	"canceled",
 ] as const;
 
 export type PaymentStatus = (typeof paymentStatus)[number];
@@ -27,6 +26,7 @@ export interface PaymentProps {
 export class Payment extends Entity<PaymentProps> {
 	private static readonly PROCESSABLE_STATUSES: PaymentStatus[] = [
 		"pending",
+		"expired",
 		"failed",
 	];
 
@@ -77,47 +77,37 @@ export class Payment extends Entity<PaymentProps> {
 	}
 
 	public setExternalMetadata(metadata: Record<string, string>): void {
-		this.props.externalMetadata = { ...this.props.externalMetadata, ...metadata };
+		this.props.externalMetadata = {
+			...this.props.externalMetadata,
+			...metadata,
+		};
 		this.touch();
 	}
 
-	public startProcessing(): void {
-		if (!Payment.PROCESSABLE_STATUSES.includes(this.props.status)) {
-			throw new DomainError(
-				`Payment cannot be processed when status is '${this.props.status}'`,
-			);
-		}
-
-		this.props.status = "processing";
-		this.touch();
-	}
-
-	public succeed(): void {
-		if (this.props.status !== "processing") {
-			throw new DomainError("Only processing payments can succeed");
+	public markAsSucceeded(): void {
+		if (this.props.status !== "pending") {
+			throw new DomainError("Only pending payments can succeed");
 		}
 
 		this.props.status = "succeeded";
 		this.touch();
 	}
 
-	public fail(): void {
-		if (this.props.status !== "processing") {
-			throw new DomainError("Only processing payments can fail");
+	public markAsFailed(): void {
+		if (this.props.status !== "pending") {
+			throw new DomainError("Only pending payments can be failed");
 		}
 
 		this.props.status = "failed";
 		this.touch();
 	}
 
-	public cancel(): void {
-		if (!["pending", "processing"].includes(this.props.status)) {
-			throw new DomainError(
-				`Payment cannot be canceled when status is '${this.props.status}'`,
-			);
+	public markAsExpired(): void {
+		if (this.props.status !== "pending") {
+			throw new DomainError("Only pending payments can be expired");
 		}
 
-		this.props.status = "canceled";
+		this.props.status = "expired";
 		this.touch();
 	}
 

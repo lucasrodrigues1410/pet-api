@@ -35,7 +35,6 @@ export class PrismaAppointmentRepository implements AppointmentRepository {
 				company: { include: { logo: true } },
 			},
 		});
-
 		if (!appointment) return null;
 		return Object.assign(PrismaAppointmentMapper.toDomain(appointment), {
 			animal: Object.assign(PrismaAnimalMapper.toDomain(appointment.animal), {

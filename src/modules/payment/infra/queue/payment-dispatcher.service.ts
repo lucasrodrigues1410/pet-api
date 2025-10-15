@@ -5,7 +5,7 @@ import { PaymentWebhookEvent } from "../../domain/events/payment-webhook.event";
 import { PaymentWebhookDispatcher } from "../../domain/interfaces/payment-webhook-dispatcher.interface";
 
 @Injectable()
-export class BullPaymentWebhookDispatcher  implements PaymentWebhookDispatcher {
+export class BullPaymentWebhookDispatcher implements PaymentWebhookDispatcher {
 	constructor(@InjectQueue("payments") private readonly queue: Queue) {}
 
 	async dispatch(event: PaymentWebhookEvent): Promise<void> {

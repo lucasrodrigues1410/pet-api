@@ -19,11 +19,11 @@ async function bootstrap() {
 	);
 
 	//App configuration
-	const origins = process.env.ALLOWED_ORIGINS?.split(',') ?? [];
+	const origins = process.env.ALLOWED_ORIGINS?.split(",") ?? [];
 	app.enableCors({
 		origin: origins.length ? origins : true,
-		methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-		allowedHeaders: ['Content-Type', 'Authorization'],
+		methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+		allowedHeaders: ["Content-Type", "Authorization"],
 	});
 	app.register(multipart);
 
@@ -46,6 +46,6 @@ async function bootstrap() {
 	const configService = app.get(EnvService);
 	const port = configService.get("PORT");
 
-	await app.listen(port, '0.0.0.0');
+	await app.listen(port, "0.0.0.0");
 }
 bootstrap();

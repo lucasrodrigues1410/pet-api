@@ -21,10 +21,7 @@ model Payment {
 
 enum PaymentStatus {
   pending
-  processing
   succeeded
+  expired
   failed
-  canceled
-  refunded
-  partially_refunded
 }

@@ -1,6 +1,10 @@
 import { createZodDto } from "nestjs-zod";
 import { makePaginatedDto } from "@/shared/utils/pagination";
-import { companyRatingStatsDto, ratingDto, ratingEligibilityDto } from "./rating.dto";
+import {
+	companyRatingStatsDto,
+	ratingDto,
+	ratingEligibilityDto,
+} from "./rating.dto";
 
 export class RatingResponse extends createZodDto(ratingDto) {}
 export class RatingListResponse extends createZodDto(

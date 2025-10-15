@@ -1,4 +1,5 @@
 import { Injectable, Logger } from "@nestjs/common";
+import { addMinutes } from "date-fns";
 import Stripe from "stripe";
 import { EnvService } from "@/core/infra/env/env.service";
 import { Either, left, right } from "@/shared/either";
@@ -20,13 +21,17 @@ export class StripeAdapter implements PaymentGateway {
 		this.logger.log("Stripe adapter initialized");
 	}
 
-	constructEvent<T = Record<string, any>>(payload: unknown, signature: string) {
+	constructEvent<T = Stripe.Event>(payload: unknown, signature: string) {
 		try {
 			const stripeEvent = this.stripe.webhooks.constructEvent(
 				payload as string | Buffer,
 				signature,
 				this.config.get("STRIPE_WEBHOOK_SECRET")!,
 			);
+
+			if (stripeEvent.type === "payment_intent.succeeded") {
+				stripeEvent.data.object;
+			}
 
 			return {
 				id: stripeEvent.id,
@@ -82,7 +87,7 @@ export class StripeAdapter implements PaymentGateway {
 								quantity: item.quantity,
 							}) as Stripe.Checkout.SessionCreateParams.LineItem,
 					),
-					expires_at: Math.floor(Date.now() / 1000) + 10 * 60, // adding 10 minutes to avoid Stripe considering the session expired
+					expires_at: Math.floor(addMinutes(new Date(), 30).getTime() / 1000),
 					success_url: params.successUrl,
 					cancel_url: params.cancelUrl,
 					metadata: params.metadata,

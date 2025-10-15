@@ -29,13 +29,13 @@ export class HandlePaymentChangeStatusUseCase {
 
 		switch (input.status) {
 			case "succeeded":
-				payment.succeed();
-				break;
-			case "canceled":
-				payment.cancel();
+				payment.markAsSucceeded();
 				break;
 			case "failed":
-				payment.fail();
+				payment.markAsFailed();
+				break;
+			case "expired":
+				payment.markAsExpired();
 				break;
 			default:
 				return left(new Error("Invalid status"));

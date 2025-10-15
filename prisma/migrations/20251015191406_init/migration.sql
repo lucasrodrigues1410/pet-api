@@ -14,7 +14,7 @@ CREATE TYPE "DayOfWeek" AS ENUM ('sunday', 'monday', 'tuesday', 'wednesday', 'th
 CREATE TYPE "Role" AS ENUM ('admin', 'manager', 'employee');
 
 -- CreateEnum
-CREATE TYPE "PaymentStatus" AS ENUM ('pending', 'processing', 'succeeded', 'failed', 'canceled', 'refunded', 'partially_refunded');
+CREATE TYPE "PaymentStatus" AS ENUM ('pending', 'succeeded', 'expired');
 
 -- CreateEnum
 CREATE TYPE "PriceAdjustmentType" AS ENUM ('discount', 'surcharge');
@@ -55,7 +55,7 @@ CREATE TABLE "Appointment" (
     "start_date" TIMESTAMP(3) NOT NULL,
     "end_date" TIMESTAMP(3) NOT NULL,
     "status" "AppointmentStatus" NOT NULL DEFAULT 'scheduled',
-    "price" DECIMAL(10,2) NOT NULL,
+    "price" INTEGER NOT NULL,
     "coat_type" "CoatType" NOT NULL,
     "animal_id" TEXT NOT NULL,
     "service_id" TEXT NOT NULL,
@@ -228,6 +228,7 @@ CREATE TABLE "payments" (
     "amount" INTEGER NOT NULL,
     "status" "PaymentStatus" NOT NULL DEFAULT 'pending',
     "external_id" TEXT,
+    "checkout_url" TEXT,
     "client_secret" TEXT,
     "appointment_id" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -272,7 +273,7 @@ CREATE TABLE "services" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "description" TEXT,
-    "price" DECIMAL(10,2) NOT NULL,
+    "price" INTEGER NOT NULL,
     "duration" INTEGER,
     "company_id" TEXT NOT NULL,
     "is_active" BOOLEAN NOT NULL DEFAULT true,

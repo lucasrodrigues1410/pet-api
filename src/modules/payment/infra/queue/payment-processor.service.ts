@@ -6,6 +6,7 @@ import { Stripe } from "stripe";
 import { AppointmentExpiredPaymentEvent } from "@/modules/appointment/domain/events/appointment-expired-payment.event copy";
 import { AppointmentPaidEvent } from "@/modules/appointment/domain/events/appointment-paid.event";
 import { HandlePaymentChangeStatusUseCase } from "../../application/use-cases/handle-payment-change-status.use-case";
+import { PaymentStatus } from "../../domain/entities/payment.entity";
 import { PaymentWebhookEvent } from "../../domain/events/payment-webhook.event";
 
 @Processor("payments")
@@ -27,11 +28,16 @@ export class BullPaymentWebhookProcessor extends WorkerHost {
 			`Processing webhook job: ${id} (attempt ${job.attemptsMade + 1})`,
 		);
 
+		const dict = {
+			"checkout.session.completed": "succeeded",
+			"checkout.session.expired": "expired",
+			"payment_intent.payment_failed": "failed",
+		} as Record<Stripe.Event.Type, PaymentStatus>;
+
 		try {
 			switch (data.type) {
 				case "checkout.session.completed": {
-					const { metadata, payment_intent } =
-						data.object as unknown as Stripe.Checkout.Session;
+					const { metadata, payment_intent } = data.data.object;
 					await this.changeStatusUseCase.execute({
 						externalPaymentId: payment_intent as string,
 						status: "succeeded",
@@ -51,10 +57,8 @@ export class BullPaymentWebhookProcessor extends WorkerHost {
 
 				case "checkout.session.expired":
 				case "payment_intent.payment_failed": {
-					const { metadata, id } =
-						data.object as unknown as Stripe.PaymentIntent;
-					const status =
-						data.type === "checkout.session.expired" ? "canceled" : "failed";
+					const { metadata, id } = data.data.object;
+					const status = dict[data.type];
 					await this.changeStatusUseCase.execute({
 						externalPaymentId: id,
 						status,
@@ -65,7 +69,7 @@ export class BullPaymentWebhookProcessor extends WorkerHost {
 						);
 						return;
 					}
-					if (status === "canceled") {
+					if (status === "expired") {
 						await this.eventEmitter.emit(
 							AppointmentExpiredPaymentEvent.name,
 							new AppointmentExpiredPaymentEvent(metadata?.appointmentId),

@@ -12,10 +12,7 @@ type RatingEligibilityReason = "ALREADY_RATED" | "NO_COMPLETED_APPOINTMENT";
 
 type CheckRatingEligibilityUseCaseResponse = Either<
 	never,
-	{
-		canRate: boolean;
-		reason?: RatingEligibilityReason;
-	}
+	{ canRate: boolean; reason?: RatingEligibilityReason }
 >;
 
 @Injectable()
