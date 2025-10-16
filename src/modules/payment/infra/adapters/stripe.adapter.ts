@@ -21,18 +21,13 @@ export class StripeAdapter implements PaymentGateway {
 		this.logger.log("Stripe adapter initialized");
 	}
 
-	constructEvent<T = Stripe.Event>(payload: unknown, signature: string) {
+	async constructEvent<T = Stripe.Event>(payload: unknown, signature: string) {
 		try {
-			const stripeEvent = this.stripe.webhooks.constructEvent(
+			const stripeEvent = await this.stripe.webhooks.constructEventAsync(
 				payload as string | Buffer,
 				signature,
 				this.config.get("STRIPE_WEBHOOK_SECRET")!,
 			);
-
-			if (stripeEvent.type === "payment_intent.succeeded") {
-				stripeEvent.data.object;
-			}
-
 			return {
 				id: stripeEvent.id,
 				data: stripeEvent as T,

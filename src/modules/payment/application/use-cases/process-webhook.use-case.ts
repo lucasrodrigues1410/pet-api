@@ -1,5 +1,4 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { PaymentWebhookEvent } from "../../domain/events/payment-webhook.event";
 import { PaymentGateway } from "../../domain/gateways/payment-gateway";
 import { PaymentWebhookDispatcher } from "../../domain/interfaces/payment-webhook-dispatcher.interface";
 
@@ -19,21 +18,14 @@ export class ProcessWebhookUseCase {
 
 	async execute(input: ProcessWebhookInput): Promise<void> {
 		try {
-			const event = this.paymentGateway.constructEvent(
+			const event = await this.paymentGateway.constructEvent(
 				input.payload,
 				input.signature,
 			);
 
 			this.logger.log(`Received webhook: ${event.id} at ${event.createdAt}`);
 
-			const job: PaymentWebhookEvent = {
-				id: event.id,
-				data: event.data.object as unknown as Record<string, any>,
-				timestamp: event.createdAt.getTime(),
-			};
-
-			await this.paymentQueue.dispatch(job);
-
+			await this.paymentQueue.dispatch({ id: event.id, data: event.data });
 			this.logger.log(
 				`Webhook job added to queue: ${event.id} - ${event.data.id}`,
 			);

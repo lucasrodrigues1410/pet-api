@@ -7,6 +7,7 @@ import { UpdateAppointmentStatusUseCase } from "./application/use-cases/update-a
 import { AppointmentRepository } from "./domain/repositories/appointment.repository";
 import { PrismaAppointmentRepository } from "./infra/database/repositories/prisma-appointment.repository";
 import { AppointmentController } from "./infra/http/controllers/appointment.controller";
+import { AppointmentStatusListener } from "./infra/listeners/appointment-status.listener";
 
 @Module({
 	imports: [NotificationModule],
@@ -15,6 +16,7 @@ import { AppointmentController } from "./infra/http/controllers/appointment.cont
 		GetAppointmentByUserIdUseCase,
 		GetAppointmentByCompanyIdUseCase,
 		UpdateAppointmentStatusUseCase,
+		AppointmentStatusListener,
 		{ provide: AppointmentRepository, useClass: PrismaAppointmentRepository },
 	],
 	controllers: [AppointmentController],

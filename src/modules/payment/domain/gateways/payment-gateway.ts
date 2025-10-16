@@ -7,10 +7,10 @@ export type CreatePaymentIntentParams = {
 };
 
 export abstract class PaymentGateway {
-	abstract constructEvent<T = Record<string, any>>(
+	abstract constructEvent<T = Record<string, unknown>>(
 		payload: unknown,
 		signature: string,
-	): { id: string; data: T; createdAt: Date };
+	): Promise<{ id: string; data: T; createdAt: Date }>;
 	abstract createPaymentIntent(
 		params: CreatePaymentIntentParams,
 	): Promise<Either<Error, { id: string; clientSecret?: string | null }>>;
