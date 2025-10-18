@@ -1,6 +1,7 @@
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from "@nestjs/core";
+import { EventEmitterModule } from "@nestjs/event-emitter";
 import { ZodSerializerInterceptor, ZodValidationPipe } from "nestjs-zod";
 import { BullEventDispatcherModule } from "./core/infra/bull/bull-event-dispatcher.module";
 import { envSchema } from "./core/infra/env/env";
@@ -19,6 +20,7 @@ import { DashboardModule } from "./modules/dashboard/dashboard.module";
 import { HealthModule } from "./modules/health/health.module";
 import { InviteModule } from "./modules/invite/invite.module";
 import { NotificationModule } from "./modules/notification/notification.module";
+import { PaymentModule } from "./modules/payment/payment.module";
 import { RatingModule } from "./modules/rating/rating.module";
 import { ServiceModule } from "./modules/service/service.module";
 import { StaffModule } from "./modules/staff/staff.module";
@@ -31,6 +33,7 @@ import { UserModule } from "./modules/user/user.module";
 			validate: (env) => envSchema.parse(env),
 			cache: true,
 		}),
+		EventEmitterModule.forRoot(),
 		EnvModule,
 		BullEventDispatcherModule,
 		NotificationModule,
@@ -50,6 +53,7 @@ import { UserModule } from "./modules/user/user.module";
 		DashboardModule,
 		RatingModule,
 		HealthModule,
+		PaymentModule,
 	],
 	providers: [
 		{ provide: APP_PIPE, useClass: ZodValidationPipe },

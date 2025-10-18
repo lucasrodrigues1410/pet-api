@@ -109,10 +109,8 @@ export class AppointmentController {
 	) {
 		const response = await this.updateAppointmentStatusUseCase.execute({
 			appointmentId,
-			newStatus: updateStatusDto.status,
-			userId,
-			userType,
-			companyId,
+			status: updateStatusDto.status,
+			user: { id: userId, type: userType, companyId },
 		});
 
 		if (response.isLeft()) {

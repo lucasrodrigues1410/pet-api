@@ -1,7 +1,13 @@
-import { BookingPresenter } from "./booking.presenter";
-
 export class CreateAppointmentPresenter {
-	static present(appointmentId: string) {
-		return BookingPresenter.presentCreateAppointment(appointmentId);
+	static present({
+		appointmentId,
+		clientSecret,
+		checkoutUrl,
+	}: {
+		appointmentId: string;
+		clientSecret?: string;
+		checkoutUrl?: string;
+	}) {
+		return { appointmentId, clientSecret, checkoutUrl };
 	}
 }

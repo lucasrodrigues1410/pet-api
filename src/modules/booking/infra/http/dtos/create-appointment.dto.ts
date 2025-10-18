@@ -13,4 +13,10 @@ const request = z.object({
 	coatType: z.enum(coatType),
 });
 
+const response = z.object({
+	appointmentId: z.string(),
+	checkoutUrl: z.url().optional(),
+});
+
+export class CreateAppointmentResponseDto extends createZodDto(response) {}
 export class CreateAppointmentRequestDto extends createZodDto(request) {}

@@ -1,0 +1,27 @@
+model Payment {
+  id            String        @id @default(cuid())
+  amount        Int
+  status        PaymentStatus @default(pending)
+  externalId    String?       @unique @map("external_id")
+  checkoutUrl   String?       @map("checkout_url")
+  clientSecret  String?       @map("client_secret")
+  appointmentId String        @map("appointment_id")
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  appointment Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+
+  @@index([status])
+  @@index([externalId])
+  @@index([deletedAt])
+  @@map("payments")
+}
+
+enum PaymentStatus {
+  pending
+  succeeded
+  expired
+  failed
+}

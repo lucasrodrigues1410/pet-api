@@ -3,7 +3,6 @@ import {
 	Body,
 	Controller,
 	Get,
-	HttpCode,
 	NotFoundException,
 	Param,
 	Post,
@@ -15,7 +14,10 @@ import { User } from "@/modules/auth/infra/http/decorators/user.decorator";
 import { UserTypeDecorator } from "@/modules/auth/infra/http/decorators/user-type.decorator";
 import { AppointmentBookingUseCase } from "@/modules/booking/application/use-cases/appointment-booking.use-case";
 import { ListAvailableDatesUseCase } from "@/modules/booking/application/use-cases/list-available-dates.use-case";
-import { CreateAppointmentRequestDto } from "../dtos/create-appointment.dto";
+import {
+	CreateAppointmentRequestDto,
+	CreateAppointmentResponseDto,
+} from "../dtos/create-appointment.dto";
 import {
 	ListAvailableDatesRequestDto,
 	ListAvailableDatesResponseDto,
@@ -56,9 +58,9 @@ export class BookingController {
 	}
 
 	@Post("create")
-	@HttpCode(201)
+	@ZodResponse({ status: 201, type: CreateAppointmentResponseDto })
 	@ApiOperation({
-		summary: "Cria um agendamento, iniciando o processo de pagamento",
+		summary: "Iniciando o processo de pagamento",
 		operationId: "createAppointment",
 	})
 	@UserTypeDecorator("customer")
@@ -79,6 +81,9 @@ export class BookingController {
 			throw new BadRequestException(`${response.value.message}`);
 		}
 
-		return CreateAppointmentPresenter.present(response.value.appointmentId);
+		return CreateAppointmentPresenter.present({
+			appointmentId: response.value.appointmentId,
+			checkoutUrl: response.value.checkoutUrl,
+		});
 	}
 }

@@ -11,7 +11,7 @@ export class PrismaServiceMapper {
 		return Service.create(
 			{
 				description: prismaService.description,
-				price: prismaService.price.toNumber(),
+				price: prismaService.price,
 				duration: prismaService.duration ?? 0,
 				isActive: prismaService.isActive,
 				name: prismaService.name,

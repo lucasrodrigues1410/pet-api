@@ -100,10 +100,7 @@ export class PrismaRatingRepository implements RatingRepository {
 		};
 	}
 
-	async findByUserAndCompany(params: {
-		userId: string;
-		companyId: string;
-	}) {
+	async findByUserAndCompany(params: { userId: string; companyId: string }) {
 		const rating = await this.prisma.rating.findUnique({
 			where: {
 				userId_companyId: {
