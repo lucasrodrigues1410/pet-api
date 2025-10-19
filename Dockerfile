@@ -1,4 +1,4 @@
-FROM oven/bun:1-slim
+FROM imbios/bun-node:23-slim
 WORKDIR /app
 ENV NODE_ENV=production
 
