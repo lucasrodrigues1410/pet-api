@@ -43,7 +43,6 @@ describe("GetAppointmentByIdUseCase", () => {
 		const result = await sut.execute({
 			id: appointment.id.toString(),
 			userId: appointment.clientId.toString(),
-			userType: "customer",
 		});
 
 		expect(result.isRight()).toBe(true);
@@ -58,7 +57,6 @@ describe("GetAppointmentByIdUseCase", () => {
 		const result = await sut.execute({
 			id: "non-existing-id",
 			userId: "user-1",
-			userType: "customer",
 		});
 
 		expect(result.isLeft()).toBe(true);
@@ -75,7 +73,6 @@ describe("GetAppointmentByIdUseCase", () => {
 		const result = await sut.execute({
 			id: appointment.id.toString(),
 			userId: "different-user-id",
-			userType: "customer",
 		});
 
 		expect(result.isLeft()).toBe(true);
@@ -92,8 +89,6 @@ describe("GetAppointmentByIdUseCase", () => {
 		const result = await sut.execute({
 			id: appointment.id.toString(),
 			userId: "staff-1",
-			userType: "company",
-			companyId: appointment.companyId.toString(),
 		});
 
 		expect(result.isRight()).toBe(true);
@@ -109,8 +104,6 @@ describe("GetAppointmentByIdUseCase", () => {
 		const result = await sut.execute({
 			id: appointment.id.toString(),
 			userId: "staff-1",
-			userType: "company",
-			companyId: "different-company-id",
 		});
 
 		expect(result.isLeft()).toBe(true);

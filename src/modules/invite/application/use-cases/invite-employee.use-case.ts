@@ -1,8 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { randomUUIDv7 } from "bun";
-import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { UserAlreadyExistError } from "@/modules/auth/domain/errors/user-already-exists.error";
-import { CompanyRepository } from "@/modules/company/domain/repositories/company.repository";
 import { EmployeeInviteEvent } from "@/modules/notification/domain/events/employee-invite.event";
 import { NotificationPublisher } from "@/modules/notification/domain/interfaces/notification-publisher.interface";
 import { Staff, StaffRole } from "@/modules/staff/domain/entities/staff.entity";
@@ -17,7 +15,7 @@ import { InviteRepository } from "../../domain/repositories/invite.repository";
 interface InviteEmployeeUseCaseRequest {
 	name: string;
 	email: string;
-	companyId: string;
+	userId: string;
 	inviterUserId: string;
 	role: StaffRole;
 }
@@ -33,7 +31,6 @@ export class InviteEmployeeUseCase {
 
 	constructor(
 		private readonly userRepository: UserRepository,
-		private readonly companyRepository: CompanyRepository,
 		private readonly staffRepository: StaffRepository,
 		private readonly inviteRepository: InviteRepository,
 		private readonly notifyPublisher: NotificationPublisher,
@@ -42,22 +39,20 @@ export class InviteEmployeeUseCase {
 	async execute({
 		name,
 		email,
-		companyId,
+		userId,
 		inviterUserId,
 		role,
 	}: InviteEmployeeUseCaseRequest): Promise<InviteEmployeeUseCaseResponse> {
-		this.logger.log(
-			`Executing invite employee use case for company ${companyId}`,
-		);
+		this.logger.log(`Executing invite employee use case for user ${userId}`);
 		this.logger.debug(
-			`Invite employee data: ${JSON.stringify({ name, email, companyId, inviterUserId })}`,
+			`Invite employee data: ${JSON.stringify({ name, email, userId, inviterUserId })}`,
 		);
 
 		try {
-			const company = await this.companyRepository.findById(companyId);
-			if (!company) {
-				this.logger.warn(`Company not found with ID: ${companyId}`);
-				return left(new ResourceNotFoundError("Empresa não encontrada"));
+			const staffOwner = await this.staffRepository.findByUserId(userId);
+			if (!staffOwner) {
+				this.logger.warn(`Staff not found with user ID: ${userId}`);
+				return left(new ResourceNotFoundError("Funcionário não encontrado"));
 			}
 
 			const inviter = await this.userRepository.findById(inviterUserId);
@@ -88,7 +83,7 @@ export class InviteEmployeeUseCase {
 
 			const staff = Staff.create({
 				userId: user.id,
-				companyId: new UniqueEntityID(companyId),
+				companyId: staffOwner.companyId,
 				role,
 				createdAt: new Date(),
 			});
@@ -121,7 +116,7 @@ export class InviteEmployeeUseCase {
 			return right({ invite, user });
 		} catch (error) {
 			this.logger.error(
-				`Error inviting employee for company ${companyId}`,
+				`Error inviting employee for company ${userId}`,
 				(error as Error).stack,
 			);
 			throw error;

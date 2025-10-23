@@ -16,6 +16,7 @@ type FindCompanyResult = Company & {
 type SearchCompanyResult = Company & { address: Location; image: Asset };
 
 export abstract class CompanyRepository {
+	abstract findByUserId(userId: string): Promise<Company | null>;
 	abstract findById(id: string): Promise<FindCompanyResult | null>;
 	abstract searchCompanies(
 		params: {

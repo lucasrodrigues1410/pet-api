@@ -9,16 +9,12 @@ import {
 	NotFoundException,
 	Param,
 	Post,
-	UseGuards,
 } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { ZodResponse } from "nestjs-zod";
 import { UserAlreadyExistError } from "@/modules/auth/domain/errors/user-already-exists.error";
 import { Public } from "@/modules/auth/infra/http/decorators/public.decorator";
 import { User } from "@/modules/auth/infra/http/decorators/user.decorator";
-import { UserTypeDecorator } from "@/modules/auth/infra/http/decorators/user-type.decorator";
-import { CompanyGuard } from "@/modules/company/infra/http/guards/company.guard";
-import { StaffRoles } from "@/modules/staff/infra/decorators/staff-roles.decorator";
 import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
 import { InviteEmployeeUseCase } from "../../../application/use-cases/invite-employee.use-case";
 import { ValidateInviteUseCase } from "../../../application/use-cases/validate-invite.use-case";
@@ -46,12 +42,8 @@ export class InviteController {
 		operationId: "inviteEmployee",
 	})
 	@ZodResponse({ status: 201, type: InviteEmployeeResponseDto })
-	@UserTypeDecorator("company")
-	@UseGuards(CompanyGuard)
-	@StaffRoles("admin", "manager")
 	async inviteEmployee(
 		@User("sub") userId: string,
-		@User("companyId") companyId: string,
 		@Body() body: InviteEmployeeRequestDto,
 	): Promise<InviteEmployeeResponseDto> {
 		const { name, email, role } = body;
@@ -59,9 +51,9 @@ export class InviteController {
 		const result = await this.inviteEmployeeUseCase.execute({
 			name,
 			email,
-			companyId,
 			inviterUserId: userId,
 			role,
+			userId,
 		});
 
 		if (result.isLeft()) {

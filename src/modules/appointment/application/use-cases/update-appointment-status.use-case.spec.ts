@@ -89,7 +89,6 @@ describe("UpdateAppointmentStatusUseCase", () => {
 				appointmentId: "appointment-1",
 				status: "canceled",
 				userId: "client-1",
-				userType: "customer",
 			});
 
 			expect(result.isRight()).toBe(true);
@@ -109,7 +108,6 @@ describe("UpdateAppointmentStatusUseCase", () => {
 				appointmentId: "appointment-1",
 				status: "no_show",
 				userId: "client-1",
-				userType: "customer",
 			});
 
 			expect(result.isLeft()).toBe(true);
@@ -124,7 +122,6 @@ describe("UpdateAppointmentStatusUseCase", () => {
 				appointmentId: "appointment-1",
 				status: "canceled",
 				userId: "other-client",
-				userType: "customer",
 			});
 
 			expect(result.isLeft()).toBe(true);
@@ -166,8 +163,6 @@ describe("UpdateAppointmentStatusUseCase", () => {
 				appointmentId: "appointment-1",
 				status: "no_show",
 				userId: "staff-1",
-				userType: "company",
-				companyId: "company-1",
 			});
 
 			expect(result.isRight()).toBe(true);
@@ -187,8 +182,6 @@ describe("UpdateAppointmentStatusUseCase", () => {
 				appointmentId: "appointment-1",
 				status: "completed",
 				userId: "staff-1",
-				userType: "company",
-				companyId: "other-company",
 			});
 
 			expect(result.isLeft()).toBe(true);
@@ -205,7 +198,6 @@ describe("UpdateAppointmentStatusUseCase", () => {
 				appointmentId: "non-existent",
 				status: "canceled",
 				userId: "client-1",
-				userType: "customer",
 			});
 
 			expect(result.isLeft()).toBe(true);
@@ -226,7 +218,6 @@ describe("UpdateAppointmentStatusUseCase", () => {
 				appointmentId: "appointment-1",
 				status: "scheduled",
 				userId: "client-1",
-				userType: "customer",
 			});
 
 			expect(result.isLeft()).toBe(true);

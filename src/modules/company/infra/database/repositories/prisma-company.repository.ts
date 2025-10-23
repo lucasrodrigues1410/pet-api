@@ -15,6 +15,14 @@ import { PrismaCompanyMapper } from "../mappers/prisma-company.mapper";
 export class PrismaCompanyRepository implements CompanyRepository {
 	constructor(private prismaService: PrismaService) {}
 
+	async findByUserId(userId: string) {
+		const result = await this.prismaService.company.findFirst({
+			where: { companyUsers: { some: { userId } } },
+		});
+		if (!result) return null;
+		return PrismaCompanyMapper.toDomain(result);
+	}
+
 	async findById(id: string) {
 		const result = await this.prismaService.company.findUnique({
 			where: { id, deletedAt: null },

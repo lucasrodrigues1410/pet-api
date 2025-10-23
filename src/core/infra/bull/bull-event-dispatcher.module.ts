@@ -9,9 +9,7 @@ import { EnvService } from "../env/env.service";
 			inject: [EnvService],
 			useFactory: (envService: EnvService) => ({
 				connection: {
-					host: envService.get("REDIS_HOST"),
-					port: envService.get("REDIS_PORT"),
-					password: envService.get("REDIS_PASSWORD"),
+					url: envService.get("REDIS_URL"),
 					retryDelayOnFailover: 100,
 					enableReadyCheck: false,
 					maxLoadingTimeout: 0,

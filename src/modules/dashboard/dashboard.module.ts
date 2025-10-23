@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common";
 import { AppointmentModule } from "../appointment/appointment.module";
-import { CompanyModule } from "../company/company.module";
 import { ServiceModule } from "../service/service.module";
+import { StaffModule } from "../staff/staff.module";
 import { UserModule } from "../user/user.module";
 import { DashboardMetricsService } from "./application/services/dashboard-metrics.service";
 import { GetDashboardMetricsUseCase } from "./application/use-cases/get-dashboard-metrics.use-case";
@@ -11,7 +11,7 @@ import { PrismaDashboardRepository } from "./infra/database/repositories/prisma-
 import { DashboardController } from "./infra/http/controllers/dashboard.controller";
 
 @Module({
-	imports: [AppointmentModule, UserModule, CompanyModule, ServiceModule],
+	imports: [AppointmentModule, UserModule, StaffModule, ServiceModule],
 	controllers: [DashboardController],
 	providers: [
 		{ provide: DashboardRepository, useClass: PrismaDashboardRepository },

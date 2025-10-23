@@ -4,18 +4,14 @@ import { Asset } from "@/modules/asset/domain/entities/asset";
 import { Breed } from "@/modules/breed/domain/entities/breed.entity";
 import { Company } from "@/modules/company/domain/entities/company.entity";
 import { Service } from "@/modules/service/domain/entities/service.entity";
-import { User, UserType } from "@/modules/user/domain/entities/user.entity";
+import { StaffRepository } from "@/modules/staff/domain/repositories/staff.repository";
+import { User } from "@/modules/user/domain/entities/user.entity";
 import { Either, left, right } from "@/shared/either";
 import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
 import { Appointment } from "../../domain/entities/appointment.entity";
 import { AppointmentRepository } from "../../domain/repositories/appointment.repository";
 
-type GetAppointmentByIdUseCaseInput = {
-	id: string;
-	userId: string;
-	userType: UserType;
-	companyId?: string;
-};
+type GetAppointmentByIdUseCaseInput = { id: string; userId: string };
 
 type GetAppointmentByIdUseCaseOutput = Either<
 	ResourceNotFoundError,
@@ -29,13 +25,14 @@ type GetAppointmentByIdUseCaseOutput = Either<
 
 @Injectable()
 export class GetAppointmentByIdUseCase {
-	constructor(private readonly appointmentRepository: AppointmentRepository) {}
+	constructor(
+		private readonly appointmentRepository: AppointmentRepository,
+		private readonly staffRepo: StaffRepository,
+	) {}
 
 	async execute({
 		id,
 		userId,
-		userType,
-		companyId,
 	}: GetAppointmentByIdUseCaseInput): Promise<GetAppointmentByIdUseCaseOutput> {
 		const appointment = await this.appointmentRepository.findById(id);
 		if (!appointment) {
@@ -44,9 +41,10 @@ export class GetAppointmentByIdUseCase {
 			);
 		}
 
+		const staff = await this.staffRepo.findByUserId(userId);
 		if (
-			(userType === "customer" && appointment.clientId.toString() !== userId) ||
-			(userType === "company" && appointment.companyId.toString() !== companyId)
+			!staff?.companyId.equals(appointment.companyId) ||
+			appointment.clientId.toString() !== userId
 		) {
 			return left(
 				new ResourceNotFoundError(
