@@ -5,9 +5,10 @@ import { UserRepository } from "@/modules/user/domain/repositories/user.reposito
 import { Either, right } from "@/shared/either";
 
 type CreateOrUpdateUserFromExternalRequest = {
-	externalId: string;
+	authProviderId: string;
 	email: string;
 	name: string;
+	avatarUrl?: string;
 };
 
 type CreateOrUpdateUserFromExternalResponse = Either<Error, { id: string }>;
@@ -19,21 +20,21 @@ export class CreateOrUpdateUserFromExternalUseCase {
 	async execute(
 		input: CreateOrUpdateUserFromExternalRequest,
 	): Promise<CreateOrUpdateUserFromExternalResponse> {
-		const { externalId, email, name } = input;
+		const { authProviderId, email, name, avatarUrl } = input;
 
-		const existingByExternal = await this.userRepository.findById(externalId);
+		const existingByEmail = await this.userRepository.findByEmail(email);
 
-		if (existingByExternal) {
-			await this.userRepository.update(existingByExternal.id.toString(), {
-				name: existingByExternal.name,
-				email: existingByExternal.email,
-				authProviderId: existingByExternal.authProviderId,
+		if (existingByEmail) {
+			await this.userRepository.update(existingByEmail.id.toString(), {
+				name: name,
+				avatarUrl: avatarUrl,
+				authProviderId,
 			});
-			return right({ id: existingByExternal.id.toString() });
+			return right({ id: existingByEmail.id.toString() });
 		}
 
 		const user = User.create(
-			{ name: name, email: email, authProviderId: externalId },
+			{ name: name, email, authProviderId, avatarUrl },
 			new UniqueEntityID(),
 		);
 

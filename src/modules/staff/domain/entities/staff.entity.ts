@@ -48,8 +48,11 @@ export class Staff extends Entity<StaffProps> {
 		this.props.appointments = appointments;
 	}
 
-	static create(props: StaffProps, id?: UniqueEntityID): Staff {
-		const staff = new Staff(props, id);
+	static create(props: Omit<StaffProps, 'createdAt' | 'updatedAt' | 'deletedAt'>, id?: UniqueEntityID): Staff {
+		const staff = new Staff({
+			...props,
+			createdAt: new Date(),
+		}, id);
 		return staff;
 	}
 

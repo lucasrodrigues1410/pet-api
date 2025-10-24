@@ -1,6 +1,4 @@
 import { Module } from "@nestjs/common";
-import { InviteModule } from "../invite/invite.module";
-import { NotificationModule } from "../notification/notification.module";
 import { StaffModule } from "../staff/staff.module";
 import { UserModule } from "../user/user.module";
 import { CreateOrUpdateUserFromExternalUseCase } from "./application/use-cases/create-or-update-user-from-external.use-case";
@@ -9,7 +7,7 @@ import { ClerkWebhookController } from "./infra/http/controllers/clerk-webhook.c
 import { ClerkAuthProviderService } from "./infra/services/clerk-auth-provider.service";
 
 @Module({
-	imports: [UserModule, StaffModule, InviteModule, NotificationModule],
+	imports: [UserModule, StaffModule],
 	controllers: [ClerkWebhookController],
 	providers: [
 		CreateOrUpdateUserFromExternalUseCase,

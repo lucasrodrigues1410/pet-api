@@ -26,7 +26,6 @@ export class ClerkAuthGuard implements CanActivate {
 
 		const user = await clerkClient.users.getUser(userId);
 		const publicMetadata = user.publicMetadata as { appUserId?: string | null };
-
 		if (!publicMetadata?.appUserId) {
 			throw new UnauthorizedException("Unauthorized");
 		}

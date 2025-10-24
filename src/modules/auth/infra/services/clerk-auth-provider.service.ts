@@ -1,4 +1,4 @@
-import { clerkClient } from "@clerk/fastify";
+import { clerkClient, UserJSON } from "@clerk/fastify";
 import { verifyWebhook } from "@clerk/fastify/webhooks";
 import { Injectable, Logger } from "@nestjs/common";
 import type { FastifyRequest } from "fastify";
@@ -26,11 +26,7 @@ export class ClerkAuthProviderService extends AuthProviderService {
 
 			switch (event.type) {
 				case "user.created": {
-					const response = await this.createOrUpdateUserService.execute({
-						email: event.data.email_addresses[0].email_address,
-						externalId: event.data.id,
-						name: `${event.data.first_name} ${event.data.last_name}`.trim(),
-					});
+					const response = await this.updateUser(event.data);
 					if (response.isLeft()) {
 						this.logger.error(
 							`Erro ao criar usuário: ${response.value.message}`,
@@ -45,11 +41,7 @@ export class ClerkAuthProviderService extends AuthProviderService {
 				}
 
 				case "user.updated":
-					this.createOrUpdateUserService.execute({
-						email: event.data.email_addresses[0].email_address,
-						externalId: event.data.id,
-						name: `${event.data.first_name} ${event.data.last_name}`.trim(),
-					});
+					await this.updateUser(event.data);
 					this.logger.log(`Usuário atualizado: ${event.data.id}`);
 					break;
 
@@ -100,5 +92,14 @@ export class ClerkAuthProviderService extends AuthProviderService {
 			);
 			throw error;
 		}
+	}
+
+	private async updateUser(user: UserJSON) {
+		return this.createOrUpdateUserService.execute({
+			email: user.email_addresses[0].email_address,
+			authProviderId: user.id,
+			avatarUrl: user.image_url,
+			name: `${user.first_name} ${user.last_name}`.trim(),
+		});
 	}
 }

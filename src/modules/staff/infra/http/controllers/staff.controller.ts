@@ -1,12 +1,21 @@
-import { BadRequestException, Controller, Get, Query } from "@nestjs/common";
+import {
+	BadRequestException,
+	Controller,
+	Get,
+	NotFoundException,
+	Query,
+} from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { ZodResponse } from "nestjs-zod";
 import { User } from "@/modules/auth/infra/http/decorators/user.decorator";
+import { GetStaffByUserIdUseCase } from "@/modules/staff/application/use-cases/get-staff-by-user-id.use-case";
 import { ListStaffByCompanyUseCase } from "@/modules/staff/application/use-cases/list-staff-by-company.use-case";
+import { GetStaffByUserIdDto } from "../dtos/get-staff-by-user-id.dto";
 import {
 	ListStaffByCompanyQueryDto,
 	ListStaffByCompanyResponseDto,
 } from "../dtos/list-staff-by-company.dto";
+import { StaffPresenter } from "../presenters/staff.presenter";
 import { StaffListPresenter } from "../presenters/staff-list.presenter";
 
 @ApiTags("Colaboradores")
@@ -14,6 +23,7 @@ import { StaffListPresenter } from "../presenters/staff-list.presenter";
 export class StaffController {
 	constructor(
 		private readonly listStaffByCompanyUseCase: ListStaffByCompanyUseCase,
+		private readonly getStaffByUserIdUseCase: GetStaffByUserIdUseCase,
 	) {}
 
 	@Get("/company")
@@ -34,5 +44,19 @@ export class StaffController {
 			throw new BadRequestException();
 		}
 		return StaffListPresenter.present(result.value);
+	}
+
+	@Get("/me")
+	@ApiOperation({
+		summary: "Obter dados do colaborador logado",
+		operationId: "getStaffByCurrentUserId",
+	})
+	@ZodResponse({ status: 200, type: GetStaffByUserIdDto })
+	async getByCurrentUserId(@User("sub") userId: string) {
+		const result = await this.getStaffByUserIdUseCase.execute(userId);
+		if (result.isLeft()) {
+			throw new NotFoundException();
+		}
+		return StaffPresenter.present(result.value);
 	}
 }
