@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { DomainError } from "@/core/domain/errors/domain-error";
 import { AppointmentChangeStatusEvent } from "@/modules/notification/domain/events/appointment-change-status.event";
 import { NotificationPublisher } from "@/modules/notification/domain/interfaces/notification-publisher.interface";
-import { UserType } from "@/modules/user/domain/entities/user.entity";
+import { StaffRepository } from "@/modules/staff/domain/repositories/staff.repository";
 import { Either, left, right } from "@/shared/either";
 import { NotAllowedError } from "@/shared/errors/errors/not-allowed.error";
 import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
@@ -15,7 +15,7 @@ import { AppointmentRepository } from "../../domain/repositories/appointment.rep
 type UpdateAppointmentStatusUseCaseInput = {
 	appointmentId: string;
 	status: AppointmentStatus;
-	user?: { id: string; type: UserType; companyId?: string };
+	userId?: string;
 };
 
 type UpdateAppointmentStatusUseCaseOutput = Either<
@@ -28,12 +28,13 @@ export class UpdateAppointmentStatusUseCase {
 	constructor(
 		private readonly appointmentRepository: AppointmentRepository,
 		private readonly notifyPublisher: NotificationPublisher,
+		private readonly staffRepo: StaffRepository,
 	) {}
 
 	async execute({
 		appointmentId,
 		status: newStatus,
-		user,
+		userId,
 	}: UpdateAppointmentStatusUseCaseInput): Promise<UpdateAppointmentStatusUseCaseOutput> {
 		const appointment =
 			await this.appointmentRepository.findById(appointmentId);
@@ -45,8 +46,11 @@ export class UpdateAppointmentStatusUseCase {
 			);
 		}
 
-		const hasPermission = this.checkPermissions(appointment, user);
-		if (!hasPermission) {
+		const { allowed, isStaff } = await this.checkPermissions(
+			appointment,
+			userId,
+		);
+		if (!allowed) {
 			return left(
 				new NotAllowedError(
 					"Você não tem permissão para alterar este agendamento",
@@ -55,7 +59,7 @@ export class UpdateAppointmentStatusUseCase {
 		}
 
 		try {
-			appointment.updateStatus(newStatus, user?.type === "company");
+			appointment.updateStatus(newStatus, isStaff);
 			await this.appointmentRepository.updateStatus(appointmentId, newStatus);
 			await this.notifyPublisher.dispatch(
 				new AppointmentChangeStatusEvent(appointment.client.id.toString(), {
@@ -78,21 +82,17 @@ export class UpdateAppointmentStatusUseCase {
 		}
 	}
 
-	private checkPermissions(
-		appointment: Appointment,
-		user?: { id: string; type: UserType; companyId?: string },
-	): boolean {
-		if (!user) return true; // system user
+	private async checkPermissions(appointment: Appointment, userId?: string) {
+		if (!userId) return { isStaff: false, allowed: true };
+		if (appointment.clientId.toString() === userId)
+			return { isStaff: false, allowed: true };
 
-		const { id: userId, type: userType, companyId } = user;
-		if (userType === "customer") {
-			return appointment.clientId.toString() === userId;
-		}
+		const staff = await this.staffRepo.findByUserId(userId);
+		if (!staff) return { isStaff: false, allowed: false };
 
-		if (userType === "company") {
-			return appointment.companyId.toString() === companyId;
-		}
-
-		return false;
+		return {
+			isStaff: true,
+			allowed: staff.companyId.toString() === appointment.companyId.toString(),
+		};
 	}
 }

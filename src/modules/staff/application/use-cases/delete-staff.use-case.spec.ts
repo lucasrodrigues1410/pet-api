@@ -5,47 +5,117 @@ import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { StaffRepository } from "../../domain/repositories/staff.repository";
 import { DeleteStaffUseCase } from "./delete-staff.use-case";
 
-describe("DeleteStaffUseCase", () => {
-	const repo = { findById: jest.fn(), delete: jest.fn() };
-	let sut: DeleteStaffUseCase;
-	let moduleRef: any;
+let mockStaffRepository: {
+	findById: ReturnType<typeof jest.fn>;
+	delete: ReturnType<typeof jest.fn>;
+};
+let sut: DeleteStaffUseCase;
+let moduleRef: any;
 
+describe("Delete Staff Use Case", () => {
 	beforeEach(async () => {
-		repo.findById.mockReset();
-		repo.delete.mockReset();
+		mockStaffRepository = {
+			findById: jest.fn(async () => null),
+			delete: jest.fn(async () => undefined),
+		};
+
 		moduleRef = await Test.createTestingModule({
 			providers: [
 				DeleteStaffUseCase,
-				{ provide: StaffRepository, useValue: repo },
+				{ provide: StaffRepository, useValue: mockStaffRepository },
 			],
 		}).compile();
+
 		sut = moduleRef.get(DeleteStaffUseCase);
 	});
 
-	it("should delete staff when it belongs to the company", async () => {
+	it("should delete a staff member successfully", async () => {
 		const companyId = new UniqueEntityID();
 		const staff = makeStaff({ companyId });
-		repo.findById.mockResolvedValue(staff);
-		repo.delete.mockResolvedValue(undefined);
+		mockStaffRepository.findById.mockResolvedValueOnce(staff);
 
 		const result = await sut.execute({
 			id: staff.id.toString(),
 			companyId: companyId.toString(),
 		});
+
 		expect(result.isRight()).toBe(true);
-		expect(repo.delete).toHaveBeenCalledWith(staff.id.toString());
+		expect(mockStaffRepository.findById).toHaveBeenCalledWith(
+			staff.id.toString(),
+		);
+		expect(mockStaffRepository.delete).toHaveBeenCalledWith(
+			staff.id.toString(),
+		);
 	});
 
-	it("should return left when staff not found or does not belong to company", async () => {
-		const companyId = new UniqueEntityID();
-		const otherCompanyStaff = makeStaff({ companyId: new UniqueEntityID() });
-		repo.findById.mockResolvedValue(otherCompanyStaff);
+	it("should return error when staff does not exist", async () => {
+		mockStaffRepository.findById.mockResolvedValueOnce(null);
 
 		const result = await sut.execute({
-			id: otherCompanyStaff.id.toString(),
+			id: "non-existent-id",
+			companyId: "company-id",
+		});
+
+		expect(result.isLeft()).toBe(true);
+		if (result.isLeft()) {
+			expect(result.value.message).toBe("Recurso não encontrado");
+		}
+		expect(mockStaffRepository.findById).toHaveBeenCalledWith(
+			"non-existent-id",
+		);
+		expect(mockStaffRepository.delete).not.toHaveBeenCalled();
+	});
+
+	it("should return error when staff belongs to a different company", async () => {
+		const staffCompanyId = new UniqueEntityID();
+		const differentCompanyId = new UniqueEntityID();
+		const staff = makeStaff({ companyId: staffCompanyId });
+		mockStaffRepository.findById.mockResolvedValueOnce(staff);
+
+		const result = await sut.execute({
+			id: staff.id.toString(),
+			companyId: differentCompanyId.toString(),
+		});
+
+		expect(result.isLeft()).toBe(true);
+		if (result.isLeft()) {
+			expect(result.value.message).toBe("Recurso não encontrado");
+		}
+		expect(mockStaffRepository.findById).toHaveBeenCalledWith(
+			staff.id.toString(),
+		);
+		expect(mockStaffRepository.delete).not.toHaveBeenCalled();
+	});
+
+	it("should delete staff with admin role", async () => {
+		const companyId = new UniqueEntityID();
+		const staff = makeStaff({ companyId, role: "admin" });
+		mockStaffRepository.findById.mockResolvedValueOnce(staff);
+
+		const result = await sut.execute({
+			id: staff.id.toString(),
 			companyId: companyId.toString(),
 		});
-		expect(result.isLeft()).toBe(true);
-		expect(repo.delete).not.toHaveBeenCalled();
+
+		expect(result.isRight()).toBe(true);
+		expect(mockStaffRepository.delete).toHaveBeenCalledWith(
+			staff.id.toString(),
+		);
+	});
+
+	it("should delete staff with member role", async () => {
+		const companyId = new UniqueEntityID();
+		const staff = makeStaff({ companyId, role: "member" });
+		mockStaffRepository.findById.mockResolvedValueOnce(staff);
+
+		const result = await sut.execute({
+			id: staff.id.toString(),
+			companyId: companyId.toString(),
+		});
+
+		expect(result.isRight()).toBe(true);
+		expect(mockStaffRepository.delete).toHaveBeenCalledWith(
+			staff.id.toString(),
+		);
 	});
 });

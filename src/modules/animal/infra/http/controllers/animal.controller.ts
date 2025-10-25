@@ -18,7 +18,6 @@ import {
 import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { ZodResponse } from "nestjs-zod";
 import { User } from "src/modules/auth/infra/http/decorators/user.decorator";
-import { UserTypeDecorator } from "src/modules/auth/infra/http/decorators/user-type.decorator";
 import { AddAssetToAnimalUseCase } from "@/modules/animal/application/use-cases/add-asset-to-animal.use-case";
 import { DeleteAnimalUseCase } from "@/modules/animal/application/use-cases/delete-animal.use-case";
 import { GetAnimalByIdUseCase } from "@/modules/animal/application/use-cases/get-animal-by-id.use-case";
@@ -52,7 +51,6 @@ export class AnimalController {
 
 	@Post()
 	@ApiOperation({ summary: "Cria um animal", operationId: "createAnimal" })
-	@UserTypeDecorator("customer")
 	@ZodResponse({ status: 201, type: CreateAnimalResponseDto })
 	@HttpCode(201)
 	async create(
@@ -71,15 +69,14 @@ export class AnimalController {
 		return { id: result.value.animal.id.toString() };
 	}
 
-	@Get("user/:id")
+	@Get("me")
 	@ApiOperation({
-		summary: "Listar todos os animais de um usuário",
+		summary: "Listar todos os animais do usuário autenticado",
 		operationId: "listAnimalsFromUser",
 	})
 	@ZodResponse({ status: 200, type: ListAnimalFromUserResponseDto })
-	@UserTypeDecorator("customer")
 	async listAll(
-		@Param("id") userId: string,
+		@User("sub") userId: string,
 		@Query() query: PaginationQueryDto,
 	) {
 		const result = await this.listAnimalsFromUserUseCase.execute({
@@ -100,7 +97,6 @@ export class AnimalController {
 		operationId: "getAnimalById",
 	})
 	@ZodResponse({ status: 200, type: GetAnimalByIdResponseDto })
-	@UserTypeDecorator("customer")
 	async getById(@User("sub") userId: string, @Param("id") animalId: string) {
 		const result = await this.getAnimalByIdUseCase.execute({
 			userId,
@@ -119,7 +115,6 @@ export class AnimalController {
 
 	@Patch(":id/asset")
 	@HttpCode(201)
-	@UserTypeDecorator("customer")
 	@UseInterceptors(FileInterceptor("file"))
 	@ApiConsumes("multipart/form-data")
 	@ApiOperation({
@@ -145,7 +140,6 @@ export class AnimalController {
 
 	@Put(":id")
 	@ApiOperation({ summary: "Atualizar um animal", operationId: "updateAnimal" })
-	@UserTypeDecorator("customer")
 	@HttpCode(200)
 	async update(
 		@User("sub") userId: string,
@@ -168,7 +162,6 @@ export class AnimalController {
 
 	@Delete(":id")
 	@ApiOperation({ summary: "Deletar um animal", operationId: "deleteAnimal" })
-	@UserTypeDecorator("customer")
 	@HttpCode(204)
 	async delete(@User("sub") userId: string, @Param("id") animalId: string) {
 		const result = await this.deleteAnimalUseCase.execute({ userId, animalId });

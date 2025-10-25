@@ -1,43 +1,17 @@
 import { Module } from "@nestjs/common";
-import { JwtModule } from "@nestjs/jwt";
-import { EnvService } from "@/core/infra/env/env.service";
-import { InviteModule } from "../invite/invite.module";
-import { NotificationModule } from "../notification/notification.module";
-import { StaffModule } from "../staff/staff.module";
 import { UserModule } from "../user/user.module";
-import { AcceptInviteUseCase } from "./application/use-cases/accept-invite.use-case";
-import { SignInUseCase } from "./application/use-cases/sign-in.use-case";
-import { SignUpUseCase } from "./application/use-cases/sign-up.use-case";
-import { Encrypter } from "./domain/interfaces/encrypter.interface";
-import { HashComparer } from "./domain/interfaces/hash-comparer.interface";
-import { HashGenerator } from "./domain/interfaces/hash-generator.interface";
-import { AuthController } from "./infra/http/controllers/auth.controller";
-import { BcryptHasher } from "./infra/security/bcrypt-hasher.service";
-import { JwtEncrypter } from "./infra/security/jwt-encrypter.service";
-import { JwtStrategy } from "./infra/strategies/jwt.strategy";
+import { CreateOrUpdateUserFromExternalUseCase } from "./application/use-cases/create-or-update-user-from-external.use-case";
+import { AuthProviderService } from "./domain/interfaces/auth-provider.service.interface";
+import { ClerkWebhookController } from "./infra/http/controllers/clerk-webhook.controller";
+import { ClerkAuthProviderService } from "./infra/services/clerk-auth-provider.service";
 
 @Module({
-	imports: [
-		JwtModule.registerAsync({
-			inject: [EnvService],
-			useFactory: async (env: EnvService) => ({
-				secret: env.get("JWT_SECRET")!,
-			}),
-		}),
-		UserModule,
-		StaffModule,
-		InviteModule,
-		NotificationModule,
-	],
-	controllers: [AuthController],
+	imports: [UserModule],
+	controllers: [ClerkWebhookController],
 	providers: [
-		JwtStrategy,
-		SignInUseCase,
-		SignUpUseCase,
-		AcceptInviteUseCase,
-		{ provide: Encrypter, useClass: JwtEncrypter },
-		{ provide: HashComparer, useClass: BcryptHasher },
-		{ provide: HashGenerator, useClass: BcryptHasher },
+		CreateOrUpdateUserFromExternalUseCase,
+		{ provide: AuthProviderService, useClass: ClerkAuthProviderService },
 	],
+	exports: [AuthProviderService],
 })
 export class AuthModule {}

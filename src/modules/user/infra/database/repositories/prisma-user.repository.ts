@@ -12,10 +12,7 @@ export class PrismaUserRepository implements UserRepository {
 	constructor(private readonly prisma: PrismaService) {}
 
 	async findByEmail(email: string) {
-		const response = await this.prisma.user.findUnique({
-			where: { email },
-			include: { avatar: true },
-		});
+		const response = await this.prisma.user.findUnique({ where: { email } });
 
 		if (!response) {
 			return null;
@@ -66,7 +63,6 @@ export class PrismaUserRepository implements UserRepository {
 				this.prisma.user.findMany({
 					where: whereClause,
 					include: {
-						avatar: true,
 						_count: { select: { appointment: { where: { companyId } } } },
 						appointment: { orderBy: { createdAt: "desc" }, take: 1 },
 					},

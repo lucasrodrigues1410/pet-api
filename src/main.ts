@@ -1,3 +1,4 @@
+import { clerkPlugin } from "@clerk/fastify";
 import multipart from "@fastify/multipart";
 import { NestFactory } from "@nestjs/core";
 import {
@@ -22,10 +23,14 @@ async function bootstrap() {
 	const origins = process.env.ALLOWED_ORIGINS?.split(",") ?? [];
 	app.enableCors({
 		origin: origins.length ? origins : true,
+		credentials: true,
 		methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
 		allowedHeaders: ["Content-Type", "Authorization"],
 	});
+	//@ts-expect-error
 	app.register(multipart);
+	//@ts-expect-error
+	app.register(clerkPlugin);
 
 	//Swagger configuration
 	const config = new DocumentBuilder()

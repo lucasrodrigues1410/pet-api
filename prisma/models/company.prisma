@@ -9,7 +9,7 @@ model Company {
   logoAssetId   String?   @map("logo_asset_id")
   averageRating Float     @default(0) @map("average_rating")
   ratingCount   Int       @default(0) @map("rating_count")
-  locationId    String   @map("location_id")
+  locationId    String    @map("location_id")
 
   ratings                      Rating[]
   companyUsers                 UserCompany[]
@@ -19,8 +19,8 @@ model Company {
   companyImage                 CompanyImage[]
   appointment                  Appointment[]
   logo                         Asset?                         @relation(fields: [logoAssetId], references: [id])
-  location                     Location                      @relation(fields: [locationId], references: [id])
-  
+  location                     Location                       @relation(fields: [locationId], references: [id])
+
   @@index([deletedAt])
   @@map("companies")
 }
@@ -29,14 +29,14 @@ model UserCompany {
   id        String @id @default(cuid())
   userId    String
   companyId String
-  role      Role
+  role      Role   @default(member)
 
   user        User          @relation(fields: [userId], references: [id])
   company     Company       @relation(fields: [companyId], references: [id])
   appointment Appointment[]
 
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
   deletedAt DateTime? @map("deleted_at")
 
   @@unique([userId, companyId])
@@ -46,8 +46,7 @@ model UserCompany {
 
 enum Role {
   admin
-  manager
-  employee
+  member
 }
 
 model CompanyImage {

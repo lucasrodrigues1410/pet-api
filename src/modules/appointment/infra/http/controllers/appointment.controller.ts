@@ -7,7 +7,6 @@ import {
 	Param,
 	Patch,
 	Query,
-	UseGuards,
 } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { ZodResponse } from "nestjs-zod";
@@ -16,9 +15,6 @@ import { GetAppointmentByIdUseCase } from "@/modules/appointment/application/use
 import { GetAppointmentByUserIdUseCase } from "@/modules/appointment/application/use-cases/get-appointment-by-user-id.use-case";
 import { UpdateAppointmentStatusUseCase } from "@/modules/appointment/application/use-cases/update-appointment-status.use-case";
 import { User } from "@/modules/auth/infra/http/decorators/user.decorator";
-import { UserTypeDecorator } from "@/modules/auth/infra/http/decorators/user-type.decorator";
-import { CompanyGuard } from "@/modules/company/infra/http/guards/company.guard";
-import type { UserType } from "@/modules/user/domain/entities/user.entity";
 import {
 	AppointmentsByClientQueryDto,
 	AppointmentsByClientResponseDto,
@@ -46,20 +42,18 @@ export class AppointmentController {
 		private readonly updateAppointmentStatusUseCase: UpdateAppointmentStatusUseCase,
 	) {}
 
-	@Get("/company/:companyId")
+	@Get("/company")
 	@ApiOperation({
 		summary: "Retorna todos os agendamentos da empresa",
 		operationId: "getAllCompanyAppointments",
 	})
 	@ZodResponse({ status: 200, type: AppointmentsByCompanyResponseDto })
-	@UserTypeDecorator("company")
-	@UseGuards(CompanyGuard)
 	async getAllCompanyAppointments(
-		@Param("companyId") companyId: string,
+		@User("sub") userId: string,
 		@Query() query: AppointmentsByCompanyQueryDto,
 	) {
 		const response = await this.getAppointmentByCompanyIdUseCase.execute({
-			companyId,
+			userId,
 			query,
 		});
 
@@ -76,7 +70,6 @@ export class AppointmentController {
 		operationId: "getAllAppointments",
 	})
 	@ZodResponse({ status: 200, type: AppointmentsByClientResponseDto })
-	@UserTypeDecorator("customer")
 	async getAllAppointments(
 		@User("sub") userId: string,
 		@Query() query: AppointmentsByClientQueryDto,
@@ -99,18 +92,15 @@ export class AppointmentController {
 		operationId: "updateAppointmentStatus",
 	})
 	@ZodResponse({ status: 200, type: UpdateAppointmentStatusResponseDto })
-	@UserTypeDecorator("customer", "company")
 	async updateAppointmentStatus(
 		@Param("id") appointmentId: string,
 		@Body() updateStatusDto: UpdateAppointmentStatusDto,
 		@User("sub") userId: string,
-		@User("type") userType: UserType,
-		@User("companyId") companyId?: string,
 	) {
 		const response = await this.updateAppointmentStatusUseCase.execute({
 			appointmentId,
 			status: updateStatusDto.status,
-			user: { id: userId, type: userType, companyId },
+			userId,
 		});
 
 		if (response.isLeft()) {
@@ -135,18 +125,13 @@ export class AppointmentController {
 		operationId: "getAppointmentById",
 	})
 	@ZodResponse({ status: 200, type: AppointmentByIdResponseDto })
-	@UserTypeDecorator("customer", "company")
 	async getAppointmentById(
 		@Param("id") id: string,
 		@User("sub") userId: string,
-		@User("type") userType: UserType,
-		@User("companyId") companyId?: string,
 	) {
 		const response = await this.getAppointmentByIdUseCase.execute({
 			id,
 			userId,
-			userType,
-			companyId,
 		});
 
 		if (response.isLeft()) {

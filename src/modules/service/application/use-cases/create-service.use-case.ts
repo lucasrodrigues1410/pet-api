@@ -1,6 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
-import { CompanyRepository } from "@/modules/company/domain/repositories/company.repository";
+import { StaffRepository } from "@/modules/staff/domain/repositories/staff.repository";
 import { Either, left, right } from "@/shared/either";
 import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
 import { Service } from "../../domain/entities/service.entity";
@@ -14,7 +13,7 @@ type CreateServiceUseCaseRequest = {
 	price: number;
 	duration: number;
 	rules?: string;
-	companyId: string;
+	userId: string;
 	categoryIds?: string[];
 };
 
@@ -24,15 +23,15 @@ type CreateServiceUseCaseResponse = Either<ResourceNotFoundError, void>;
 export class CreateServiceUseCase {
 	constructor(
 		private readonly serviceRepository: ServiceRepository,
-		private readonly companyRepository: CompanyRepository,
+		private readonly staffRepository: StaffRepository,
 		private readonly translateRulesUseCase: TranslateRulesUseCase,
 	) {}
 	async execute(
 		data: CreateServiceUseCaseRequest,
 	): Promise<CreateServiceUseCaseResponse> {
-		const company = await this.companyRepository.findById(data.companyId);
-		if (!company) {
-			return left(new ResourceNotFoundError("Empresa não encontrada"));
+		const staff = await this.staffRepository.findByUserId(data.userId);
+		if (!staff) {
+			return left(new ResourceNotFoundError("Funcionário não encontrado"));
 		}
 
 		let rules: Rules[] | undefined;
@@ -48,7 +47,7 @@ export class CreateServiceUseCase {
 			rules: rules,
 			isActive: true,
 			rulesPrompt: data.rules,
-			companyId: new UniqueEntityID(data.companyId),
+			companyId: staff.companyId,
 		});
 
 		await this.serviceRepository.create(service, data.categoryIds);

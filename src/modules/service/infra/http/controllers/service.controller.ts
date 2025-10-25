@@ -8,15 +8,11 @@ import {
 	Param,
 	Patch,
 	Post,
-	UseGuards,
 } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { ZodResponse } from "nestjs-zod";
 import { User } from "@/modules/auth/infra/http/decorators/user.decorator";
-import { UserTypeDecorator } from "@/modules/auth/infra/http/decorators/user-type.decorator";
-import { CompanyGuard } from "@/modules/company/infra/http/guards/company.guard";
 import { CreateServiceUseCase } from "@/modules/service/application/use-cases/create-service.use-case";
-import { StaffRoles } from "@/modules/staff/infra/decorators/staff-roles.decorator";
 import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
 import { DeactivateServiceUseCase } from "../../../application/use-cases/deactivate-service.use-case";
 import { GetServiceByIdUseCase } from "../../../application/use-cases/get-service-by-id.use-case";
@@ -61,15 +57,14 @@ export class ServiceController {
 		summary: "Inativar serviço da empresa",
 		operationId: "deactivateService",
 	})
-	@UserTypeDecorator("company")
-	@StaffRoles("admin", "manager")
-	@UseGuards(CompanyGuard)
 	async deactivateService(
 		@Param("id") id: string,
 		@Param("companyId") companyId: string,
+		@User("sub") userId: string,
 	) {
 		const result = await this.deactivateServiceUseCase.execute({
 			id,
+			userId,
 			companyId,
 		});
 
@@ -81,16 +76,14 @@ export class ServiceController {
 	@Post()
 	@ApiOperation({ summary: "Criar serviço", operationId: "createService" })
 	@HttpCode(201)
-	@UserTypeDecorator("company")
-	@UseGuards(CompanyGuard)
 	async createService(
 		@Body() body: CreateServiceRequestDto,
-		@User("companyId") companyId: string,
+		@User("sub") userId: string,
 	) {
 		const result = await this.createServiceUseCase.execute({
 			...body,
 			categoryIds: body.categoryId ? [body.categoryId] : undefined,
-			companyId,
+			userId,
 		});
 
 		if (result.isLeft()) {

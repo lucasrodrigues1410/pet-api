@@ -7,7 +7,6 @@ import {
 	NotificationJobOptions,
 } from "../../domain/entities/job-payloads";
 import { AppointmentChangeStatusEvent } from "../../domain/events/appointment-change-status.event";
-import { EmployeeInviteEvent } from "../../domain/events/employee-invite.event";
 import { WelcomeEvent } from "../../domain/events/welcome.event";
 
 @Processor("notifications")
@@ -27,13 +26,6 @@ export class BullNotificationProcessor extends WorkerHost {
 		if (job.data instanceof WelcomeEvent) {
 			await this.novu.trigger({
 				workflowId: "welcome",
-				to: { subscriberId: job.data.to, email: job.data.payload.email },
-				payload: { name: job.data.payload.name },
-			});
-		}
-		if (job.data instanceof EmployeeInviteEvent) {
-			await this.novu.trigger({
-				workflowId: "employee-invite",
 				to: { subscriberId: job.data.to, email: job.data.payload.email },
 				payload: { name: job.data.payload.name },
 			});

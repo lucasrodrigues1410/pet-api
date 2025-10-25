@@ -16,7 +16,6 @@ model Asset {
   companyImage CompanyImage[]
   animal       Animal[]
   company      Company[]
-  user         User[]
 
   @@index([url])
   @@index([userId, deletedAt])

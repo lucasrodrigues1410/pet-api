@@ -11,7 +11,6 @@ import {
 	Patch,
 	Query,
 	UploadedFile,
-	UseGuards,
 	UseInterceptors,
 } from "@nestjs/common";
 import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from "@nestjs/swagger";
@@ -21,15 +20,12 @@ import { GetCompanyByIdUseCase } from "src/modules/company/application/use-cases
 import { SearchCompaniesUseCase } from "src/modules/company/application/use-cases/search-companies.use-case";
 import { Public } from "@/modules/auth/infra/http/decorators/public.decorator";
 import { User } from "@/modules/auth/infra/http/decorators/user.decorator";
-import { UserTypeDecorator } from "@/modules/auth/infra/http/decorators/user-type.decorator";
-import type { UserPayload } from "@/modules/auth/infra/strategies/jwt.strategy";
 import { AddLogoResponseDtoClass, UploadImageDto } from "../dtos/add-logo.dto";
 import { CompanyByIdResponseDto } from "../dtos/company-by-id.dto";
 import {
 	SearchCompaniesRequestDto,
 	SearchCompaniesResponseDto,
 } from "../dtos/search-companies.dto";
-import { CompanyGuard } from "../guards/company.guard";
 import { CompanyByIdPresenter } from "../presenters/company-by-id.presenter";
 import { SearchCompaniesPresenter } from "../presenters/search-companies.presenter";
 
@@ -82,19 +78,17 @@ export class CompanyController {
 	})
 	@ZodResponse({ status: 201, type: AddLogoResponseDtoClass })
 	@HttpCode(HttpStatus.CREATED)
-	@UserTypeDecorator("company")
-	@UseGuards(CompanyGuard)
 	@UseInterceptors(FileInterceptor("file"))
 	@ApiConsumes("multipart/form-data")
 	@ApiBody({ description: "Envio de imagem", type: UploadImageDto })
 	async addLogo(
-		@User() payload: UserPayload,
+		@User("sub") userId: string,
 		@Param("id") companyId: string,
 		@UploadedFile() file: Express.Multer.File,
 	) {
 		const result = await this.addLogoToCompanyUseCase.execute({
 			companyId,
-			userId: payload.sub.toString(),
+			userId,
 			file: file as Express.Multer.File,
 		});
 

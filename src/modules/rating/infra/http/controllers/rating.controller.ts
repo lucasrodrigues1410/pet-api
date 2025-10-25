@@ -11,7 +11,6 @@ import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { ZodResponse } from "nestjs-zod";
 import { Public } from "@/modules/auth/infra/http/decorators/public.decorator";
 import { User } from "@/modules/auth/infra/http/decorators/user.decorator";
-import { UserTypeDecorator } from "@/modules/auth/infra/http/decorators/user-type.decorator";
 import { CheckRatingEligibilityUseCase } from "@/modules/rating/application/usecases/check-rating-eligibility.use-case";
 import { CreateRatingCompanyUseCase } from "@/modules/rating/application/usecases/create-rating.company";
 import { GetCompanyRatingStatsUseCase } from "@/modules/rating/application/usecases/get-company-rating-stats.use-case";
@@ -36,7 +35,6 @@ export class RatingController {
 	) {}
 
 	@Post()
-	@UserTypeDecorator("customer")
 	@ApiOperation({
 		summary: "Cria uma avaliação para uma empresa",
 		operationId: "createRating",
@@ -93,7 +91,6 @@ export class RatingController {
 	}
 
 	@Get("company/:companyId/eligibility")
-	@UserTypeDecorator("customer")
 	@ApiOperation({
 		summary: "Verificar se um usuário pode criar avaliação para uma empresa",
 		operationId: "checkRatingEligibility",

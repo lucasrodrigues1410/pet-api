@@ -11,7 +11,6 @@ import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { ZodResponse } from "nestjs-zod";
 import { Public } from "@/modules/auth/infra/http/decorators/public.decorator";
 import { User } from "@/modules/auth/infra/http/decorators/user.decorator";
-import { UserTypeDecorator } from "@/modules/auth/infra/http/decorators/user-type.decorator";
 import { AppointmentBookingUseCase } from "@/modules/booking/application/use-cases/appointment-booking.use-case";
 import { ListAvailableDatesUseCase } from "@/modules/booking/application/use-cases/list-available-dates.use-case";
 import {
@@ -63,7 +62,6 @@ export class BookingController {
 		summary: "Iniciando o processo de pagamento",
 		operationId: "createAppointment",
 	})
-	@UserTypeDecorator("customer")
 	async createAppointment(
 		@User("sub") userId: string,
 		@Body() params: CreateAppointmentRequestDto,

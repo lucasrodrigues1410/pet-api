@@ -1,5 +1,6 @@
 import { Module } from "@nestjs/common";
 import { NotificationModule } from "../notification/notification.module";
+import { StaffModule } from "../staff/staff.module";
 import { GetAppointmentByCompanyIdUseCase } from "./application/use-cases/get-appointment-by-company-id.use-case";
 import { GetAppointmentByIdUseCase } from "./application/use-cases/get-appointment-by-id.use-case";
 import { GetAppointmentByUserIdUseCase } from "./application/use-cases/get-appointment-by-user-id.use-case";
@@ -10,7 +11,7 @@ import { AppointmentController } from "./infra/http/controllers/appointment.cont
 import { AppointmentStatusListener } from "./infra/listeners/appointment-status.listener";
 
 @Module({
-	imports: [NotificationModule],
+	imports: [NotificationModule, StaffModule],
 	providers: [
 		GetAppointmentByIdUseCase,
 		GetAppointmentByUserIdUseCase,

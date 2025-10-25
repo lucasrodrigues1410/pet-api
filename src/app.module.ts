@@ -11,14 +11,12 @@ import { AnimalModule } from "./modules/animal/animal.module";
 import { AppointmentModule } from "./modules/appointment/appointment.module";
 import { AssetModule } from "./modules/asset/asset.module";
 import { AuthModule } from "./modules/auth/auth.module";
-import { JwtGuard } from "./modules/auth/infra/http/guards/jwt.guard";
+import { ClerkAuthGuard } from "./modules/auth/infra/http/guards/clerk-auth.guard";
 import { BookingModule } from "./modules/booking/booking.module";
 import { BreedModule } from "./modules/breed/breed.module";
 import { CategoryModule } from "./modules/category/category.module";
 import { CompanyModule } from "./modules/company/company.module";
 import { DashboardModule } from "./modules/dashboard/dashboard.module";
-import { HealthModule } from "./modules/health/health.module";
-import { InviteModule } from "./modules/invite/invite.module";
 import { NotificationModule } from "./modules/notification/notification.module";
 import { PaymentModule } from "./modules/payment/payment.module";
 import { RatingModule } from "./modules/rating/rating.module";
@@ -49,15 +47,13 @@ import { UserModule } from "./modules/user/user.module";
 		AppointmentModule,
 		BookingModule,
 		StaffModule,
-		InviteModule,
 		DashboardModule,
 		RatingModule,
-		HealthModule,
 		PaymentModule,
 	],
 	providers: [
 		{ provide: APP_PIPE, useClass: ZodValidationPipe },
-		{ provide: APP_GUARD, useClass: JwtGuard },
+		{ provide: APP_GUARD, useClass: ClerkAuthGuard },
 		{ provide: APP_INTERCEPTOR, useClass: ZodSerializerInterceptor },
 	],
 })

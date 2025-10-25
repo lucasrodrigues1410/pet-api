@@ -40,7 +40,6 @@ describe("Find a user", () => {
 				email: user.email,
 				name: user.name,
 				password: user.password,
-				type: user.type,
 			}),
 		});
 	});

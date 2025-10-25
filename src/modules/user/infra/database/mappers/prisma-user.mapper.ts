@@ -1,49 +1,44 @@
-import {
-	Prisma,
-	Asset as PrismaAsset,
-	User as PrismaUser,
-} from "prisma/generated/client";
-import { User, UserType } from "src/modules/user/domain/entities/user.entity";
+import { Prisma, User as PrismaUser } from "prisma/generated/client";
+import { User } from "src/modules/user/domain/entities/user.entity";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
-import { PrismaAssetMapper } from "@/modules/asset/infra/database/mappers/prisma-asset.mapper";
 
 export class PrismaUserMapper {
-	static toDomain(
-		prismaUser: PrismaUser & { avatar?: PrismaAsset | null | undefined },
-	): User {
+	static toDomain(prismaUser: PrismaUser): User {
 		return User.create(
 			{
 				name: prismaUser.name,
 				email: prismaUser.email,
-				type: prismaUser.type as UserType,
-				password: prismaUser.password,
-				avatar: prismaUser.avatar
-					? PrismaAssetMapper.toDomain(prismaUser.avatar)
-					: undefined,
-				avatarAssetId: prismaUser.avatarAssetId ?? undefined,
+				password: prismaUser.password ?? undefined,
+				avatarUrl: prismaUser.avatarUrl ?? undefined,
+				authProviderId: prismaUser.authProviderId ?? undefined,
 			},
 			new UniqueEntityID(prismaUser.id),
 		);
 	}
 
 	static toPrisma(user: User): Prisma.UserUncheckedCreateInput {
-		return {
+		const data: any = {
 			id: user.id.toString(),
 			name: user.name,
 			email: user.email,
 			password: user.password,
-			type: user.type,
-			avatarAssetId: user.avatarAssetId ?? undefined,
+			avatarUrl: user.avatarUrl ?? undefined,
+			authProviderId: user.authProviderId ?? undefined,
 		};
+
+		return data;
 	}
 
 	static toPrismaUpdate(user: Partial<User>): Prisma.UserUncheckedUpdateInput {
-		return {
+		const data: any = {
 			name: user.name,
 			email: user.email,
 			password: user.password,
-			avatarAssetId: user.avatarAssetId ?? undefined,
+			avatarUrl: user.avatarUrl ?? undefined,
+			authProviderId: user.authProviderId ?? undefined,
 			updatedAt: new Date(),
 		};
+
+		return data;
 	}
 }

@@ -1,9 +1,7 @@
-import { Controller, Get, Query, UseGuards } from "@nestjs/common";
+import { Controller, Get, Query } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { ZodResponse } from "nestjs-zod";
 import { User } from "@/modules/auth/infra/http/decorators/user.decorator";
-import { UserTypeDecorator } from "@/modules/auth/infra/http/decorators/user-type.decorator";
-import { CompanyGuard } from "@/modules/company/infra/http/guards/company.guard";
 import { GetDashboardMetricsUseCase } from "@/modules/dashboard/application/use-cases/get-dashboard-metrics.use-case";
 import { GetDashboardPerformanceUseCase } from "@/modules/dashboard/application/use-cases/get-dashboard-performance.use-case";
 import { DashboardQueryDto } from "../dtos/dashboard.query.dto";
@@ -16,8 +14,6 @@ import { WeeklyPerformancePresenter } from "../presenters/weekly-performance.pre
 
 @ApiTags("Dashboard")
 @Controller("dashboard")
-@UserTypeDecorator("company")
-@UseGuards(CompanyGuard)
 export class DashboardController {
 	constructor(
 		private readonly getDashboardMetricsUseCase: GetDashboardMetricsUseCase,
@@ -34,10 +30,10 @@ export class DashboardController {
 	@ZodResponse({ status: 200, type: DashboardMetricsResponse })
 	async getDashboardMetrics(
 		@Query() query: DashboardQueryDto,
-		@User("companyId") companyId: string,
+		@User("sub") userId: string,
 	): Promise<DashboardMetricsResponse> {
 		const metrics = await this.getDashboardMetricsUseCase.execute({
-			companyId,
+			userId,
 			startDate: query.startDate ? new Date(query.startDate) : undefined,
 			endDate: query.endDate ? new Date(query.endDate) : undefined,
 		});
@@ -54,11 +50,11 @@ export class DashboardController {
 	})
 	@ZodResponse({ status: 200, type: WeeklyPerformanceResponse })
 	async getWeeklyPerformance(
-		@User("companyId") companyId: string,
+		@User("sub") userId: string,
 		@Query() query: DashboardQueryDto,
 	): Promise<WeeklyPerformanceResponse> {
 		const performance = await this.getDashboardPerformanceUseCase.execute({
-			companyId,
+			userId,
 			startDate: query.startDate ? new Date(query.startDate) : undefined,
 			endDate: query.endDate ? new Date(query.endDate) : undefined,
 		});

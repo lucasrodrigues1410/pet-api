@@ -1,17 +1,11 @@
 import { Entity } from "@/core/domain/entities/entity";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
-import { Asset } from "@/modules/asset/domain/entities/asset";
-
-export const userType = ["customer", "company", "admin"] as const;
-export type UserType = (typeof userType)[number];
-
 export interface UserProps {
 	email: string;
 	name: string;
-	password: string;
-	type: UserType;
-	avatarAssetId?: string;
-	avatar?: Asset;
+	password?: string;
+	authProviderId?: string;
+	avatarUrl?: string;
 }
 
 export class User extends Entity<UserProps> {
@@ -23,20 +17,24 @@ export class User extends Entity<UserProps> {
 		return this.props.name;
 	}
 
-	get password() {
+	get password(): string | undefined {
 		return this.props.password;
 	}
 
-	get type() {
-		return this.props.type;
+	get authProviderId() {
+		return this.props.authProviderId;
 	}
 
-	get avatar() {
-		return this.props.avatar;
+	get avatarUrl() {
+		return this.props.avatarUrl;
 	}
 
-	get avatarAssetId() {
-		return this.props.avatarAssetId;
+	set email(email: string) {
+		this.props.email = email;
+	}
+
+	set name(name: string) {
+		this.props.name = name;
 	}
 
 	set password(password: string) {
