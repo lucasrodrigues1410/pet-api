@@ -105,9 +105,7 @@ describe("Create Or Update User From External Use Case", () => {
 	});
 
 	it("should update user without avatar URL", async () => {
-		const existingUser = makeUser({
-			email: "update@example.com",
-		});
+		const existingUser = makeUser({ email: "update@example.com" });
 		mockUserRepository.findByEmail.mockResolvedValueOnce(existingUser);
 
 		const result = await sut.execute({

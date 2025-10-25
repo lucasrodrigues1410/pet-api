@@ -6,7 +6,6 @@ import { PaginationQuery } from "@/shared/utils/pagination-query";
 import { Staff, StaffRole } from "../entities/staff.entity";
 
 export abstract class StaffRepository {
-	abstract findByUserEmail(userEmail: string): Promise<Staff | null>;
 	abstract findById(id: string): Promise<Staff | null>;
 	abstract findByUserId(userId: string): Promise<Staff | null>;
 	abstract findByCompanyId(

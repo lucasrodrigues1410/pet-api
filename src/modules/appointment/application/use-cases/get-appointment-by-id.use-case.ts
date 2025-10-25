@@ -42,7 +42,7 @@ export class GetAppointmentByIdUseCase {
 		}
 
 		const isClient = appointment.clientId.toString() === userId;
-		
+
 		const staff = await this.staffRepo.findByUserId(userId);
 		const isCompanyStaff = staff?.companyId.equals(appointment.companyId);
 

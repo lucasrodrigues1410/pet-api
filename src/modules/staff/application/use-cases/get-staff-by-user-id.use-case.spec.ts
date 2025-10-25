@@ -5,17 +5,13 @@ import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { StaffRepository } from "../../domain/repositories/staff.repository";
 import { GetStaffByUserIdUseCase } from "./get-staff-by-user-id.use-case";
 
-let mockStaffRepository: {
-	findByUserId: ReturnType<typeof jest.fn>;
-};
+let mockStaffRepository: { findByUserId: ReturnType<typeof jest.fn> };
 let sut: GetStaffByUserIdUseCase;
 let moduleRef: any;
 
 describe("Get Staff By User ID Use Case", () => {
 	beforeEach(async () => {
-		mockStaffRepository = {
-			findByUserId: jest.fn(async () => null),
-		};
+		mockStaffRepository = { findByUserId: jest.fn(async () => null) };
 
 		moduleRef = await Test.createTestingModule({
 			providers: [

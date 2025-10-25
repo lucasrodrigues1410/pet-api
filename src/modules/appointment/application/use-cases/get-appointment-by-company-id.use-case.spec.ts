@@ -13,42 +13,16 @@ describe("GetAppointmentByCompanyIdUseCase", () => {
 	let sut: GetAppointmentByCompanyIdUseCase;
 
 	const mockAppointmentRepo = {
-		findById: jest.fn(),
-		findByUserId: jest.fn(),
 		findByCompanyId: jest.fn(),
-		create: jest.fn(),
-		update: jest.fn(),
-		delete: jest.fn(),
 	};
 
 	const mockStaffRepo = {
-		findByUserEmail: jest.fn(),
-		findById: jest.fn(),
 		findByUserId: jest.fn(),
-		findByCompanyId: jest.fn(),
-		fetchCompanyStaffWithAppointmentsInDateRange: jest.fn(),
-		findAvailableForSlot: jest.fn(),
-		create: jest.fn(),
-		delete: jest.fn(),
-		totalStaffByCompanyId: jest.fn(),
 	};
 
 	beforeEach(async () => {
-		mockAppointmentRepo.findById.mockReset();
-		mockAppointmentRepo.findByUserId.mockReset();
 		mockAppointmentRepo.findByCompanyId.mockReset();
-		mockAppointmentRepo.create.mockReset();
-		mockAppointmentRepo.update.mockReset();
-		mockAppointmentRepo.delete.mockReset();
-		mockStaffRepo.findByUserEmail.mockReset();
-		mockStaffRepo.findById.mockReset();
 		mockStaffRepo.findByUserId.mockReset();
-		mockStaffRepo.findByCompanyId.mockReset();
-		mockStaffRepo.fetchCompanyStaffWithAppointmentsInDateRange.mockReset();
-		mockStaffRepo.findAvailableForSlot.mockReset();
-		mockStaffRepo.create.mockReset();
-		mockStaffRepo.delete.mockReset();
-		mockStaffRepo.totalStaffByCompanyId.mockReset();
 
 		moduleRef = await Test.createTestingModule({
 			providers: [

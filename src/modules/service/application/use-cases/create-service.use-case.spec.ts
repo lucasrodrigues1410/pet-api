@@ -14,16 +14,16 @@ let moduleRef: any;
 
 describe("Create Service Use Case", () => {
 	beforeEach(async () => {
-			mockServiceRepository = { create: jest.fn(async () => undefined) };
-			mockStaffRepository = { findByUserId: jest.fn(async () => null) };
+		mockServiceRepository = { create: jest.fn(async () => undefined) };
+		mockStaffRepository = { findByUserId: jest.fn(async () => null) };
 		mockTranslateRulesUseCase = { execute: jest.fn(async () => []) };
 
 		moduleRef = await Test.createTestingModule({
 			providers: [
 				CreateServiceUseCase,
-					{ provide: ServiceRepository, useValue: mockServiceRepository },
-					{ provide: StaffRepository, useValue: mockStaffRepository },
-					{ provide: TranslateRulesUseCase, useValue: mockTranslateRulesUseCase },
+				{ provide: ServiceRepository, useValue: mockServiceRepository },
+				{ provide: StaffRepository, useValue: mockStaffRepository },
+				{ provide: TranslateRulesUseCase, useValue: mockTranslateRulesUseCase },
 			],
 		}).compile();
 
@@ -31,21 +31,21 @@ describe("Create Service Use Case", () => {
 	});
 
 	it("should create a service without categories", async () => {
-			const staff = makeStaff();
-			mockStaffRepository.findByUserId.mockResolvedValueOnce(staff);
+		const staff = makeStaff();
+		mockStaffRepository.findByUserId.mockResolvedValueOnce(staff);
 
 		const result = await sut.execute({
 			name: "Banho e Tosa",
 			description: "Serviço de banho e tosa para pets",
 			price: 80.0,
 			duration: 120,
-				userId: staff.userId.toString(),
+			userId: staff.userId.toString(),
 		});
 
 		expect(result.isRight()).toBe(true);
-			expect(mockStaffRepository.findByUserId).toHaveBeenCalledWith(
-				staff.userId.toString(),
-			);
+		expect(mockStaffRepository.findByUserId).toHaveBeenCalledWith(
+			staff.userId.toString(),
+		);
 		expect(mockServiceRepository.create).toHaveBeenCalled();
 		// Categories not provided
 		const [, passedCategories] = mockServiceRepository.create.mock.calls[0];
@@ -53,15 +53,15 @@ describe("Create Service Use Case", () => {
 	});
 
 	it("should create a service with one category", async () => {
-			const staff = makeStaff();
-			mockStaffRepository.findByUserId.mockResolvedValueOnce(staff);
+		const staff = makeStaff();
+		mockStaffRepository.findByUserId.mockResolvedValueOnce(staff);
 
 		const result = await sut.execute({
 			name: "Consulta Veterinária",
 			description: "Consulta veterinária básica",
 			price: 100.0,
 			duration: 60,
-				userId: staff.userId.toString(),
+			userId: staff.userId.toString(),
 			categoryIds: ["category-123"],
 		});
 
@@ -72,15 +72,15 @@ describe("Create Service Use Case", () => {
 	});
 
 	it("should create a service with multiple categories", async () => {
-			const staff = makeStaff();
-			mockStaffRepository.findByUserId.mockResolvedValueOnce(staff);
+		const staff = makeStaff();
+		mockStaffRepository.findByUserId.mockResolvedValueOnce(staff);
 
 		const result = await sut.execute({
 			name: "Pacote Completo",
 			description: "Pacote com múltiplos serviços",
 			price: 200.0,
 			duration: 180,
-				userId: staff.userId.toString(),
+			userId: staff.userId.toString(),
 			categoryIds: ["category-123", "category-456", "category-789"],
 		});
 
@@ -95,19 +95,19 @@ describe("Create Service Use Case", () => {
 	});
 
 	it("should return error when company not found", async () => {
-			mockStaffRepository.findByUserId.mockResolvedValueOnce(null);
+		mockStaffRepository.findByUserId.mockResolvedValueOnce(null);
 
 		const result = await sut.execute({
 			name: "Serviço Teste",
 			description: "Descrição do serviço",
 			price: 50.0,
 			duration: 30,
-				userId: "non-existent-user-id",
+			userId: "non-existent-user-id",
 		});
 
 		expect(result.isLeft()).toBe(true);
 		if (result.isLeft()) {
-				expect(result.value.message).toBe("Funcionário não encontrado");
+			expect(result.value.message).toBe("Funcionário não encontrado");
 		}
 	});
 });

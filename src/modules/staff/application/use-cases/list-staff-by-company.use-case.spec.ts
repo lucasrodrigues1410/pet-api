@@ -207,7 +207,10 @@ describe("List Staff By Company Use Case", () => {
 		const loggedStaff = makeStaff({ companyId });
 		const user1 = makeUser();
 		const user2 = makeUser();
-		const adminStaff = { ...makeStaff({ companyId, role: "admin" }), user: user1 };
+		const adminStaff = {
+			...makeStaff({ companyId, role: "admin" }),
+			user: user1,
+		};
 		const memberStaff = {
 			...makeStaff({ companyId, role: "member" }),
 			user: user2,
