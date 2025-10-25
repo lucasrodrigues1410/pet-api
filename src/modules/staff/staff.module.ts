@@ -7,9 +7,10 @@ import { ListStaffByCompanyUseCase } from "./application/use-cases/list-staff-by
 import { StaffRepository } from "./domain/repositories/staff.repository";
 import { PrismaStaffRepository } from "./infra/database/repositories/prisma-staff.repository";
 import { StaffController } from "./infra/http/controllers/staff.controller";
+import { StaffWebhookController } from "./infra/http/controllers/staff-webhook.controller";
 @Module({
 	imports: [UserModule],
-	controllers: [StaffController],
+	controllers: [StaffController, StaffWebhookController],
 	providers: [
 		{ provide: StaffRepository, useClass: PrismaStaffRepository },
 		ListStaffByCompanyUseCase,

@@ -18,7 +18,7 @@ import { PrismaAppointmentMapper } from "../mapper/prisma-appointment.mapper";
 
 const appointmentDefaultInclude = {
 	animal: { include: { breed: true, asset: true } },
-	client: { include: { avatar: true } },
+	client: { },
 	service: true,
 	company: { include: { logo: true } },
 } satisfies Prisma.AppointmentInclude;
