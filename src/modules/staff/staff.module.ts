@@ -1,4 +1,5 @@
 import { Module } from "@nestjs/common";
+import { AuthModule } from "../auth/auth.module";
 import { UserModule } from "../user/user.module";
 import { CreateStaffUseCase } from "./application/use-cases/create-staff.use-case";
 import { DeleteStaffUseCase } from "./application/use-cases/delete-staff.use-case";
@@ -8,7 +9,7 @@ import { StaffRepository } from "./domain/repositories/staff.repository";
 import { PrismaStaffRepository } from "./infra/database/repositories/prisma-staff.repository";
 import { StaffController } from "./infra/http/controllers/staff.controller";
 @Module({
-	imports: [UserModule],
+	imports: [UserModule, AuthModule],
 	controllers: [StaffController],
 	providers: [
 		{ provide: StaffRepository, useClass: PrismaStaffRepository },

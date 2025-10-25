@@ -1,8 +1,9 @@
 import { Injectable } from "@nestjs/common";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
+import { AuthProviderService } from "@/modules/auth/domain/interfaces/auth-provider.service.interface";
 import { User } from "@/modules/user/domain/entities/user.entity";
 import { UserRepository } from "@/modules/user/domain/repositories/user.repository";
-import { left, right } from "@/shared/either";
+import { Either, left, right } from "@/shared/either";
 import { NotAllowedError } from "@/shared/errors/errors/not-allowed.error";
 import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
 import { Staff, StaffRole } from "../../domain/entities/staff.entity";
@@ -16,18 +17,26 @@ type CreateStaffUseCaseInput = {
 	loggedUserId: string;
 };
 
+type CreateStaffUseCaseResponse = Either<
+	NotAllowedError | ResourceNotFoundError,
+	undefined
+>;
+
 @Injectable()
 export class CreateStaffUseCase {
 	constructor(
 		private readonly staffRepository: StaffRepository,
 		private readonly userRepository: UserRepository,
+		private readonly authProviderService: AuthProviderService,
 	) {}
 
-	async execute(staffData: CreateStaffUseCaseInput) {
+	async execute(
+		staffData: CreateStaffUseCaseInput,
+	): Promise<CreateStaffUseCaseResponse> {
 		const loggedUserStaff = await this.staffRepository.findByUserId(
 			staffData.loggedUserId,
 		);
-		if (loggedUserStaff?.companyId.equals(staffData.companyId)) {
+		if (!loggedUserStaff?.companyId.equals(staffData.companyId)) {
 			return left(
 				new NotAllowedError("Only staff members can create new staff"),
 			);
@@ -63,6 +72,7 @@ export class CreateStaffUseCase {
 		});
 
 		await this.staffRepository.create(newStaff);
+		await this.authProviderService.inviteUser(staffData.email);
 		return right(undefined);
 	}
 }

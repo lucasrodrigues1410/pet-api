@@ -17,7 +17,6 @@ import { BreedModule } from "./modules/breed/breed.module";
 import { CategoryModule } from "./modules/category/category.module";
 import { CompanyModule } from "./modules/company/company.module";
 import { DashboardModule } from "./modules/dashboard/dashboard.module";
-import { HealthModule } from "./modules/health/health.module";
 import { NotificationModule } from "./modules/notification/notification.module";
 import { PaymentModule } from "./modules/payment/payment.module";
 import { RatingModule } from "./modules/rating/rating.module";
@@ -50,7 +49,6 @@ import { UserModule } from "./modules/user/user.module";
 		StaffModule,
 		DashboardModule,
 		RatingModule,
-		HealthModule,
 		PaymentModule,
 	],
 	providers: [

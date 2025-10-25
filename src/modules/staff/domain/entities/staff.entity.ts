@@ -2,7 +2,7 @@ import { Entity } from "@/core/domain/entities/entity";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { Appointment } from "@/modules/appointment/domain/entities/appointment.entity";
 
-export const staffRole = ["admin", "manager", "employee"] as const;
+export const staffRole = ["admin", "member"] as const;
 export type StaffRole = (typeof staffRole)[number];
 
 export interface StaffProps {
@@ -48,11 +48,11 @@ export class Staff extends Entity<StaffProps> {
 		this.props.appointments = appointments;
 	}
 
-	static create(props: Omit<StaffProps, 'createdAt' | 'updatedAt' | 'deletedAt'>, id?: UniqueEntityID): Staff {
-		const staff = new Staff({
-			...props,
-			createdAt: new Date(),
-		}, id);
+	static create(
+		props: Omit<StaffProps, "createdAt" | "updatedAt" | "deletedAt">,
+		id?: UniqueEntityID,
+	): Staff {
+		const staff = new Staff({ ...props, createdAt: new Date() }, id);
 		return staff;
 	}
 

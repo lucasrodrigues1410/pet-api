@@ -94,6 +94,19 @@ export class ClerkAuthProviderService extends AuthProviderService {
 		}
 	}
 
+	async inviteUser(email: string, redirectUrl?: string): Promise<void> {
+		try {
+			await clerkClient.invitations.createInvitation({
+				emailAddress: email,
+				redirectUrl: redirectUrl,
+			});
+			this.logger.log(`Convite enviado para o email: ${email}`);
+		} catch (error) {
+			this.logger.error(`Erro ao enviar convite para o email: ${email}`, error);
+			throw error;
+		}
+	}
+
 	private async updateUser(user: UserJSON) {
 		return this.createOrUpdateUserService.execute({
 			email: user.email_addresses[0].email_address,

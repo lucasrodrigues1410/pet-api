@@ -41,11 +41,12 @@ export class GetAppointmentByIdUseCase {
 			);
 		}
 
+		const isClient = appointment.clientId.toString() === userId;
+		
 		const staff = await this.staffRepo.findByUserId(userId);
-		if (
-			!staff?.companyId.equals(appointment.companyId) ||
-			appointment.clientId.toString() !== userId
-		) {
+		const isCompanyStaff = staff?.companyId.equals(appointment.companyId);
+
+		if (!isClient && !isCompanyStaff) {
 			return left(
 				new ResourceNotFoundError(
 					"Você não tem permissão para acessar este agendamento",

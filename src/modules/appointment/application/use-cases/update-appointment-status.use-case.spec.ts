@@ -1,8 +1,10 @@
 import { beforeEach, describe, expect, it, jest } from "bun:test";
 import { Test } from "@nestjs/testing";
 import { makeAppointment } from "test/factories/make-appointment";
+import { makeStaff } from "test/factories/make-staff";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { NotificationPublisher } from "@/modules/notification/domain/interfaces/notification-publisher.interface";
+import { StaffRepository } from "@/modules/staff/domain/repositories/staff.repository";
 import { NotAllowedError } from "@/shared/errors/errors/not-allowed.error";
 import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
 import { AppointmentRepository } from "../../domain/repositories/appointment.repository";
@@ -33,6 +35,18 @@ describe("UpdateAppointmentStatusUseCase", () => {
 		delete: jest.fn(),
 	};
 
+	const mockStaffRepo = {
+		findByUserEmail: jest.fn(),
+		findById: jest.fn(),
+		findByUserId: jest.fn(),
+		findByCompanyId: jest.fn(),
+		fetchCompanyStaffWithAppointmentsInDateRange: jest.fn(),
+		findAvailableForSlot: jest.fn(),
+		create: jest.fn(),
+		delete: jest.fn(),
+		totalStaffByCompanyId: jest.fn(),
+	};
+
 	const mockCommandBus = { dispatch: jest.fn() };
 
 	beforeEach(async () => {
@@ -43,6 +57,15 @@ describe("UpdateAppointmentStatusUseCase", () => {
 		mockAppointmentRepo.update.mockReset();
 		mockAppointmentRepo.updateStatus.mockReset();
 		mockAppointmentRepo.delete.mockReset();
+		mockStaffRepo.findByUserEmail.mockReset();
+		mockStaffRepo.findById.mockReset();
+		mockStaffRepo.findByUserId.mockReset();
+		mockStaffRepo.findByCompanyId.mockReset();
+		mockStaffRepo.fetchCompanyStaffWithAppointmentsInDateRange.mockReset();
+		mockStaffRepo.findAvailableForSlot.mockReset();
+		mockStaffRepo.create.mockReset();
+		mockStaffRepo.delete.mockReset();
+		mockStaffRepo.totalStaffByCompanyId.mockReset();
 		mockCommandBus.dispatch.mockReset();
 
 		moduleRef = await Test.createTestingModule({
@@ -50,6 +73,7 @@ describe("UpdateAppointmentStatusUseCase", () => {
 				UpdateAppointmentStatusUseCase,
 				{ provide: AppointmentRepository, useValue: mockAppointmentRepo },
 				{ provide: NotificationPublisher, useValue: mockCommandBus },
+				{ provide: StaffRepository, useValue: mockStaffRepo },
 			],
 		}).compile();
 
@@ -83,6 +107,7 @@ describe("UpdateAppointmentStatusUseCase", () => {
 			mockAppointmentRepo.findById.mockResolvedValueOnce(
 				appointmentWithRelations,
 			);
+			mockStaffRepo.findByUserId.mockResolvedValueOnce(null);
 			mockAppointmentRepo.updateStatus.mockResolvedValueOnce(undefined);
 
 			const result = await sut.execute({
@@ -103,6 +128,7 @@ describe("UpdateAppointmentStatusUseCase", () => {
 
 		it("deve impedir cliente de definir status NO_SHOW", async () => {
 			mockAppointmentRepo.findById.mockResolvedValueOnce(mockAppointment);
+			mockStaffRepo.findByUserId.mockResolvedValueOnce(null);
 
 			const result = await sut.execute({
 				appointmentId: "appointment-1",
@@ -117,6 +143,7 @@ describe("UpdateAppointmentStatusUseCase", () => {
 
 		it("deve impedir cliente de acessar agendamento de outro cliente", async () => {
 			mockAppointmentRepo.findById.mockResolvedValueOnce(mockAppointment);
+			mockStaffRepo.findByUserId.mockResolvedValueOnce(null);
 
 			const result = await sut.execute({
 				appointmentId: "appointment-1",
@@ -154,9 +181,18 @@ describe("UpdateAppointmentStatusUseCase", () => {
 				company: { name: "Company Name" },
 			});
 
+			const staff = makeStaff(
+				{
+					userId: new UniqueEntityID("staff-1"),
+					companyId: new UniqueEntityID("company-1"),
+				},
+				new UniqueEntityID("staff-id-1"),
+			);
+
 			mockAppointmentRepo.findById.mockResolvedValueOnce(
 				appointmentWithRelations,
 			);
+			mockStaffRepo.findByUserId.mockResolvedValueOnce(staff);
 			mockAppointmentRepo.updateStatus.mockResolvedValueOnce(undefined);
 
 			const result = await sut.execute({
@@ -176,7 +212,16 @@ describe("UpdateAppointmentStatusUseCase", () => {
 		});
 
 		it("deve impedir empresa de acessar agendamento de outra empresa", async () => {
+			const staff = makeStaff(
+				{
+					userId: new UniqueEntityID("staff-1"),
+					companyId: new UniqueEntityID("company-2"),
+				},
+				new UniqueEntityID("staff-id-1"),
+			);
+
 			mockAppointmentRepo.findById.mockResolvedValueOnce(mockAppointment);
+			mockStaffRepo.findByUserId.mockResolvedValueOnce(staff);
 
 			const result = await sut.execute({
 				appointmentId: "appointment-1",
@@ -208,11 +253,18 @@ describe("UpdateAppointmentStatusUseCase", () => {
 
 		it("deve retornar erro para transição inválida de status", async () => {
 			const completedAppointment = makeAppointment(
-				{ status: "completed" },
+				{
+					status: "completed",
+					companyId: new UniqueEntityID("company-1"),
+					animalId: new UniqueEntityID("animal-1"),
+					clientId: new UniqueEntityID("client-1"),
+					serviceId: new UniqueEntityID("service-1"),
+				},
 				new UniqueEntityID("appointment-1"),
 			);
 
 			mockAppointmentRepo.findById.mockResolvedValueOnce(completedAppointment);
+			mockStaffRepo.findByUserId.mockResolvedValueOnce(null);
 
 			const result = await sut.execute({
 				appointmentId: "appointment-1",

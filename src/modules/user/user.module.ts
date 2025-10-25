@@ -4,11 +4,8 @@ import { PrismaUserRepository } from "./infra/database/repositories/prisma-user.
 import { UserController } from "./infra/http/controllers/user.controller";
 
 @Module({
-	imports: [],
 	controllers: [UserController],
-	providers: [
-		{ provide: UserRepository, useClass: PrismaUserRepository },
-	],
+	providers: [{ provide: UserRepository, useClass: PrismaUserRepository }],
 	exports: [{ provide: UserRepository, useClass: PrismaUserRepository }],
 })
 export class UserModule {}

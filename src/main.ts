@@ -27,7 +27,7 @@ async function bootstrap() {
 		methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
 		allowedHeaders: ["Content-Type", "Authorization"],
 	});
-	//@ts-expect-error 
+	//@ts-expect-error
 	app.register(multipart);
 	//@ts-expect-error
 	app.register(clerkPlugin);

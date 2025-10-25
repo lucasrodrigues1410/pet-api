@@ -1,10 +1,10 @@
 import { Injectable } from "@nestjs/common";
+import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { WeeklyPerformance } from "@/modules/dashboard/domain/entities/weekly-performance.entity";
-import { StaffRepository } from "@/modules/staff/domain/repositories/staff.repository";
 import { DashboardMetricsService } from "../services/dashboard-metrics.service";
 
 export interface GetDashboardPerformanceRequest {
-	userId: string;
+	companyId: string;
 	startDate?: Date;
 	endDate?: Date;
 }
@@ -13,20 +13,15 @@ export interface GetDashboardPerformanceRequest {
 export class GetDashboardPerformanceUseCase {
 	constructor(
 		private readonly dashboardMetricsService: DashboardMetricsService,
-		private readonly staffRepository: StaffRepository,
 	) {}
 
 	async execute(
 		request: GetDashboardPerformanceRequest,
 	): Promise<WeeklyPerformance> {
-		const { userId, startDate, endDate } = request;
-		const staff = await this.staffRepository.findByUserId(userId);
-		if (!staff) {
-			throw new Error("Staff not found for the given user ID");
-		}
+		const { companyId, startDate, endDate } = request;
 
 		return this.dashboardMetricsService.getWeeklyPerformance({
-			companyId: staff.companyId,
+			companyId: new UniqueEntityID(companyId),
 			startDate,
 			endDate,
 		});

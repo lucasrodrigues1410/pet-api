@@ -11,19 +11,16 @@ CREATE TYPE "ServiceType" AS ENUM ('petshop');
 CREATE TYPE "DayOfWeek" AS ENUM ('sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday');
 
 -- CreateEnum
-CREATE TYPE "Role" AS ENUM ('admin', 'manager', 'employee');
+CREATE TYPE "Role" AS ENUM ('admin', 'member');
 
 -- CreateEnum
-CREATE TYPE "PaymentStatus" AS ENUM ('pending', 'succeeded', 'expired');
+CREATE TYPE "PaymentStatus" AS ENUM ('pending', 'succeeded', 'expired', 'failed');
 
 -- CreateEnum
 CREATE TYPE "PriceAdjustmentType" AS ENUM ('discount', 'surcharge');
 
 -- CreateEnum
 CREATE TYPE "PriceAdjustmentMethod" AS ENUM ('percentage', 'fixed');
-
--- CreateEnum
-CREATE TYPE "UserType" AS ENUM ('customer', 'company', 'admin');
 
 -- CreateTable
 CREATE TABLE "animals" (
@@ -159,7 +156,7 @@ CREATE TABLE "user_companies" (
     "id" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
     "companyId" TEXT NOT NULL,
-    "role" "Role" NOT NULL,
+    "role" "Role" NOT NULL DEFAULT 'member',
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
     "deleted_at" TIMESTAMP(3),
@@ -174,20 +171,6 @@ CREATE TABLE "company_images" (
     "assetId" TEXT NOT NULL,
 
     CONSTRAINT "company_images_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "invites" (
-    "id" TEXT NOT NULL,
-    "user_id" TEXT NOT NULL,
-    "token" TEXT NOT NULL,
-    "expires_at" TIMESTAMP(3) NOT NULL,
-    "used_at" TIMESTAMP(3),
-    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL,
-    "deleted_at" TIMESTAMP(3),
-
-    CONSTRAINT "invites_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -325,9 +308,9 @@ CREATE TABLE "users" (
     "id" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "name" TEXT NOT NULL,
-    "password" TEXT NOT NULL,
-    "type" "UserType" NOT NULL,
-    "avatar_asset_id" TEXT,
+    "password" TEXT,
+    "auth_provider_id" TEXT,
+    "avatar_url" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
     "deleted_at" TIMESTAMP(3),
@@ -406,9 +389,6 @@ CREATE INDEX "user_companies_companyId_role_idx" ON "user_companies"("companyId"
 
 -- CreateIndex
 CREATE UNIQUE INDEX "user_companies_userId_companyId_key" ON "user_companies"("userId", "companyId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "invites_token_key" ON "invites"("token");
 
 -- CreateIndex
 CREATE INDEX "locations_city_state_idx" ON "locations"("city", "state");
@@ -525,9 +505,6 @@ ALTER TABLE "company_images" ADD CONSTRAINT "company_images_companyId_fkey" FORE
 ALTER TABLE "company_images" ADD CONSTRAINT "company_images_assetId_fkey" FOREIGN KEY ("assetId") REFERENCES "assets"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "invites" ADD CONSTRAINT "invites_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "notifications" ADD CONSTRAINT "notifications_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -556,6 +533,3 @@ ALTER TABLE "service_promotions" ADD CONSTRAINT "service_promotions_service_id_f
 
 -- AddForeignKey
 ALTER TABLE "service_promotions" ADD CONSTRAINT "service_promotions_promotion_id_fkey" FOREIGN KEY ("promotion_id") REFERENCES "promotions"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "users" ADD CONSTRAINT "users_avatar_asset_id_fkey" FOREIGN KEY ("avatar_asset_id") REFERENCES "assets"("id") ON DELETE CASCADE ON UPDATE CASCADE;

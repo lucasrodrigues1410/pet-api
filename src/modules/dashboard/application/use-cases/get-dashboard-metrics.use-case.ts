@@ -1,10 +1,10 @@
 import { Injectable } from "@nestjs/common";
+import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { DashboardMetrics } from "@/modules/dashboard/domain/entities/dashboard-metrics.entity";
-import { StaffRepository } from "@/modules/staff/domain/repositories/staff.repository";
 import { DashboardMetricsService } from "../services/dashboard-metrics.service";
 
 export interface GetDashboardMetricsRequest {
-	userId: string;
+	companyId: string;
 	startDate?: Date;
 	endDate?: Date;
 }
@@ -13,20 +13,15 @@ export interface GetDashboardMetricsRequest {
 export class GetDashboardMetricsUseCase {
 	constructor(
 		private readonly dashboardMetricsService: DashboardMetricsService,
-		private readonly staffRepository: StaffRepository,
 	) {}
 
 	async execute(
 		request: GetDashboardMetricsRequest,
 	): Promise<DashboardMetrics> {
-		const { userId, startDate, endDate } = request;
-		const staff = await this.staffRepository.findByUserId(userId);
-		if (!staff?.companyId) {
-			throw new Error("Company not found for the given user.");
-		}
+		const { companyId, startDate, endDate } = request;
 
 		return this.dashboardMetricsService.getDashboardMetrics({
-			companyId: staff.companyId,
+			companyId: new UniqueEntityID(companyId),
 			startDate,
 			endDate,
 		});

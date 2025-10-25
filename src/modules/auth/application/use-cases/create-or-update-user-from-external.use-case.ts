@@ -23,7 +23,6 @@ export class CreateOrUpdateUserFromExternalUseCase {
 		const { authProviderId, email, name, avatarUrl } = input;
 
 		const existingByEmail = await this.userRepository.findByEmail(email);
-
 		if (existingByEmail) {
 			await this.userRepository.update(existingByEmail.id.toString(), {
 				name: name,

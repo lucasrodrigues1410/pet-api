@@ -247,10 +247,10 @@ export async function createCompany(prisma: PrismaClient) {
 
 	// Adicionar alguns funcionários extras
 	const employees = [
-		{ userId: "company-user-2", companyId: "company-1", role: "manager" as const },
-		{ userId: "company-user-3", companyId: "company-1", role: "employee" as const },
-		{ userId: "company-user-1", companyId: "company-2", role: "employee" as const },
-		{ userId: "company-user-4", companyId: "company-3", role: "manager" as const },
+		{ userId: "company-user-2", companyId: "company-1", role: "member" as const },
+		{ userId: "company-user-3", companyId: "company-1", role: "member" as const },
+		{ userId: "company-user-1", companyId: "company-2", role: "member" as const },
+		{ userId: "company-user-4", companyId: "company-3", role: "member" as const },
 	];
 
 	for (const employee of employees) {
