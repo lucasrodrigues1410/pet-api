@@ -5,7 +5,7 @@ import { ListAllCategoriesUseCase } from "@/modules/category/application/use-cas
 import { CategoryResponse } from "../dtos/category.response.dto";
 import { ListCategoriesPresenter } from "../presenters/list-categories.presenter";
 
-@ApiTags("categories")
+@ApiTags("Categorias")
 @Controller("categories")
 export class CategoryController {
 	constructor(
