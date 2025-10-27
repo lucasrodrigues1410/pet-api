@@ -3,6 +3,7 @@ import { Animal } from "@/modules/animal/domain/entities/animal.entity";
 import { Asset } from "@/modules/asset/domain/entities/asset";
 import { Breed } from "@/modules/breed/domain/entities/breed.entity";
 import { Company } from "@/modules/company/domain/entities/company.entity";
+import { Payment } from "@/modules/payment/domain/entities/payment.entity";
 import { Service } from "@/modules/service/domain/entities/service.entity";
 import { StaffRepository } from "@/modules/staff/domain/repositories/staff.repository";
 import { User } from "@/modules/user/domain/entities/user.entity";
@@ -20,6 +21,7 @@ type GetAppointmentByIdUseCaseOutput = Either<
 		client: User;
 		service: Service;
 		company: Company;
+		payment: Payment | null;
 	}
 >;
 

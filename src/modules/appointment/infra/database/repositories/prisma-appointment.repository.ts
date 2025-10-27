@@ -10,6 +10,7 @@ import { AppointmentRepository } from "@/modules/appointment/domain/repositories
 import { PrismaAssetMapper } from "@/modules/asset/infra/database/mappers/prisma-asset.mapper";
 import { PrismaBreedMapper } from "@/modules/breed/infra/database/mappers/prisma-breed.mapper";
 import { PrismaCompanyMapper } from "@/modules/company/infra/database/mappers/prisma-company.mapper";
+import { PrismaPaymentMapper } from "@/modules/payment/infra/database/payment.mapper";
 import { PrismaServiceMapper } from "@/modules/service/infra/database/mappers/prisma-service.mapper";
 import { PrismaUserMapper } from "@/modules/user/infra/database/mappers/prisma-user.mapper";
 import type { DateRange } from "@/shared/types/date-range";
@@ -18,9 +19,10 @@ import { PrismaAppointmentMapper } from "../mapper/prisma-appointment.mapper";
 
 const appointmentDefaultInclude = {
 	animal: { include: { breed: true, asset: true } },
-	client: { },
+	client: {},
 	service: true,
 	company: { include: { logo: true } },
+	payments: { orderBy: { createdAt: "desc" }, take: 1 },
 } satisfies Prisma.AppointmentInclude;
 
 @Injectable()
@@ -46,6 +48,9 @@ export class PrismaAppointmentRepository implements AppointmentRepository {
 			client: PrismaUserMapper.toDomain(appointment.client),
 			service: PrismaServiceMapper.toDomain(appointment.service),
 			company: PrismaCompanyMapper.toDomain(appointment.company),
+			payment: appointment.payments.length
+				? PrismaPaymentMapper.toDomain(appointment.payments[0])
+				: null,
 		});
 	}
 

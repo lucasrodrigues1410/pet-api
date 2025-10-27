@@ -3,7 +3,7 @@ import { Prisma } from "prisma/generated/client";
 import { PrismaService } from "@/core/infra/prisma/prisma.service";
 import { Payment } from "../../domain/entities/payment.entity";
 import { PaymentRepository } from "../../domain/repositories/payment.repository";
-import { PaymentMapper } from "./payment.mapper";
+import { PrismaPaymentMapper } from "./payment.mapper";
 
 @Injectable()
 export class PrismaPaymentRepository implements PaymentRepository {
@@ -16,7 +16,7 @@ export class PrismaPaymentRepository implements PaymentRepository {
 			where: { id },
 		});
 		if (!payment) return null;
-		return PaymentMapper.toDomain(payment);
+		return PrismaPaymentMapper.toDomain(payment);
 	}
 
 	async findByAppointmentId(
@@ -27,7 +27,7 @@ export class PrismaPaymentRepository implements PaymentRepository {
 			where: { appointmentId },
 		});
 		if (!payment) return null;
-		return PaymentMapper.toDomain(payment);
+		return PrismaPaymentMapper.toDomain(payment);
 	}
 
 	async findByExternalId(
@@ -38,11 +38,11 @@ export class PrismaPaymentRepository implements PaymentRepository {
 			where: { externalId },
 		});
 		if (!payment) return null;
-		return PaymentMapper.toDomain(payment);
+		return PrismaPaymentMapper.toDomain(payment);
 	}
 
 	async save(payment: Payment): Promise<void> {
-		const data = PaymentMapper.toPersistence(payment);
+		const data = PrismaPaymentMapper.toPersistence(payment);
 		await this.prisma.payment.create({ data });
 	}
 

@@ -1,5 +1,6 @@
 import { createZodDto } from "nestjs-zod";
 import { z } from "zod";
+import { paymentStatus } from "@/modules/payment/domain/entities/payment.entity";
 import { appointmentDto } from "./appointment.dto";
 
 const responseDto = appointmentDto
@@ -23,13 +24,18 @@ const responseDto = appointmentDto
 			id: z.string(),
 			name: z.string(),
 			email: z.string(),
-			avatar: z.object({ id: z.string(), url: z.string() }).optional(),
+			avatarUrl: z.string().nullish(),
 		}),
 		service: z.object({ id: z.string(), name: z.string() }),
 		company: z.object({
 			id: z.string(),
 			name: z.string(),
 			logo: z.object({ id: z.string(), url: z.string() }).optional(),
+		}),
+		payment: z.object({
+			amount: z.number().nullish(),
+			status: z.enum(paymentStatus).nullish(),
+			checkoutUrl: z.string().nullish(),
 		}),
 	});
 

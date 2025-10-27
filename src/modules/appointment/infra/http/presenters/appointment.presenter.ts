@@ -4,6 +4,7 @@ import { Asset } from "@/modules/asset/domain/entities/asset";
 import { AssetPresenter } from "@/modules/asset/infra/http/presenters/asset.presenter";
 import { Breed } from "@/modules/breed/domain/entities/breed.entity";
 import { Company } from "@/modules/company/domain/entities/company.entity";
+import { Payment } from "@/modules/payment/domain/entities/payment.entity";
 import { Service } from "@/modules/service/domain/entities/service.entity";
 import { ServicePresenter } from "@/modules/service/infra/http/presenters/service.presenter";
 import { User } from "@/modules/user/domain/entities/user.entity";
@@ -73,11 +74,7 @@ export class AppointmentPresenter {
 				id: client.id.toString(),
 				email: client.email,
 				name: client.name,
-				type: client.type,
-				avatar: client.avatar
-					? AssetPresenter.present(client.avatar)
-					: undefined,
-				avatarAssetId: client.avatarAssetId,
+				avatarUrl: client.avatarUrl,
 			},
 		};
 	}
@@ -95,6 +92,7 @@ export class AppointmentPresenter {
 		client: User,
 		service: Service,
 		company: Company,
+		payment: Payment | null,
 	) {
 		return {
 			...this.presentBasic(appointment),
@@ -119,11 +117,7 @@ export class AppointmentPresenter {
 				id: client.id.toString(),
 				email: client.email,
 				name: client.name,
-				type: client.type,
-				avatar: client.avatar
-					? AssetPresenter.present(client.avatar)
-					: undefined,
-				avatarAssetId: client.avatarAssetId,
+				avatarUrl: client.avatarUrl,
 			},
 			service: ServicePresenter.present(service),
 			company: {
@@ -136,6 +130,12 @@ export class AppointmentPresenter {
 				locationId: company.locationId.toString(),
 				averageRating: company.averageRating,
 				ratingCount: company.ratingCount,
+			},
+			payment: {
+				id: payment?.id.toString(),
+				amount: payment?.amount,
+				status: payment?.status,
+				checkoutUrl: payment?.checkoutUrl,
 			},
 		};
 	}
@@ -169,11 +169,7 @@ export class AppointmentPresenter {
 				id: client.id.toString(),
 				email: client.email,
 				name: client.name,
-				type: client.type,
-				avatar: client.avatar
-					? AssetPresenter.present(client.avatar)
-					: undefined,
-				avatarAssetId: client.avatarAssetId,
+				avatarUrl: client.avatarUrl,
 			},
 			service: ServicePresenter.present(service),
 		};

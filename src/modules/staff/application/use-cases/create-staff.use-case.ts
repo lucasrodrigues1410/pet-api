@@ -31,14 +31,16 @@ export class CreateStaffUseCase {
 	): Promise<CreateStaffUseCaseResponse> {
 		const user = await this.userRepository.findByEmail(staffData.email);
 		if (!user) {
-			return left(new ResourceNotFoundError("Does not exist user with this email"));
+			return left(
+				new ResourceNotFoundError("Does not exist user with this email"),
+			);
 		}
 
 		const newStaff = Staff.create({
 			userId: user.id,
 			companyId: new UniqueEntityID(staffData.companyId),
-				role: staffData.role,
-			});
+			role: staffData.role,
+		});
 
 		await this.staffRepository.create(newStaff);
 		return right({ userId: user.id.toString() });
