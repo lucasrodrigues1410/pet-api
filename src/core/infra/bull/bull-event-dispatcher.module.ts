@@ -20,7 +20,7 @@ import { EnvService } from "../env/env.service";
 					removeOnFail: 1000,
 					attempts: 3,
 					backoff: { type: "exponential", delay: 1000 },
-					ttl: 24 * 60 * 60 * 1000, // 24 horas
+					ttl: 24 * 60 * 60 * 1000,
 				},
 			}),
 		}),

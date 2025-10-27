@@ -39,7 +39,7 @@ export class CreatePaymentUseCase {
 
 		const appointmentId = new UniqueEntityID(request.appointmentId);
 		const paymentIntent = await this.paymentGateway.createCheckoutSession({
-			successUrl: `${process.env.APP_URL}/appointments/${request.appointmentId}`,
+			successUrl: `${process.env.APP_URL}/appointments?id=${request.appointmentId}`,
 			cancelUrl: `${process.env.APP_URL}/`,
 			lineItems: [
 				{

@@ -12,13 +12,9 @@ describe("GetAppointmentByCompanyIdUseCase", () => {
 	let moduleRef: any;
 	let sut: GetAppointmentByCompanyIdUseCase;
 
-	const mockAppointmentRepo = {
-		findByCompanyId: jest.fn(),
-	};
+	const mockAppointmentRepo = { findByCompanyId: jest.fn() };
 
-	const mockStaffRepo = {
-		findByUserId: jest.fn(),
-	};
+	const mockStaffRepo = { findByUserId: jest.fn() };
 
 	beforeEach(async () => {
 		mockAppointmentRepo.findByCompanyId.mockReset();
