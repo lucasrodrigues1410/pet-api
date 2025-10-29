@@ -112,8 +112,6 @@ export class PrismaAppointmentRepository implements AppointmentRepository {
 					},
 				},
 			],
-			startDate: { gte: params.query.startDate },
-			endDate: { lte: params.query.endDate },
 			status: { in: params.query.status },
 		} as Prisma.AppointmentWhereInput;
 
@@ -129,6 +127,7 @@ export class PrismaAppointmentRepository implements AppointmentRepository {
 			() => this.prismaService.appointment.count({ where: filter }),
 			params.query,
 		);
+
 		return {
 			meta,
 			items: items.map((appointment) =>

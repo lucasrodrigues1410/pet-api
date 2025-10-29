@@ -12,6 +12,7 @@ model Service {
   updatedAt   DateTime @updatedAt @map("updated_at")
   rules       Json?
   rulesPrompt String?  @map("rules_prompt")
+  requiresPayment Boolean @default(false) @map("requires_payment")
 
   company          Company            @relation(fields: [companyId], references: [id])
   appointments     Appointment[]

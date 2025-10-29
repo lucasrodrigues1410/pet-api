@@ -13,8 +13,8 @@ enum Operator {
 
 @Injectable()
 export class RulesExecutionService {
-	execute(animal: Animal, rules: Rules[]): CalculateResult | null {
-		if (rules.length === 0) return null;
+	execute(animal: Animal, rules?: Rules[]): CalculateResult | null {
+		if (!rules || rules.length === 0) return null;
 
 		const animalValues = this.buildCharacteristicsMap(animal);
 

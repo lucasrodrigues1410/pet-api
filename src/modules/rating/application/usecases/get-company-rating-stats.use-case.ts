@@ -1,4 +1,5 @@
 import { Injectable } from "@nestjs/common";
+import { CompanyRepository } from "@/modules/company/domain/repositories/company.repository";
 import {
 	CompanyRatingStats,
 	RatingRepository,
@@ -17,21 +18,21 @@ type GetCompanyRatingStatsUseCaseResponse = Either<
 
 @Injectable()
 export class GetCompanyRatingStatsUseCase {
-	constructor(private readonly ratingRepository: RatingRepository) {}
+	constructor(
+		private readonly ratingRepository: RatingRepository,
+		private readonly companyRepository: CompanyRepository,
+	) {}
 
 	async execute({
 		companyId,
 	}: GetCompanyRatingStatsUseCaseRequest): Promise<GetCompanyRatingStatsUseCaseResponse> {
-		try {
-			const stats =
-				await this.ratingRepository.getCompanyRatingStats(companyId);
+		const companyExists = await this.companyRepository.findById(companyId);
 
-			return right(stats);
-		} catch (error) {
-			if (error instanceof ResourceNotFoundError) {
-				return left(error);
-			}
-			throw error;
+		if (!companyExists) {
+			return left(new ResourceNotFoundError("Company not found."));
 		}
+		const stats = await this.ratingRepository.getCompanyRatingStats(companyId);
+
+		return right(stats);
 	}
 }

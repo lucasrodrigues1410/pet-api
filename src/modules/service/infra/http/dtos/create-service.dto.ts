@@ -8,6 +8,7 @@ const requestDto = z.object({
 	duration: z.number().min(0),
 	rules: z.string().optional(),
 	categoryId: z.string().optional(),
+	requiresPayment: z.boolean().optional().default(false),
 });
 
 export class CreateServiceRequestDto extends createZodDto(requestDto) {}

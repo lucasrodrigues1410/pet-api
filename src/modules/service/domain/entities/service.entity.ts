@@ -14,6 +14,7 @@ export interface ServiceProps {
 	details?: Record<string, unknown> | null;
 	rules?: Rules[];
 	rulesPrompt?: string | null;
+	requiresPayment: boolean;
 }
 
 export class Service extends Entity<ServiceProps> {
@@ -53,8 +54,15 @@ export class Service extends Entity<ServiceProps> {
 		return this.props.rulesPrompt;
 	}
 
-	public static create(props: ServiceProps, id?: UniqueEntityID): Service {
-		const service = new Service(props, id);
+	get requiresPayment() {
+		return this.props.requiresPayment;
+	}
+
+	public static create(
+		{ isActive, ...props }: Omit<ServiceProps, "isActive"> & { isActive?: boolean },
+		id?: UniqueEntityID,
+	): Service {
+		const service = new Service({ ...props, isActive: isActive ?? true }, id);
 		return service;
 	}
 }
