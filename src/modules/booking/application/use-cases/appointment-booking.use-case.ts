@@ -63,7 +63,7 @@ export class AppointmentBookingUseCase {
 
 		const ruleExecutionResult = await this.rulesExecution.execute(
 			animal,
-			service.rules || [],
+			service.rules,
 		);
 
 		const priceAdjustment = ruleExecutionResult?.price ?? 0;
@@ -92,22 +92,23 @@ export class AppointmentBookingUseCase {
 		});
 
 		await this.appointmentRepository.create(appointmentIntent);
-		const paymentResult = await this.createPaymentUseCase.execute({
-			appointmentId: appointmentIntent.id.toString(),
-			amountCents: appointmentIntent.price,
-			serviceName: service.name,
-			serviceDescription: `Agendamento para ${animal.name} às ${startDate.toLocaleString()}`,
-			companyImage: service.company.logo?.url,
-		});
+		let checkoutUrl: string | undefined;
+		if (service.requiresPayment) {
+			const paymentResult = await this.createPaymentUseCase.execute({
+				appointmentId: appointmentIntent.id.toString(),
+				amountCents: appointmentIntent.price,
+				serviceName: service.name,
+				serviceDescription: `Agendamento para ${animal.name} às ${startDate.toLocaleString()}`,
+				companyImage: service.company.logo?.url,
+			});
 
-		if (paymentResult.isLeft()) {
-			// TODO: rollback appointment
-			return left(paymentResult.value);
+			if (paymentResult.isLeft()) return left(paymentResult.value);
+			checkoutUrl = paymentResult.value.url;
 		}
 
 		return right({
 			appointmentId: appointmentIntent.id.toString(),
-			checkoutUrl: paymentResult.value.url,
+			checkoutUrl,
 		});
 	}
 }

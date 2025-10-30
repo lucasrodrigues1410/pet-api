@@ -45,7 +45,7 @@ export const responseDto = appointmentDto
 		client: z.object({
 			id: z.string(),
 			name: z.string(),
-			avatar: z.object({ id: z.string(), url: z.string() }).optional(),
+			avatarUrl: z.string().optional(),
 		}),
 		service: z.object({ id: z.string(), name: z.string() }),
 	});

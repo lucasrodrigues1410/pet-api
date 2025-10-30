@@ -13,6 +13,7 @@ export class ServicePresenter {
 			companyId: service.companyId.toString(),
 			details: service.details,
 			rules: service.rules?.map((rule) => RulesPresenter.present(rule)),
+			rulesPrompt: service.rulesPrompt,
 		};
 	}
 }

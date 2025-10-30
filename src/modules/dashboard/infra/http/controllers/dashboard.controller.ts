@@ -1,4 +1,10 @@
-import { Controller, Get, Query } from "@nestjs/common";
+import {
+	Controller,
+	ForbiddenException,
+	Get,
+	Param,
+	Query,
+} from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { ZodResponse } from "nestjs-zod";
 import { User } from "@/modules/auth/infra/http/decorators/user.decorator";
@@ -20,7 +26,7 @@ export class DashboardController {
 		private readonly getDashboardPerformanceUseCase: GetDashboardPerformanceUseCase,
 	) {}
 
-	@Get("metrics")
+	@Get("metrics/:companyId")
 	@ApiOperation({
 		summary: "Obter métricas do dashboard",
 		operationId: "getDashboardMetrics",
@@ -30,18 +36,24 @@ export class DashboardController {
 	@ZodResponse({ status: 200, type: DashboardMetricsResponse })
 	async getDashboardMetrics(
 		@Query() query: DashboardQueryDto,
+		@Param("companyId") companyId: string,
 		@User("sub") userId: string,
 	): Promise<DashboardMetricsResponse> {
 		const metrics = await this.getDashboardMetricsUseCase.execute({
 			userId,
+			companyId,
 			startDate: query.startDate ? new Date(query.startDate) : undefined,
 			endDate: query.endDate ? new Date(query.endDate) : undefined,
 		});
 
-		return DashboardMetricsPresenter.present(metrics);
+		if (metrics.isLeft()) {
+			throw new ForbiddenException(metrics.value?.message);
+		}
+
+		return DashboardMetricsPresenter.present(metrics.value);
 	}
 
-	@Get("performance")
+	@Get("performance/:companyId")
 	@ApiOperation({
 		summary: "Obter performance semanal",
 		operationId: "getWeeklyPerformance",
@@ -50,15 +62,21 @@ export class DashboardController {
 	})
 	@ZodResponse({ status: 200, type: WeeklyPerformanceResponse })
 	async getWeeklyPerformance(
+		@Param("companyId") companyId: string,
 		@User("sub") userId: string,
 		@Query() query: DashboardQueryDto,
 	): Promise<WeeklyPerformanceResponse> {
 		const performance = await this.getDashboardPerformanceUseCase.execute({
 			userId,
+			companyId,
 			startDate: query.startDate ? new Date(query.startDate) : undefined,
 			endDate: query.endDate ? new Date(query.endDate) : undefined,
 		});
 
-		return WeeklyPerformancePresenter.present(performance);
+		if (performance.isLeft()) {
+			throw new ForbiddenException(performance.value?.message);
+		}
+
+		return WeeklyPerformancePresenter.present(performance.value);
 	}
 }

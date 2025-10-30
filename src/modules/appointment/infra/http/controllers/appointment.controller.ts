@@ -42,7 +42,7 @@ export class AppointmentController {
 		private readonly updateAppointmentStatusUseCase: UpdateAppointmentStatusUseCase,
 	) {}
 
-	@Get("/company")
+	@Get("company/:companyId")
 	@ApiOperation({
 		summary: "Retorna todos os agendamentos da empresa",
 		operationId: "getAllCompanyAppointments",
@@ -50,15 +50,17 @@ export class AppointmentController {
 	@ZodResponse({ status: 200, type: AppointmentsByCompanyResponseDto })
 	async getAllCompanyAppointments(
 		@User("sub") userId: string,
+		@Param("companyId") companyId: string,
 		@Query() query: AppointmentsByCompanyQueryDto,
 	) {
 		const response = await this.getAppointmentByCompanyIdUseCase.execute({
 			userId,
+			companyId,
 			query,
 		});
 
 		if (response.isLeft()) {
-			throw new NotFoundException(response.value.message);
+			throw new ForbiddenException(response.value.message);
 		}
 
 		return CompanyAppointmentsPresenter.present(response.value);

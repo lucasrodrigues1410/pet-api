@@ -2,6 +2,7 @@ import {
 	BadRequestException,
 	Body,
 	Controller,
+	ForbiddenException,
 	Get,
 	HttpCode,
 	NotFoundException,
@@ -13,7 +14,7 @@ import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { ZodResponse } from "nestjs-zod";
 import { User } from "@/modules/auth/infra/http/decorators/user.decorator";
 import { CreateServiceUseCase } from "@/modules/service/application/use-cases/create-service.use-case";
-import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
+import { NotAllowedError } from "@/shared/errors/errors/not-allowed.error";
 import { DeactivateServiceUseCase } from "../../../application/use-cases/deactivate-service.use-case";
 import { GetServiceByIdUseCase } from "../../../application/use-cases/get-service-by-id.use-case";
 import { ListServicesByCompanyUseCase } from "../../../application/use-cases/list-services-by-company.use-case";
@@ -39,9 +40,13 @@ export class ServiceController {
 		operationId: "listServicesByCompany",
 	})
 	@ZodResponse({ status: 200, type: ServiceResponseList })
-	async listServicesByCompany(@Param("companyId") companyId: string) {
+	async listServicesByCompany(
+		@User("sub") userId: string,
+		@Param("companyId") companyId: string,
+	) {
 		const result = await this.listServicesByCompanyUseCase.execute({
 			companyId,
+			userId,
 		});
 
 		if (result.isLeft()) {
@@ -73,22 +78,24 @@ export class ServiceController {
 		}
 	}
 
-	@Post()
+	@Post("company/:companyId")
 	@ApiOperation({ summary: "Criar serviço", operationId: "createService" })
 	@HttpCode(201)
 	async createService(
 		@Body() body: CreateServiceRequestDto,
 		@User("sub") userId: string,
+		@Param("companyId") companyId: string,
 	) {
 		const result = await this.createServiceUseCase.execute({
 			...body,
 			categoryIds: body.categoryId ? [body.categoryId] : undefined,
 			userId,
+			companyId,
 		});
 
 		if (result.isLeft()) {
-			if (result.value instanceof ResourceNotFoundError) {
-				throw new NotFoundException(result.value.message);
+			if (result.value instanceof NotAllowedError) {
+				throw new ForbiddenException(result.value.message);
 			}
 			throw new BadRequestException();
 		}

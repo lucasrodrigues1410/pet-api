@@ -12,7 +12,7 @@ import { ZodResponse } from "nestjs-zod";
 import { Public } from "@/modules/auth/infra/http/decorators/public.decorator";
 import { User } from "@/modules/auth/infra/http/decorators/user.decorator";
 import { CheckRatingEligibilityUseCase } from "@/modules/rating/application/usecases/check-rating-eligibility.use-case";
-import { CreateRatingCompanyUseCase } from "@/modules/rating/application/usecases/create-rating.company";
+import { CreateRatingCompanyUseCase } from "@/modules/rating/application/usecases/create-rating.company.use-case";
 import { GetCompanyRatingStatsUseCase } from "@/modules/rating/application/usecases/get-company-rating-stats.use-case";
 import { ListCompanyRatingsUseCase } from "@/modules/rating/application/usecases/list-company-ratings.use-case";
 import { PaginationQueryDto } from "@/shared/utils/pagination-query";

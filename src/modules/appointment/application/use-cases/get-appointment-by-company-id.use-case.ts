@@ -5,6 +5,7 @@ import { Service } from "@/modules/service/domain/entities/service.entity";
 import { StaffRepository } from "@/modules/staff/domain/repositories/staff.repository";
 import { User } from "@/modules/user/domain/entities/user.entity";
 import { Either, left, right } from "@/shared/either";
+import { NotAllowedError } from "@/shared/errors/errors/not-allowed.error";
 import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
 import { PaginationResult } from "@/shared/utils/pagination";
 import type { PaginationQuery } from "@/shared/utils/pagination-query";
@@ -16,6 +17,7 @@ import { AppointmentRepository } from "../../domain/repositories/appointment.rep
 
 interface Request {
 	userId: string;
+	companyId: string;
 	query: PaginationQuery & {
 		startDate?: Date;
 		endDate?: Date;
@@ -42,12 +44,11 @@ export class GetAppointmentByCompanyIdUseCase {
 		private readonly staffRepo: StaffRepository,
 	) {}
 
-	async execute({ userId, query }: Request): Promise<Response> {
-		const staff = await this.staffRepo.findByUserId(userId);
+	async execute({ userId, companyId, query }: Request): Promise<Response> {
+		const staff = await this.staffRepo.findByUserId(userId, companyId);
 		if (!staff) {
-			return left(new ResourceNotFoundError("Staff not found"));
+			return left(new NotAllowedError("The user is not a staff member"));
 		}
-		const companyId = staff.companyId.toString();
 		const result = await this.appointmentRepo.findByCompanyId({
 			companyId,
 			query,

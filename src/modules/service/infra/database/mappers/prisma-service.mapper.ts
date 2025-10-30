@@ -21,6 +21,7 @@ export class PrismaServiceMapper {
 					Rules.create(rule as unknown as RulesProps),
 				),
 				details: prismaService.details as Record<string, unknown>,
+				requiresPayment: prismaService.requiresPayment,
 			},
 			new UniqueEntityID(prismaService.id),
 		);
@@ -49,6 +50,7 @@ export class PrismaServiceMapper {
 					}),
 				};
 			}) as Prisma.InputJsonValue,
+			requiresPayment: service.requiresPayment,
 		};
 	}
 
@@ -76,6 +78,7 @@ export class PrismaServiceMapper {
 					}),
 				};
 			}) as Prisma.InputJsonValue,
+			requiresPayment: service.requiresPayment,
 		};
 	}
 }
