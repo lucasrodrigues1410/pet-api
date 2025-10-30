@@ -18,8 +18,7 @@ COPY . .
 
 # Gera Prisma Client (se você usa Prisma)
 RUN bun prisma generate
-RUN bun prisma migrate deploy
 
 # Expõe porta e start
 EXPOSE 3000
-CMD ["bun", "start"]
+CMD ["sh", "-c", "bun prisma migrate deploy && bun start"]
