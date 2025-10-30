@@ -18,6 +18,7 @@ COPY . .
 
 # Gera Prisma Client (se você usa Prisma)
 RUN bun prisma generate
+RUN bun prism migrate deploy
 
 # Expõe porta e start
 EXPOSE 3000
