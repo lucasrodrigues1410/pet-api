@@ -1,5 +1,4 @@
 import { Module } from "@nestjs/common";
-import { AppointmentModule } from "@/modules/appointment/appointment.module";
 import { CompanyModule } from "../company/company.module";
 import { CheckRatingEligibilityUseCase } from "./application/usecases/check-rating-eligibility.use-case";
 import { CreateRatingCompanyUseCase } from "./application/usecases/create-rating.company.use-case";
@@ -10,7 +9,7 @@ import { PrismaRatingRepository } from "./infra/database/repositories/prisma-rat
 import { RatingController } from "./infra/http/controllers/rating.controller";
 
 @Module({
-	imports: [AppointmentModule, CompanyModule],
+	imports: [CompanyModule],
 	controllers: [RatingController],
 	providers: [
 		CreateRatingCompanyUseCase,

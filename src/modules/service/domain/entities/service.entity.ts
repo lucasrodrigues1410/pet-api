@@ -59,11 +59,30 @@ export class Service extends Entity<ServiceProps> {
 	}
 
 	public static create(
-		{ isActive, ...props }: Omit<ServiceProps, "isActive"> & { isActive?: boolean },
+		{
+			isActive,
+			...props
+		}: Omit<ServiceProps, "isActive"> & { isActive?: boolean },
 		id?: UniqueEntityID,
 	): Service {
 		const service = new Service({ ...props, isActive: isActive ?? true }, id);
 		return service;
+	}
+
+	update(
+		props: Pick<
+			ServiceProps,
+			| "name"
+			| "description"
+			| "price"
+			| "duration"
+			| "details"
+			| "rules"
+			| "rulesPrompt"
+			| "requiresPayment"
+		>,
+	) {
+		this.props = { ...this.props, ...props };
 	}
 }
 

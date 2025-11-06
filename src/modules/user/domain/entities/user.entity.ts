@@ -45,4 +45,8 @@ export class User extends Entity<UserProps> {
 		const user = new User(props, id);
 		return user;
 	}
+
+	public update(props: Pick<UserProps, "avatarUrl" | "email" | "name">): void {
+		this.props = { ...this.props, ...props };
+	}
 }

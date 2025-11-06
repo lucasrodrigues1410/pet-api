@@ -22,7 +22,9 @@ export class GetDashboardMetricsUseCase {
 		private readonly staffRepository: StaffRepository,
 	) {}
 
-	async execute(request: GetDashboardMetricsRequest):Promise<GetDashboardMetricsResponse> {
+	async execute(
+		request: GetDashboardMetricsRequest,
+	): Promise<GetDashboardMetricsResponse> {
 		const { companyId, userId, startDate, endDate } = request;
 		const staffMember = await this.staffRepository.findByUserId(
 			userId,

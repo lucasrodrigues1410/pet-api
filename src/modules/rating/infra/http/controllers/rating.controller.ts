@@ -44,7 +44,13 @@ export class RatingController {
 		@User("sub") userId: string,
 		@Body() body: CreateRatingRequestDto,
 	) {
-		return this.createRatingCompanyUseCase.execute({ ...body, userId });
+		const response = await this.createRatingCompanyUseCase.execute({
+			...body,
+			userId,
+		});
+		if (response.isLeft()) {
+			throw new NotFoundException(response.value.message);
+		}
 	}
 
 	@Get("company/:companyId")
@@ -62,7 +68,6 @@ export class RatingController {
 			companyId,
 			...query,
 		});
-
 		if (result.isLeft()) {
 			throw new NotFoundException("Empresa não encontrada");
 		}
@@ -104,6 +109,10 @@ export class RatingController {
 			userId,
 			companyId,
 		});
+
+		if (result.isLeft()) {
+			throw new NotFoundException(result.value.message);
+		}
 
 		return result.value;
 	}

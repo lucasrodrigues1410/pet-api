@@ -2,6 +2,7 @@ import { Module } from "@nestjs/common";
 import { AnimalModule } from "../animal/animal.module";
 import { AppointmentModule } from "../appointment/appointment.module";
 import { CompanyAvailabilityModule } from "../company-availability/company-availability.module";
+import { NotificationModule } from "../notification/notification.module";
 import { PaymentModule } from "../payment/payment.module";
 import { ServiceModule } from "../service/service.module";
 import { StaffModule } from "../staff/staff.module";
@@ -18,6 +19,7 @@ import { BookingController } from "./infra/http/controllers/booking.controller";
 		StaffModule,
 		AnimalModule,
 		PaymentModule,
+		NotificationModule,
 	],
 	controllers: [BookingController],
 	providers: [

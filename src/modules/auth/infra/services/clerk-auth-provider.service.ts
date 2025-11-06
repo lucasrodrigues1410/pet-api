@@ -2,26 +2,20 @@ import { clerkClient, UserJSON } from "@clerk/fastify";
 import { verifyWebhook } from "@clerk/fastify/webhooks";
 import { Injectable, Logger } from "@nestjs/common";
 import type { FastifyRequest } from "fastify";
-import { EnvService } from "@/core/infra/env/env.service";
-import { CreateOrUpdateUserFromExternalUseCase } from "../../application/use-cases/create-or-update-user-from-external.use-case";
+import { SyncExternalUserUseCase } from "../../application/use-cases/sync-external-user.use-case";
 import { AuthProviderService } from "../../domain/interfaces/auth-provider.service.interface";
 
 @Injectable()
 export class ClerkAuthProviderService extends AuthProviderService {
 	private readonly logger = new Logger(ClerkAuthProviderService.name);
 
-	constructor(
-		private readonly createOrUpdateUserService: CreateOrUpdateUserFromExternalUseCase,
-		private readonly envService: EnvService,
-	) {
+	constructor(private readonly syncExtUserUseCase: SyncExternalUserUseCase) {
 		super();
 	}
 
 	async processWebhook(req: FastifyRequest): Promise<void> {
 		try {
-			const event = await verifyWebhook(req, {
-				signingSecret: this.envService.get("CLERK_WEBHOOK_SIGNING_SECRET"),
-			});
+			const event = await verifyWebhook(req);
 			this.logger.log(`Clerk webhook event: ${event.type}`);
 
 			switch (event.type) {
@@ -45,10 +39,16 @@ export class ClerkAuthProviderService extends AuthProviderService {
 					this.logger.log(`Usuário atualizado: ${event.data.id}`);
 					break;
 
-				case "user.deleted":
-					//TODO: implementar lógica de exclusão se necessário
+				case "session.created": {
+					const appUserId = event.data.public_metadata?.appUserId;
+					if (!appUserId) {
+						await this.updateUser(event.data.user);
+						this.logger.log(
+							`Sessão criada para usuário: ${event.data.user.id}`,
+						);
+					}
 					break;
-
+				}
 				default:
 					this.logger.debug(`Evento não tratado: ${event.type}`);
 			}
@@ -76,39 +76,8 @@ export class ClerkAuthProviderService extends AuthProviderService {
 		}
 	}
 
-	async updatePrivateMetadata(
-		userId: string,
-		metadata: Record<string, any>,
-	): Promise<void> {
-		try {
-			await clerkClient.users.updateUserMetadata(userId, {
-				privateMetadata: metadata,
-			});
-			this.logger.log(`Metadados privados atualizados para usuário ${userId}`);
-		} catch (error) {
-			this.logger.error(
-				`Erro ao atualizar private metadata para usuário ${userId}`,
-				error,
-			);
-			throw error;
-		}
-	}
-
-	async inviteUser(email: string, redirectUrl?: string): Promise<void> {
-		try {
-			await clerkClient.invitations.createInvitation({
-				emailAddress: email,
-				redirectUrl: redirectUrl,
-			});
-			this.logger.log(`Convite enviado para o email: ${email}`);
-		} catch (error) {
-			this.logger.error(`Erro ao enviar convite para o email: ${email}`, error);
-			throw error;
-		}
-	}
-
 	private async updateUser(user: UserJSON) {
-		return this.createOrUpdateUserService.execute({
+		return this.syncExtUserUseCase.execute({
 			email: user.email_addresses[0].email_address,
 			authProviderId: user.id,
 			avatarUrl: user.image_url,

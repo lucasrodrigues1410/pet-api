@@ -17,13 +17,13 @@ const CharacteristicSchema = z.enum(["size", "age", "coat", "diseases"]);
 ]);*/
 
 const rulesOptionDto = z.object({
-  value: z.union([z.string(), z.array(z.string())]),
-  operator: OperatorSchema,
-  price: z.number(),
-  time: z.number().optional(),
+	value: z.union([z.string(), z.array(z.string())]),
+	operator: OperatorSchema,
+	price: z.number(),
+	time: z.number().optional(),
 });
 
 export const rulesDto = z.object({
-  characteristic: CharacteristicSchema,
-  options: z.array(rulesOptionDto),
+	characteristic: CharacteristicSchema,
+	options: z.array(rulesOptionDto),
 });

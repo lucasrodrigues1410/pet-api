@@ -30,7 +30,7 @@ export class ListServicesByCompanyUseCase {
 		if (!staff) {
 			return left(new NotAllowedError("User is not staff of the company"));
 		}
-		
+
 		const services = await this.serviceRepository.findByCompanyId(companyId);
 		return right({ services });
 	}

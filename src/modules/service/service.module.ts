@@ -3,6 +3,7 @@ import { CacheModule } from "@/core/infra/cache/cache.module";
 import { StaffModule } from "../staff/staff.module";
 import { CreateServiceUseCase } from "./application/use-cases/create-service.use-case";
 import { DeactivateServiceUseCase } from "./application/use-cases/deactivate-service.use-case";
+import { UpdateServiceUseCase } from "./application/use-cases/edit-service.use-case";
 import { GetServiceByIdUseCase } from "./application/use-cases/get-service-by-id.use-case";
 import { ListServicesByCompanyUseCase } from "./application/use-cases/list-services-by-company.use-case";
 import { TranslateRulesUseCase } from "./application/use-cases/translate-rules.use-case";
@@ -21,6 +22,7 @@ import { GoogleAIRulesTranslatorRepository } from "./infra/repositories/google-a
 		DeactivateServiceUseCase,
 		TranslateRulesUseCase,
 		CreateServiceUseCase,
+		UpdateServiceUseCase,
 		{ provide: ServiceRepository, useClass: PrismaServiceRepository },
 		{
 			provide: RulesTranslatorRepository,

@@ -1,10 +1,14 @@
 import { Injectable } from "@nestjs/common";
-import { addMinutes, isBefore } from "date-fns";
+import { addMinutes, format, isBefore } from "date-fns";
+import { ptBR } from "date-fns/locale";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { AnimalRepository } from "@/modules/animal/domain/repositories/animal.repository";
+import { CreateAppointmentEvent } from "@/modules/notification/domain/events/create-appointment.event";
+import { NotificationPublisher } from "@/modules/notification/domain/interfaces/notification-publisher.interface";
 import { CreatePaymentUseCase } from "@/modules/payment/application/use-cases/create-payment.use-case";
 import { ServiceRepository } from "@/modules/service/domain/repositories/service.repository";
 import { StaffRepository } from "@/modules/staff/domain/repositories/staff.repository";
+import { UserRepository } from "@/modules/user/domain/repositories/user.repository";
 import { Either, left, right } from "@/shared/either";
 import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
 import {
@@ -33,10 +37,12 @@ export class AppointmentBookingUseCase {
 	constructor(
 		private readonly staffRespository: StaffRepository,
 		private readonly serviceRepository: ServiceRepository,
-		private readonly rulesExecution: RulesExecutionService,
+		private readonly userRepository: UserRepository,
 		private readonly animalRepository: AnimalRepository,
 		private readonly appointmentRepository: AppointmentRepository,
 		private readonly createPaymentUseCase: CreatePaymentUseCase,
+		private readonly notifyPublisher: NotificationPublisher,
+		private readonly rulesExecution: RulesExecutionService,
 	) {}
 
 	async execute({
@@ -52,12 +58,13 @@ export class AppointmentBookingUseCase {
 			return left(new TimeSlotUnavailableError("Data passada não permitida"));
 		}
 
-		const [service, animal] = await Promise.all([
+		const [service, animal, user] = await Promise.all([
 			this.serviceRepository.findById(serviceId),
 			this.animalRepository.findById(animalId),
+			this.userRepository.findById(clientId),
 		]);
 
-		if (!service || !animal || !service.isActive) {
+		if (!service || !animal || !service.isActive || !user) {
 			return left(new ResourceNotFoundError());
 		}
 
@@ -66,7 +73,6 @@ export class AppointmentBookingUseCase {
 			service.rules,
 		);
 
-		const priceAdjustment = ruleExecutionResult?.price ?? 0;
 		const finalDurationMinutes =
 			service.duration + (ruleExecutionResult?.durationMinutes ?? 0);
 
@@ -87,7 +93,7 @@ export class AppointmentBookingUseCase {
 			companyId: service.companyId,
 			startDate,
 			endDate,
-			price: service.price + priceAdjustment,
+			price: service.price + (ruleExecutionResult?.price ?? 0),
 			coatType,
 		});
 
@@ -105,7 +111,17 @@ export class AppointmentBookingUseCase {
 			if (paymentResult.isLeft()) return left(paymentResult.value);
 			checkoutUrl = paymentResult.value.url;
 		}
-
+		await this.notifyPublisher.dispatch(
+			new CreateAppointmentEvent(clientId, user.email, {
+				clientName: animal.name,
+				companyName: service.company.name,
+				companyAddress: "",
+				date: `${format(startDate, "EEEE, d 'de' MMMM 'de' yyyy, HH:mm", { locale: ptBR })} - ${format(endDate, "HH:mm", { locale: ptBR })}`,
+				price: appointmentIntent.price,
+				professionalName: "Profissional Designado",
+				detailsLink: `${process.env.APP_URL}/appointments/${appointmentIntent.id.toString()}`,
+			}),
+		);
 		return right({
 			appointmentId: appointmentIntent.id.toString(),
 			checkoutUrl,
