@@ -4,12 +4,4 @@ export abstract class AuthProviderService {
 		userId: string,
 		metadata: Record<string, any>,
 	): Promise<void>;
-	public abstract updatePrivateMetadata(
-		userId: string,
-		metadata: Record<string, any>,
-	): Promise<void>;
-	public abstract inviteUser(
-		email: string,
-		redirectUrl?: string,
-	): Promise<void>;
 }

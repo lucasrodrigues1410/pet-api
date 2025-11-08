@@ -14,10 +14,7 @@ export class PrismaRatingRepository implements RatingRepository {
 
 	async create(rating: Rating) {
 		return this.prisma.$transaction(async (tx) => {
-			// Cria o rating
 			await tx.rating.create({ data: PrismaRatingMapper.toPrisma(rating) });
-
-			// Busca a empresa atual para recalcular a média
 			const company = await tx.company.findUnique({
 				where: { id: rating.companyId.toString() },
 				select: { averageRating: true, ratingCount: true },
@@ -27,15 +24,12 @@ export class PrismaRatingRepository implements RatingRepository {
 				throw new ResourceNotFoundError("Company not found");
 			}
 
-			// Novo total de ratings
 			const newRatingCount = company.ratingCount + 1;
 
-			// Novo average
 			const newAverage =
 				(company.averageRating * company.ratingCount + rating.rating) /
 				newRatingCount;
 
-			// Atualiza empresa com os novos valores
 			await tx.company.update({
 				where: { id: rating.companyId.toString() },
 				data: { averageRating: newAverage, ratingCount: newRatingCount },
@@ -79,7 +73,6 @@ export class PrismaRatingRepository implements RatingRepository {
 			throw new ResourceNotFoundError("Company not found");
 		}
 
-		// Busca distribuição das avaliações
 		const distribution = await this.prisma.rating.groupBy({
 			by: ["rating"],
 			where: { companyId },
@@ -87,7 +80,6 @@ export class PrismaRatingRepository implements RatingRepository {
 			orderBy: { rating: "desc" },
 		});
 
-		// Garante que todas as notas de 1 a 5 estejam representadas
 		const fullDistribution = [5, 4, 3, 2, 1].map((rating) => {
 			const found = distribution.find((d) => d.rating === rating);
 			return { rating, count: found ? found._count.rating : 0 };
@@ -100,7 +92,7 @@ export class PrismaRatingRepository implements RatingRepository {
 		};
 	}
 
-	async findByUserAndCompany(params: { userId: string; companyId: string }) {
+	async canUserRateCompany(params: { userId: string; companyId: string }) {
 		const rating = await this.prisma.rating.findUnique({
 			where: {
 				userId_companyId: {
@@ -110,10 +102,15 @@ export class PrismaRatingRepository implements RatingRepository {
 			},
 		});
 
-		if (!rating) {
-			return null;
-		}
+		if (!rating) return false;
+		const hasCompletedAppointment = await this.prisma.appointment.findFirst({
+			where: {
+				clientId: params.userId,
+				companyId: params.companyId,
+				status: "completed",
+			},
+		});
 
-		return PrismaRatingMapper.toDomain(rating);
+		return !!hasCompletedAppointment;
 	}
 }

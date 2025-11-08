@@ -1,23 +1,47 @@
 import { ValueObject } from "@/core/domain/entities/value-object";
 
-type SizeValue = "small" | "medium" | "large";
-type AgeValue = "puppy" | "adult" | "senior";
-type CoatValue = "short" | "medium" | "long" | "curly";
-type DiseasesValue = "none" | "heart" | "skin" | "orthopedic";
+type BaseOption = {
+	operator: string;
+	price: number;
+	time?: number;
+	action?: "deny" | "allow" | "charge" | "discount";
+};
 
-type Operator = "eq" | "neq";
-type Characteristic = "size" | "age" | "coat" | "diseases";
-type Value = SizeValue | AgeValue | CoatValue | DiseasesValue;
+type SizeOption = BaseOption & { value: "small" | "medium" | "large" };
 
-export interface RulesProps {
-	characteristic: Characteristic;
-	options: {
-		value: Value | Value[];
-		operator: Operator;
-		price: number;
-		time?: number;
-	}[];
+type AgeOption = BaseOption & { value: "puppy" | "adult" | "senior" };
+
+type CoatOption = BaseOption & { value: "short" | "medium" | "long" | "curly" };
+
+type DiseasesOption = BaseOption & {
+	value: "none" | "heart" | "skin" | "orthopedic";
+};
+
+export interface SizeRulesDto {
+	characteristic: "size";
+	options: SizeOption[];
 }
+
+export interface AgeRulesDto {
+	characteristic: "age";
+	options: AgeOption[];
+}
+
+export interface CoatRulesDto {
+	characteristic: "coat";
+	options: CoatOption[];
+}
+
+export interface DiseasesRulesDto {
+	characteristic: "diseases";
+	options: DiseasesOption[];
+}
+
+export type RulesProps =
+	| SizeRulesDto
+	| AgeRulesDto
+	| CoatRulesDto
+	| DiseasesRulesDto;
 
 export class Rules extends ValueObject<RulesProps> {
 	get characteristic() {
@@ -47,6 +71,7 @@ export class Rules extends ValueObject<RulesProps> {
 				operator: o.operator,
 				price: o.price,
 				time: o.time,
+				action: o.action,
 			})),
 		};
 	}

@@ -11,14 +11,14 @@ export type CompanyRatingStats = {
 
 export abstract class RatingRepository {
 	abstract create(rating: Rating): Promise<void>;
+	abstract canUserRateCompany(params: {
+		userId: string;
+		companyId: string;
+	}): Promise<boolean>;
 	abstract findByCompanyId(
 		params: { companyId: string } & PaginationQuery,
 	): Promise<PaginationResult<Rating & { user: Pick<User, "id" | "name"> }>>;
 	abstract getCompanyRatingStats(
 		companyId: string,
 	): Promise<CompanyRatingStats>;
-	abstract findByUserAndCompany(params: {
-		userId: string;
-		companyId: string;
-	}): Promise<Rating | null>;
 }

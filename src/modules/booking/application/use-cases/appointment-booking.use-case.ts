@@ -1,10 +1,13 @@
 import { Injectable } from "@nestjs/common";
-import { addMinutes, isBefore } from "date-fns";
-import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
+import { addMinutes, format, isBefore } from "date-fns";
+import { ptBR } from "date-fns/locale";
 import { AnimalRepository } from "@/modules/animal/domain/repositories/animal.repository";
+import { CreateAppointmentEvent } from "@/modules/notification/domain/events/create-appointment.event";
+import { NotificationPublisher } from "@/modules/notification/domain/interfaces/notification-publisher.interface";
 import { CreatePaymentUseCase } from "@/modules/payment/application/use-cases/create-payment.use-case";
 import { ServiceRepository } from "@/modules/service/domain/repositories/service.repository";
 import { StaffRepository } from "@/modules/staff/domain/repositories/staff.repository";
+import { UserRepository } from "@/modules/user/domain/repositories/user.repository";
 import { Either, left, right } from "@/shared/either";
 import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
 import {
@@ -12,6 +15,7 @@ import {
 	CoatType,
 } from "../../../appointment/domain/entities/appointment.entity";
 import { AppointmentRepository } from "../../../appointment/domain/repositories/appointment.repository";
+import { NotPossibleCompleteAppointmentError } from "../errors/not-possible-comple-appointment";
 import { TimeSlotUnavailableError } from "../errors/time-slot-unavailable.error";
 import { RulesExecutionService } from "../services/rules-execution.service";
 
@@ -19,12 +23,15 @@ interface AppointmentBookingUseCaseRequest {
 	serviceId: string;
 	animalId: string;
 	clientId: string;
-	date: Date;
+	startDate: Date;
 	coatType: CoatType;
+	disease?: string;
 }
 
 type AppointmentBookingUseCaseResponse = Either<
-	ResourceNotFoundError | TimeSlotUnavailableError,
+	| ResourceNotFoundError
+	| TimeSlotUnavailableError
+	| NotPossibleCompleteAppointmentError,
 	{ appointmentId: string; clientSecret?: string; checkoutUrl?: string }
 >;
 
@@ -33,61 +40,72 @@ export class AppointmentBookingUseCase {
 	constructor(
 		private readonly staffRespository: StaffRepository,
 		private readonly serviceRepository: ServiceRepository,
-		private readonly rulesExecution: RulesExecutionService,
+		private readonly userRepository: UserRepository,
 		private readonly animalRepository: AnimalRepository,
 		private readonly appointmentRepository: AppointmentRepository,
 		private readonly createPaymentUseCase: CreatePaymentUseCase,
+		private readonly notifyPublisher: NotificationPublisher,
+		private readonly rulesExecution: RulesExecutionService,
 	) {}
 
 	async execute({
 		serviceId,
 		clientId,
 		animalId,
-		date,
+		startDate,
 		coatType,
+		disease,
 	}: AppointmentBookingUseCaseRequest): Promise<AppointmentBookingUseCaseResponse> {
-		const startDate = new Date(date);
 		const now = new Date();
 		if (isBefore(startDate, now)) {
 			return left(new TimeSlotUnavailableError("Data passada não permitida"));
 		}
 
-		const [service, animal] = await Promise.all([
+		const [service, animal, user] = await Promise.all([
 			this.serviceRepository.findById(serviceId),
 			this.animalRepository.findById(animalId),
+			this.userRepository.findById(clientId),
 		]);
 
-		if (!service || !animal || !service.isActive) {
+		if (!service || !animal || !service.isActive || !user) {
 			return left(new ResourceNotFoundError());
 		}
 
 		const ruleExecutionResult = await this.rulesExecution.execute(
 			animal,
 			service.rules,
+			disease,
+			coatType,
 		);
+		if ("action" in ruleExecutionResult) {
+			return left(
+				new NotPossibleCompleteAppointmentError(
+					"Serviço indisponível para o animal com as características informadas.",
+				),
+			);
+		}
 
-		const priceAdjustment = ruleExecutionResult?.price ?? 0;
-		const finalDurationMinutes =
-			service.duration + (ruleExecutionResult?.durationMinutes ?? 0);
-
-		const endDate = addMinutes(startDate, finalDurationMinutes);
+		const endDate = addMinutes(
+			startDate,
+			service.duration + (ruleExecutionResult?.durationMinutes ?? 0),
+		);
 		const staffAvailable = await this.staffRespository.findAvailableForSlot(
 			service.companyId.toString(),
-			{ startDate: startDate, endDate: endDate },
+			{ startDate, endDate },
 		);
 		if (!staffAvailable) {
 			return left(new TimeSlotUnavailableError("Horário indisponível"));
 		}
 
 		const appointmentIntent = Appointment.create({
-			serviceId: new UniqueEntityID(serviceId),
+			serviceId: service.id,
 			staffId: staffAvailable,
-			animalId: new UniqueEntityID(animalId),
-			clientId: new UniqueEntityID(clientId),
+			animalId: animal.id,
+			clientId: user.id,
 			companyId: service.companyId,
 			startDate,
 			endDate,
-			price: service.price + priceAdjustment,
+			price: service.price + (ruleExecutionResult?.price ?? 0),
 			coatType,
 		});
 
@@ -104,11 +122,20 @@ export class AppointmentBookingUseCase {
 
 			if (paymentResult.isLeft()) return left(paymentResult.value);
 			checkoutUrl = paymentResult.value.url;
+		} else {
+			await this.notifyPublisher.dispatch(
+				new CreateAppointmentEvent(clientId, user.email, {
+					clientName: animal.name,
+					companyName: service.company.name,
+					date: `${format(startDate, "EEEE, d 'de' MMMM 'de' yyyy, HH:mm", { locale: ptBR })} - ${format(endDate, "HH:mm", { locale: ptBR })}`,
+					price: appointmentIntent.price,
+					detailsLink: `${process.env.APP_URL}/appointments/${appointmentIntent.id.toString()}`,
+				}),
+			);
 		}
-
 		return right({
 			appointmentId: appointmentIntent.id.toString(),
-			checkoutUrl,
+			clientSecret: checkoutUrl,
 		});
 	}
 }

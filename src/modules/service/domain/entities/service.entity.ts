@@ -1,7 +1,7 @@
-import { Category } from "src/modules/category/domain/entities/category.entity";
 import { Company } from "src/modules/company/domain/entities/company.entity";
 import { Entity } from "@/core/domain/entities/entity";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
+import { Category } from "@/modules/category/domain/entities/category.entity";
 import { Rules } from "./value-objects/rules.value-object";
 
 export interface ServiceProps {
@@ -13,6 +13,7 @@ export interface ServiceProps {
 	companyId: UniqueEntityID;
 	details?: Record<string, unknown> | null;
 	rules?: Rules[];
+	categoryIds: UniqueEntityID[];
 	rulesPrompt?: string | null;
 	requiresPayment: boolean;
 }
@@ -58,16 +59,43 @@ export class Service extends Entity<ServiceProps> {
 		return this.props.requiresPayment;
 	}
 
+	get categoryIds() {
+		return this.props.categoryIds;
+	}
+
 	public static create(
-		{ isActive, ...props }: Omit<ServiceProps, "isActive"> & { isActive?: boolean },
+		{
+			isActive,
+			...props
+		}: Omit<ServiceProps, "isActive"> & { isActive?: boolean },
 		id?: UniqueEntityID,
 	): Service {
 		const service = new Service({ ...props, isActive: isActive ?? true }, id);
 		return service;
 	}
+
+	update(
+		props: Partial<
+			Pick<
+				ServiceProps,
+				| "name"
+				| "description"
+				| "price"
+				| "duration"
+				| "details"
+				| "rules"
+				| "rulesPrompt"
+				| "requiresPayment"
+				| "categoryIds"
+				| "isActive"
+			>
+		>,
+	) {
+		this.props = { ...this.props, ...props };
+	}
 }
 
 export type ServiceWithRelations = Service & {
-	categories: Category[];
 	company: Company;
+	categories: Category[];
 };

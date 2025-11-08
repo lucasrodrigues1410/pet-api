@@ -13,6 +13,7 @@ export const serviceDto = z.object({
 	details: z.record(z.string(), z.unknown()).nullish(),
 	rulesPrompt: z.string().nullish(),
 	rules: z.array(rulesDto).nullish(),
+	categoryIds: z.array(z.string()),
 });
 
 const listResponse = z.object({ items: z.array(serviceDto) });

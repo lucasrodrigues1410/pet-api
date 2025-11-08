@@ -1,8 +1,11 @@
 import { createParamDecorator, ExecutionContext } from "@nestjs/common";
 
+type UserData = { sub: string };
+
 export const User = createParamDecorator(
-	(data: any, context: ExecutionContext) => {
+	(data: keyof UserData, context: ExecutionContext) => {
 		const request = context.switchToHttp().getRequest();
-		return data ? request.user[data] : request.user;
+		const user = request.user || {};
+		return data ? user[data] : user;
 	},
 );

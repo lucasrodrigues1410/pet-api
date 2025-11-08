@@ -1,17 +1,14 @@
 import { Injectable } from "@nestjs/common";
-import { AppointmentRepository } from "@/modules/appointment/domain/repositories/appointment.repository";
+import { CompanyRepository } from "@/modules/company/domain/repositories/company.repository";
 import { RatingRepository } from "@/modules/rating/domain/repositories/rating.repository";
-import { Either, right } from "@/shared/either";
+import { Either, left, right } from "@/shared/either";
+import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
 
-interface CheckRatingEligibilityUseCaseRequest {
-	userId: string;
-	companyId: string;
-}
-
+type UseCaseInput = { userId: string; companyId: string };
 type RatingEligibilityReason = "ALREADY_RATED" | "NO_COMPLETED_APPOINTMENT";
 
-type CheckRatingEligibilityUseCaseResponse = Either<
-	never,
+type UseCaseOutput = Either<
+	ResourceNotFoundError,
 	{ canRate: boolean; reason?: RatingEligibilityReason }
 >;
 
@@ -19,26 +16,19 @@ type CheckRatingEligibilityUseCaseResponse = Either<
 export class CheckRatingEligibilityUseCase {
 	constructor(
 		private readonly ratingRepository: RatingRepository,
-		private readonly appointmentRepository: AppointmentRepository,
+		private readonly companyRepository: CompanyRepository,
 	) {}
 
-	async execute(
-		params: CheckRatingEligibilityUseCaseRequest,
-	): Promise<CheckRatingEligibilityUseCaseResponse> {
-		const existingRating =
-			await this.ratingRepository.findByUserAndCompany(params);
-
-		if (existingRating) {
-			return right({ canRate: false, reason: "ALREADY_RATED" });
+	async execute(params: UseCaseInput): Promise<UseCaseOutput> {
+		const company = await this.companyRepository.findById(params.companyId);
+		if (!company) {
+			return left(new ResourceNotFoundError("Company not found"));
 		}
 
-		const hasCompletedAppointment =
-			await this.appointmentRepository.userHasCompletedAppointmentForCompany(
-				params,
-			);
+		const canUserRate = await this.ratingRepository.canUserRateCompany(params);
 
-		if (!hasCompletedAppointment) {
-			return right({ canRate: false, reason: "NO_COMPLETED_APPOINTMENT" });
+		if (!canUserRate) {
+			return right({ canRate: false, reason: "ALREADY_RATED" });
 		}
 
 		return right({ canRate: true });

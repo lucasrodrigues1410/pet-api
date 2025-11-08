@@ -14,6 +14,7 @@ export class ServicePresenter {
 			details: service.details,
 			rules: service.rules?.map((rule) => RulesPresenter.present(rule)),
 			rulesPrompt: service.rulesPrompt,
+			categoryIds: service.categoryIds.map((id) => id.toString()),
 		};
 	}
 }

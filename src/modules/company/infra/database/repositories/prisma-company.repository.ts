@@ -30,7 +30,10 @@ export class PrismaCompanyRepository implements CompanyRepository {
 				companyImage: { include: { asset: true }, take: 1 },
 				logo: true,
 				companyAvailability: true,
-				services: true,
+				services: {
+					where: { isActive: true },
+					include: { categories: { include: { category: true } } },
+				},
 				location: true,
 			},
 		});

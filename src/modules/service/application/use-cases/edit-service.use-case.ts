@@ -4,41 +4,45 @@ import { StaffRepository } from "@/modules/staff/domain/repositories/staff.repos
 import { Either, left, right } from "@/shared/either";
 import { NotAllowedError } from "@/shared/errors/errors/not-allowed.error";
 import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
-import { Service } from "../../domain/entities/service.entity";
 import { Rules } from "../../domain/entities/value-objects/rules.value-object";
 import { ServiceRepository } from "../../domain/repositories/service.repository";
 import { TranslateRulesService } from "../services/translation-rules.service";
 
-type CreateServiceUseCaseRequest = {
-	name: string;
-	description: string;
-	price: number;
-	duration: number;
+type UseCaseInput = {
+	serviceId: string;
+	name?: string;
+	description?: string;
+	price?: number;
+	duration?: number;
 	rules?: string;
+	isActive?: boolean;
 	userId: string;
 	companyId: string;
-	categoryIds: string[];
-	requiresPayment: boolean;
+	categoryIds?: string[];
+	requiresPayment?: boolean;
 };
 
-type CreateServiceUseCaseResponse = Either<ResourceNotFoundError, void>;
+type UseCaseOutput = Either<ResourceNotFoundError | NotAllowedError, void>;
 
 @Injectable()
-export class CreateServiceUseCase {
+export class UpdateServiceUseCase {
 	constructor(
 		private readonly serviceRepository: ServiceRepository,
 		private readonly staffRepository: StaffRepository,
 		private readonly translateRules: TranslateRulesService,
 	) {}
-	async execute(
-		data: CreateServiceUseCaseRequest,
-	): Promise<CreateServiceUseCaseResponse> {
-		const staff = await this.staffRepository.findByUserId(
-			data.userId,
-			data.companyId,
-		);
+	async execute(data: UseCaseInput): Promise<UseCaseOutput> {
+		const [staff, service] = await Promise.all([
+			this.staffRepository.findByUserId(data.userId, data.companyId),
+			this.serviceRepository.findById(data.serviceId),
+		]);
+
 		if (!staff) {
 			return left(new NotAllowedError("The user is not staff of this company"));
+		}
+
+		if (!service) {
+			return left(new ResourceNotFoundError("Service not found"));
 		}
 
 		let rules: Rules[] | undefined;
@@ -46,19 +50,14 @@ export class CreateServiceUseCase {
 			rules = await this.translateRules.execute({ rules: data.rules });
 		}
 
-		const service = Service.create({
-			name: data.name,
-			description: data.description,
-			price: data.price,
-			duration: data.duration,
+		service.update({
+			...data,
 			rules: rules,
 			rulesPrompt: data.rules,
-			companyId: staff.companyId,
-			requiresPayment: data.requiresPayment,
-			categoryIds: data.categoryIds.map((id) => new UniqueEntityID(id)),
+			categoryIds: data.categoryIds?.map((id) => new UniqueEntityID(id)),
 		});
 
-		await this.serviceRepository.create(service);
+		await this.serviceRepository.update(service.id.toString(), service);
 		return right(undefined);
 	}
 }

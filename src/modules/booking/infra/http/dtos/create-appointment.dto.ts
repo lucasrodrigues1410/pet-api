@@ -11,6 +11,7 @@ const request = z.object({
 	serviceId: z.string(),
 	animalId: z.string(),
 	coatType: z.enum(coatType),
+	disease: z.string().optional(),
 });
 
 const response = z.object({
