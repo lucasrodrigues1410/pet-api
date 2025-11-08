@@ -17,16 +17,18 @@ export class RulesExecutionService {
 		if (!rules || rules.length === 0) return null;
 
 		const animalValues = this.buildCharacteristicsMap(animal);
-
 		for (const rule of rules) {
 			const actualValues = animalValues.get(rule.characteristic);
 			if (!actualValues || actualValues.length === 0) continue;
 
 			const matchedOption = this.findMatchingOption(rule.options, actualValues);
-
 			if (matchedOption) {
+				if(matchedOption.action === 'deny') {
+					throw new Error(`Serviço indisponível para o animal com as características informadas.`)
+				}
+				// Se a ação for "allow", continua a execução
 				return {
-					price: matchedOption.price,
+					price: matchedOption.price * 100, // Convertendo para centavos
 					durationMinutes: matchedOption.time ?? 0,
 				};
 			}

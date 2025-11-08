@@ -1,7 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { addMinutes, format, isBefore } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { AnimalRepository } from "@/modules/animal/domain/repositories/animal.repository";
 import { CreateAppointmentEvent } from "@/modules/notification/domain/events/create-appointment.event";
 import { NotificationPublisher } from "@/modules/notification/domain/interfaces/notification-publisher.interface";
@@ -23,7 +22,7 @@ interface AppointmentBookingUseCaseRequest {
 	serviceId: string;
 	animalId: string;
 	clientId: string;
-	date: Date;
+	startDate: Date;
 	coatType: CoatType;
 }
 
@@ -49,10 +48,9 @@ export class AppointmentBookingUseCase {
 		serviceId,
 		clientId,
 		animalId,
-		date,
+		startDate,
 		coatType,
 	}: AppointmentBookingUseCaseRequest): Promise<AppointmentBookingUseCaseResponse> {
-		const startDate = new Date(date);
 		const now = new Date();
 		if (isBefore(startDate, now)) {
 			return left(new TimeSlotUnavailableError("Data passada não permitida"));
@@ -73,23 +71,23 @@ export class AppointmentBookingUseCase {
 			service.rules,
 		);
 
-		const finalDurationMinutes =
-			service.duration + (ruleExecutionResult?.durationMinutes ?? 0);
-
-		const endDate = addMinutes(startDate, finalDurationMinutes);
+		const endDate = addMinutes(
+			startDate,
+			service.duration + (ruleExecutionResult?.durationMinutes ?? 0),
+		);
 		const staffAvailable = await this.staffRespository.findAvailableForSlot(
 			service.companyId.toString(),
-			{ startDate: startDate, endDate: endDate },
+			{ startDate, endDate },
 		);
 		if (!staffAvailable) {
 			return left(new TimeSlotUnavailableError("Horário indisponível"));
 		}
 
 		const appointmentIntent = Appointment.create({
-			serviceId: new UniqueEntityID(serviceId),
+			serviceId: service.id,
 			staffId: staffAvailable,
-			animalId: new UniqueEntityID(animalId),
-			clientId: new UniqueEntityID(clientId),
+			animalId: animal.id,
+			clientId: user.id,
 			companyId: service.companyId,
 			startDate,
 			endDate,
@@ -110,18 +108,18 @@ export class AppointmentBookingUseCase {
 
 			if (paymentResult.isLeft()) return left(paymentResult.value);
 			checkoutUrl = paymentResult.value.url;
+		} else {
+			await this.notifyPublisher.dispatch(
+				new CreateAppointmentEvent(clientId, user.email, {
+					clientName: animal.name,
+					companyName: service.company.name,
+					date: `${format(startDate, "EEEE, d 'de' MMMM 'de' yyyy, HH:mm", { locale: ptBR })} - ${format(endDate, "HH:mm", { locale: ptBR })}`,
+					price: appointmentIntent.price,
+					detailsLink: `${process.env.APP_URL}/appointments/${appointmentIntent.id.toString()}`,
+				}),
+			);
 		}
-		await this.notifyPublisher.dispatch(
-			new CreateAppointmentEvent(clientId, user.email, {
-				clientName: animal.name,
-				companyName: service.company.name,
-				companyAddress: "",
-				date: `${format(startDate, "EEEE, d 'de' MMMM 'de' yyyy, HH:mm", { locale: ptBR })} - ${format(endDate, "HH:mm", { locale: ptBR })}`,
-				price: appointmentIntent.price,
-				professionalName: "Profissional Designado",
-				detailsLink: `${process.env.APP_URL}/appointments/${appointmentIntent.id.toString()}`,
-			}),
-		);
+
 		return right({
 			appointmentId: appointmentIntent.id.toString(),
 			checkoutUrl,

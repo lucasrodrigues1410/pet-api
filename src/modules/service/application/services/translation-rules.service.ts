@@ -2,21 +2,19 @@ import { Injectable } from "@nestjs/common";
 import { Rules } from "../../domain/entities/value-objects/rules.value-object";
 import { RulesTranslatorRepository } from "../../domain/repositories/rules-translator.repository";
 
-interface TranslateRulesUseCaseRequest {
+interface ServiceInput {
 	rules: string;
 }
 
-type TranslateRulesUseCaseResponse = Rules[];
+type ServiceOutput = Rules[];
 
 @Injectable()
-export class TranslateRulesUseCase {
+export class TranslateRulesService {
 	constructor(
 		private readonly rulesTranslatorRepository: RulesTranslatorRepository,
 	) {}
 
-	async execute({
-		rules,
-	}: TranslateRulesUseCaseRequest): Promise<TranslateRulesUseCaseResponse> {
+	async execute({ rules }: ServiceInput): Promise<ServiceOutput> {
 		return this.rulesTranslatorRepository.translate(rules);
 	}
 }

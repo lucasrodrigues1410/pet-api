@@ -1,4 +1,5 @@
 import { Injectable } from "@nestjs/common";
+import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { StaffRepository } from "@/modules/staff/domain/repositories/staff.repository";
 import { Either, left, right } from "@/shared/either";
 import { NotAllowedError } from "@/shared/errors/errors/not-allowed.error";
@@ -6,7 +7,7 @@ import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found
 import { Service } from "../../domain/entities/service.entity";
 import { Rules } from "../../domain/entities/value-objects/rules.value-object";
 import { ServiceRepository } from "../../domain/repositories/service.repository";
-import { TranslateRulesUseCase } from "./translate-rules.use-case";
+import { TranslateRulesService } from "../services/translation-rules.service";
 
 type CreateServiceUseCaseRequest = {
 	name: string;
@@ -16,7 +17,7 @@ type CreateServiceUseCaseRequest = {
 	rules?: string;
 	userId: string;
 	companyId: string;
-	categoryIds?: string[];
+	categoryIds: string[];
 	requiresPayment: boolean;
 };
 
@@ -27,7 +28,7 @@ export class CreateServiceUseCase {
 	constructor(
 		private readonly serviceRepository: ServiceRepository,
 		private readonly staffRepository: StaffRepository,
-		private readonly translateRulesUseCase: TranslateRulesUseCase,
+		private readonly translateRules: TranslateRulesService,
 	) {}
 	async execute(
 		data: CreateServiceUseCaseRequest,
@@ -42,7 +43,7 @@ export class CreateServiceUseCase {
 
 		let rules: Rules[] | undefined;
 		if (data.rules) {
-			rules = await this.translateRulesUseCase.execute({ rules: data.rules });
+			rules = await this.translateRules.execute({ rules: data.rules });
 		}
 
 		const service = Service.create({
@@ -54,9 +55,10 @@ export class CreateServiceUseCase {
 			rulesPrompt: data.rules,
 			companyId: staff.companyId,
 			requiresPayment: data.requiresPayment,
+			categoryIds: data.categoryIds.map((id) => new UniqueEntityID(id)),
 		});
 
-		await this.serviceRepository.create(service, data.categoryIds);
+		await this.serviceRepository.create(service);
 		return right(undefined);
 	}
 }

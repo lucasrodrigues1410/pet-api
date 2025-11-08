@@ -7,7 +7,6 @@ import {
 	HttpCode,
 	NotFoundException,
 	Param,
-	Patch,
 	Post,
 	Put,
 } from "@nestjs/common";
@@ -17,7 +16,6 @@ import { User } from "@/modules/auth/infra/http/decorators/user.decorator";
 import { CreateServiceUseCase } from "@/modules/service/application/use-cases/create-service.use-case";
 import { UpdateServiceUseCase } from "@/modules/service/application/use-cases/edit-service.use-case";
 import { NotAllowedError } from "@/shared/errors/errors/not-allowed.error";
-import { DeactivateServiceUseCase } from "../../../application/use-cases/deactivate-service.use-case";
 import { GetServiceByIdUseCase } from "../../../application/use-cases/get-service-by-id.use-case";
 import { ListServicesByCompanyUseCase } from "../../../application/use-cases/list-services-by-company.use-case";
 import { CreateServiceRequestDto } from "../dtos/create-service.dto";
@@ -33,7 +31,6 @@ export class ServiceController {
 	constructor(
 		private readonly getServiceByIdUseCase: GetServiceByIdUseCase,
 		private readonly listServicesByCompanyUseCase: ListServicesByCompanyUseCase,
-		private readonly deactivateServiceUseCase: DeactivateServiceUseCase,
 		private readonly createServiceUseCase: CreateServiceUseCase,
 		private readonly updateServiceUseCase: UpdateServiceUseCase,
 	) {}
@@ -59,29 +56,7 @@ export class ServiceController {
 
 		return ServiceListPresenter.present(result.value.services);
 	}
-
-	@Patch("/:id/company/:companyId/deactivate")
-	@HttpCode(204)
-	@ApiOperation({
-		summary: "Inativar serviço da empresa",
-		operationId: "deactivateService",
-	})
-	async deactivateService(
-		@Param("id") id: string,
-		@Param("companyId") companyId: string,
-		@User("sub") userId: string,
-	) {
-		const result = await this.deactivateServiceUseCase.execute({
-			id,
-			userId,
-			companyId,
-		});
-
-		if (result.isLeft()) {
-			throw new NotFoundException(result.value.message);
-		}
-	}
-
+	
 	@Post("company/:companyId")
 	@ApiOperation({ summary: "Criar serviço", operationId: "createService" })
 	@HttpCode(201)
@@ -92,7 +67,7 @@ export class ServiceController {
 	) {
 		const result = await this.createServiceUseCase.execute({
 			...body,
-			categoryIds: body.categoryId ? [body.categoryId] : undefined,
+			categoryIds: [body.categoryId],
 			userId,
 			companyId,
 		});

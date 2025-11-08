@@ -69,7 +69,7 @@ export class BookingController {
 		const response = await this.createAppointmentUseCase.execute({
 			...params,
 			clientId: userId,
-			date: new Date(params.date),
+			startDate: new Date(params.date),
 		});
 
 		if (response.isLeft()) {

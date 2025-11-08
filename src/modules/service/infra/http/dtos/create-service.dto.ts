@@ -7,7 +7,7 @@ const requestDto = z.object({
 	price: z.number().min(0),
 	duration: z.number().min(0),
 	rules: z.string().optional(),
-	categoryId: z.string().optional(),
+	categoryId: z.string(),
 	requiresPayment: z.boolean().optional().default(false),
 });
 

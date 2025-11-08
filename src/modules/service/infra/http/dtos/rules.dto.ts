@@ -1,29 +1,61 @@
 import { z } from "zod";
 
-/*
-const SizeValueSchema = z.enum(["small", "medium", "large"]);
-const AgeValueSchema = z.enum(["puppy", "adult", "senior"]);
-const CoatValueSchema = z.enum(["short", "medium", "long", "curly"]);
-const DiseasesValueSchema = z.enum(["none", "heart", "skin", "orthopedic"]);
-*/
-const OperatorSchema = z.enum(["eq", "neq"]);
-const CharacteristicSchema = z.enum(["size", "age", "coat", "diseases"]);
-
-/*const rulesValueDto = z.union([
-  SizeValueSchema,
-  AgeValueSchema,
-  CoatValueSchema,
-  DiseasesValueSchema
-]);*/
-
-const rulesOptionDto = z.object({
-	value: z.union([z.string(), z.array(z.string())]),
-	operator: OperatorSchema,
+const optionsDefinition = z.object({
+	operator: z.string(),
 	price: z.number(),
 	time: z.number().optional(),
+	action: z.enum(["deny", "allow"]).optional(),
 });
 
-export const rulesDto = z.object({
-	characteristic: CharacteristicSchema,
-	options: z.array(rulesOptionDto),
+const sizeRulesDto = z.object({
+	characteristic: z.literal("size"),
+	options: z
+		.object({
+			value: z.enum(["small", "medium", "large"]),
+			...optionsDefinition.shape,	
+		})
+		.array(),
 });
+
+const ageRulesDto = z.object({
+	characteristic: z.literal("age"),
+	options: z
+		.object({
+			value: z.enum(["puppy", "adult", "senior"]),
+			...optionsDefinition.shape,
+		})
+		.array(),
+});
+
+const coatRulesDto = z.object({
+	characteristic: z.literal("coat"),
+	options: z
+		.object({
+			value: z.enum(["short", "medium", "long", "curly"]),
+			...optionsDefinition.shape,
+		})
+		.array(),
+});
+
+const diseasesRulesDto = z.object({
+	characteristic: z.literal("diseases"),
+	options: z
+		.object({
+			value: z.enum(["none", "heart", "skin", "orthopedic"]),
+			...optionsDefinition.shape,
+		})
+		.array(),
+});
+
+export const rulesDto = z.discriminatedUnion("characteristic", [
+	sizeRulesDto,
+	ageRulesDto,
+	coatRulesDto,
+	diseasesRulesDto,
+]);
+
+export type RulesDto = z.infer<typeof rulesDto>;
+export type SizeRulesDto = z.infer<typeof sizeRulesDto>;
+export type AgeRulesDto = z.infer<typeof ageRulesDto>;
+export type CoatRulesDto = z.infer<typeof coatRulesDto>;
+export type DiseasesRulesDto = z.infer<typeof diseasesRulesDto>;

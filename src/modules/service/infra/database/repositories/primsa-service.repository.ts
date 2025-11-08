@@ -10,26 +10,23 @@ import { PrismaServiceMapper } from "../mappers/prisma-service.mapper";
 export class PrismaServiceRepository implements ServiceRepository {
 	constructor(private prismaService: PrismaService) {}
 
-	async create(service: Service, categoryIds?: string[]) {
+	async create(service: Service) {
 		await this.prismaService.service.create({
 			data: {
 				...PrismaServiceMapper.toPrisma(service),
-				...(categoryIds &&
-					categoryIds.length > 0 && {
-						categories: {
-							create: categoryIds.map((categoryId) => ({
-								categoryId,
-								assignedAt: new Date(),
-							})),
-						},
-					}),
+				categories: {
+					create: service.categoryIds.map((categoryId) => ({
+						categoryId: categoryId.toString(),
+						assignedAt: new Date(),
+					})),
+				},
 			},
 		});
 	}
 
 	async findById(id: string) {
 		const result = await this.prismaService.service.findUnique({
-			where: { id, isActive: true },
+			where: { id },
 			include: { company: true, categories: { include: { category: true } } },
 		});
 		if (!result) {
@@ -47,15 +44,26 @@ export class PrismaServiceRepository implements ServiceRepository {
 	}
 
 	async update(id: string, service: Partial<Service>) {
+		const prismaData = PrismaServiceMapper.toPrismaUpdate(service);
 		await this.prismaService.service.update({
 			where: { id },
-			data: PrismaServiceMapper.toPrismaUpdate(service),
+			data: {
+				...prismaData,
+				categories: {
+					deleteMany: {},
+					create: service.categoryIds?.map((categoryId) => ({
+						categoryId: categoryId.toString(),
+						assignedAt: new Date(),
+					})),
+				}
+			},
 		});
 	}
 
 	async findByCompanyId(companyId: string) {
 		const result = await this.prismaService.service.findMany({
-			where: { companyId },
+			where: { companyId }, 
+			include: { categories: { include: { category: true } } },
 		});
 
 		return result.map((service) => PrismaServiceMapper.toDomain(service));

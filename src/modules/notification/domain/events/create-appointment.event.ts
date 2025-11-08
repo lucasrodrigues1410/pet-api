@@ -9,10 +9,10 @@ export class CreateAppointmentEvent extends NotificationEvent {
 		public readonly payload: {
 			clientName: string;
 			companyName: string;
-			companyAddress: string;
+			companyAddress?: string;
 			date: string;
 			price: number;
-			professionalName: string;
+			professionalName?: string;
 			detailsLink?: string;
 		},
 	) {
