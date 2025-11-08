@@ -84,8 +84,7 @@ export class AppointmentBookingUseCase {
 				),
 			);
 		}
-		
-		
+
 		const endDate = addMinutes(
 			startDate,
 			service.duration + (ruleExecutionResult?.durationMinutes ?? 0),
@@ -136,7 +135,7 @@ export class AppointmentBookingUseCase {
 		}
 		return right({
 			appointmentId: appointmentIntent.id.toString(),
-			clientSecret: checkoutUrl
+			clientSecret: checkoutUrl,
 		});
 	}
 }

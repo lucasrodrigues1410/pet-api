@@ -12,7 +12,7 @@ const sizeRulesDto = z.object({
 	options: z
 		.object({
 			value: z.enum(["small", "medium", "large"]),
-			...optionsDefinition.shape,	
+			...optionsDefinition.shape,
 		})
 		.array(),
 });

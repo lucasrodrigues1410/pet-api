@@ -56,7 +56,7 @@ export class ServiceController {
 
 		return ServiceListPresenter.present(result.value.services);
 	}
-	
+
 	@Post("company/:companyId")
 	@ApiOperation({ summary: "Criar serviço", operationId: "createService" })
 	@HttpCode(201)

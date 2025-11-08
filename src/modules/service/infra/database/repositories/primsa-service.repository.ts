@@ -55,14 +55,14 @@ export class PrismaServiceRepository implements ServiceRepository {
 						categoryId: categoryId.toString(),
 						assignedAt: new Date(),
 					})),
-				}
+				},
 			},
 		});
 	}
 
 	async findByCompanyId(companyId: string) {
 		const result = await this.prismaService.service.findMany({
-			where: { companyId }, 
+			where: { companyId },
 			orderBy: { createdAt: "desc" },
 			include: { categories: { include: { category: true } } },
 		});
