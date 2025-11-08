@@ -63,6 +63,7 @@ export class PrismaServiceRepository implements ServiceRepository {
 	async findByCompanyId(companyId: string) {
 		const result = await this.prismaService.service.findMany({
 			where: { companyId }, 
+			orderBy: { createdAt: "desc" },
 			include: { categories: { include: { category: true } } },
 		});
 
