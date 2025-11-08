@@ -15,6 +15,7 @@ import {
 	CoatType,
 } from "../../../appointment/domain/entities/appointment.entity";
 import { AppointmentRepository } from "../../../appointment/domain/repositories/appointment.repository";
+import { NotPossibleCompleteAppointmentError } from "../errors/not-possible-comple-appointment";
 import { TimeSlotUnavailableError } from "../errors/time-slot-unavailable.error";
 import { RulesExecutionService } from "../services/rules-execution.service";
 
@@ -24,10 +25,13 @@ interface AppointmentBookingUseCaseRequest {
 	clientId: string;
 	startDate: Date;
 	coatType: CoatType;
+	disease?: string;
 }
 
 type AppointmentBookingUseCaseResponse = Either<
-	ResourceNotFoundError | TimeSlotUnavailableError,
+	| ResourceNotFoundError
+	| TimeSlotUnavailableError
+	| NotPossibleCompleteAppointmentError,
 	{ appointmentId: string; clientSecret?: string; checkoutUrl?: string }
 >;
 
@@ -50,6 +54,7 @@ export class AppointmentBookingUseCase {
 		animalId,
 		startDate,
 		coatType,
+		disease,
 	}: AppointmentBookingUseCaseRequest): Promise<AppointmentBookingUseCaseResponse> {
 		const now = new Date();
 		if (isBefore(startDate, now)) {
@@ -69,8 +74,18 @@ export class AppointmentBookingUseCase {
 		const ruleExecutionResult = await this.rulesExecution.execute(
 			animal,
 			service.rules,
+			disease,
+			coatType,
 		);
-
+		if ("action" in ruleExecutionResult) {
+			return left(
+				new NotPossibleCompleteAppointmentError(
+					"Serviço indisponível para o animal com as características informadas.",
+				),
+			);
+		}
+		
+		
 		const endDate = addMinutes(
 			startDate,
 			service.duration + (ruleExecutionResult?.durationMinutes ?? 0),
@@ -119,10 +134,9 @@ export class AppointmentBookingUseCase {
 				}),
 			);
 		}
-
 		return right({
 			appointmentId: appointmentIntent.id.toString(),
-			checkoutUrl,
+			clientSecret: checkoutUrl
 		});
 	}
 }

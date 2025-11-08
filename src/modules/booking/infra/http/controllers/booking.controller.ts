@@ -11,6 +11,7 @@ import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { ZodResponse } from "nestjs-zod";
 import { Public } from "@/modules/auth/infra/http/decorators/public.decorator";
 import { User } from "@/modules/auth/infra/http/decorators/user.decorator";
+import { NotPossibleCompleteAppointmentError } from "@/modules/booking/application/errors/not-possible-comple-appointment";
 import { AppointmentBookingUseCase } from "@/modules/booking/application/use-cases/appointment-booking.use-case";
 import { ListAvailableDatesUseCase } from "@/modules/booking/application/use-cases/list-available-dates.use-case";
 import {
@@ -75,6 +76,9 @@ export class BookingController {
 		if (response.isLeft()) {
 			if (response.value instanceof NotFoundException) {
 				throw new NotFoundException();
+			}
+			if (response.value instanceof NotPossibleCompleteAppointmentError) {
+				throw new BadRequestException(`${response.value.message}`);
 			}
 			throw new BadRequestException(`${response.value.message}`);
 		}

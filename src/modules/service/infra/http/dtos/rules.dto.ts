@@ -41,7 +41,7 @@ const diseasesRulesDto = z.object({
 	characteristic: z.literal("diseases"),
 	options: z
 		.object({
-			value: z.enum(["none", "heart", "skin", "orthopedic"]),
+			value: z.enum(["heart", "skin", "orthopedic", "diabetes", "none"]),
 			...optionsDefinition.shape,
 		})
 		.array(),

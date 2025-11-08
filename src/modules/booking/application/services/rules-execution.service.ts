@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { Animal } from "@/modules/animal/domain/entities/animal.entity";
 import { Rules } from "@/modules/service/domain/entities/value-objects/rules.value-object";
 
-type CalculateResult = { price: number; durationMinutes: number };
+type CalculateResult = { price: number; durationMinutes: number } | { action: 'deny' };
 type AnimalCharacteristic = string | undefined | null;
 type CharacteristicValue = string | string[];
 
@@ -13,10 +13,10 @@ enum Operator {
 
 @Injectable()
 export class RulesExecutionService {
-	execute(animal: Animal, rules?: Rules[]): CalculateResult | null {
-		if (!rules || rules.length === 0) return null;
+	execute(animal: Animal, rules?: Rules[], disease?: string, coatType?: string): CalculateResult {
+		if (!rules || rules.length === 0) return { price: 0, durationMinutes: 0 };
 
-		const animalValues = this.buildCharacteristicsMap(animal);
+		const animalValues = this.buildCharacteristicsMap(animal, disease, coatType);
 		for (const rule of rules) {
 			const actualValues = animalValues.get(rule.characteristic);
 			if (!actualValues || actualValues.length === 0) continue;
@@ -24,7 +24,7 @@ export class RulesExecutionService {
 			const matchedOption = this.findMatchingOption(rule.options, actualValues);
 			if (matchedOption) {
 				if(matchedOption.action === 'deny') {
-					throw new Error(`Serviço indisponível para o animal com as características informadas.`)
+					return { action: 'deny' };
 				}
 				// Se a ação for "allow", continua a execução
 				return {
@@ -34,15 +34,19 @@ export class RulesExecutionService {
 			}
 		}
 
-		return null;
+		return { price: 0, durationMinutes: 0 };
 	}
 
 	private buildCharacteristicsMap(
 		animal: Animal,
+		disease?: string,
+		coatType?: string ,
 	): Map<string, AnimalCharacteristic[]> {
 		return new Map([
 			["size", [animal.size]],
 			["age", [animal.ageStage]],
+			["diseases", [disease]],
+			["coat", [coatType]],
 		]);
 	}
 
