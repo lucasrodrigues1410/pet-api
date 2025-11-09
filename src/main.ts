@@ -27,9 +27,7 @@ async function bootstrap() {
 		methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
 		allowedHeaders: ["Content-Type", "Authorization"],
 	});
-	//@ts-expect-error
 	app.register(multipart);
-	//@ts-expect-error
 	app.register(clerkPlugin);
 
 	//Swagger configuration

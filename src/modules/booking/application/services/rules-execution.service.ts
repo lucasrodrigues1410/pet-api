@@ -5,13 +5,6 @@ import { Rules } from "@/modules/service/domain/entities/value-objects/rules.val
 type CalculateResult =
 	| { price: number; durationMinutes: number }
 	| { action: "deny" };
-type AnimalCharacteristic = string | undefined | null;
-type CharacteristicValue = string | string[];
-
-enum Operator {
-	EQUALS = "eq",
-	NOT_EQUALS = "neq",
-}
 
 @Injectable()
 export class RulesExecutionService {
@@ -21,84 +14,44 @@ export class RulesExecutionService {
 		disease?: string,
 		coatType?: string,
 	): CalculateResult {
-		if (!rules || rules.length === 0) return { price: 0, durationMinutes: 0 };
+		if (!rules?.length) return { price: 0, durationMinutes: 0 };
 
-		const animalValues = this.buildCharacteristicsMap(
-			animal,
-			disease,
-			coatType,
-		);
+		const characteristics = {
+			size: animal.size,
+			age: animal.ageStage,
+			diseases: disease,
+			coat: coatType,
+		};
+
+		let price = 0;
+		let durationMinutes = 0;
+
 		for (const rule of rules) {
-			const actualValues = animalValues.get(rule.characteristic);
-			if (!actualValues || actualValues.length === 0) continue;
+			const actualValue = characteristics[rule.characteristic as keyof typeof characteristics];
+			if (!actualValue) continue;
 
-			const matchedOption = this.findMatchingOption(rule.options, actualValues);
-			if (matchedOption) {
-				if (matchedOption.action === "deny") {
-					return { action: "deny" };
-				}
-				// Se a ação for "allow", continua a execução
-				return {
-					price: matchedOption.price * 100, // Convertendo para centavos
-					durationMinutes: matchedOption.time ?? 0,
-				};
-			}
+			const matchedOption = rule.options.find((option) =>
+				this.matches(option.value, actualValue, option.operator),
+			);
+
+			if (!matchedOption) continue;
+			if (matchedOption.action === "deny") return { action: "deny" };
+
+			price = matchedOption.price;
+			durationMinutes += matchedOption.time || 0;
 		}
-
-		return { price: 0, durationMinutes: 0 };
+		return { price, durationMinutes };
 	}
 
-	private buildCharacteristicsMap(
-		animal: Animal,
-		disease?: string,
-		coatType?: string,
-	): Map<string, AnimalCharacteristic[]> {
-		return new Map([
-			["size", [animal.size]],
-			["age", [animal.ageStage]],
-			["diseases", [disease]],
-			["coat", [coatType]],
-		]);
-	}
-
-	private findMatchingOption(
-		options: Rules["options"],
-		actualValues: AnimalCharacteristic[],
-	): Rules["options"][number] | undefined {
-		return options.find((option) => this.evaluateOption(option, actualValues));
-	}
-
-	private evaluateOption(
-		option: Rules["options"][number],
-		actualValues: AnimalCharacteristic[],
-	): boolean {
-		const { value, operator } = option;
-
-		// Garante que temos valores válidos para comparar
-		const cleanValues = actualValues.filter(
-			(v): v is string => v !== null && v !== undefined,
-		);
-
-		if (cleanValues.length === 0) return false;
-
-		// Normaliza o valor da opção para sempre ser um array
-		const optionValues = Array.isArray(value) ? value : [value];
-
-		return this.matchesOperator(optionValues, cleanValues, operator);
-	}
-
-	private matchesOperator(
-		optionValues: CharacteristicValue[],
-		actualValues: string[],
+	private matches(
+		optionValue: string | string[],
+		actualValue: string,
 		operator: string,
 	): boolean {
-		const isEquals = operator === Operator.EQUALS;
+		const values = Array.isArray(optionValue) ? optionValue : [optionValue];
+		const isEquals = operator === "eq";
+		const isPresent = values.includes(actualValue);
 
-		// Para operador "eq": retorna true se ALGUM valor da opção está presente
-		// Para operador "neq": retorna true se ALGUM valor da opção NÃO está presente
-		return optionValues.some((optValue) => {
-			const isPresent = actualValues.includes(optValue as string);
-			return isEquals ? isPresent : !isPresent;
-		});
+		return isEquals ? isPresent : !isPresent;
 	}
 }

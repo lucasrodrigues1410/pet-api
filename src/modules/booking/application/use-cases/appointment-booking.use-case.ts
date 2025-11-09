@@ -84,7 +84,7 @@ export class AppointmentBookingUseCase {
 				),
 			);
 		}
-
+		 
 		const endDate = addMinutes(
 			startDate,
 			service.duration + (ruleExecutionResult?.durationMinutes ?? 0),
