@@ -1,6 +1,5 @@
 import { Injectable } from "@nestjs/common";
 import { Prisma } from "prisma/generated/client";
-import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { PrismaService } from "@/core/infra/prisma/prisma.service";
 import { Staff, StaffRole } from "@/modules/staff/domain/entities/staff.entity";
 import { StaffRepository } from "@/modules/staff/domain/repositories/staff.repository";
@@ -91,12 +90,16 @@ export class PrismaStaffRepository implements StaffRepository {
 					},
 				},
 			},
+			include: { user: { select: { name: true } } },
 		});
 
 		if (!staff.length) return null;
 
 		const chosen = staff[Math.floor(Math.random() * staff.length)];
-		return new UniqueEntityID(chosen.id);
+		return {
+			id: chosen.id,
+			name: chosen.user.name,
+		}
 	}
 
 	async fetchCompanyStaffWithAppointmentsInDateRange(

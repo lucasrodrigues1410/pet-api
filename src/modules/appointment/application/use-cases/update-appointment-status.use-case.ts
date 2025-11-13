@@ -62,16 +62,17 @@ export class UpdateAppointmentStatusUseCase {
 			appointment.updateStatus(newStatus, isStaff);
 			await this.appointmentRepository.updateStatus(appointmentId, newStatus);
 			await this.notifyPublisher.dispatch(
-				new AppointmentChangeStatusEvent(appointment.client.id.toString(), {
-					userName: appointment.client.name,
-					userEmail: appointment.client.email,
-					appointmentId: appointmentId,
-					appointmentStatus: appointment.status,
-					petName: appointment.animal.name,
-					providerName: appointment.service.name,
-					serviceName: appointment.service.name,
-					updatedOn: new Date(),
-				}),
+				new AppointmentChangeStatusEvent(
+					appointment.client.id.toString(),
+					appointment.client.email,
+					{
+						userName: appointment.client.name,
+						appointmentStatus: appointment.status,
+						petName: appointment.animal.name,
+						serviceName: appointment.service.name,
+						updatedOn: new Date(),
+					},
+				),
 			);
 			return right(appointment);
 		} catch (error) {
