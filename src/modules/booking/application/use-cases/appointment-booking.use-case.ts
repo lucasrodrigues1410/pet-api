@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { addMinutes, format, isBefore } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { AnimalRepository } from "@/modules/animal/domain/repositories/animal.repository";
 import { CreateAppointmentEvent } from "@/modules/notification/domain/events/create-appointment.event";
 import { NotificationPublisher } from "@/modules/notification/domain/interfaces/notification-publisher.interface";
@@ -62,7 +63,7 @@ export class AppointmentBookingUseCase {
 		}
 
 		const [service, animal, user] = await Promise.all([
-			this.serviceRepository.findById(serviceId),
+			this.serviceRepository.findByIdWithCompanyLocation(serviceId),
 			this.animalRepository.findById(animalId),
 			this.userRepository.findById(clientId),
 		]);
@@ -84,7 +85,7 @@ export class AppointmentBookingUseCase {
 				),
 			);
 		}
-		 
+
 		const endDate = addMinutes(
 			startDate,
 			service.duration + (ruleExecutionResult?.durationMinutes ?? 0),
@@ -99,7 +100,7 @@ export class AppointmentBookingUseCase {
 
 		const appointmentIntent = Appointment.create({
 			serviceId: service.id,
-			staffId: staffAvailable,
+			staffId: new UniqueEntityID(staffAvailable.id),
 			animalId: animal.id,
 			clientId: user.id,
 			companyId: service.companyId,
@@ -126,10 +127,12 @@ export class AppointmentBookingUseCase {
 			await this.notifyPublisher.dispatch(
 				new CreateAppointmentEvent(clientId, user.email, {
 					clientName: animal.name,
+					companyAddress: `${service.company.addressLine}, ${service.company.number} - ${service.company.city}`,
 					companyName: service.company.name,
 					date: `${format(startDate, "EEEE, d 'de' MMMM 'de' yyyy, HH:mm", { locale: ptBR })} - ${format(endDate, "HH:mm", { locale: ptBR })}`,
 					price: appointmentIntent.price,
 					detailsLink: `${process.env.APP_URL}/appointments/${appointmentIntent.id.toString()}`,
+					professionalName: staffAvailable.name,
 				}),
 			);
 		}

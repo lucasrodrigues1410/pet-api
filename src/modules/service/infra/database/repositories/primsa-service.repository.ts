@@ -3,6 +3,7 @@ import { PrismaService } from "src/core/infra/prisma/prisma.service";
 import { ServiceRepository } from "src/modules/service/domain/repositories/service.repository";
 import { PrismaCategoryMapper } from "@/modules/category/infra/database/mappers/prisma-category.mapper";
 import { PrismaCompanyMapper } from "@/modules/company/infra/database/mappers/prisma-company.mapper";
+import { PrismaLocationMapper } from "@/modules/location/infra/database/mappers/prisma-location.mapper";
 import { Service } from "@/modules/service/domain/entities/service.entity";
 import { PrismaServiceMapper } from "../mappers/prisma-service.mapper";
 
@@ -68,5 +69,27 @@ export class PrismaServiceRepository implements ServiceRepository {
 		});
 
 		return result.map((service) => PrismaServiceMapper.toDomain(service));
+	}
+
+	async findByIdWithCompanyLocation(id: string) {
+		const result = await this.prismaService.service.findUnique({
+			where: { id },
+			include: {
+				categories: { include: { category: true } },
+				company: { include: { location: true } },
+			},
+		});
+
+		if (!result) {
+			return undefined;
+		}
+
+		const service = PrismaServiceMapper.toDomain(result);
+		const companyWithLocation = Object.assign(
+			PrismaCompanyMapper.toDomain(result.company),
+			PrismaLocationMapper.toDomain(result.company.location),
+		);
+
+		return Object.assign(service, { company: companyWithLocation });
 	}
 }

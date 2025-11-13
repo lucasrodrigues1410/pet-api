@@ -37,7 +37,7 @@ export class RulesExecutionService {
 			if (!matchedOption) continue;
 			if (matchedOption.action === "deny") return { action: "deny" };
 
-			price = matchedOption.price;
+			price = matchedOption.price * 100;
 			durationMinutes += matchedOption.time || 0;
 		}
 		return { price, durationMinutes };
