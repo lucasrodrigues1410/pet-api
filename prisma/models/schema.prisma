@@ -3,6 +3,7 @@ generator client {
   output          = "../generated"
   engineType      = "client"
   runtime         = "bun"
+  previewFeatures = ["fullTextSearchPostgres"]
 }
 
 datasource db {
