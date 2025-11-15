@@ -7,7 +7,6 @@ import { CompanyRepository } from "@/modules/company/domain/repositories/company
 import { PrismaCompanyAvailabilityMapper as AvlbyMapper } from "@/modules/company-availability/infra/database/mappers/company-availability.mapper";
 import { PrismaLocationMapper } from "@/modules/location/infra/database/mappers/prisma-location.mapper";
 import { PrismaServiceMapper } from "@/modules/service/infra/database/mappers/prisma-service.mapper";
-import { normalizeText } from "@/shared/utils/normalize-text";
 import { paginate } from "@/shared/utils/paginator";
 import { PrismaCompanyMapper } from "../mappers/prisma-company.mapper";
 
@@ -55,64 +54,51 @@ export class PrismaCompanyRepository implements CompanyRepository {
 
 		// Acumuladores de filtros
 		const andConditions: Prisma.CompanyWhereInput[] = [{ deletedAt: null }];
-
 		const orConditions: Prisma.CompanyWhereInput[] = [];
 
-		if (search) {
-			const normalizedQuery = normalizeText(
-				`${search} ${categories?.join(" ")}`,
-			);
-			const keywords = normalizedQuery
-				.split(" ")
-				.filter(
-					(word) =>
-						word.length > 2 &&
-						!["e", "de", "da", "do", "em", "para", "com"].includes(word),
-				);
+		// Normalizar keywords uma única vez
+		const keywords = search?.trim().split(/\s+/).filter(Boolean) ?? [];
+		const categoryKeywords = (categories ?? []).filter(Boolean);
+		const allKeywords = [...keywords, ...categoryKeywords];
+		const searchString = allKeywords.join(" | ");
 
-			if (keywords.length > 0) {
-				const serviceConditions = keywords.map((keyword) => ({
+		if (allKeywords.length > 0) {
+			orConditions.push(
+				{
 					services: {
 						some: {
-							name: { contains: keyword, mode: "insensitive" },
+							name: { search: searchString, mode: "insensitive" },
 							isActive: true,
 						},
 					},
-				})) as Prisma.CompanyWhereInput[];
-
-				const nameConditions = keywords.map((keyword) => ({
-					name: { contains: keyword, mode: "insensitive" },
-				})) as Prisma.CompanyWhereInput[];
-
-				const descriptionConditions = keywords.map((keyword) => ({
-					description: { contains: keyword, mode: "insensitive" },
-				})) as Prisma.CompanyWhereInput[];
-
-				orConditions.push(
-					...serviceConditions,
-					...nameConditions,
-					...descriptionConditions,
-				);
-			}
+				},
+				{ name: { search: searchString, mode: "insensitive" } },
+				{ description: { search: searchString, mode: "insensitive" } },
+			);
 		}
 
-		// Geolocalização (caixa) aplicada via companyLocations
+		// Geolocalização: usar AND dentro de location (não OR redundante)
 		if (location) {
+			const locationTrim = location.trim();
 			andConditions.push({
 				location: {
-					OR: [
+					AND: [
 						{
-							city: { contains: location, mode: "insensitive" },
-							state: { contains: location, mode: "insensitive" },
-							country: { contains: location, mode: "insensitive" },
-							neighborhood: { contains: location, mode: "insensitive" },
+							OR: [
+								{ city: { contains: locationTrim, mode: "insensitive" } },
+								{ state: { contains: locationTrim, mode: "insensitive" } },
+								{ country: { contains: locationTrim, mode: "insensitive" } },
+								{
+									neighborhood: { contains: locationTrim, mode: "insensitive" },
+								},
+							],
 						},
 					],
 				},
 			});
 		}
 
-		// Monta where final de forma segura
+		// Where final
 		const whereConditions: Prisma.CompanyWhereInput = {
 			AND: andConditions,
 			...(orConditions.length ? { OR: orConditions } : {}),
