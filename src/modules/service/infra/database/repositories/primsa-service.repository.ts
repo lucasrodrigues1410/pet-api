@@ -85,11 +85,9 @@ export class PrismaServiceRepository implements ServiceRepository {
 		}
 
 		const service = PrismaServiceMapper.toDomain(result);
-		const companyWithLocation = Object.assign(
-			PrismaCompanyMapper.toDomain(result.company),
-			PrismaLocationMapper.toDomain(result.company.location),
-		);
-
-		return Object.assign(service, { company: companyWithLocation });
+		return Object.assign(service, {
+			company: PrismaCompanyMapper.toDomain(result.company),
+			location: PrismaLocationMapper.toDomain(result.company.location),
+		});
 	}
 }

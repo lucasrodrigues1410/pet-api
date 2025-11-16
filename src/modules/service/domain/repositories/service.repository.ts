@@ -8,6 +8,6 @@ export abstract class ServiceRepository {
 	abstract findByCompanyId(companyId: string): Promise<Service[]>;
 	abstract findByIdWithCompanyLocation(
 		id: string,
-	): Promise<(Service & { company: Company & Location }) | undefined>;
+	): Promise<(Service & { company: Company; location: Location }) | undefined>;
 	abstract update(id: string, service: Partial<Service>): Promise<void>;
 }

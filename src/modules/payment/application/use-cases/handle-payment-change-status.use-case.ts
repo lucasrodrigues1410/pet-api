@@ -41,7 +41,7 @@ export class HandlePaymentChangeStatusUseCase {
 				return left(new Error("Invalid status"));
 		}
 
-		await this.paymentRepository.save(payment);
+		await this.paymentRepository.update(payment);
 		return right(void 0);
 	}
 }

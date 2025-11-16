@@ -10,6 +10,7 @@ export abstract class PaymentRepository {
 		externalId: string,
 		tx?: any,
 	): Promise<Payment | null>;
-	abstract save(payment: Payment, tx?: any): Promise<void>;
+	abstract create(payment: Payment): Promise<void>;
+	abstract update(payment: Payment): Promise<void>;
 	abstract delete(id: string, tx?: any): Promise<void>;
 }

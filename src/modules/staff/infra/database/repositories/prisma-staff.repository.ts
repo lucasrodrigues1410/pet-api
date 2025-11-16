@@ -96,10 +96,7 @@ export class PrismaStaffRepository implements StaffRepository {
 		if (!staff.length) return null;
 
 		const chosen = staff[Math.floor(Math.random() * staff.length)];
-		return {
-			id: chosen.id,
-			name: chosen.user.name,
-		}
+		return { id: chosen.id, name: chosen.user.name };
 	}
 
 	async fetchCompanyStaffWithAppointmentsInDateRange(

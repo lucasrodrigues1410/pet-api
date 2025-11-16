@@ -27,7 +27,8 @@ export class RulesExecutionService {
 		let durationMinutes = 0;
 
 		for (const rule of rules) {
-			const actualValue = characteristics[rule.characteristic as keyof typeof characteristics];
+			const actualValue =
+				characteristics[rule.characteristic as keyof typeof characteristics];
 			if (!actualValue) continue;
 
 			const matchedOption = rule.options.find((option) =>

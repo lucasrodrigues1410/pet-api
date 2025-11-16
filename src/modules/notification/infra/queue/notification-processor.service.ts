@@ -4,64 +4,80 @@ import { Novu } from "@novu/api";
 import { Job } from "bullmq";
 import { AppointmentChangeStatusEvent } from "../../domain/events/appointment-change-status.event";
 import { CreateAppointmentEvent } from "../../domain/events/create-appointment.event";
-import { WelcomeEvent } from "../../domain/events/welcome.event";
+
+type NotificationEvent = AppointmentChangeStatusEvent | CreateAppointmentEvent;
+
+interface NotificationHandler {
+	handle(event: NotificationEvent): Promise<void>;
+}
 
 @Processor("notifications")
 @Injectable()
 export class BullNotificationProcessor extends WorkerHost {
 	private readonly logger = new Logger(BullNotificationProcessor.name);
+
+	private readonly handlers: Record<string, NotificationHandler> = {
+		"appointment-change-status": {
+			handle: (event) =>
+				this.handleAppointmentChangeStatus(
+					event as AppointmentChangeStatusEvent,
+				),
+		},
+		"create-appointment": {
+			handle: (event) =>
+				this.handleCreateAppointment(event as CreateAppointmentEvent),
+		},
+	};
+
 	constructor(private readonly novu: Novu) {
 		super();
 	}
 
-	async process(job: Job): Promise<void> {
-		this.logger.log(`Processing job ${job.id} of type ${job.name}`);
-		if (job.name === "welcome") {
-			const welcomeEvent = job.data as unknown as WelcomeEvent;
-			this.logger.log(`Triggering welcome event for ${welcomeEvent.to}`);
-			await this.novu.trigger({
-				workflowId: "welcome",
-				to: {
-					subscriberId: welcomeEvent.to,
-					email: welcomeEvent.payload.email,
-				},
-				payload: { name: welcomeEvent.payload.name },
-			});
-			this.logger.log(`Welcome event triggered for ${welcomeEvent.to}`);
-		}
-		if (job.name === "appointment-change-status") {
-			const appointmentChangeStatusEvent =
-				job.data as unknown as AppointmentChangeStatusEvent;
-			this.logger.log(
-				`Triggering appointment change status event for ${appointmentChangeStatusEvent.to}`,
+	async process(job: Job<NotificationEvent>): Promise<void> {
+		this.logger.log(`Processing job ${job.id}: ${job.name}`);
+
+		try {
+			const handler = this.handlers[job.name];
+
+			if (!handler) {
+				throw new Error(`No handler found for job type: ${job.name}`);
+			}
+
+			await handler.handle(job.data);
+			this.logger.log(`Job ${job.id} completed successfully`);
+		} catch (error) {
+			this.logger.error(
+				`Error processing job ${job.id} (${job.name}): ${error instanceof Error ? error.message : String(error)}`,
+				error instanceof Error ? error.stack : undefined,
 			);
-			await this.novu.trigger({
-				workflowId: "appointment-change-status",
-				to: {
-					subscriberId: appointmentChangeStatusEvent.to,
-					email: appointmentChangeStatusEvent.payload.userEmail,
-				},
-				payload: { name: appointmentChangeStatusEvent.payload.userName },
-			});
-			this.logger.log(
-				`Appointment change status event triggered for ${appointmentChangeStatusEvent.to}`,
-			);
+			throw error;
 		}
-		if (job.name === "create-appointment") {
-			const createAppointmentEvent =
-				job.data as unknown as CreateAppointmentEvent;
-			this.logger.log(
-				`Triggering create appointment event for ${createAppointmentEvent.to}`,
-			);
-			await this.novu.trigger({
-				workflowId: "create-appointment",
-				to: {
-					subscriberId: createAppointmentEvent.to,
-					email: createAppointmentEvent.payload.email,
-				},
-				payload: createAppointmentEvent.payload,
-			});
-			this.logger.log(`Create appointment event triggered for ${job.data.to}`);
-		}
+	}
+
+	private async handleAppointmentChangeStatus(
+		event: AppointmentChangeStatusEvent,
+	): Promise<void> {
+		this.logger.log(`Triggering appointment change status for ${event.to}`);
+
+		await this.novu.trigger({
+			workflowId: "appointment-change-status",
+			to: { subscriberId: event.to, email: event.email },
+			payload: { name: event.payload.userName },
+		});
+
+		this.logger.log(`Appointment change status completed for ${event.to}`);
+	}
+
+	private async handleCreateAppointment(
+		event: CreateAppointmentEvent,
+	): Promise<void> {
+		this.logger.log(`Triggering create appointment for ${event.to}`);
+		await this.novu.trigger({
+			workflowId: "create-appointment",
+			to: { subscriberId: event.to, email: event.email },
+			payload: event.payload,
+		});
+
+		this.logger.log(`Create appointment completed for ${event.to}`);
 	}
 }

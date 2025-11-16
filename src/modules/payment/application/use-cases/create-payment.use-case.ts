@@ -65,7 +65,7 @@ export class CreatePaymentUseCase {
 			checkoutUrl: paymentIntent.value.url,
 		});
 
-		await this.paymentRepository.save(payment);
+		await this.paymentRepository.create(payment);
 		return right({ url: paymentIntent.value.url });
 	}
 }

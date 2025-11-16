@@ -26,7 +26,7 @@
 		"@nestjs/core": "^11.1.9",
 		"@nestjs/event-emitter": "^3.0.1",
 		"@nestjs/platform-fastify": "^11.1.9",
-		"@nestjs/swagger": "^11.2.1",
+		"@nestjs/swagger": "^11.2.2",
 		"@novu/api": "^1.8.0",
 		"@prisma/adapter-pg": "^6.19.0",
 		"@prisma/client": "^6.19.0",

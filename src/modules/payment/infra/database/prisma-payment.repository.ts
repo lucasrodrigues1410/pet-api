@@ -41,9 +41,17 @@ export class PrismaPaymentRepository implements PaymentRepository {
 		return PrismaPaymentMapper.toDomain(payment);
 	}
 
-	async save(payment: Payment): Promise<void> {
+	async create(payment: Payment): Promise<void> {
 		const data = PrismaPaymentMapper.toPersistence(payment);
 		await this.prisma.payment.create({ data });
+	}
+
+	async update(payment: Payment): Promise<void> {
+		const data = PrismaPaymentMapper.toPersistence(payment);
+		await this.prisma.payment.update({
+			where: { id: payment.id.toString() },
+			data,
+		});
 	}
 
 	async delete(id: string): Promise<void> {

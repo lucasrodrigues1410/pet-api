@@ -71,7 +71,6 @@ export class AppointmentBookingUseCase {
 		if (!service || !animal || !service.isActive || !user) {
 			return left(new ResourceNotFoundError());
 		}
-
 		const ruleExecutionResult = await this.rulesExecution.execute(
 			animal,
 			service.rules,
@@ -120,14 +119,13 @@ export class AppointmentBookingUseCase {
 				serviceDescription: `Agendamento para ${animal.name} às ${startDate.toLocaleString()}`,
 				companyImage: service.company.logo?.url,
 			});
-
 			if (paymentResult.isLeft()) return left(paymentResult.value);
 			checkoutUrl = paymentResult.value.url;
 		} else {
 			await this.notifyPublisher.dispatch(
 				new CreateAppointmentEvent(clientId, user.email, {
 					clientName: animal.name,
-					companyAddress: `${service.company.addressLine}, ${service.company.number} - ${service.company.city}`,
+					companyAddress: `${service.location.addressLine}, ${service.location.number} - ${service.location.city}`,
 					companyName: service.company.name,
 					date: `${format(startDate, "EEEE, d 'de' MMMM 'de' yyyy, HH:mm", { locale: ptBR })} - ${format(endDate, "HH:mm", { locale: ptBR })}`,
 					price: appointmentIntent.price,
@@ -138,7 +136,7 @@ export class AppointmentBookingUseCase {
 		}
 		return right({
 			appointmentId: appointmentIntent.id.toString(),
-			clientSecret: checkoutUrl,
+			checkoutUrl: checkoutUrl,
 		});
 	}
 }
