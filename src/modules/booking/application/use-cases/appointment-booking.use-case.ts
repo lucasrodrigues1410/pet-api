@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { addMinutes, format, isBefore } from "date-fns";
+import { addMinutes, format, isBefore, sub } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { AnimalRepository } from "@/modules/animal/domain/repositories/animal.repository";
@@ -127,7 +127,7 @@ export class AppointmentBookingUseCase {
 					clientName: animal.name,
 					companyAddress: `${service.location.addressLine}, ${service.location.number} - ${service.location.city}`,
 					companyName: service.company.name,
-					date: `${format(startDate, "EEEE, d 'de' MMMM 'de' yyyy, HH:mm")} - ${format(endDate, "HH:mm")}`,
+					date: `${format(sub(startDate, { hours: 3 }), "EEEE, d 'de' MMMM 'de' yyyy, HH:mm", { locale: ptBR })} - ${format(sub(endDate, { hours: 3 }), "HH:mm", { locale: ptBR })}`,
 					price: appointmentIntent.price,
 					detailsLink: `${process.env.APP_URL}/appointments/${appointmentIntent.id.toString()}`,
 					professionalName: staffAvailable.name,
