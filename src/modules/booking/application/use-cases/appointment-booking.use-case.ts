@@ -127,7 +127,7 @@ export class AppointmentBookingUseCase {
 					clientName: animal.name,
 					companyAddress: `${service.location.addressLine}, ${service.location.number} - ${service.location.city}`,
 					companyName: service.company.name,
-					date: `${format(startDate, "EEEE, d 'de' MMMM 'de' yyyy, HH:mm", { locale: ptBR })} - ${format(endDate, "HH:mm", { locale: ptBR })}`,
+					date: `${format(startDate, "EEEE, d 'de' MMMM 'de' yyyy, HH:mm")} - ${format(endDate, "HH:mm")}`,
 					price: appointmentIntent.price,
 					detailsLink: `${process.env.APP_URL}/appointments/${appointmentIntent.id.toString()}`,
 					professionalName: staffAvailable.name,
