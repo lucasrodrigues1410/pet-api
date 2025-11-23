@@ -1,8 +1,15 @@
-import { BadRequestException, Controller, Get, Query } from "@nestjs/common";
+import {
+	BadRequestException,
+	Controller,
+	Get,
+	NotFoundException,
+	Query,
+} from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { ZodResponse } from "nestjs-zod";
 import { User } from "@/modules/auth/infra/http/decorators/user.decorator";
 import { ListStaffByCompanyUseCase } from "@/modules/staff/application/use-cases/list-staff-by-company.use-case";
+import { ResourceNotFoundError } from "@/shared/errors/errors/resource-not-found.error";
 import {
 	ListStaffByCompanyQueryDto,
 	ListStaffByCompanyResponseDto,
@@ -31,6 +38,9 @@ export class StaffController {
 			query,
 		});
 		if (result.isLeft()) {
+			if (result.value instanceof ResourceNotFoundError) {
+				throw new NotFoundException(result.value.message);
+			}
 			throw new BadRequestException();
 		}
 		return StaffListPresenter.present(result.value);

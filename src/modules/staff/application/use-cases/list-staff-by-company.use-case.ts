@@ -26,12 +26,12 @@ export class ListStaffByCompanyUseCase {
 		query,
 	}: ListStaffByCompanyUseCaseRequest): Promise<ListStaffByCompanyUseCaseResponse> {
 		const staff = await this.staffRepository.findByUserId(userId);
+
 		if (!staff) {
 			return left(
 				new ResourceNotFoundError("Staff not found for the given user ID"),
 			);
 		}
-
 		const items = await this.staffRepository.findByCompanyId(
 			staff.companyId.toString(),
 			query,

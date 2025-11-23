@@ -49,10 +49,22 @@ export class Staff extends Entity<StaffProps> {
 	}
 
 	static create(
-		props: Omit<StaffProps, "createdAt" | "updatedAt" | "deletedAt">,
+		props: Omit<StaffProps, "createdAt" | "updatedAt" | "deletedAt"> & {
+			createdAt?: Date;
+			updatedAt?: Date;
+			deletedAt?: Date;
+		},
 		id?: UniqueEntityID,
 	): Staff {
-		const staff = new Staff({ ...props, createdAt: new Date() }, id);
+		const staff = new Staff(
+			{
+				...props,
+				createdAt: props.createdAt ?? new Date(),
+				updatedAt: props.updatedAt ?? new Date(),
+				deletedAt: props.deletedAt ?? undefined,
+			},
+			id,
+		);
 		return staff;
 	}
 
