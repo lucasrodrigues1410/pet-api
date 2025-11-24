@@ -20,6 +20,17 @@ export class PrismaBreedRepository implements BreedRepository {
 		return response.map(PrismaBreedMapper.toDomain);
 	}
 
+	async getAllGroupedByAnimalType() {
+		const response = await this.prismaService.animalType.findMany({
+			include: { breeds: true },
+		});
+
+		return response.map((animalType) => ({
+			name: animalType.name,
+			breeds: animalType.breeds.map(PrismaBreedMapper.toDomain),
+		}));
+	}
+
 	async findById(id: string) {
 		const breed = await this.prismaService.breed.findUnique({ where: { id } });
 

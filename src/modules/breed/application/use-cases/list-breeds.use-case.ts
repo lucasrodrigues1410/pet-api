@@ -3,19 +3,17 @@ import { Either, right } from "@/shared/either";
 import { Breed } from "../../domain/entities/breed.entity";
 import { BreedRepository } from "../../domain/repositories/breed.repository";
 
-type GetAllBreedUseCaseRequest = { query?: string };
-
-type GetAllBreedUseCaseResponse = Either<null, { items: Breed[] }>;
+type GetAllBreedUseCaseResponse = Either<
+	null,
+	{ items: { name: string; breeds: Breed[] }[] }
+>;
 
 @Injectable()
 export class ListBreedsUseCase {
 	constructor(private readonly breedRepository: BreedRepository) {}
 
-	async execute(
-		params: GetAllBreedUseCaseRequest,
-	): Promise<GetAllBreedUseCaseResponse> {
-		const query = (params.query || "").trim().toLowerCase();
-		const all = await this.breedRepository.getAll({ query });
+	async execute(): Promise<GetAllBreedUseCaseResponse> {
+		const all = await this.breedRepository.getAllGroupedByAnimalType();
 		return right({ items: all });
 	}
 }
