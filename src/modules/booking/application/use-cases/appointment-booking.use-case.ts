@@ -129,7 +129,7 @@ export class AppointmentBookingUseCase {
 					companyName: service.company.name,
 					date: `${format(sub(startDate, { hours: 3 }), "EEEE, d 'de' MMMM 'de' yyyy, HH:mm", { locale: ptBR })} - ${format(sub(endDate, { hours: 3 }), "HH:mm", { locale: ptBR })}`,
 					price: appointmentIntent.price,
-					detailsLink: `${process.env.APP_URL}/appointments/${appointmentIntent.id.toString()}`,
+					detailsLink: `${process.env.APP_URL}/appointments?id=${appointmentIntent.id.toString()}`,
 					professionalName: staffAvailable.name,
 				}),
 			);
