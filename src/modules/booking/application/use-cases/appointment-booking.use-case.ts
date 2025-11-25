@@ -124,7 +124,7 @@ export class AppointmentBookingUseCase {
 		} else {
 			await this.notifyPublisher.dispatch(
 				new CreateAppointmentEvent(clientId, user.email, {
-					clientName: animal.name,
+					clientName: user.name,
 					companyAddress: `${service.location.addressLine}, ${service.location.number} - ${service.location.city}`,
 					companyName: service.company.name,
 					date: `${format(sub(startDate, { hours: 3 }), "EEEE, d 'de' MMMM 'de' yyyy, HH:mm", { locale: ptBR })} - ${format(sub(endDate, { hours: 3 }), "HH:mm", { locale: ptBR })}`,
