@@ -81,7 +81,7 @@ export class ClerkAuthProviderService extends AuthProviderService {
 			email: user.email_addresses[0].email_address,
 			authProviderId: user.id,
 			avatarUrl: user.image_url,
-			name: `${user.first_name} ${user.last_name}`.trim(),
+			name: `${user.first_name} ${user.last_name || ''}`.trim()
 		});
 	}
 }

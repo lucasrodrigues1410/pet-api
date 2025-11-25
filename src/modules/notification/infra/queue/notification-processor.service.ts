@@ -5,7 +5,12 @@ import { Job } from "bullmq";
 import { AppointmentChangeStatusEvent } from "../../domain/events/appointment-change-status.event";
 import { CreateAppointmentEvent } from "../../domain/events/create-appointment.event";
 
-type NotificationEvent = AppointmentChangeStatusEvent | CreateAppointmentEvent;
+import { AppointmentReminderEvent } from "../../domain/events/appointment-reminder.event";
+
+type NotificationEvent =
+	| AppointmentChangeStatusEvent
+	| CreateAppointmentEvent
+	| AppointmentReminderEvent;
 
 interface NotificationHandler {
 	handle(event: NotificationEvent): Promise<void>;
@@ -26,6 +31,10 @@ export class BullNotificationProcessor extends WorkerHost {
 		"create-appointment": {
 			handle: (event) =>
 				this.handleCreateAppointment(event as CreateAppointmentEvent),
+		},
+		"appointment-reminder": {
+			handle: (event) =>
+				this.handleAppointmentReminder(event as AppointmentReminderEvent),
 		},
 	};
 
@@ -79,5 +88,18 @@ export class BullNotificationProcessor extends WorkerHost {
 		});
 
 		this.logger.log(`Create appointment completed for ${event.to}`);
+	}
+
+	private async handleAppointmentReminder(
+		event: AppointmentReminderEvent,
+	): Promise<void> {
+		this.logger.log(`Triggering appointment reminder for ${event.to}`);
+		await this.novu.trigger({
+			workflowId: "appointment-reminder",
+			to: { subscriberId: event.to, email: event.email },
+			payload: event.payload,
+		});
+
+		this.logger.log(`Appointment reminder completed for ${event.to}`);
 	}
 }

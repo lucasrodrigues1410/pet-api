@@ -22,8 +22,13 @@ import {
 	ListAvailableDatesRequestDto,
 	ListAvailableDatesResponseDto,
 } from "../dtos/list-available-dates.dto";
+import {
+	CalculateServicePriceDurationRequestDto,
+	CalculateServicePriceDurationResponseDto,
+} from "../dtos/calculate-service-price-duration.dto";
 import { AvailableDatesPresenter } from "../presenters/available-dates.presenter";
 import { CreateAppointmentPresenter } from "../presenters/create-appointment.presenter";
+import { CalculateServicePriceDurationUseCase } from "@/modules/booking/application/use-cases/calculate-service-price-duration.use-case";
 
 @ApiTags("Reservas")
 @Controller("booking")
@@ -31,6 +36,7 @@ export class BookingController {
 	constructor(
 		private readonly listAvailableDatesUseCase: ListAvailableDatesUseCase,
 		private readonly createAppointmentUseCase: AppointmentBookingUseCase,
+		private readonly calculateServicePriceDurationUseCase: CalculateServicePriceDurationUseCase,
 	) {}
 
 	@ApiOperation({
@@ -87,5 +93,31 @@ export class BookingController {
 			appointmentId: response.value.appointmentId,
 			checkoutUrl: response.value.checkoutUrl,
 		});
+	}
+
+	@Post("calculate")
+	@ZodResponse({ status: 200, type: CalculateServicePriceDurationResponseDto })
+	@ApiOperation({
+		summary: "Calcula o preço e a duração do serviço com base no animal",
+		operationId: "calculateServicePriceDuration",
+	})
+	async calculateServicePriceDuration(
+		@Body() params: CalculateServicePriceDurationRequestDto,
+	) {
+		const response = await this.calculateServicePriceDurationUseCase.execute(
+			params,
+		);
+
+		if (response.isLeft()) {
+			if (response.value instanceof NotFoundException) {
+				throw new NotFoundException();
+			}
+			if (response.value instanceof NotPossibleCompleteAppointmentError) {
+				throw new BadRequestException(`${response.value.message}`);
+			}
+			throw new BadRequestException(`${response.value.message}`);
+		}
+
+		return response.value;
 	}
 }

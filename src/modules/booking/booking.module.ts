@@ -9,6 +9,7 @@ import { StaffModule } from "../staff/staff.module";
 import { UserModule } from "../user/user.module";
 import { RulesExecutionService } from "./application/services/rules-execution.service";
 import { AppointmentBookingUseCase } from "./application/use-cases/appointment-booking.use-case";
+import { CalculateServicePriceDurationUseCase } from "./application/use-cases/calculate-service-price-duration.use-case";
 import { ListAvailableDatesUseCase } from "./application/use-cases/list-available-dates.use-case";
 import { BookingController } from "./infra/http/controllers/booking.controller";
 
@@ -27,6 +28,7 @@ import { BookingController } from "./infra/http/controllers/booking.controller";
 	providers: [
 		AppointmentBookingUseCase,
 		ListAvailableDatesUseCase,
+		CalculateServicePriceDurationUseCase,
 		RulesExecutionService,
 	],
 })

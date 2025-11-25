@@ -24,6 +24,8 @@ import { ServiceModule } from "./modules/service/service.module";
 import { StaffModule } from "./modules/staff/staff.module";
 import { UserModule } from "./modules/user/user.module";
 
+import { ScheduleModule } from "@nestjs/schedule";
+
 @Module({
 	imports: [
 		ConfigModule.forRoot({
@@ -31,6 +33,7 @@ import { UserModule } from "./modules/user/user.module";
 			validate: (env) => envSchema.parse(env),
 			cache: true,
 		}),
+		ScheduleModule.forRoot(),
 		EventEmitterModule.forRoot(),
 		EnvModule,
 		BullEventDispatcherModule,

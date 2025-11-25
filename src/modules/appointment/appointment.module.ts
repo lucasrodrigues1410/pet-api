@@ -9,6 +9,7 @@ import { AppointmentRepository } from "./domain/repositories/appointment.reposit
 import { PrismaAppointmentRepository } from "./infra/database/repositories/prisma-appointment.repository";
 import { AppointmentController } from "./infra/http/controllers/appointment.controller";
 import { AppointmentStatusListener } from "./infra/listeners/appointment-status.listener";
+import { AppointmentReminderJob } from "./infra/jobs/appointment-reminder.job";
 
 @Module({
 	imports: [NotificationModule, StaffModule],
@@ -18,6 +19,7 @@ import { AppointmentStatusListener } from "./infra/listeners/appointment-status.
 		GetAppointmentByCompanyIdUseCase,
 		UpdateAppointmentStatusUseCase,
 		AppointmentStatusListener,
+		AppointmentReminderJob,
 		{ provide: AppointmentRepository, useClass: PrismaAppointmentRepository },
 	],
 	controllers: [AppointmentController],

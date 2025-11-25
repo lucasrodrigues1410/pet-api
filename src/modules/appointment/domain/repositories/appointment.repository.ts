@@ -66,4 +66,12 @@ export abstract class AppointmentRepository {
 		userId: string;
 		companyId: string;
 	}): Promise<boolean>;
+	abstract findUpcomingAppointments(range: DateRange): Promise<
+		(Appointment & {
+			client: User;
+			service: Service;
+			company: Company;
+			staff: { name: string };
+		})[]
+	>;
 }

@@ -197,4 +197,31 @@ export class PrismaAppointmentRepository implements AppointmentRepository {
 
 		return Boolean(appointment);
 	}
+
+	async findUpcomingAppointments(range: DateRange) {
+		const appointments = await this.prismaService.appointment.findMany({
+			where: {
+				startDate: {
+					gte: range.startDate,
+					lte: range.endDate,
+				},
+				status: "scheduled",
+			},
+			include: {
+				client: true,
+				service: { include: { categories: { include: { category: true } } } },
+				company: true,
+				staff: { select: { user: { select: { name: true } } } },
+			},
+		});
+
+		return appointments.map((appointment) =>
+			Object.assign(PrismaAppointmentMapper.toDomain(appointment), {
+				client: PrismaUserMapper.toDomain(appointment.client),
+				service: PrismaServiceMapper.toDomain(appointment.service),
+				company: PrismaCompanyMapper.toDomain(appointment.company),
+				staff: { name: appointment.staff.user.name },
+			}),
+		);
+	}
 }
