@@ -1,9 +1,10 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { Cron, CronExpression } from "@nestjs/schedule";
-import { addHours } from "date-fns";
+import { addHours, format } from "date-fns";
+import { ptBR } from "date-fns/locale/pt-BR";
 import { AppointmentReminderEvent } from "@/modules/notification/domain/events/appointment-reminder.event";
-import { AppointmentRepository } from "../../domain/repositories/appointment.repository";
 import { NotificationPublisher } from "@/modules/notification/domain/interfaces/notification-publisher.interface";
+import { AppointmentRepository } from "../../domain/repositories/appointment.repository";
 
 @Injectable()
 export class AppointmentReminderJob {
@@ -48,7 +49,11 @@ export class AppointmentReminderJob {
 				{
 					clientName: appointment.client.name,
 					companyName: appointment.company.name,
-					date: appointment.startDate.toISOString(),
+					date: format(
+						appointment.startDate,
+						"EEEE, d 'de' MMMM 'de' yyyy, HH:mm",
+						{ locale: ptBR },
+					),
 					serviceName: appointment.service.name,
 					professionalName: appointment.staff.name,
 				},

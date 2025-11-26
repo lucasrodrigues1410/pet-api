@@ -1,4 +1,3 @@
-import { differenceInYears } from "date-fns";
 import { Entity } from "@/core/domain/entities/entity";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 
@@ -12,8 +11,6 @@ export interface AnimalProps {
 	size?: "small" | "medium" | "large" | null;
 	ageStage?: "puppy" | "adult" | "senior" | null;
 }
-
-type RawBirthdate = Date | string | null;
 
 export class Animal extends Entity<AnimalProps> {
 	get userId() {
@@ -49,9 +46,7 @@ export class Animal extends Entity<AnimalProps> {
 	}
 
 	public static create(
-		props: Omit<AnimalProps, "age" | "size" | "ageStage"> & {
-			birthdate?: RawBirthdate;
-		},
+		props: Omit<AnimalProps, "size" | "ageStage">,
 		id?: UniqueEntityID,
 	): Animal {
 		const size = props.weight
@@ -61,18 +56,14 @@ export class Animal extends Entity<AnimalProps> {
 					? "medium"
 					: "large"
 			: "small";
-		const age = props.birthdate
-			? differenceInYears(new Date(), new Date(props.birthdate))
-			: null;
-		const ageStage = age
-			? age < 1
+		const ageStage = props.age
+			? props.age < 1
 				? "puppy"
-				: age < 10
+				: props.age < 10
 					? "adult"
 					: "senior"
 			: "puppy";
-
-		return new Animal({ ...props, age, size, ageStage }, id);
+		return new Animal({ ...props, size, ageStage }, id);
 	}
 
 	public toObject() {

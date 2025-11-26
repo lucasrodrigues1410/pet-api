@@ -1,4 +1,4 @@
-import { subYears } from "date-fns";
+import { differenceInYears, subYears } from "date-fns";
 import { Prisma, Animal as PrismaAnimal } from "prisma/generated/client";
 import { Animal } from "src/modules/animal/domain/entities/animal.entity";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
@@ -13,7 +13,9 @@ export class PrismaAnimalMapper {
 					? new UniqueEntityID(prismaAnimal.assetId)
 					: undefined,
 				name: prismaAnimal.name,
-				birthdate: prismaAnimal.birthdate,
+				age: prismaAnimal.birthdate
+					? differenceInYears(new Date(), prismaAnimal.birthdate)
+					: undefined,
 				weight: prismaAnimal.weight,
 			},
 			new UniqueEntityID(prismaAnimal.id),
@@ -27,7 +29,7 @@ export class PrismaAnimalMapper {
 			breedId: animal.breedId.toString(),
 			assetId: animal.assetId?.toString(),
 			name: animal.name,
-			birthdate: animal.age ? subYears(new Date(), animal.age) : null,
+			birthdate: animal.age ? subYears(new Date(), animal.age) : undefined,
 			weight: animal.weight,
 		};
 	}
@@ -41,7 +43,7 @@ export class PrismaAnimalMapper {
 			breedId: animal.breedId?.toString(),
 			assetId: animal.assetId?.toString(),
 			name: animal.name,
-			birthdate: animal.age ? subYears(new Date(), animal.age) : null,
+			birthdate: animal.age ? subYears(new Date(), animal.age) : undefined,
 			weight: animal.weight,
 		};
 	}

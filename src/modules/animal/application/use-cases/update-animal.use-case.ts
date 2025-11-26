@@ -1,5 +1,4 @@
 import { Injectable } from "@nestjs/common";
-import { subYears } from "date-fns";
 import { UniqueEntityID } from "@/core/domain/entities/unique-entity-id";
 import { AssetRepository } from "@/modules/asset/domain/repositories/asset.repository";
 import { Either, left, right } from "@/shared/either";
@@ -45,7 +44,7 @@ export class UpdateAnimalUseCase {
 			{
 				breedId: animal.breedId,
 				name: data.name ?? animal.name,
-				birthdate: data.age ? subYears(new Date(), data.age) : null,
+				age: data.age,
 				weight: data.weight ?? animal.weight,
 				assetId: data.assetId
 					? new UniqueEntityID(data.assetId)

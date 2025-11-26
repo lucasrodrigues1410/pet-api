@@ -15,10 +15,7 @@ export class AnimalPrismaRepository implements AnimalRepository {
 	constructor(private prismaService: PrismaService) {}
 
 	async create(animal: Animal) {
-		console.log(animal.toObject());
-		const data = PrismaAnimalMapper.toPrisma(animal);
-		const response = await this.prismaService.animal.create({ data });
-
+		const response = await this.prismaService.animal.create({ data: PrismaAnimalMapper.toPrisma(animal) });
 		return PrismaAnimalMapper.toDomain(response);
 	}
 
