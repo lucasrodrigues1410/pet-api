@@ -31,7 +31,7 @@ export class UploadAndCreateAssetUseCase {
 		fileName,
 		folder,
 	}: UploadAndCreateAssetRequest): Promise<UploadAndCreateAssetResponse> {
-		const allowedFileTypes = ["image/jpeg", "image/png", "application/pdf"];
+		const allowedFileTypes = ["image/*"];
 		if (!allowedFileTypes.includes(data.mimetype)) {
 			return left(new InvalidAssetTypeError(data.mimetype));
 		}
