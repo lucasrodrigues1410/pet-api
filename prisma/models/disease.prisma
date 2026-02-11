@@ -1,0 +1,6 @@
+model Disease {
+  id   String @id @default(cuid())
+  name String @unique @db.VarChar(255)
+
+  @@map("diseases")
+}

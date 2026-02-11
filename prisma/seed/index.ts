@@ -5,6 +5,7 @@ import { createAppointment } from "./appointment";
 import { createAsset } from "./asset";
 import { createBreed } from "./breed";
 import { createCompany } from "./company";
+import { createDisease } from "./disease";
 import { createLocation } from "./location";
 import { createNotification } from "./notification";
 import { createRating } from "./rating";
@@ -28,6 +29,10 @@ async function main() {
 		console.log("🐕 Criando tipos de animais e raças...");
 		await createAnimalType(prisma);
 		await createBreed(prisma);
+		
+		// 2.5. Criar doenças
+		console.log("🦠 Criando doenças...");
+		await createDisease(prisma);
 		
 		// 3. Criar assets (imagens para os animais)
 		console.log("🖼️ Criando assets (imagens)...");
@@ -66,6 +71,7 @@ async function main() {
 		console.log("• 12 usuários (8 clientes + 4 empresários)");
 		console.log("• 4 empresas com horários de funcionamento");
 		console.log("• 5 tipos de animais e 37 raças");
+		console.log("• 15 doenças comuns (raiva, parvovirose, etc...)");
 		console.log("• 30 assets (imagens para os animais)");
 		console.log("• 20 animais variados com imagens");
 		console.log("• 6 localizações");

@@ -15,6 +15,7 @@ import { ClerkAuthGuard } from "./modules/auth/infra/http/guards/clerk-auth.guar
 import { BookingModule } from "./modules/booking/booking.module";
 import { BreedModule } from "./modules/breed/breed.module";
 import { CategoryModule } from "./modules/category/category.module";
+import { DiseaseModule } from "./modules/disease/disease.module";
 import { CompanyModule } from "./modules/company/company.module";
 import { DashboardModule } from "./modules/dashboard/dashboard.module";
 import { NotificationModule } from "./modules/notification/notification.module";
@@ -45,6 +46,7 @@ import { ScheduleModule } from "@nestjs/schedule";
 		ServiceModule,
 		BreedModule,
 		CategoryModule,
+		DiseaseModule,
 		AssetModule,
 		CompanyModule,
 		AppointmentModule,
